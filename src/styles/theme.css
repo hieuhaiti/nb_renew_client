@@ -1,0 +1,113 @@
+:root {
+  --radius: 0.5rem;
+
+  /* App shell */
+  --background: #eff1ef; /* Green-Gray 50 — nền trang nhẹ */
+  --foreground: #212221; /* Green-Gray 900 — text chính */
+
+  /* Elevated surfaces */
+  --card: #ffffff;
+  --card-foreground: #212221;
+
+  /* Floating overlays */
+  --popover: #ffffff;
+  --popover-foreground: #212221;
+
+  /* High-emphasis brand/action */
+  --primary: #2e6f40; /* Forest Green 500 — anchor màu */
+  --primary-foreground: #ffffff;
+
+  /* Lower-emphasis filled surfaces */
+  --secondary: #cffcd8; /* Forest Green 50 — light fill */
+  --secondary-foreground: #1c4a29; /* Forest Green 800 */
+
+  /* Subtle UI and helper content */
+  --muted: #ced4ce; /* Green-Gray 100 */
+  --muted-foreground: #606360; /* Green-Gray 600 */
+
+  /* Hover / selected / interactive support surfaces */
+  --accent: #81e59d; /* Sage 200 */
+  --accent-foreground: #23492d; /* Sage 900 */
+
+  /* Errors */
+  --destructive: #b73737;
+  --destructive-foreground: #ffffff;
+
+  /* Inputs and separators */
+  --border: #ced4ce; /* Green-Gray 200 */
+  --input: #ced4ce; /* Green-Gray 100 */
+  --ring: #2e6f40; /* Forest Green 500 */
+
+  /* Data viz — từ 4 dải Lush Forest */
+  --chart-1: #2e6f40; /* Forest Green */
+  --chart-2: #00bd63; /* Mint 400 */
+  --chart-3: #68ba7f; /* Sage 400 */
+  --chart-4: #509182; /* Sage 500 — teal-sage */
+  --chart-5: #386a47; /* Sage 600 — đậm hơn */
+
+  /* Sidebar */
+  --sidebar: #ced4ce; /* Green-Gray 100 */
+  --sidebar-foreground: #212221;
+  --sidebar-primary: #2e6f40; /* Forest Green 500 */
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #cffcd8; /* Forest Green 50 */
+  --sidebar-accent-foreground: #1c4a29;
+  --sidebar-border: #a8ada8; /* Green-Gray 200 */
+  --sidebar-ring: #2e6f40;
+}
+
+.dark {
+  /* App shell */
+  --background: #212221; /* Green-Gray 900 */
+  --foreground: #eff1ef; /* Green-Gray 50 */
+
+  /* Elevated surfaces */
+  --card: #3f413f; /* Green-Gray 700 */
+  --card-foreground: #eff1ef;
+
+  /* Floating overlays */
+  --popover: #3f413f;
+  --popover-foreground: #eff1ef;
+
+  /* High-emphasis brand/action */
+  --primary: #6aec8e; /* Forest Green 200 — sáng trên nền tối */
+  --primary-foreground: #0c2713; /* Forest Green 900 */
+
+  /* Lower-emphasis filled surfaces */
+  --secondary: #1c4a29; /* Forest Green 800 */
+  --secondary-foreground: #cffcd8; /* Forest Green 50 */
+
+  /* Subtle UI and helper content */
+  --muted: #3f413f; /* Green-Gray 700 */
+  --muted-foreground: #a8ada8; /* Green-Gray 200 */
+
+  /* Hover / selected / interactive support surfaces */
+  --accent: #23492d; /* Sage 900 */
+  --accent-foreground: #81e59d; /* Sage 200 */
+
+  /* Errors */
+  --destructive: #ff7b7b;
+  --destructive-foreground: #2a0d0d;
+
+  /* Inputs and separators */
+  --border: #606360; /* Green-Gray 600 */
+  --input: #3f413f; /* Green-Gray 700 */
+  --ring: #6aec8e; /* Forest Green 200 */
+
+  /* Data viz — sáng trên nền tối */
+  --chart-1: #6aec8e; /* Forest Green 200 */
+  --chart-2: #00e97b; /* Mint 200 */
+  --chart-3: #81e59d; /* Sage 200 */
+  --chart-4: #68ba7f; /* Sage 400 */
+  --chart-5: #00bd63; /* Mint 400 */
+
+  /* Sidebar */
+  --sidebar: #0c2713; /* Forest Green 900 — sidebar tối sâu */
+  --sidebar-foreground: #cffcd8;
+  --sidebar-primary: #6aec8e; /* Forest Green 200 */
+  --sidebar-primary-foreground: #0c2713;
+  --sidebar-accent: #1c4a29; /* Forest Green 800 */
+  --sidebar-accent-foreground: #cffcd8;
+  --sidebar-border: #606360; /* Green-Gray 600 */
+  --sidebar-ring: #6aec8e;
+}

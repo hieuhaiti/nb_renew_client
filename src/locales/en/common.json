@@ -1,0 +1,11 @@
+{
+  "app.title": "Client App",
+  "nav.dashboard": "Dashboard",
+  "nav.profile": "Profile",
+  "nav.login": "Login",
+  "hero.title": "Client starter ready",
+  "hero.description": "Tailwind 4, shadcn-ready, semantic theme tokens, i18n-first.",
+  "common.language": "Language",
+  "common.theme": "Theme",
+  "common.darkMode": "Dark Mode"
+}

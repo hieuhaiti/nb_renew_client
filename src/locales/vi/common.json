@@ -1,0 +1,11 @@
+{
+  "app.title": "Client App",
+  "nav.dashboard": "Bảng điều khiển",
+  "nav.profile": "Hồ sơ",
+  "nav.login": "Đăng nhập",
+  "hero.title": "Bộ khởi tạo client đã sẵn sàng",
+  "hero.description": "Tailwind 4, sẵn sàng cho shadcn, semantic token, ưu tiên i18n.",
+  "common.language": "Ngôn ngữ",
+  "common.theme": "Chủ đề",
+  "common.darkMode": "Chế độ tối"
+}
