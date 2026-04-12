@@ -1,0 +1,131 @@
+{
+  "common": {
+    "app_name": "Travel Ninh Bình",
+    "home": "Trang chủ",
+    "tour3D": "Tour 3D",
+    "tourism_points": "Điểm du lịch",
+    "tourist_route": "Tuyến du lịch",
+    "user_document": "Hướng dẫn sử dụng",
+    "food_tour": "Ẩm thực OCOP",
+    "map": "Bản đồ",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "settings": "Cài đặt",
+    "back": "Quay lại",
+    "toggle_theme": "Giao diện sáng/tối",
+    "toggle_lang": "Chuyển ngôn ngữ",
+    "dark": "Tối",
+    "light": "Sáng",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "authen_required": "Yêu cầu xác thực",
+    "prev": "Trước",
+    "next": "Tiếp",
+    "yes": "Có",
+    "no": "Không",
+    "open_menu": "Mở menu"
+  },
+  "theme": {
+    "toggle": "Chuyển giao diện",
+    "dark": "Tối",
+    "light": "Sáng",
+    "switch_to_dark": "Chuyển sang tối",
+    "switch_to_light": "Chuyển sang sáng"
+  },
+  "home": {
+    "welcome": "Chào mừng đến với Travel Ninh Bình!",
+    "description": "Khám phá các điểm đến hàng đầu, xem thông tin thời tiết, dịch vụ và nhiều hơn nữa.",
+    "hero": {
+      "title": "Khám phá vẻ đẹp Ninh Bình",
+      "subtitle": "Bản đồ du lịch thông minh, điểm đến hấp dẫn và trải nghiệm không quên",
+      "cta_map": "Khám phá bản đồ",
+      "cta_discover": "Điểm du lịch nổi bật",
+      "scroll_hint": "Cuộn để khám phá"
+    },
+    "explore": "Khám phá ngay",
+    "features_title": "Nền tảng du lịch thông minh",
+    "features_desc": "Tích hợp bản đồ GIS, thông tin điểm đến và lên lịch hành trình",
+    "see_more": "Xem thêm"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "description": "Chào mừng trở lại! Vui lòng nhập thông tin để tiếp tục.",
+      "email_or_username": "Email hoặc tên đăng nhập",
+      "email_placeholder": "example@email.com hoặc username",
+      "password": "Mật khẩu",
+      "password_placeholder": "Nhập mật khẩu",
+      "remember": "Ghi nhớ đăng nhập",
+      "forgot": "Quên mật khẩu?",
+      "submit": "Đăng nhập",
+      "loading": "Đang đăng nhập...",
+      "noAccount": "Chưa có tài khoản?",
+      "signup": "Đăng ký",
+      "success": "Đăng nhập thành công!"
+    },
+    "signup": {
+      "title": "Tạo tài khoản",
+      "description": "Đăng ký để thưởng thức đầy đủ trải nghiệm",
+      "username": "Tên đăng nhập",
+      "username_placeholder": "Nhập tên đăng nhập",
+      "email": "Email",
+      "email_placeholder": "example@email.com",
+      "password": "Mật khẩu",
+      "password_placeholder": "Tối thiểu 8 ký tự",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "confirmPassword_placeholder": "Nhập lại mật khẩu",
+      "submit": "Đăng ký",
+      "loading": "Đang đăng ký...",
+      "haveAccount": "Đã có tài khoản?",
+      "login": "Đăng nhập",
+      "success": "Đăng ký thành công!"
+    },
+    "logout_success": "Đăng xuất thành công",
+    "logout_error": "Đã đăng xuất",
+    "errors": {
+      "required_login": "Vui lòng nhập email hoặc tên đăng nhập",
+      "required_password": "Vui lòng nhập mật khẩu",
+      "required_username": "Vui lòng nhập tên đăng nhập",
+      "required_email": "Vui lòng nhập email",
+      "invalid_email": "Email không hợp lệ",
+      "password_min": "Mật khẩu tối thiểu 8 ký tự",
+      "passwords_mismatch": "Mật khẩu xác nhận không khớp",
+      "login_failed": "Đăng nhập thất bại",
+      "signup_failed": "Đăng ký thất bại"
+    }
+  },
+  "error": {
+    "back_home": "Về trang chủ",
+    "login": "Đăng nhập",
+    "400": {
+      "title": "Yêu cầu không hợp lệ",
+      "message": "Máy chủ không thể xử lý yêu cầu do dữ liệu không hợp lệ."
+    },
+    "401": {
+      "title": "Chưa xác thực",
+      "message": "Bạn cần đăng nhập để truy cập trang này."
+    },
+    "403": {
+      "title": "Truy cập bị từ chối",
+      "message": "Bạn không có quyền truy cập vào trang này."
+    },
+    "404": {
+      "title": "Không tìm thấy trang",
+      "message": "Trang bạn tìm kiếm không tồn tại hoặc đã bị di chuyển."
+    },
+    "500": {
+      "title": "Lỗi máy chủ",
+      "message": "Đã xảy ra lỗi trong quá trình xử lý. Vui lòng thử lại sau."
+    },
+    "503": {
+      "title": "Dịch vụ không khả dụng",
+      "message": "Dịch vụ đang bảo trì. Vui lòng quay lại sau.",
+      "server_overload": "Máy chủ đang quá tải, vui lòng thử lại"
+    },
+    "504": {
+      "title": "Hết thời gian chờ",
+      "message": "Yêu cầu mất quá nhiều thời gian xử lý.",
+      "timeout_message": "Xử lý kéo dài hơn dự kiến, vui lòng thử lại"
+    }
+  }
+}

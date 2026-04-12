@@ -1,0 +1,172 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { fetcher } from '@/services/fetcher';
+import { mutater } from '@/services/mutater';
+import { tokenManager } from '@/lib/tokenManager';
+import { useLoadingStore } from '@/stores/useLoadingStore';
+import { toast } from 'react-toastify';
+import { renderValidationErrors } from '@/services/errorUtils';
+
+// ─── TOAST HELPERS ────────────────────────────────────────────────────────────
+
+const toastError = (content, duration = 5000) =>
+  toast.error(content, { autoClose: duration, closeOnClick: true, pauseOnHover: true });
+
+const toastSuccess = (content) =>
+  toast.success(content, { autoClose: 3000, closeOnClick: true });
+
+// ─── useApiQuery ──────────────────────────────────────────────────────────────
+
+/**
+ * useApiQuery — wraps TanStack useQuery with:
+ * - global loading overlay (opt-out with `loading: false`)
+ * - success toast (opt-in with `notification: true`)
+ * - 401 session-expired handling → redirect /login
+ * - validation error rendering via renderValidationErrors
+ *
+ * @param {string|string[]} key - query key
+ * @param {string} endPoint - API path
+ * @param {import('@tanstack/react-query').UseQueryOptions} [options]
+ * @param {boolean} [loading=true] - sync to global loading overlay
+ * @param {boolean} [notification=false] - show success toast
+ */
+export function useApiQuery(key, endPoint, options = {}, loading = true, notification = false) {
+  const navigate = useNavigate();
+  const setLoading = useLoadingStore((state) => state.setLoading);
+
+  const query = useQuery({
+    queryKey: Array.isArray(key) ? key : [key],
+    queryFn: () => fetcher(endPoint),
+    ...options,
+  });
+
+  // Sync global loading overlay
+  useEffect(() => {
+    setLoading(loading ? (query.isLoading || query.isFetching) : false);
+  }, [query.isLoading, query.isFetching, setLoading, loading]);
+
+  // Success toast (opt-in)
+  useEffect(() => {
+    if (notification && query.isSuccess && query.data?.message) {
+      toastSuccess(query.data.message);
+    }
+  }, [notification, query.isSuccess, query.data]);
+
+  // Error handling
+  useEffect(() => {
+    if (!query.error) return;
+    if (query.error.meta?.suppressGlobalError) return;
+
+    const { status, isAuthRequest, errors, message } = query.error;
+
+    if (status === 401 && !isAuthRequest) {
+      // TODO: if backend uses httpOnly cookies, no tokenManager.clearTokens() needed
+      tokenManager.clearTokens();
+      toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+      navigate('/login');
+      return;
+    }
+
+    // 400 with validation errors array
+    if (status === 400 && Array.isArray(errors) && errors.length) {
+      toastError(renderValidationErrors(errors), 8000);
+      return;
+    }
+
+    // Other non-401 errors — toast already shown by apiClient interceptor
+    // but we can add feature-level handling here if needed
+  }, [query.error, navigate]);
+
+  return query;
+}
+
+// ─── useApiMutation ───────────────────────────────────────────────────────────
+
+/**
+ * useApiMutation — wraps TanStack useMutation with:
+ * - global loading overlay (synced to isPending)
+ * - success toast when response has message
+ * - 401 session-expired handling → redirect /login
+ * - validation error rendering
+ *
+ * @param {string|string[]} key - query key to invalidate on success (optional)
+ * @param {string} endPoint - API path
+ * @param {'POST'|'PUT'|'PATCH'|'DELETE'} [method='POST']
+ * @param {import('@tanstack/react-query').UseMutationOptions} [options]
+ */
+export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
+  const navigate = useNavigate();
+  const setLoading = useLoadingStore((state) => state.setLoading);
+  const queryClient = useQueryClient();
+
+  const { onSuccess: optionsOnSuccess, onError: optionsOnError, ...restOptions } = options;
+
+  const mutation = useMutation({
+    mutationFn: (body) => mutater(endPoint, method, body),
+
+    onSuccess: (data, variables, context) => {
+      // Invalidate related cache if key provided
+      if (key) {
+        const queryKey = Array.isArray(key) ? key : [key];
+        queryClient.invalidateQueries({ queryKey });
+      }
+
+      if (data?.message) {
+        toastSuccess(data.message);
+      }
+
+      optionsOnSuccess?.(data, variables, context);
+    },
+
+    onError: (error, variables, context) => {
+      const { status, isAuthRequest, errors, message } = error || {};
+
+      if (status === 401 && !isAuthRequest) {
+        // TODO: if backend uses httpOnly cookies, no tokenManager.clearTokens() needed
+        tokenManager.clearTokens();
+        toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+        navigate('/login');
+      } else if (status === 400 && Array.isArray(errors) && errors.length) {
+        toastError(renderValidationErrors(errors), 8000);
+      } else if (message && status !== 401) {
+        toastError(message);
+      }
+
+      optionsOnError?.(error, variables, context);
+    },
+
+    ...restOptions,
+  });
+
+  // Sync global loading overlay
+  useEffect(() => {
+    setLoading(mutation.isPending);
+  }, [mutation.isPending, setLoading]);
+
+  return mutation;
+}
+
+// ─── useQueryCache ────────────────────────────────────────────────────────────
+
+/**
+ * useQueryCache — helpers to read/write TanStack Query cache imperatively.
+ * Useful for optimistic updates or reading cached data outside of queries.
+ */
+export function useQueryCache() {
+  const queryClient = useQueryClient();
+
+  return {
+    getCachedData: (key) =>
+      queryClient.getQueryData(Array.isArray(key) ? key : [key]),
+
+    setCachedData: (key, data) =>
+      queryClient.setQueryData(Array.isArray(key) ? key : [key], data),
+
+    removeQuery: (key) =>
+      queryClient.removeQueries({ queryKey: Array.isArray(key) ? key : [key] }),
+
+    invalidate: (key) =>
+      queryClient.invalidateQueries({ queryKey: Array.isArray(key) ? key : [key] }),
+  };
+}

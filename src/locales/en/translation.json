@@ -1,0 +1,131 @@
+{
+  "common": {
+    "app_name": "Travel Ninh Binh",
+    "home": "Home",
+    "tour3D": "3D Tour",
+    "tourism_points": "Tourism Points",
+    "tourist_route": "Tourist Route",
+    "user_document": "User Manual",
+    "food_tour": "OCOP Cuisine",
+    "map": "Map",
+    "login": "Login",
+    "logout": "Logout",
+    "settings": "Settings",
+    "back": "Back",
+    "toggle_theme": "Toggle light/dark mode",
+    "toggle_lang": "Switch language",
+    "dark": "Dark",
+    "light": "Light",
+    "vietnamese": "Vietnamese",
+    "english": "English",
+    "authen_required": "Authentication required",
+    "prev": "Previous",
+    "next": "Next",
+    "yes": "Yes",
+    "no": "No",
+    "open_menu": "Open menu"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "dark": "Dark",
+    "light": "Light",
+    "switch_to_dark": "Switch to Dark mode",
+    "switch_to_light": "Switch to Light mode"
+  },
+  "home": {
+    "welcome": "Welcome to Travel Ninh Binh!",
+    "description": "Discover top travel destinations, check weather info, services, and more.",
+    "hero": {
+      "title": "Discover the Beauty of Ninh Binh",
+      "subtitle": "Smart tourism map, fascinating destinations, and unforgettable experiences",
+      "cta_map": "Explore Map",
+      "cta_discover": "Top Destinations",
+      "scroll_hint": "Scroll to explore"
+    },
+    "explore": "Explore Now",
+    "features_title": "Smart Tourism Platform",
+    "features_desc": "WebGIS map, destination info, and itinerary planning integrated",
+    "see_more": "See more"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "description": "Welcome back! Please enter your credentials to continue.",
+      "email_or_username": "Email or Username",
+      "email_placeholder": "example@email.com or username",
+      "password": "Password",
+      "password_placeholder": "Enter your password",
+      "remember": "Remember me",
+      "forgot": "Forgot password?",
+      "submit": "Sign In",
+      "loading": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signup": "Sign Up",
+      "success": "Signed in successfully!"
+    },
+    "signup": {
+      "title": "Create Account",
+      "description": "Sign up to explore the full tourism experience",
+      "username": "Username",
+      "username_placeholder": "Enter a username",
+      "email": "Email",
+      "email_placeholder": "example@email.com",
+      "password": "Password",
+      "password_placeholder": "Minimum 8 characters",
+      "confirmPassword": "Confirm Password",
+      "confirmPassword_placeholder": "Re-enter your password",
+      "submit": "Sign Up",
+      "loading": "Creating account...",
+      "haveAccount": "Already have an account?",
+      "login": "Sign In",
+      "success": "Account created successfully!"
+    },
+    "logout_success": "Logged out successfully",
+    "logout_error": "Logged out",
+    "errors": {
+      "required_login": "Please enter email or username",
+      "required_password": "Please enter your password",
+      "required_username": "Please enter a username",
+      "required_email": "Please enter your email",
+      "invalid_email": "Invalid email address",
+      "password_min": "Password must be at least 8 characters",
+      "passwords_mismatch": "Passwords do not match",
+      "login_failed": "Login failed",
+      "signup_failed": "Sign up failed"
+    }
+  },
+  "error": {
+    "back_home": "Back to Home",
+    "login": "Login",
+    "400": {
+      "title": "Bad Request",
+      "message": "The server could not process the request due to invalid data."
+    },
+    "401": {
+      "title": "Unauthorized",
+      "message": "You need to be logged in to access this page."
+    },
+    "403": {
+      "title": "Access Denied",
+      "message": "You do not have permission to access this page."
+    },
+    "404": {
+      "title": "Page Not Found",
+      "message": "The page you are looking for does not exist or has been moved."
+    },
+    "500": {
+      "title": "Internal Server Error",
+      "message": "An error occurred while processing your request. Please try again later."
+    },
+    "503": {
+      "title": "Service Unavailable",
+      "message": "The service is currently under maintenance. Please check back later.",
+      "server_overload": "Server is overloaded, please try again"
+    },
+    "504": {
+      "title": "Gateway Timeout",
+      "message": "The request took too long to process.",
+      "timeout_message": "Processing is taking longer than expected, please try again"
+    }
+  }
+}

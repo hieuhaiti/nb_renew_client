@@ -11,7 +11,9 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
+    /* Khai báo trực tiếp — không dựa vào @theme token resolution của Tailwind v4 */
+    font-family: 'Roboto Slab', 'Noto Sans', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     font-weight: 400;
     text-rendering: optimizeLegibility;
@@ -76,15 +78,18 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* ===== Shadows ===== */
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(var(--shadow-color) / 0.1), 0 2px 4px -2px rgb(var(--shadow-color) / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / 0.15), 0 4px 6px -4px rgb(var(--shadow-color) / 0.15);
+  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / 0.2), 0 8px 10px -6px rgb(var(--shadow-color) / 0.2);
 
-  --shadow-top-sm: 0 -1px 2px rgb(0 0 0 / 0.05);
-  --shadow-top-md: 0 -4px 6px -1px rgb(0 0 0 / 0.1), 0 -2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-top-lg: 0 -10px 15px -3px rgb(0 0 0 / 0.1), 0 -4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-top-xl: 0 -20px 25px -5px rgb(0 0 0 / 0.1), 0 -8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-top-sm: 0 -1px 2px rgb(var(--shadow-color) / 0.05);
+  --shadow-top-md: 0 -4px 6px -1px rgb(var(--shadow-color) / 0.1), 0 -2px 4px -2px rgb(var(--shadow-color) / 0.1);
+  --shadow-top-lg: 0 -10px 15px -3px rgb(var(--shadow-color) / 0.15), 0 -4px 6px -4px rgb(var(--shadow-color) / 0.15);
+  --shadow-top-xl: 0 -20px 25px -5px rgb(var(--shadow-color) / 0.2), 0 -8px 10px -6px rgb(var(--shadow-color) / 0.2);
+
+  /* ===== Elevated Custom Shadow ===== */
+  --shadow-elevated: 0 2px 6px rgb(var(--shadow-color) / 0.10), 0 12px 28px rgb(var(--shadow-color) / 0.12);
 
   /* Loading */
   --loading-spinner: var(--primary);

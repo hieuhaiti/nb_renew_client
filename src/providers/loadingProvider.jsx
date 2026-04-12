@@ -1,5 +1,5 @@
-import { useLoadingStore } from '@/contexts/LoadingContext/useLoadingStore';
-import LoadingOverlay from '@/contexts/LoadingContext/LoadingOverlay';
+import { useLoadingStore } from '@/stores/useLoadingStore';
+import LoadingOverlay from '@/components/common/LoadingOverlay';
 
 export function LoadingProvider({ children }) {
   const loading = useLoadingStore((state) => state.loading);
