@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { tokenManager } from '@/lib/tokenManager';
+import { env } from '@/config/env';
 
-const BASE_URL = import.meta.env.VITE_BASE_URL_BE;
+const BASE_URL = env.apiBaseUrl;
 
 /**
  * Central axios instance for all API calls.
@@ -97,8 +98,12 @@ apiClient.interceptors.response.use(
           { headers: { 'Content-Type': 'application/json' } }
         );
 
-        const { accessToken, refreshToken: newRefresh, expiresIn, refreshExpiresIn } =
-          refreshRes.data?.data || {};
+        const {
+          accessToken,
+          refreshToken: newRefresh,
+          expiresIn,
+          refreshExpiresIn,
+        } = refreshRes.data?.data || {};
 
         if (!accessToken) throw new Error('REFRESH_FAILED');
 
