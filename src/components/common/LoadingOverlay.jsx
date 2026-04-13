@@ -1,26 +1,12 @@
-import React from 'react';
-import { Loader2 } from 'lucide-react';
+import { memo } from 'react';
+import { HashLoader } from 'react-spinners';
 
-/**
- * LoadingOverlay — full-screen spinner overlay.
- * Shown when useLoadingStore.loading === true (via LoadingProvider).
- */
-export default function LoadingOverlay() {
+function LoadingOverlay() {
   return (
-    <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-background/60 backdrop-blur-sm"
-      aria-live="polite"
-      aria-label="Đang tải..."
-    >
-      <div className="flex flex-col items-center gap-3">
-        <Loader2
-          className="w-12 h-12 animate-spin text-primary"
-          aria-hidden="true"
-        />
-        <span className="text-sm text-muted-foreground font-medium animate-pulse">
-          Đang tải...
-        </span>
-      </div>
+    <div className="bg-background/85 fixed inset-0 z-10000 flex items-center justify-center backdrop-blur-sm transition-all duration-300">
+      <HashLoader color="#14b8a5" />
     </div>
   );
 }
+
+export default memo(LoadingOverlay);
