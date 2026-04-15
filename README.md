@@ -149,7 +149,6 @@ Client phải hỗ trợ tốt các nhóm nhu cầu sau:
 - `@diceui/file-upload`
 - react-toastify
 - react-error-boundary
-- fuse.js
 - date-fns
 - date-fns-tz
 
