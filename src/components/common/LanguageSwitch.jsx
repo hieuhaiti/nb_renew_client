@@ -29,24 +29,16 @@ export default function LanguageSwitch() {
             size="sm"
             id="language-switch-btn"
             aria-label="Toggle language"
-            className="flex h-8 items-center gap-1.5 rounded-full bg-card px-3 shadow-md transition-colors duration-200 hover:bg-[var(--surface-hover)]"
+            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-[var(--surface-hover)]"
             onClick={handleToggle}
             type="button"
           >
             {lang === 'vi' ? (
-              <img
-                src={viFlag}
-                alt="VN"
-                className="w-5 h-5 object-cover rounded-full"
-              />
+              <img src={viFlag} alt="VN" className="h-5 w-5 rounded-full object-cover" />
             ) : (
-              <img
-                src={enFlag}
-                alt="EN"
-                className="w-5 h-5 object-cover rounded-full"
-              />
+              <img src={enFlag} alt="EN" className="h-5 w-5 rounded-full object-cover" />
             )}
-            <span className="hidden sm:inline text-xs font-medium">
+            <span className="hidden text-xs font-medium sm:inline">
               {lang === 'vi' ? 'VI' : 'EN'}
             </span>
           </Button>
@@ -54,11 +46,9 @@ export default function LanguageSwitch() {
         <Tooltip.Portal>
           <Tooltip.Content
             sideOffset={4}
-            className="z-50 px-2 py-1 rounded-md bg-popover text-popover-foreground text-xs shadow-md border border-border"
+            className="bg-popover text-popover-foreground border-border z-50 rounded-md border px-2 py-1 text-xs shadow-md"
           >
-            {lang === 'vi'
-              ? 'Chuyển sang English'
-              : 'Switch to Vietnamese'}
+            {lang === 'vi' ? 'Chuyển sang English' : 'Switch to Vietnamese'}
             <Tooltip.Arrow className="fill-popover" />
           </Tooltip.Content>
         </Tooltip.Portal>

@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
+import { tokenManager } from '@/lib/tokenManager';
+import { useRegisterMutation } from '@/features/auth/api/authApi';
 import useAuthStore from '@/stores/useAuthStore';
 import RootLayout from '@/components/layout/RootLayout';
 
@@ -25,9 +27,7 @@ const signupSchema = (t) =>
         .string()
         .min(1, t('auth.errors.required_email'))
         .email(t('auth.errors.invalid_email')),
-      password: z
-        .string()
-        .min(8, t('auth.errors.password_min')),
+      password: z.string().min(8, t('auth.errors.password_min')),
       confirmPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu'),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -78,26 +78,28 @@ export default function Signup() {
     defaultValues: { username: '', email: '', password: '', confirmPassword: '' },
   });
 
+  const registerMut = useRegisterMutation();
+
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      // TODO: Replace with real authService.signup(data) call
-      // const response = await authService.signup({ username: data.username, email: data.email, password: data.password });
-      // setUser(response.user);
-
-      // --- MOCK: simulate signup for development ---
-      await new Promise((r) => setTimeout(r, 900));
-      const mockUser = {
-        id: '2',
-        name: data.username,
+      const res = await registerMut.mutateAsync({
         username: data.username,
         email: data.email,
-      };
-      setUser(mockUser);
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      });
+      const payload = res.data || res;
+
+      if (payload.accessToken || payload.token) {
+        tokenManager.setTokens(payload.accessToken || payload.token, payload.refreshToken || null);
+      }
+      setUser(payload.user || payload);
       toast.success(t('auth.signup.success'));
       navigate('/');
     } catch (err) {
-      const message = err?.response?.data?.message || t('auth.errors.signup_failed');
+      const message =
+        err?.response?.data?.message || err?.message || t('auth.errors.signup_failed');
       setError('root', { message });
     } finally {
       setIsLoading(false);
@@ -109,29 +111,23 @@ export default function Signup() {
   return (
     <RootLayout>
       {/* Form area */}
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
+      <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="bg-card border border-border rounded-2xl shadow-xl px-8 py-10">
+          <div className="bg-card border-border rounded-2xl border px-8 py-10 shadow-xl">
             {/* Header */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 mb-4">
+            <div className="mb-8 text-center">
+              <div className="bg-primary/10 mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl">
                 <UserPlus size={24} className="text-primary" />
               </div>
-              <h1 className="text-2xl font-bold text-foreground">
-                {t('auth.signup.title')}
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                {t('auth.signup.description')}
-              </p>
+              <h1 className="text-foreground text-2xl font-bold">{t('auth.signup.title')}</h1>
+              <p className="text-muted-foreground mt-1 text-sm">{t('auth.signup.description')}</p>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
               {/* Username */}
               <div className="space-y-1.5">
-                <Label htmlFor="signup-username">
-                  {t('auth.signup.username')}
-                </Label>
+                <Label htmlFor="signup-username">{t('auth.signup.username')}</Label>
                 <Input
                   id="signup-username"
                   type="text"
@@ -139,10 +135,12 @@ export default function Signup() {
                   placeholder={t('auth.signup.username_placeholder')}
                   {...register('username')}
                   aria-invalid={!!errors.username}
-                  className={errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}
+                  className={
+                    errors.username ? 'border-destructive focus-visible:ring-destructive' : ''
+                  }
                 />
                 {errors.username && (
-                  <p className="text-xs text-destructive" role="alert">
+                  <p className="text-destructive text-xs" role="alert">
                     {errors.username.message}
                   </p>
                 )}
@@ -150,9 +148,7 @@ export default function Signup() {
 
               {/* Email */}
               <div className="space-y-1.5">
-                <Label htmlFor="signup-email">
-                  {t('auth.signup.email')}
-                </Label>
+                <Label htmlFor="signup-email">{t('auth.signup.email')}</Label>
                 <Input
                   id="signup-email"
                   type="email"
@@ -160,10 +156,12 @@ export default function Signup() {
                   placeholder={t('auth.signup.email_placeholder')}
                   {...register('email')}
                   aria-invalid={!!errors.email}
-                  className={errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+                  className={
+                    errors.email ? 'border-destructive focus-visible:ring-destructive' : ''
+                  }
                 />
                 {errors.email && (
-                  <p className="text-xs text-destructive" role="alert">
+                  <p className="text-destructive text-xs" role="alert">
                     {errors.email.message}
                   </p>
                 )}
@@ -171,9 +169,7 @@ export default function Signup() {
 
               {/* Password */}
               <div className="space-y-1.5">
-                <Label htmlFor="signup-password">
-                  {t('auth.signup.password')}
-                </Label>
+                <Label htmlFor="signup-password">{t('auth.signup.password')}</Label>
                 <div className="relative">
                   <Input
                     id="signup-password"
@@ -192,7 +188,7 @@ export default function Signup() {
                     size="icon"
                     type="button"
                     tabIndex={-1}
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:bg-transparent hover:text-foreground"
+                    className="bg-card text-muted-foreground hover:bg-muted hover:text-foreground absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
@@ -200,13 +196,13 @@ export default function Signup() {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-xs text-destructive" role="alert">
+                  <p className="text-destructive text-xs" role="alert">
                     {errors.password.message}
                   </p>
                 )}
                 {/* Password strength hint */}
                 {passwordValue && passwordValue.length > 0 && (
-                  <div className="flex gap-1 mt-1.5">
+                  <div className="mt-1.5 flex gap-1">
                     {[...Array(4)].map((_, i) => (
                       <div
                         key={i}
@@ -216,8 +212,8 @@ export default function Signup() {
                             ? passwordValue.length >= 12
                               ? 'bg-primary'
                               : passwordValue.length >= 8
-                              ? 'bg-amber-400'
-                              : 'bg-destructive'
+                                ? 'bg-amber-400'
+                                : 'bg-destructive'
                             : 'bg-muted',
                         ].join(' ')}
                       />
@@ -228,9 +224,7 @@ export default function Signup() {
 
               {/* Confirm Password */}
               <div className="space-y-1.5">
-                <Label htmlFor="signup-confirm-password">
-                  {t('auth.signup.confirmPassword')}
-                </Label>
+                <Label htmlFor="signup-confirm-password">{t('auth.signup.confirmPassword')}</Label>
                 <div className="relative">
                   <Input
                     id="signup-confirm-password"
@@ -241,7 +235,9 @@ export default function Signup() {
                     aria-invalid={!!errors.confirmPassword}
                     className={[
                       'pr-10',
-                      errors.confirmPassword ? 'border-destructive focus-visible:ring-destructive' : '',
+                      errors.confirmPassword
+                        ? 'border-destructive focus-visible:ring-destructive'
+                        : '',
                     ].join(' ')}
                   />
                   <Button
@@ -249,7 +245,7 @@ export default function Signup() {
                     size="icon"
                     type="button"
                     tabIndex={-1}
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:bg-transparent hover:text-foreground"
+                    className="bg-card text-muted-foreground hover:bg-muted hover:text-foreground absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2"
                     onClick={() => setShowConfirm((v) => !v)}
                     aria-label={showConfirm ? 'Hide password' : 'Show password'}
                   >
@@ -257,7 +253,7 @@ export default function Signup() {
                   </Button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-xs text-destructive" role="alert">
+                  <p className="text-destructive text-xs" role="alert">
                     {errors.confirmPassword.message}
                   </p>
                 )}
@@ -266,7 +262,7 @@ export default function Signup() {
               {/* Root error */}
               {errors.root && (
                 <div
-                  className="px-4 py-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive"
+                  className="bg-destructive/10 border-destructive/30 text-destructive rounded-lg border px-4 py-3 text-sm"
                   role="alert"
                 >
                   {errors.root.message}
@@ -295,12 +291,9 @@ export default function Signup() {
             </form>
 
             {/* Login link */}
-            <p className="text-center text-sm text-muted-foreground mt-6">
+            <p className="text-muted-foreground mt-6 text-center text-sm">
               {t('auth.signup.haveAccount')}{' '}
-              <Link
-                to="/login"
-                className="font-semibold text-primary hover:underline"
-              >
+              <Link to="/login" className="text-primary font-semibold hover:underline">
                 {t('auth.signup.login')}
               </Link>
             </p>
