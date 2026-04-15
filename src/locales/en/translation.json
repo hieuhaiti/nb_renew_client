@@ -2,11 +2,8 @@
   "common": {
     "app_name": "Travel Ninh Binh",
     "home": "Home",
-    "tour3D": "3D Tour",
     "tourism_points": "Tourism Points",
     "tourist_route": "Tourist Route",
-    "user_document": "User Manual",
-    "food_tour": "OCOP Cuisine",
     "map": "Map",
     "login": "Login",
     "logout": "Logout",
@@ -14,16 +11,19 @@
     "back": "Back",
     "toggle_theme": "Toggle light/dark mode",
     "toggle_lang": "Switch language",
-    "dark": "Dark",
-    "light": "Light",
-    "vietnamese": "Vietnamese",
-    "english": "English",
-    "authen_required": "Authentication required",
     "prev": "Previous",
     "next": "Next",
     "yes": "Yes",
     "no": "No",
-    "open_menu": "Open menu"
+    "open_menu": "Open menu",
+    "news": "News",
+    "ocop_festival": "OCOP Festival",
+    "see_all": "See all",
+    "search_placeholder": "Search places / routes...",
+    "search_results": "Search Results",
+    "search_no_results": "No results found",
+    "search_view_all": "View all results",
+    "tourism_point": "Tourism Point"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -33,8 +33,6 @@
     "switch_to_light": "Switch to Light mode"
   },
   "home": {
-    "welcome": "Welcome to Travel Ninh Binh!",
-    "description": "Discover top travel destinations, check weather info, services, and more.",
     "hero": {
       "title": "Discover the Beauty of Ninh Binh",
       "subtitle": "Smart tourism map, fascinating destinations, and unforgettable experiences",
@@ -42,10 +40,38 @@
       "cta_discover": "Top Destinations",
       "scroll_hint": "Scroll to explore"
     },
-    "explore": "Explore Now",
-    "features_title": "Smart Tourism Platform",
-    "features_desc": "WebGIS map, destination info, and itinerary planning integrated",
-    "see_more": "See more"
+    "ad_carousel": {
+      "subtitle": "Services & Events",
+      "title": "Discover top deals",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "news": {
+      "subtitle": "Official & Latest",
+      "title": "Ninh Binh Tourism News",
+      "see_all": "All news",
+      "read_more": "Read more",
+      "hot": "Hot"
+    },
+    "categories": {
+      "subtitle": "Categories",
+      "title": "Explore exciting categories",
+      "items": "places"
+    },
+    "points": {
+      "subtitle": "Destinations",
+      "title": "Explore fascinating destinations"
+    },
+    "tours": {
+      "subtitle": "Tourist Routes",
+      "title": "Discover amazing tourist routes"
+    },
+    "voucher": {
+      "title": "Get exclusive partner vouchers",
+      "desc": "Explore our featured tourist destinations to get attractive offers, discount vouchers, and excellent services from our trusted partners!",
+      "cta": "Go to destinations for vouchers",
+      "partners": "Our Partners"
+    }
   },
   "auth": {
     "login": {
@@ -94,38 +120,193 @@
       "signup_failed": "Sign up failed"
     }
   },
+  "profile": {
+    "title": "My Profile",
+    "editProfile": "Edit profile",
+    "saveChanges": "Save changes",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "cancelShort": "Cancel",
+    "confirmAction": "Confirm",
+    "avatar": {
+      "change": "Change photo"
+    },
+    "role": {
+      "member": "Member"
+    },
+    "notUpdated": "Not updated",
+    "username": "Username",
+    "fullName": "Full name",
+    "email": "Email",
+    "phone": "Phone number",
+    "address": "Address",
+    "joinDate": "Join date",
+    "changePassword": "Change password",
+    "changePasswordSecure": "Change secure password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "validation": {
+      "username": "Username must contain only letters and numbers, 3-50 characters.",
+      "emailMax": "Email must be at most 100 characters.",
+      "invalidEmail": "Invalid email format.",
+      "nameMin": "Full name must be at least 2 characters.",
+      "invalidName": "Invalid full name.",
+      "invalidPhone": "Invalid phone number.",
+      "currentRequired": "Current password is required.",
+      "newRequired": "New password is required.",
+      "newMin": "New password must be at least 8 characters.",
+      "newWeak": "New password must include lowercase, uppercase, number, and special character.",
+      "confirmMismatch": "Password confirmation does not match."
+    },
+    "toast": {
+      "invalidImage": "Invalid image file type.",
+      "imageTooLarge": "Image size must be 5MB or less.",
+      "updateSuccess": "Profile updated successfully!",
+      "updateError": "Failed to update profile.",
+      "changePasswordError": "Failed to change password.",
+      "changePasswordSuccess": "Password changed successfully."
+    }
+  },
   "error": {
-    "back_home": "Back to Home",
     "login": "Login",
+    "back_home": "Back to home",
     "400": {
-      "title": "Bad Request",
-      "message": "The server could not process the request due to invalid data."
+      "title": "Bad request",
+      "message": "The request is invalid or missing required information. Please review and try again."
     },
     "401": {
       "title": "Unauthorized",
-      "message": "You need to be logged in to access this page."
+      "message": "Your session is invalid or has expired. Please sign in to continue."
     },
     "403": {
-      "title": "Access Denied",
-      "message": "You do not have permission to access this page."
+      "title": "Access forbidden",
+      "message": "You do not have permission to access this content. Contact an administrator if you need help."
     },
     "404": {
-      "title": "Page Not Found",
-      "message": "The page you are looking for does not exist or has been moved."
+      "title": "Page not found",
+      "message": "The page you are looking for may have been removed, renamed, or is temporarily unavailable."
     },
     "500": {
-      "title": "Internal Server Error",
-      "message": "An error occurred while processing your request. Please try again later."
+      "title": "Internal server error",
+      "message": "Something went wrong on our side. Please try again in a few minutes."
     },
     "503": {
-      "title": "Service Unavailable",
-      "message": "The service is currently under maintenance. Please check back later.",
-      "server_overload": "Server is overloaded, please try again"
-    },
-    "504": {
-      "title": "Gateway Timeout",
-      "message": "The request took too long to process.",
-      "timeout_message": "Processing is taking longer than expected, please try again"
+      "title": "Service unavailable",
+      "message": "The service is temporarily unavailable due to maintenance or high load. Please come back later."
     }
+  },
+  "tourism": {
+    "detail_title": "Tourism point",
+    "not_found": "Tourism point not found",
+    "back_to_list": "Back to list",
+    "unknown": "Unknown",
+    "description": "Description",
+    "no_description": "No description",
+    "reviews": "Reviews",
+    "anonymous": "Guest",
+    "visited": "Visited",
+    "season": "Season",
+    "cleanliness": "Cleanliness",
+    "service": "Service",
+    "value": "Value",
+    "accessibility": "Accessibility",
+    "delete": "Delete",
+    "page": "Page",
+    "leave_review": "Leave a review",
+    "visit_date": "Visit date",
+    "recommend": "Do you recommend this place?",
+    "upload_photos": "Upload photos (max 5)",
+    "upload_hint": "Click or drag images here",
+    "sending": "Sending...",
+    "submit_review": "Submit review",
+    "cancel": "Cancel",
+    "location": "Location",
+    "opening_hours": "Opening hours",
+    "ticket_price": "Ticket price",
+    "free": "Free",
+    "rating": "Rating",
+    "view_on_map": "View on map",
+    "contact": "Contact",
+    "leave_comment_placeholder": "Share your experience and feelings about this place...",
+    "min_characters": "Minimum 10 characters",
+    "characters_left": "left",
+    "share": {
+      "copied": "Copied",
+      "shared": "Shared"
+    },
+    "review": {
+      "missing_rating": "Please provide ratings."
+    }
+  },
+  "tourismPointPage": {
+    "title": "Tourism Points",
+    "subtitle": "Discover outstanding attractions in Ninh Binh",
+    "unknown_category": "Unknown category",
+    "47_points": "47 attractions",
+    "ninh_binh": "Ninh Binh",
+    "updated_today": "Updated today",
+    "refresh": "Refresh",
+    "all": "All",
+    "showing": "Showing",
+    "of": "/",
+    "results": "results",
+    "sort_by": "Sort by",
+    "featured": "Featured",
+    "search_placeholder": "Search attractions...",
+    "filter": "Filter",
+    "reviews": "reviews",
+    "view_detail": "View Details",
+    "free": "Free",
+    "no_results": "No results found"
+  },
+  "tourPage": {
+    "title": "Tour Routes",
+    "description": "Explore available tour routes from live system data",
+    "detailDescriptionTitle": "Tour Description",
+    "total": "Total routes",
+    "refresh": "Refresh",
+    "searchPlaceholder": "Search tour routes...",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "showing": "Showing",
+    "errorLoading": "Failed to load tours",
+    "noTours": "No tours found",
+    "unknown": "Unknown",
+    "noDescription": "No description",
+    "loading": "Loading...",
+    "back": "Back",
+    "notFound": "Tour information not found.",
+    "shareTitle": "Tour details",
+    "copied": "Copied",
+    "shared": "Shared",
+    "review": "Review",
+    "by": "by",
+    "guest": "Guest",
+    "createdAt": "Created at",
+    "reviewNotFound": "Review not found.",
+    "reviews": "Reviews",
+    "cleanliness": "Cleanliness",
+    "service": "Service",
+    "value": "Value",
+    "accessibility": "Accessibility",
+    "page": "Page",
+    "previous": "Previous",
+    "next": "Next",
+    "leaveReview": "Leave a review",
+    "starCount": "Stars (auto-calculated from criteria)",
+    "noRating": "No rating",
+    "sending": "Sending...",
+    "sendReview": "Submit review",
+    "cancel": "Cancel",
+    "information": "Information",
+    "duration": "Duration",
+    "days": "days",
+    "hours": "hours",
+    "price": "Price",
+    "perPerson": "Per person",
+    "contact": "Contact",
+    "tourList": "Open map",
+    "reviewErrorRatings": "Please provide ratings for all criteria: cleanliness, service, value, and accessibility."
   }
 }

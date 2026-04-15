@@ -6,8 +6,9 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { LoadingProvider } from '@/providers/loadingProvider';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5,
@@ -33,6 +34,10 @@ export function AppProviders() {
         hideProgressBar={false}
         closeOnClick
         pauseOnHover
+      />
+      <ReactQueryDevtools
+        initialIsOpen={false}
+        toggleButtonProps={{ style: { display: 'none' } }}
       />
     </QueryClientProvider>
   );

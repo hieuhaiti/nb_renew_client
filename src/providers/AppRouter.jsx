@@ -11,6 +11,20 @@ const HomePage = lazyWithDelay(() => import('@/pages/HomePage'));
 // Auth
 const Login = lazyWithDelay(() => import('@/features/auth/components/Login'));
 const Signup = lazyWithDelay(() => import('@/features/auth/components/Signup'));
+const ProfilePage = lazyWithDelay(() => import('@/features/auth/pages/ProfilePage'));
+
+// Features
+const TourismPointPage = lazyWithDelay(
+  () => import('@/features/tourism-points/pages/TourismPointPage')
+);
+const TourismDetailPage = lazyWithDelay(
+  () => import('@/features/tourism-points/pages/TourismDetailPage')
+);
+const TourPage = lazyWithDelay(() => import('@/features/tours/pages/TourPage'));
+const TourDetailPage = lazyWithDelay(() => import('@/features/tours/pages/TourDetailPage'));
+const CategoryMapRoute = lazyWithDelay(
+  () => import('@/features/categories/pages/CategoryMapRoute')
+);
 
 // Error pages
 const NotFoundPage = lazy(() => import('@/pages/Errors/404NotFoundPage'));
@@ -32,6 +46,15 @@ export function AppRouter() {
           {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<ProfilePage />} />
+
+          {/* Features */}
+          <Route path="/tourism-point" element={<TourismPointPage />} />
+          <Route path="/tourism-point/point/:id" element={<TourismDetailPage />} />
+          <Route path="/tour" element={<TourPage />} />
+          <Route path="/tour/:id" element={<TourDetailPage />} />
+          <Route path="/map" element={<CategoryMapRoute />} />
+          <Route path="/:categorySlug" element={<CategoryMapRoute />} />
 
           {/* Error pages */}
           <Route path="/400" element={<BadRequestPage />} />

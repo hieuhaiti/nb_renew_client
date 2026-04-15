@@ -2,7 +2,7 @@ import axios from 'axios';
 import { tokenManager } from '@/lib/tokenManager';
 import { env } from '@/config/env';
 
-const BASE_URL = env.apiBaseUrl;
+const BASE_URL = env.apiBaseUrlBE;
 
 /**
  * Central axios instance for all API calls.

@@ -6,7 +6,6 @@
 
   /* App shell */
   --background: #e4e9e4;
-  /* đậm hơn nền cũ để card trắng nổi rõ */
   --foreground: #1f211f;
 
   /* Elevated surfaces */
@@ -20,31 +19,38 @@
   /* High-emphasis brand/action */
   --primary: #2e6f40;
   --primary-foreground: #ffffff;
+  --primary-hover: #245a33;
+  --primary-soft: #dff3e4;
+  --primary-soft-foreground: #173d22;
 
   /* Lower-emphasis filled surfaces */
   --secondary: #bdf2ca;
-  /* tách rõ khỏi background */
   --secondary-foreground: #173d22;
+  --secondary-hover: #a8e9b8;
 
   /* Subtle UI and helper content */
   --muted: #d4dbd4;
-  /* khác nền rõ hơn, vẫn dịu */
   --muted-foreground: #4d524d;
+  --muted-hover: #c7cfc7;
 
   /* Hover / selected / interactive support surfaces */
   --accent: #6fd98c;
-  /* tăng độ nổi của interactive surface */
-  --accent-foreground: #173d22;
+  --accent-foreground: #06220e;
+  --accent-hover: #5dcb7c;
+
+  /* Neutral interactive surface */
+  --surface-hover: #d9e3d9;
+  --surface-active: #ced8ce;
 
   /* Errors */
   --destructive: #b73737;
   --destructive-foreground: #ffffff;
+  --destructive-hover: #9e2e2e;
 
   /* Inputs and separators */
   --border: #b2bbb2;
-  /* đậm hơn rõ rệt */
   --input: #bcc5bc;
-  /* field nhìn thành khối hơn */
+  --input-hover: #b0bab0;
   --ring: #2e6f40;
 
   /* Data viz */
@@ -61,6 +67,7 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #bdf2ca;
   --sidebar-accent-foreground: #173d22;
+  --sidebar-accent-hover: #a8e9b8;
   --sidebar-border: #9ea89e;
   --sidebar-ring: #2e6f40;
 
@@ -92,28 +99,38 @@
   /* High-emphasis brand/action */
   --primary: #6aec8e;
   --primary-foreground: #0c2713;
+  --primary-hover: #83f3a1;
+  --primary-soft: #173321;
+  --primary-soft-foreground: #baf7c9;
 
   /* Lower-emphasis filled surfaces */
   --secondary: #1c4a29;
   --secondary-foreground: #cffcd8;
+  --secondary-hover: #245d34;
 
   /* Subtle UI and helper content */
   --muted: #343734;
   --muted-foreground: #b7bdb7;
+  --muted-hover: #404440;
 
   /* Hover / selected / interactive support surfaces */
   --accent: #23492d;
   --accent-foreground: #81e59d;
+  --accent-hover: #2d5c39;
+
+  /* Neutral interactive surface */
+  --surface-hover: #444844;
+  --surface-active: #505550;
 
   /* Errors */
   --destructive: #ff7b7b;
   --destructive-foreground: #2a0d0d;
+  --destructive-hover: #ff9595;
 
   /* Inputs and separators */
   --border: #787f78;
-  /* sáng hơn rõ rệt để viền nổi */
   --input: #454845;
-  /* input khác card một nấc */
+  --input-hover: #505450;
   --ring: #6aec8e;
 
   /* Data viz */
@@ -130,6 +147,7 @@
   --sidebar-primary-foreground: #0c2713;
   --sidebar-accent: #1c4a29;
   --sidebar-accent-foreground: #cffcd8;
+  --sidebar-accent-hover: #245d34;
   --sidebar-border: #4c6152;
   --sidebar-ring: #6aec8e;
 

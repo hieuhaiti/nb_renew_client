@@ -22,7 +22,7 @@ export default function ThemeSwitch() {
             size="sm"
             id="theme-switch-btn"
             aria-label={t('theme.toggle')}
-            className="flex h-8 items-center gap-1.5 px-3 rounded-full bg-card hover:bg-accent/30 transition-colors duration-200 shadow-md"
+            className="flex h-8 items-center gap-1.5 rounded-full bg-card px-3 shadow-md transition-colors duration-200 hover:bg-[var(--surface-hover)]"
             onClick={toggleDark}
             type="button"
           >

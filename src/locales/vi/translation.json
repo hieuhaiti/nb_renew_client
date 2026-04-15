@@ -2,11 +2,8 @@
   "common": {
     "app_name": "Travel Ninh Bình",
     "home": "Trang chủ",
-    "tour3D": "Tour 3D",
     "tourism_points": "Điểm du lịch",
     "tourist_route": "Tuyến du lịch",
-    "user_document": "Hướng dẫn sử dụng",
-    "food_tour": "Ẩm thực OCOP",
     "map": "Bản đồ",
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
@@ -14,16 +11,19 @@
     "back": "Quay lại",
     "toggle_theme": "Giao diện sáng/tối",
     "toggle_lang": "Chuyển ngôn ngữ",
-    "dark": "Tối",
-    "light": "Sáng",
-    "vietnamese": "Tiếng Việt",
-    "english": "English",
-    "authen_required": "Yêu cầu xác thực",
     "prev": "Trước",
     "next": "Tiếp",
     "yes": "Có",
     "no": "Không",
-    "open_menu": "Mở menu"
+    "open_menu": "Mở menu",
+    "news": "Tin tức",
+    "ocop_festival": "Lễ hội OCOP",
+    "see_all": "Xem tất cả",
+    "search_placeholder": "Tìm kiếm điểm / tuyến...",
+    "search_results": "Kết quả tìm kiếm",
+    "search_no_results": "Không tìm thấy kết quả",
+    "search_view_all": "Xem tất cả kết quả",
+    "tourism_point": "Điểm du lịch"
   },
   "theme": {
     "toggle": "Chuyển giao diện",
@@ -33,8 +33,6 @@
     "switch_to_light": "Chuyển sang sáng"
   },
   "home": {
-    "welcome": "Chào mừng đến với Travel Ninh Bình!",
-    "description": "Khám phá các điểm đến hàng đầu, xem thông tin thời tiết, dịch vụ và nhiều hơn nữa.",
     "hero": {
       "title": "Khám phá vẻ đẹp Ninh Bình",
       "subtitle": "Bản đồ du lịch thông minh, điểm đến hấp dẫn và trải nghiệm không quên",
@@ -42,17 +40,45 @@
       "cta_discover": "Điểm du lịch nổi bật",
       "scroll_hint": "Cuộn để khám phá"
     },
-    "explore": "Khám phá ngay",
-    "features_title": "Nền tảng du lịch thông minh",
-    "features_desc": "Tích hợp bản đồ GIS, thông tin điểm đến và lên lịch hành trình",
-    "see_more": "Xem thêm"
+    "ad_carousel": {
+      "subtitle": "Dịch vụ & Sự kiện",
+      "title": "Khám phá ưu đãi nổi bật",
+      "prev": "Trước",
+      "next": "Tiếp theo"
+    },
+    "news": {
+      "subtitle": "Chính thống & Mới nhất",
+      "title": "Tin tức du lịch Ninh Bình",
+      "see_all": "Tất cả tin tức",
+      "read_more": "Đọc tiếp",
+      "hot": "Nổi bật"
+    },
+    "categories": {
+      "subtitle": "Danh mục",
+      "title": "Khám phá danh mục du lịch hấp dẫn",
+      "items": "địa điểm"
+    },
+    "points": {
+      "subtitle": "Điểm đến",
+      "title": "Khám phá điểm đến hấp dẫn"
+    },
+    "tours": {
+      "subtitle": "Tuyến du lịch",
+      "title": "Khám phá tuyến du lịch hấp dẫn"
+    },
+    "voucher": {
+      "title": "Nhận voucher độc quyền từ đối tác",
+      "desc": "Khám phá các điểm đến du lịch nổi bật của chúng tôi để nhận những ưu đãi hấp dẫn, mã voucher giảm giá và trải nghiệm dịch vụ tuyệt vời từ các đơn vị hợp tác uy tín!",
+      "cta": "Đến điểm du lịch để nhận voucher",
+      "partners": "Các doanh nghiệp hợp tác"
+    }
   },
   "auth": {
     "login": {
       "title": "Đăng nhập",
-      "description": "Chào mừng trở lại! Vui lòng nhập thông tin để tiếp tục.",
+      "description": "Nhập thông tin tài khoản của bạn",
       "email_or_username": "Email hoặc tên đăng nhập",
-      "email_placeholder": "example@email.com hoặc username",
+      "email_placeholder": "email@example.com hoặc username",
       "password": "Mật khẩu",
       "password_placeholder": "Nhập mật khẩu",
       "remember": "Ghi nhớ đăng nhập",
@@ -60,19 +86,19 @@
       "submit": "Đăng nhập",
       "loading": "Đang đăng nhập...",
       "noAccount": "Chưa có tài khoản?",
-      "signup": "Đăng ký",
+      "signup": "Đăng ký ngay",
       "success": "Đăng nhập thành công!"
     },
     "signup": {
-      "title": "Tạo tài khoản",
-      "description": "Đăng ký để thưởng thức đầy đủ trải nghiệm",
+      "title": "Đăng ký",
+      "description": "Tạo tài khoản mới",
       "username": "Tên đăng nhập",
-      "username_placeholder": "Nhập tên đăng nhập",
+      "username_placeholder": "username của bạn",
       "email": "Email",
-      "email_placeholder": "example@email.com",
+      "email_placeholder": "email@example.com",
       "password": "Mật khẩu",
-      "password_placeholder": "Tối thiểu 8 ký tự",
-      "confirmPassword": "Xác nhận mật khẩu",
+      "password_placeholder": "Ít nhất 8 ký tự",
+      "confirmPassword": "Xác nhập mật khẩu",
       "confirmPassword_placeholder": "Nhập lại mật khẩu",
       "submit": "Đăng ký",
       "loading": "Đang đăng ký...",
@@ -80,52 +106,207 @@
       "login": "Đăng nhập",
       "success": "Đăng ký thành công!"
     },
-    "logout_success": "Đăng xuất thành công",
-    "logout_error": "Đã đăng xuất",
     "errors": {
       "required_login": "Vui lòng nhập email hoặc tên đăng nhập",
       "required_password": "Vui lòng nhập mật khẩu",
       "required_username": "Vui lòng nhập tên đăng nhập",
       "required_email": "Vui lòng nhập email",
       "invalid_email": "Email không hợp lệ",
-      "password_min": "Mật khẩu tối thiểu 8 ký tự",
-      "passwords_mismatch": "Mật khẩu xác nhận không khớp",
-      "login_failed": "Đăng nhập thất bại",
-      "signup_failed": "Đăng ký thất bại"
+      "password_min": "Mật khẩu phải có ít nhất 8 ký tự",
+      "passwords_mismatch": "Mật khẩu không khớp",
+      "login_failed": "Đăng nhập thất bại. Vui lòng thử lại.",
+      "signup_failed": "Đăng ký thất bại. Vui lòng thử lại."
+    },
+    "logout_success": "Đã đăng xuất thành công",
+    "logout_error": "Lỗi khi đăng xuất"
+  },
+  "profile": {
+    "title": "Hồ sơ cá nhân",
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "saveChanges": "Lưu thay đổi",
+    "saving": "Đang lưu...",
+    "cancel": "Hủy bỏ",
+    "cancelShort": "Hủy",
+    "confirmAction": "Xác nhận",
+    "avatar": {
+      "change": "Thay ảnh"
+    },
+    "role": {
+      "member": "Thành viên"
+    },
+    "notUpdated": "Chưa cập nhật",
+    "username": "Tên đăng nhập",
+    "fullName": "Họ và tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ",
+    "joinDate": "Ngày tham gia",
+    "changePassword": "Đổi mật khẩu",
+    "changePasswordSecure": "Đổi mật khẩu bảo mật",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmNewPassword": "Xác nhận mật khẩu mới",
+    "validation": {
+      "username": "Username chỉ chứa ký tự/số, từ 3-50 ký tự.",
+      "emailMax": "Email không được quá 100 ký tự.",
+      "invalidEmail": "Email không hợp lệ.",
+      "nameMin": "Họ tên phải có ít nhất 2 ký tự.",
+      "invalidName": "Họ tên không hợp lệ.",
+      "invalidPhone": "Số điện thoại không hợp lệ.",
+      "currentRequired": "Mật khẩu hiện tại là bắt buộc.",
+      "newRequired": "Mật khẩu mới là bắt buộc.",
+      "newMin": "Mật khẩu mới ít nhất 8 ký tự.",
+      "newWeak": "Mật khẩu mới phải có chữ thường, hoa, số và ký tự đặc biệt.",
+      "confirmMismatch": "Xác nhận mật khẩu không khớp."
+    },
+    "toast": {
+      "invalidImage": "File không đúng định dạng hình ảnh.",
+      "imageTooLarge": "Dung lượng hình ảnh không được vượt quá 5MB.",
+      "updateSuccess": "Cập nhật thông tin thành công!",
+      "updateError": "Lỗi khi cập nhật thông tin.",
+      "changePasswordError": "Lỗi đổi mật khẩu.",
+      "changePasswordSuccess": "Đổi mật khẩu thành công."
     }
   },
   "error": {
-    "back_home": "Về trang chủ",
     "login": "Đăng nhập",
+    "back_home": "Về trang chủ",
     "400": {
       "title": "Yêu cầu không hợp lệ",
-      "message": "Máy chủ không thể xử lý yêu cầu do dữ liệu không hợp lệ."
+      "message": "Yêu cầu bạn gửi lên không hợp lệ hoặc thiếu thông tin. Vui lòng kiểm tra lại và thử lại."
     },
     "401": {
-      "title": "Chưa xác thực",
-      "message": "Bạn cần đăng nhập để truy cập trang này."
+      "title": "Bạn chưa đăng nhập",
+      "message": "Phiên làm việc chưa hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập để tiếp tục."
     },
     "403": {
-      "title": "Truy cập bị từ chối",
-      "message": "Bạn không có quyền truy cập vào trang này."
+      "title": "Không có quyền truy cập",
+      "message": "Bạn không có quyền truy cập vào nội dung này. Vui lòng liên hệ quản trị viên nếu cần hỗ trợ."
     },
     "404": {
       "title": "Không tìm thấy trang",
-      "message": "Trang bạn tìm kiếm không tồn tại hoặc đã bị di chuyển."
+      "message": "Trang bạn đang tìm có thể đã bị xóa, đổi tên hoặc tạm thời không khả dụng."
     },
     "500": {
-      "title": "Lỗi máy chủ",
-      "message": "Đã xảy ra lỗi trong quá trình xử lý. Vui lòng thử lại sau."
+      "title": "Lỗi máy chủ nội bộ",
+      "message": "Hệ thống đang gặp sự cố ngoài ý muốn. Vui lòng thử lại sau ít phút."
     },
     "503": {
-      "title": "Dịch vụ không khả dụng",
-      "message": "Dịch vụ đang bảo trì. Vui lòng quay lại sau.",
-      "server_overload": "Máy chủ đang quá tải, vui lòng thử lại"
-    },
-    "504": {
-      "title": "Hết thời gian chờ",
-      "message": "Yêu cầu mất quá nhiều thời gian xử lý.",
-      "timeout_message": "Xử lý kéo dài hơn dự kiến, vui lòng thử lại"
+      "title": "Dịch vụ tạm thời gián đoạn",
+      "message": "Máy chủ đang bảo trì hoặc quá tải. Vui lòng quay lại sau."
     }
+  },
+  "tourism": {
+    "detail_title": "Điểm du lịch",
+    "not_found": "Không tìm thấy điểm du lịch",
+    "back_to_list": "Quay lại danh sách",
+    "unknown": "Không xác định",
+    "description": "Mô tả",
+    "no_description": "Chưa có mô tả",
+    "reviews": "Đánh giá",
+    "anonymous": "Khách",
+    "visited": "Tham quan",
+    "season": "Mùa",
+    "cleanliness": "Sạch sẽ",
+    "service": "Dịch vụ",
+    "value": "Giá trị",
+    "accessibility": "Tiếp cận",
+    "delete": "Xóa",
+    "page": "Trang",
+    "leave_review": "Để lại đánh giá",
+    "visit_date": "Ngày tham quan",
+    "recommend": "Bạn có khuyên người khác không?",
+    "upload_photos": "Tải ảnh (tối đa 5)",
+    "upload_hint": "Nhấn để chọn hoặc kéo thả ảnh vào đây",
+    "sending": "Đang gửi...",
+    "submit_review": "Gửi đánh giá",
+    "cancel": "Hủy",
+    "location": "Vị trí",
+    "opening_hours": "Giờ mở cửa",
+    "ticket_price": "Giá vé",
+    "free": "Miễn phí",
+    "rating": "Đánh giá",
+    "view_on_map": "Xem trên bản đồ",
+    "contact": "Liên hệ",
+    "leave_comment_placeholder": "Chia sẻ trải nghiệm, cảm nhận của bạn về địa điểm này...",
+    "min_characters": "Tối thiểu 10 ký tự",
+    "characters_left": "còn",
+    "share": {
+      "copied": "Đã sao chép",
+      "shared": "Đã chia sẻ"
+    },
+    "review": {
+      "missing_rating": "Vui lòng đánh giá đầy đủ các tiêu chí."
+    }
+  },
+  "tourismPointPage": {
+    "title": "Điểm du lịch",
+    "subtitle": "Khám phá các điểm tham quan nổi bật tại Ninh Bình",
+    "unknown_category": "Chưa phân loại",
+    "47_points": "47 điểm tham quan",
+    "ninh_binh": "Ninh Bình",
+    "updated_today": "Cập nhật hôm nay",
+    "refresh": "Làm mới",
+    "all": "Tất cả",
+    "showing": "Hiển thị",
+    "of": "/",
+    "results": "kết quả",
+    "sort_by": "Sắp xếp",
+    "featured": "Nổi bật",
+    "search_placeholder": "Tìm kiếm điểm tham quan...",
+    "filter": "Bộ lọc",
+    "reviews": "đánh giá",
+    "view_detail": "Xem chi tiết",
+    "free": "Miễn phí",
+    "no_results": "Không tìm thấy kết quả"
+  },
+  "tourPage": {
+    "title": "Tuyến du lịch",
+    "description": "Khám phá các tuyến du lịch từ dữ liệu thực tế",
+    "detailDescriptionTitle": "Mô tả tuyến du lịch",
+    "total": "Tổng số tuyến",
+    "refresh": "Làm mới",
+    "searchPlaceholder": "Tìm kiếm tuyến du lịch...",
+    "gridView": "Dạng lưới",
+    "listView": "Dạng danh sách",
+    "showing": "Hiển thị",
+    "errorLoading": "Không thể tải danh sách tuyến du lịch",
+    "noTours": "Không có tuyến du lịch phù hợp",
+    "unknown": "Không xác định",
+    "noDescription": "Chưa có mô tả",
+    "loading": "Đang tải...",
+    "back": "Quay lại",
+    "notFound": "Không tìm thấy thông tin tuyến du lịch.",
+    "shareTitle": "Chi tiết tuyến du lịch",
+    "copied": "Đã sao chép",
+    "shared": "Đã chia sẻ",
+    "review": "Đánh giá",
+    "by": "bởi",
+    "guest": "Khách",
+    "createdAt": "Ngày tạo",
+    "reviewNotFound": "Không tìm thấy đánh giá.",
+    "reviews": "Đánh giá",
+    "cleanliness": "Sạch sẽ",
+    "service": "Dịch vụ",
+    "value": "Giá trị",
+    "accessibility": "Tiếp cận",
+    "page": "Trang",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "leaveReview": "Để lại đánh giá",
+    "starCount": "Số sao (tự động tính từ các tiêu chí)",
+    "noRating": "Chưa có",
+    "sending": "Đang gửi...",
+    "sendReview": "Gửi đánh giá",
+    "cancel": "Hủy",
+    "information": "Thông tin",
+    "duration": "Thời lượng",
+    "days": "ngày",
+    "hours": "giờ",
+    "price": "Giá",
+    "perPerson": "Theo người",
+    "contact": "Liên hệ",
+    "tourList": "Mở bản đồ",
+    "reviewErrorRatings": "Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và khả năng tiếp cận."
   }
 }
