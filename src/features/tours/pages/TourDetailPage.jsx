@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import RootLayout from '@/components/layout/RootLayout';
 import LoadingOverlay from '@/components/common/LoadingOverlay';
 import { Button } from '@/components/ui/button';
-import { TourDetailTopBar } from '@/features/tours/components/detail/TourDetailTopBar';
-import { TourDetailHero } from '@/features/tours/components/detail/TourDetailHero';
-import { TourDetailQuickStats } from '@/features/tours/components/detail/TourDetailQuickStats';
-import { TourDetailGallerySection } from '@/features/tours/components/detail/TourDetailGallerySection';
-import { TourDetailIntroSection } from '@/features/tours/components/detail/TourDetailIntroSection';
-import { TourDetailReviewsSection } from '@/features/tours/components/detail/TourDetailReviewsSection';
-import { TourDetailSidebar } from '@/features/tours/components/detail/TourDetailSidebar';
+import { TourDetailTopBar } from '@/features/tours/components/TourDetailTopBar';
+import { TourDetailHero } from '@/features/tours/components/TourDetailHero';
+import { TourDetailQuickStats } from '@/features/tours/components/TourDetailQuickStats';
+import { TourDetailGallerySection } from '@/features/tours/components/TourDetailGallerySection';
+import { TourDetailIntroSection } from '@/features/tours/components/TourDetailIntroSection';
+import { TourDetailReviewsSection } from '@/features/tours/components/TourDetailReviewsSection';
+import { TourDetailSidebar } from '@/features/tours/components/TourDetailSidebar';
 import { useTourDetailPageModel } from '@/features/tours/hooks/useTourDetailPageModel';
 
 export default function TourDetailPage() {

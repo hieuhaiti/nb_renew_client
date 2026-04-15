@@ -17,7 +17,7 @@ import {
   getHeroTags,
   getIntroTags,
   getGalleryPreviewImages,
-} from '@/features/tours/components/detail/tourDetail.utils';
+} from '@/features/tours/utils/tourDetail.utils';
 
 function getTicketDisplay(tour, t) {
   const price = Number(tour?.price ?? 0);
@@ -267,15 +267,15 @@ export function useTourDetailPageModel(t) {
             <Star className="h-3.5 w-3.5" />
           </div>
         ) : (
-          <span className="text-[14px] font-medium text-foreground">-</span>
+          <span className="text-foreground text-[14px] font-medium">-</span>
         ),
     },
     {
       key: 'duration',
       label: t('tourPage.duration', 'Thời lượng'),
       value: (
-        <span className="inline-flex items-center gap-1 text-[14px] font-medium text-foreground">
-          <Clock3 className="h-3.5 w-3.5 text-primary" />
+        <span className="text-foreground inline-flex items-center gap-1 text-[14px] font-medium">
+          <Clock3 className="text-primary h-3.5 w-3.5" />
           {durationLabel}
         </span>
       ),
