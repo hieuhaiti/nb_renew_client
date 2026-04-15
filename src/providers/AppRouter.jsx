@@ -2,29 +2,20 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoadingOverlay from '@/components/common/LoadingOverlay';
 
-const lazyWithDelay = (importFunc) =>
-  lazy(() => Promise.all([importFunc()]).then(([module]) => module));
-
 // Pages
-const HomePage = lazyWithDelay(() => import('@/pages/HomePage'));
+const HomePage = lazy(() => import('@/pages/HomePage'));
 
 // Auth
-const Login = lazyWithDelay(() => import('@/features/auth/components/Login'));
-const Signup = lazyWithDelay(() => import('@/features/auth/components/Signup'));
-const ProfilePage = lazyWithDelay(() => import('@/features/auth/pages/ProfilePage'));
+const Login = lazy(() => import('@/features/auth/components/Login'));
+const Signup = lazy(() => import('@/features/auth/components/Signup'));
+const ProfilePage = lazy(() => import('@/features/auth/pages/ProfilePage'));
 
 // Features
-const TourismPointPage = lazyWithDelay(
-  () => import('@/features/tourism-points/pages/TourismPointPage')
-);
-const TourismDetailPage = lazyWithDelay(
-  () => import('@/features/tourism-points/pages/TourismDetailPage')
-);
-const TourPage = lazyWithDelay(() => import('@/features/tours/pages/TourPage'));
-const TourDetailPage = lazyWithDelay(() => import('@/features/tours/pages/TourDetailPage'));
-const CategoryMapRoute = lazyWithDelay(
-  () => import('@/features/categories/pages/CategoryMapRoute')
-);
+const TourismPointPage = lazy(() => import('@/features/tourism-points/pages/TourismPointPage'));
+const TourismDetailPage = lazy(() => import('@/features/tourism-points/pages/TourismDetailPage'));
+const TourPage = lazy(() => import('@/features/tours/pages/TourPage'));
+const TourDetailPage = lazy(() => import('@/features/tours/pages/TourDetailPage'));
+const CategoryMapRoute = lazy(() => import('@/features/categories/pages/CategoryMapRoute'));
 
 // Error pages
 const NotFoundPage = lazy(() => import('@/pages/Errors/404NotFoundPage'));
