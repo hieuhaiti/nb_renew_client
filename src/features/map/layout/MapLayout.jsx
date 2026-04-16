@@ -5,11 +5,9 @@ import Header from '@/components/common/Header';
  */
 export default function MapLayout({ children }) {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="bg-background flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 w-full">
-        {children}
-      </main>
+      <main className="relative w-full flex-1 overflow-hidden">{children}</main>
     </div>
   );
 }
