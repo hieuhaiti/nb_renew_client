@@ -8,7 +8,6 @@ import useAuthStore from '@/stores/useAuthStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
 import { categoriesService } from '@/features/categories/api/categoriesService';
-import { categoriesMap } from '@/features/categories/constant';
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
 import { tokenManager } from '@/lib/tokenManager';
 import { toast } from 'react-toastify';
@@ -55,6 +54,15 @@ export default function Header() {
 
   const { data: categoriesData } = categoriesService({ lang });
   const categories = useMemo(() => categoriesData?.data?.categories || [], [categoriesData]);
+  const categorySlugMap = useMemo(
+    () =>
+      categories.reduce((acc, cat) => {
+        if (cat?.id == null || !cat?.slug) return acc;
+        acc[Number(cat.id)] = cat.slug;
+        return acc;
+      }, {}),
+    [categories]
+  );
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -107,7 +115,7 @@ export default function Header() {
     (category) => {
       if (!category) return;
 
-      const mapSlug = category.slug || categoriesMap(Number(category.id));
+      const mapSlug = category.slug || categorySlugMap[Number(category.id)];
 
       setCategory(category);
       setCurrentTourismPointSettings({
@@ -120,7 +128,7 @@ export default function Header() {
       setDropdownOpenIdx(null);
       setIsMobileMenuOpen(false);
     },
-    [navigate, setCategory, setCurrentTourismPointSettings]
+    [categorySlugMap, navigate, setCategory, setCurrentTourismPointSettings]
   );
 
   const handleLogout = async () => {

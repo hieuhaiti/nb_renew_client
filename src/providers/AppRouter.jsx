@@ -15,7 +15,7 @@ const TourismPointPage = lazy(() => import('@/features/tourism-points/pages/Tour
 const TourismDetailPage = lazy(() => import('@/features/tourism-points/pages/TourismDetailPage'));
 const TourPage = lazy(() => import('@/features/tours/pages/TourPage'));
 const TourDetailPage = lazy(() => import('@/features/tours/pages/TourDetailPage'));
-const CategoryMapRoute = lazy(() => import('@/features/categories/pages/CategoryMapRoute'));
+const MapPage = lazy(() => import('@/features/map/pages/MapPage'));
 
 // Error pages
 const NotFoundPage = lazy(() => import('@/pages/Errors/404NotFoundPage'));
@@ -44,8 +44,8 @@ export function AppRouter() {
           <Route path="/tourism-point/point/:id" element={<TourismDetailPage />} />
           <Route path="/tour" element={<TourPage />} />
           <Route path="/tour/:id" element={<TourDetailPage />} />
-          <Route path="/map" element={<CategoryMapRoute />} />
-          <Route path="/:categorySlug" element={<CategoryMapRoute />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/:categorySlug" element={<MapPage />} />
 
           {/* Error pages */}
           <Route path="/400" element={<BadRequestPage />} />
