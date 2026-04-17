@@ -309,13 +309,30 @@
     "tourList": "Mở bản đồ",
     "reviewErrorRatings": "Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và khả năng tiếp cận."
   },
+  "mapStyle": {
+    "toggle": "Chuyển nền bản đồ",
+    "outdoor": "Ngoài trời",
+    "street": "Đường phố",
+    "satellite": "Vệ tinh",
+    "satelliteStreet": "Hỗn hợp",
+    "outdoorDesc": "Bản đồ địa hình phù hợp khám phá thiên nhiên.",
+    "streetDesc": "Bản đồ đường phố với nhãn và giao thông chi tiết.",
+    "satelliteDesc": "Ảnh vệ tinh độ phân giải cao.",
+    "satelliteStreetDesc": "Nền vệ tinh kèm nhãn đường và địa điểm."
+  },
+  "headerAside": {
+    "layerData": "Lớp dữ liệu",
+    "direction": "Chỉ đường",
+    "satellite": "Ảnh vệ tinh",
+    "event": "Sự kiện",
+    "tour": "Tour du lịch"
+  },
   "mapPage": {
     "layout": {
       "mapArea": "Khu vực bản đồ",
-      "leftSidebar": "Thanh bên trái",
-      "leftSidebarHint": "Dùng khu vực này cho bộ lọc, danh mục và danh sách kết quả.",
+      "expandSidebar": "Mở rộng thanh bên",
+      "collapseSidebar": "Thu gọn thanh bên",
       "subSidebar": "Thanh phụ",
-      "subSidebarHint": "Dùng bảng này cho chi tiết, so sánh và nội dung mở rộng.",
       "openSubSidebar": "Mở thanh phụ",
       "closeSubSidebar": "Đóng thanh phụ",
       "floatLegend": "Chú giải",
@@ -327,6 +344,8 @@
       "toolLayer": "Bật tắt lớp bản đồ",
       "toolZoomIn": "Phóng to",
       "toolZoomOut": "Thu nhỏ",
+      "tool2dDesc": "Chuyển sang chế độ 2D (tắt địa hình và tòa nhà 3D)",
+      "tool3dDesc": "Chuyển sang chế độ 3D (bật địa hình và tòa nhà 3D)",
       "floatWeather": "Thời tiết",
       "weatherFeelsLike": "Nhiệt độ cảm nhận",
       "weatherHumidity": "Độ ẩm hiện tại",
@@ -347,7 +366,9 @@
       "aqiModerate": "Trung bình",
       "aqiPoor": "Kém",
       "aqiVeryPoor": "Rất kém",
-      "aqiUnknown": "Không xác định"
+      "aqiUnknown": "Không xác định",
+      "unsupportedTitle": "Bản đồ chưa hỗ trợ trên thiết bị này",
+      "unsupportedMessage": "Vui lòng dùng màn hình từ laptop/desktop (>= 1024px) để trải nghiệm đầy đủ tính năng bản đồ."
     }
   }
 }

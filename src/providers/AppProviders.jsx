@@ -5,7 +5,6 @@ import { AppRouter } from './AppRouter';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { LoadingProvider } from '@/providers/loadingProvider';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export const queryClient = new QueryClient({

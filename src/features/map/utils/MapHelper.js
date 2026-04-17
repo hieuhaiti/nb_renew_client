@@ -1,4 +1,4 @@
-import { MAP_PAGE_DEFAULT_TOURISM_POINT_SETTINGS } from '@/features/map/constant';
+import { MAP_PAGE_DEFAULT_TOURISM_POINT_SETTINGS } from '@/features/map/constant/mapConstant';
 
 export function resolveCategorySlug(fallbackSlug, categorySlug) {
   return fallbackSlug || categorySlug || null;

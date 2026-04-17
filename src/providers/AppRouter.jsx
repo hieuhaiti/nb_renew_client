@@ -1,6 +1,7 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoadingOverlay from '@/components/common/LoadingOverlay';
+import { categoriesService } from '@/features/categories/api/categoriesService';
 
 // Pages
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -26,6 +27,8 @@ const InternalServerErrorPage = lazy(() => import('@/pages/Errors/500InternalSer
 const ServiceUnavailablePage = lazy(() => import('@/pages/Errors/503ServiceUnavailablePage'));
 
 export function AppRouter() {
+  // useEffect(() => {}, []);
+
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingOverlay />}>

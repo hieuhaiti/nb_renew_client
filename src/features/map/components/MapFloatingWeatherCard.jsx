@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { MAP_PAGE_DEFAULT_COORDINATES } from '@/features/map/constant';
+import { defaultLatLong } from '@/features/map/constant/mapConstant';
 import { useWeatherOverview } from '@/features/weather/hooks/useWeatherOverview';
 import {
   formatHumidity,
@@ -26,8 +26,8 @@ export default function MapFloatingWeatherCard({ className }) {
   const lang = useLanguageStore((state) => state.lang);
 
   const { data, isLoading, isError, isConfigured } = useWeatherOverview({
-    lat: MAP_PAGE_DEFAULT_COORDINATES.lat,
-    lng: MAP_PAGE_DEFAULT_COORDINATES.lng,
+    lat: defaultLatLong.lat,
+    lng: defaultLatLong.lng,
     lang,
   });
 
@@ -78,12 +78,7 @@ export default function MapFloatingWeatherCard({ className }) {
         <div className="flex items-center gap-2">
           <WeatherIcon className={cn('h-5 w-5 shrink-0', weatherIconMeta.toneClass)} />
           <div className="min-w-0">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <p className="truncate text-base font-bold">{cityName}</p>
-              </TooltipTrigger>
-              <TooltipContent className="z-80">{cityName}</TooltipContent>
-            </Tooltip>
+            <p className="truncate text-base font-bold">{cityName}</p>
 
             <Tooltip>
               <TooltipTrigger asChild>
@@ -154,7 +149,9 @@ export default function MapFloatingWeatherCard({ className }) {
                     alt={t(aqiMeta.labelKey)}
                     className="h-4.5 w-4.5 shrink-0 object-contain"
                   />
-                  <p className="mt-1 truncate font-bold">{t(aqiMeta.labelKey)}</p>
+                  <p className={cn('mt-1 truncate font-bold', aqiMeta.toneClass)}>
+                    {t(aqiMeta.labelKey)}
+                  </p>
                 </div>
               </TooltipTrigger>
               <TooltipContent className="z-80">
@@ -164,13 +161,13 @@ export default function MapFloatingWeatherCard({ className }) {
           </div>
         </div>
 
-        <div className="bg-muted/40 rounded-md px-2 py-1.5 text-xs">
-          <div className="mb-1 flex items-center gap-1 font-normal">
-            <AlertTriangle className="h-4.5 w-4.5" />
-            <span>{t('mapPage.layout.weatherAlert')}</span>
-          </div>
+        {alert && (
+          <div className="bg-muted/40 rounded-md px-2 py-1.5 text-xs">
+            <div className="mb-1 flex items-center gap-1 font-normal">
+              <AlertTriangle className={cn('h-4.5 w-4.5', alertSeverityMeta.color)} />
+              <span>{t('mapPage.layout.weatherAlert')}</span>
+            </div>
 
-          {alert ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Badge
@@ -186,12 +183,8 @@ export default function MapFloatingWeatherCard({ className }) {
               </TooltipTrigger>
               <TooltipContent className="z-80">{t(alert.labelKey)}</TooltipContent>
             </Tooltip>
-          ) : (
-            <Badge variant="outline" className="text-primary max-w-full truncate">
-              {t('mapPage.layout.weatherNoAlert')}
-            </Badge>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   })();

@@ -64,6 +64,38 @@ export default function Header() {
     [categories]
   );
 
+  useEffect(() => {
+    if (!categories.length) return;
+
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    if (pathParts.length !== 1) return;
+
+    const currentPath = pathParts[0];
+    let matchedCategory = null;
+
+    if (currentPath === 'map') {
+      matchedCategory =
+        categories.find((cat) => Number(cat?.id) === Number(selectedCategory)) || categories[0];
+    } else {
+      matchedCategory = categories.find((cat) => cat?.slug === currentPath) || null;
+    }
+
+    if (!matchedCategory) return;
+
+    setCategory(matchedCategory);
+    setCurrentTourismPointSettings({
+      selectedCategory: Number(matchedCategory.id) || matchedCategory.id,
+      selectedSubcategory: 0,
+      page: 1,
+    });
+  }, [
+    categories,
+    location.pathname,
+    selectedCategory,
+    setCategory,
+    setCurrentTourismPointSettings,
+  ]);
+
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);

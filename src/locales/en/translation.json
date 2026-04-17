@@ -309,13 +309,30 @@
     "tourList": "Open map",
     "reviewErrorRatings": "Please provide ratings for all criteria: cleanliness, service, value, and accessibility."
   },
+  "mapStyle": {
+    "toggle": "Switch base map",
+    "outdoor": "Outdoor",
+    "street": "Street",
+    "satellite": "Satellite",
+    "satelliteStreet": "Hybrid",
+    "outdoorDesc": "Topographic and nature-oriented map style.",
+    "streetDesc": "Urban-focused map with roads and labels.",
+    "satelliteDesc": "High-resolution satellite imagery.",
+    "satelliteStreetDesc": "Satellite imagery with road and place labels."
+  },
+  "headerAside": {
+    "layerData": "Data layers",
+    "direction": "Directions",
+    "satellite": "Satellite",
+    "event": "Events",
+    "tour": "Tours"
+  },
   "mapPage": {
     "layout": {
       "mapArea": "Map area",
-      "leftSidebar": "Left sidebar",
-      "leftSidebarHint": "Use this area for filters, categories, and result lists.",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar",
       "subSidebar": "Subsidebar",
-      "subSidebarHint": "Use this panel for details, comparison, and advanced drill-down.",
       "openSubSidebar": "Open subsidebar",
       "closeSubSidebar": "Close subsidebar",
       "floatLegend": "Legend",
@@ -327,6 +344,8 @@
       "toolLayer": "Toggle map layers",
       "toolZoomIn": "Zoom in",
       "toolZoomOut": "Zoom out",
+      "tool2dDesc": "Switch to 2D mode (disable terrain and 3D buildings)",
+      "tool3dDesc": "Switch to 3D mode (enable terrain and 3D buildings)",
       "floatWeather": "Weather",
       "weatherFeelsLike": "Feels like",
       "weatherHumidity": "Current humidity",
@@ -347,7 +366,9 @@
       "aqiModerate": "Moderate",
       "aqiPoor": "Poor",
       "aqiVeryPoor": "Very poor",
-      "aqiUnknown": "Unknown"
+      "aqiUnknown": "Unknown",
+      "unsupportedTitle": "Map is not supported on this device",
+      "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience."
     }
   }
 }
