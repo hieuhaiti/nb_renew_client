@@ -1,4 +1,4 @@
-import { Calendar, Layers, MapPin, Navigation, Palette, Satellite } from 'lucide-react';
+import { Calendar, Layers, MapPin, Navigation, Satellite } from 'lucide-react';
 
 export const componentMapSideBar = {
   layerData: 'DataLayer Placeholder',

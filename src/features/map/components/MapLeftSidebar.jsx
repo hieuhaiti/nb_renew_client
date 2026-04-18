@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
+import { useSidebarStore } from '@/features/map/store/useSidebarStore';
+import DataLayer from '@/features/map/components/sidebar/DataLayer';
 import {
   componentMapSideBar,
   currentHeaderSidebar,
@@ -20,11 +22,18 @@ import {
 export default function MapLeftSidebar() {
   const { t } = useTranslation();
   const categoriesStoreName = useCategoriesStore((state) => state.categoriesStoreName);
+  const categoriesStoreID = useCategoriesStore((state) => state.categoriesStoreID);
+  const isExpanded = useSidebarStore((state) => state.isLeftExpanded);
+  const toggleLeftExpanded = useSidebarStore((state) => state.toggleLeftExpanded);
   const [activeSidebar, setActiveSidebar] = useState(currentHeaderSidebar);
-  const [isExpanded, setIsExpanded] = useState(true);
 
-  const activeSidebarContent =
-    componentMapSideBar[activeSidebar] ?? componentMapSideBar[currentHeaderSidebar];
+  const activeSidebarContent = useMemo(() => {
+    if (activeSidebar === 'layerData') {
+      return <DataLayer categoryId={categoriesStoreID} />;
+    }
+
+    return componentMapSideBar[activeSidebar] ?? componentMapSideBar[currentHeaderSidebar];
+  }, [activeSidebar, categoriesStoreID]);
   const collapsedSidebarTitle = categoriesStoreName
     ? categoriesStoreName
         .split(' ')
@@ -107,7 +116,7 @@ export default function MapLeftSidebar() {
                     variant="ghost"
                     size="icon"
                     className={cn('h-8 rounded-lg', isExpanded ? 'w-full' : 'w-9')}
-                    onClick={() => setIsExpanded((prev) => !prev)}
+                    onClick={toggleLeftExpanded}
                     aria-label={
                       isExpanded
                         ? t('mapPage.layout.collapseSidebar')
@@ -130,10 +139,13 @@ export default function MapLeftSidebar() {
         {/* Content panel */}
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
-            {/* component content */}
-            <div className="text-muted-foreground flex min-h-40 items-center justify-center rounded-lg border border-dashed text-center text-sm font-medium">
-              {activeSidebarContent}
-            </div>
+            {typeof activeSidebarContent === 'string' ? (
+              <div className="text-muted-foreground flex min-h-40 items-center justify-center rounded-lg border border-dashed text-center text-sm font-medium">
+                {activeSidebarContent}
+              </div>
+            ) : (
+              activeSidebarContent
+            )}
           </div>
         </div>
       </div>

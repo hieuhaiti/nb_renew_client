@@ -111,16 +111,13 @@ export default function MapBaseArea() {
     map.on('load', handleSingleLoad);
     mapRef.current.split.on('load', handleSplitLoad);
 
-    map.on('move', () => {
-      const center = map.getCenter();
-      setMapState({
-        lat: center.lat,
-        lng: center.lng,
-        zoom: map.getZoom(),
-      });
-
+    const handleMove = () => {
       // Sync split map when in compare mode
-      if (isSplitMode && mapRef.current.split && mapRef.current.split.isStyleLoaded()) {
+      if (
+        useMapStore.getState().isSplitMode &&
+        mapRef.current.split &&
+        mapRef.current.split.isStyleLoaded()
+      ) {
         mapRef.current.split.jumpTo({
           center: map.getCenter(),
           zoom: map.getZoom(),
@@ -128,9 +125,25 @@ export default function MapBaseArea() {
           bearing: map.getBearing(),
         });
       }
-    });
+    };
+
+    const handleMoveEnd = () => {
+      const center = map.getCenter();
+      setMapState({
+        lat: center.lat,
+        lng: center.lng,
+        zoom: map.getZoom(),
+      });
+      handleMove();
+    };
+
+    map.on('move', handleMove);
+    map.on('moveend', handleMoveEnd);
 
     return () => {
+      map.off('move', handleMove);
+      map.off('moveend', handleMoveEnd);
+
       if (mapRef.current.single) {
         mapRef.current.single.remove();
         mapRef.current.single = null;

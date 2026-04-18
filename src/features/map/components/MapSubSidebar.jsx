@@ -1,15 +1,17 @@
-import { Compass, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { useSidebarStore } from '@/features/map/store/useSidebarStore';
 
 /**
  * MapSubSidebar — secondary overlay panel that can slide in/out.
  */
-export default function MapSubSidebar({ isOpen, onToggle }) {
+export default function MapSubSidebar() {
   const { t } = useTranslation();
+  const isOpen = useSidebarStore((state) => state.isSubSidebarOpen);
+  const onToggle = useSidebarStore((state) => state.toggleSubSidebar);
   const sidebarPlacementClass =
     'inset-y-0 hidden lg:left-[31%] lg:block lg:w-[28%] xl:left-[26%] xl:w-[24%] 2xl:left-[24%] 2xl:w-[22%]';
 
@@ -30,7 +32,7 @@ export default function MapSubSidebar({ isOpen, onToggle }) {
             }
             variant="secondary"
             size="icon-sm"
-            className="border-border bg-background pointer-events-auto absolute top-1/2 -right-4 -translate-y-1/2 rounded-full border shadow-md"
+            className="border-border pointer-events-auto absolute top-1/2 -right-4 -translate-y-1/2 rounded-full border shadow-md"
             onClick={onToggle}
           >
             {isOpen ? <PanelLeftClose /> : <PanelLeftOpen />}

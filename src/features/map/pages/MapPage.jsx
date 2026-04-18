@@ -1,13 +1,13 @@
-﻿import { useState } from 'react';
-import MapBaseArea from '@/features/map/components/MapBase';
+﻿import MapBaseArea from '@/features/map/components/MapBase';
 import MapFloatingLegend from '@/features/map/components/MapFloatingLegend';
 import MapFloatingWeatherCard from '@/features/map/components/MapFloatingWeatherCard';
 import MapLeftSidebar from '@/features/map/components/MapLeftSidebar';
 import MapSubSidebar from '@/features/map/components/MapSubSidebar';
 import MapLayout from '@/features/map/layout/MapLayout';
+import { useSidebarStore } from '@/features/map/store/useSidebarStore';
 
 export default function MapPage() {
-  const [isSubSidebarOpen, setIsSubSidebarOpen] = useState(true);
+  const isSubSidebarOpen = useSidebarStore((state) => state.isSubSidebarOpen);
 
   // Change to 'right' if you want to keep legend pinned to the right side.
   const legendAnchor = 'left';
@@ -24,10 +24,7 @@ export default function MapPage() {
       <section className="bg-background relative h-[calc(100vh-4rem)] min-h-[calc(100vh-4rem)] w-full overflow-hidden">
         <MapLeftSidebar />
 
-        <MapSubSidebar
-          isOpen={isSubSidebarOpen}
-          onToggle={() => setIsSubSidebarOpen((prev) => !prev)}
-        />
+        <MapSubSidebar />
 
         <MapFloatingWeatherCard className="absolute top-4 right-4 z-60 w-[min(18rem,calc(100%-1rem))] md:w-[42%] lg:w-[18%] xl:w-[15%] 2xl:w-[13%]" />
 

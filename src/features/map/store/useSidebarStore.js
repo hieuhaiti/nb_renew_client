@@ -23,11 +23,11 @@ export const useSidebarStore = create((set) => ({
 
   toggleSubSidebar: () =>
     set((state) => ({
-      isSubSidebarOpen: !state.isSubSidebarOpen,
+      isSubSidebarOpen: state.isLeftExpanded ? !state.isSubSidebarOpen : false,
     })),
 
   setSubSidebarOpen: (isOpen) =>
-    set({
-      isSubSidebarOpen: isOpen,
-    }),
+    set((state) => ({
+      isSubSidebarOpen: state.isLeftExpanded ? isOpen : false,
+    })),
 }));

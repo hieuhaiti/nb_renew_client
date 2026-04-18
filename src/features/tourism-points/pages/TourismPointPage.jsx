@@ -204,7 +204,7 @@ export default function TourismPointPage() {
                   )}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="text-primary placeholder:text-primary focus-visible:ring-ring h-10 w-full rounded-full pl-10 text-sm shadow-sm focus-visible:ring-1 dark:border-[var(--border-primary)] dark:bg-[var(--bg-secondary)]"
+                  className="text-primary placeholder:text-primary focus-visible:ring-ring h-10 w-full rounded-full pl-10 text-sm shadow-sm focus-visible:ring-1"
                 />
               </div>
 
@@ -218,25 +218,25 @@ export default function TourismPointPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="text-primary h-9 rounded-full px-4 font-medium text-[var(--foreground)] shadow-sm dark:border-[var(--border-primary)] dark:bg-[var(--bg-secondary)]"
+                  className="text-primary h-9 rounded-full px-4 font-medium text-[var(--foreground)] shadow-sm"
                   size="sm"
                 >
                   {t('tourismPointPage.filter', 'Bộ lọc')}
                 </Button>
-                <div className="text-primary hidden h-9 items-center overflow-hidden rounded-md border p-0.5 shadow-sm md:flex dark:border-[var(--border-primary)] dark:bg-[var(--bg-secondary)]">
+                <div className="text-primary hidden h-9 items-center overflow-hidden rounded-md border p-0.5 shadow-sm md:flex">
                   <Button
-                    variant={currentSettings.viewMode === 'grid' ? 'secondary' : 'ghost'}
+                    variant={currentSettings.viewMode === 'grid' ? 'default' : 'ghost'}
                     size="icon"
-                    className="h-full w-8 rounded-sm rounded-r-none text-[var(--foreground)]"
+                    className="h-full w-8 rounded-sm rounded-r-none"
                     onClick={() => setCurrentSettings({ viewMode: 'grid' })}
                   >
                     <LayoutGrid size={15} />
                   </Button>
                   <div className="bg-border text-primary h-4 w-[1px]"></div>
                   <Button
-                    variant={currentSettings.viewMode === 'list' ? 'secondary' : 'ghost'}
+                    variant={currentSettings.viewMode === 'list' ? 'default' : 'ghost'}
                     size="icon"
-                    className="h-full w-8 rounded-sm rounded-l-none text-[var(--foreground)]"
+                    className="h-full w-8 rounded-sm rounded-l-none"
                     onClick={() => setCurrentSettings({ viewMode: 'list' })}
                   >
                     <List size={15} />
@@ -245,7 +245,7 @@ export default function TourismPointPage() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="text-primary h-9 w-9 rounded-full text-[var(--foreground)] shadow-sm md:hidden dark:border-[var(--border-primary)] dark:bg-[var(--bg-secondary)]"
+                  className="text-primary h-9 w-9 rounded-full text-[var(--foreground)] shadow-sm md:hidden"
                 >
                   <SlidersHorizontal size={15} />
                 </Button>
@@ -416,7 +416,7 @@ export default function TourismPointPage() {
                   >
                     <ChevronLeft size={16} className="mr-1" /> {t('common.prev', 'Trước')}
                   </Button>
-                  <div className="text-primary rounded-full border px-4 py-1.5 text-sm shadow-sm dark:border-[var(--border-primary)] dark:bg-[var(--bg-secondary)]">
+                  <div className="text-primary rounded-full border px-4 py-1.5 text-sm shadow-sm">
                     {currentSettings.page} / {pages}
                   </div>
                   <Button
