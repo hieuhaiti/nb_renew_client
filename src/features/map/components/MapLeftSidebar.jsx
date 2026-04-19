@@ -7,12 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
 import { useSidebarStore } from '@/features/map/store/useSidebarStore';
-import DataLayer from '@/features/map/components/sidebar/DataLayer';
-import {
-  componentMapSideBar,
-  currentHeaderSidebar,
-  headerSidebar,
-} from '../constant/sidebarConstant';
+import { currentHeaderSidebar, headerSidebar } from '../constant/sidebarConstant';
 
 /**
  * MapLeftSidebar — primary full-height sidebar for map filters and lists.
@@ -28,11 +23,20 @@ export default function MapLeftSidebar() {
   const [activeSidebar, setActiveSidebar] = useState(currentHeaderSidebar);
 
   const activeSidebarContent = useMemo(() => {
-    if (activeSidebar === 'layerData') {
-      return <DataLayer categoryId={categoriesStoreID} />;
+    const activeSidebarItem =
+      headerSidebar.find((item) => item.value === activeSidebar) ??
+      headerSidebar.find((item) => item.value === currentHeaderSidebar);
+
+    if (!activeSidebarItem?.component) {
+      return null;
     }
 
-    return componentMapSideBar[activeSidebar] ?? componentMapSideBar[currentHeaderSidebar];
+    if (typeof activeSidebarItem.component === 'function') {
+      const ActiveSidebarComponent = activeSidebarItem.component;
+      return <ActiveSidebarComponent categoryId={categoriesStoreID} />;
+    }
+
+    return activeSidebarItem.component;
   }, [activeSidebar, categoriesStoreID]);
   const collapsedSidebarTitle = categoriesStoreName
     ? categoriesStoreName

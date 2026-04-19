@@ -1,17 +1,12 @@
 import { Calendar, Layers, MapPin, Navigation, Satellite } from 'lucide-react';
+import DataLayer from '@/features/map/components/sidebar/DataLayer';
 
-export const componentMapSideBar = {
-  layerData: 'DataLayer Placeholder',
-  direction: 'DirectionMap Placeholder',
-  satellite: 'SatelliteImage Placeholder',
-  event: 'EventPanel Placeholder',
-  tour: 'TourPanel Placeholder',
-};
 export const headerSidebar = [
   {
     icon: Layers,
     label: 'headerAside.layerData',
     value: 'layerData',
+    component: DataLayer,
     authen: false,
   },
 
@@ -19,24 +14,28 @@ export const headerSidebar = [
     icon: Navigation,
     label: 'headerAside.direction',
     value: 'direction',
+    component: 'DirectionMap Placeholder',
     authen: false,
   },
   {
     icon: Satellite,
     label: 'headerAside.satellite',
     value: 'satellite',
+    component: 'SatelliteImage Placeholder',
     authen: true,
   },
   {
     icon: Calendar,
     label: 'headerAside.event',
     value: 'event',
+    component: 'EventPanel Placeholder',
     authen: false,
   },
   {
     icon: MapPin,
     label: 'headerAside.tour',
     value: 'tour',
+    component: 'TourPanel Placeholder',
     authen: false,
   },
 ];

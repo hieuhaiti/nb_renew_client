@@ -38,7 +38,17 @@
       "subtitle": "Smart tourism map, fascinating destinations, and unforgettable experiences",
       "cta_map": "Explore Map",
       "cta_discover": "Top Destinations",
-      "scroll_hint": "Scroll to explore"
+      "scroll_hint": "Scroll to explore",
+      "intro": "Explore Ninh Binh via WebGIS",
+      "map_title": "Smart Tourism Map",
+      "map_desc": "Find destinations, routes, weather and services on an interactive map.",
+      "map_cta": "Open tourism map",
+      "vlog_title": "Vlog & Experiences",
+      "vlog_desc": "Get inspired by real videos, traveller reviews and community 360° content.",
+      "vlog_cta": "Visit vlog page",
+      "chatbot_title": "AI Travel Companion",
+      "chatbot_desc": "Ask about tours, weather, OCOP and get personalised itinerary suggestions.",
+      "chatbot_cta": "Chat with the assistant"
     },
     "ad_carousel": {
       "subtitle": "Services & Events",

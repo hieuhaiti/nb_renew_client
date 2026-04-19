@@ -38,7 +38,17 @@
       "subtitle": "Bản đồ du lịch thông minh, điểm đến hấp dẫn và trải nghiệm không quên",
       "cta_map": "Khám phá bản đồ",
       "cta_discover": "Điểm du lịch nổi bật",
-      "scroll_hint": "Cuộn để khám phá"
+      "scroll_hint": "Cuộn để khám phá",
+      "intro": "Khám phá Ninh Bình qua WebGIS",
+      "map_title": "Bản đồ du lịch thông minh",
+      "map_desc": "Tìm kiếm điểm đến, tuyến tham quan, thời tiết và dịch vụ trên bản đồ tương tác.",
+      "map_cta": "Xem bản đồ du lịch",
+      "vlog_title": "Vlog & Trải nghiệm",
+      "vlog_desc": "Cảm hứng từ video thực tế, đánh giá du khách và nội dung 360° từ cộng đồng.",
+      "vlog_cta": "Truy cập trang vlog",
+      "chatbot_title": "Chatbot đồng hành",
+      "chatbot_desc": "Hỏi nhanh về tour, thời tiết, OCOP và nhận gợi ý lịch trình cá nhân hoá.",
+      "chatbot_cta": "Trò chuyện cùng chatbot"
     },
     "ad_carousel": {
       "subtitle": "Dịch vụ & Sự kiện",
