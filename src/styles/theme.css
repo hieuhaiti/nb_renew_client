@@ -1,7 +1,7 @@
 :root {
-  --radius: 0.75rem; /* md: 24px — "Soft Minimalism" base */
-  --radius-sm: 0.5rem; /* 20px */
-  --radius-lg: 1rem; /* 32px — large cards */
+  --radius: 0.75rem; /* 12px */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-lg: 1rem; /* 16px */
   --radius-xl: 2rem;
 
   /* Shadows */
@@ -49,6 +49,11 @@
   --destructive: #c33b32;
   --destructive-foreground: #ffffff;
   --destructive-hover: #ab2f27;
+
+  /* Warning feedback */
+  --warning: #b86908;
+  --warning-foreground: #ffffff;
+  --warning-soft: #fff1e3;
 
   /* Inputs and separators */
   --border: #d4dee8;
@@ -143,6 +148,11 @@
   --destructive: #ff8e86;
   --destructive-foreground: #32110e;
   --destructive-hover: #ffaaa3;
+
+  /* Warning feedback */
+  --warning: #f5b973;
+  --warning-foreground: #2e1700;
+  --warning-soft: #3e2d1d;
 
   /* Inputs and separators */
   --border: #2b3b48;
