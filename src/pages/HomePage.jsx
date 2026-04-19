@@ -71,13 +71,7 @@ export default function HomePage() {
             {t('home.hero.subtitle')}
           </p>
           <div className="mt-2 flex flex-wrap justify-center gap-4">
-            <Button
-              id="hero-map-btn"
-              size="lg"
-              variant="default"
-              className="shadow-primary/30 rounded-full px-8 font-semibold shadow-lg transition-all duration-200"
-              onClick={() => navigate('/map')}
-            >
+            <Button id="hero-map-btn" size="lg" variant="default" onClick={() => navigate('/map')}>
               <Map size={18} className="mr-2" />
               {t('home.hero.cta_map')}
             </Button>
@@ -85,7 +79,6 @@ export default function HomePage() {
               id="hero-discover-btn"
               size="lg"
               variant="outline"
-              className="rounded-full px-8 font-semibold backdrop-blur-sm transition-all duration-200"
               onClick={() => navigate('/tourism-point')}
             >
               {t('home.hero.cta_discover')}
@@ -96,7 +89,6 @@ export default function HomePage() {
               id="hero-ocop-btn"
               size="lg"
               variant="secondary"
-              className="rounded-full px-8 font-semibold shadow-lg transition-all duration-200"
               onClick={() => navigate('/ocop')}
             >
               <ShoppingBag size={18} className="mr-2" />
@@ -105,17 +97,20 @@ export default function HomePage() {
           </div>
         </div>
 
-        <button
-          id="hero-scroll-btn"
-          onClick={scrollToNextSection}
-          aria-label={t('home.hero.scroll_hint')}
-          className="text-primary-foreground/60 group hover:text-primary-foreground absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1 transition-colors duration-200"
-        >
-          <span className="text-xs font-medium tracking-wide uppercase">
-            {t('home.hero.scroll_hint')}
-          </span>
-          <ChevronDown size={20} className="animate-bounce" />
-        </button>
+        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
+          <Button
+            id="hero-scroll-btn"
+            type="button"
+            variant="ghost"
+            onClick={scrollToNextSection}
+            aria-label={t('home.hero.scroll_hint')}
+          >
+            <span className="text-xs font-medium tracking-wide uppercase">
+              {t('home.hero.scroll_hint')}
+            </span>
+            <ChevronDown size={20} className="animate-bounce" />
+          </Button>
+        </div>
       </section>
 
       {/* ===== AD CAROUSEL (Embla) — Dịch vụ quảng cáo ===== */}
@@ -135,22 +130,26 @@ export default function HomePage() {
               </h2>
             </div>
             <div className="flex gap-2">
-              <button
+              <Button
                 id="ad-carousel-prev"
+                type="button"
+                variant="outline"
+                size="icon"
                 onClick={scrollPrev}
                 aria-label={t('home.ad_carousel.prev')}
-                className="border-border bg-card text-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:border-(--primary-hover) hover:bg-(--primary-hover)"
               >
                 <ChevronLeft size={18} />
-              </button>
-              <button
+              </Button>
+              <Button
                 id="ad-carousel-next"
+                type="button"
+                variant="outline"
+                size="icon"
                 onClick={scrollNext}
                 aria-label={t('home.ad_carousel.next')}
-                className="border-border bg-card text-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:border-(--primary-hover) hover:bg-(--primary-hover)"
               >
                 <ChevronRight size={18} />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -233,13 +232,14 @@ export default function HomePage() {
               {t('home.news.title')}
             </h2>
           </div>
-          <button
+          <Button
             id="news-see-all-btn"
-            className="text-primary inline-flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70"
+            type="button"
+            variant="ghost"
             onClick={() => navigate('/news')}
           >
             {t('home.news.see_all')} <ArrowRight size={15} />
-          </button>
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -319,10 +319,11 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {CATEGORIES.map((cat) => (
-              <button
+              <Button
                 key={cat.id}
                 id={`cat-${cat.id}`}
-                className="group bg-card border-border hover:border-primary/40 flex cursor-pointer flex-col items-center gap-3 rounded-2xl border p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                type="button"
+                variant="ghost"
                 onClick={() => navigate(cat.path)}
               >
                 <span className="text-3xl">{cat.icon}</span>
@@ -332,7 +333,7 @@ export default function HomePage() {
                 <span className="text-muted-foreground text-xs">
                   {cat.count} {t('home.categories.items')}
                 </span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -349,20 +350,22 @@ export default function HomePage() {
               {t('home.points.title')}
             </h2>
           </div>
-          <button
+          <Button
             id="points-see-all-btn"
-            className="text-primary inline-flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70"
+            type="button"
+            variant="ghost"
             onClick={() => navigate('/tourism-point')}
           >
             {t('common.see_all')} <ArrowRight size={15} />
-          </button>
+          </Button>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {SUGGEST_POINTS.map((point) => (
-            <button
+            <Button
               key={point.id}
               id={`point-${point.id}`}
-              className="group bg-card border-border hover:border-primary/40 cursor-pointer rounded-2xl border p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+              type="button"
+              variant="ghost"
               onClick={() => navigate('/tourism-point')}
             >
               <div className="mb-3 text-3xl">{point.emoji}</div>
@@ -378,7 +381,7 @@ export default function HomePage() {
                 <span className="font-semibold">{point.rating}</span>
                 <span className="text-muted-foreground">({point.reviews.toLocaleString()})</span>
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       </section>
@@ -395,20 +398,22 @@ export default function HomePage() {
                 {t('home.tours.title')}
               </h2>
             </div>
-            <button
+            <Button
               id="tours-see-all-btn"
-              className="text-primary inline-flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70"
+              type="button"
+              variant="ghost"
               onClick={() => navigate('/tour')}
             >
               {t('common.see_all')} <ArrowRight size={15} />
-            </button>
+            </Button>
           </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {SUGGEST_TOURS.map((tour) => (
-              <button
+              <Button
                 key={tour.id}
                 id={`tour-${tour.id}`}
-                className="group bg-card border-border hover:border-primary/40 cursor-pointer rounded-2xl border p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                type="button"
+                variant="ghost"
                 onClick={() => navigate('/tour')}
               >
                 <div className="mb-4 text-3xl">{tour.emoji}</div>
@@ -426,7 +431,7 @@ export default function HomePage() {
                     <span className="font-semibold">{tour.rating}</span>
                   </div>
                 </div>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -445,12 +450,7 @@ export default function HomePage() {
             {t('home.voucher.desc')}
           </p>
 
-          <Button
-            id="get-voucher-btn"
-            size="lg"
-            className="shadow-primary/20 mb-12 rounded-xl px-8 font-semibold shadow-lg transition-all duration-300 hover:-translate-y-0.5"
-            onClick={() => navigate('/tourism-point')}
-          >
+          <Button id="get-voucher-btn" size="lg" onClick={() => navigate('/tourism-point')}>
             {t('home.voucher.cta')}
             <ArrowRight size={18} className="ml-2" />
           </Button>

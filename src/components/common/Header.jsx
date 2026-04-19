@@ -193,14 +193,15 @@ export default function Header() {
     <>
       <header className="bg-background/85 border-border/80 sticky top-0 z-50 flex h-16 items-center justify-between border-b px-4 shadow-sm backdrop-blur-md transition-colors duration-200 sm:px-6">
         {/* LOGO */}
-        <button
+        <Button
           id="header-logo-btn"
-          className="text-primary shrink-0 cursor-pointer text-lg font-extrabold transition-opacity select-none hover:opacity-80 sm:text-xl"
+          type="button"
+          variant="ghost"
           onClick={() => navigate('/')}
           aria-label="Go to home"
         >
           {t('common.app_name')}
-        </button>
+        </Button>
 
         {/* DESKTOP NAV */}
         <nav
@@ -211,13 +212,9 @@ export default function Header() {
             if (item.type === 'map-dropdown') {
               return (
                 <div key={item.key} className="relative" data-header-interactive>
-                  <button
-                    className={[
-                      'relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                      isMapDropdownActive || dropdownOpenIdx === 'map'
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-(--surface-hover)',
-                    ].join(' ')}
+                  <Button
+                    type="button"
+                    variant={isMapDropdownActive || dropdownOpenIdx === 'map' ? 'default' : 'ghost'}
                     onClick={() => setDropdownOpenIdx(dropdownOpenIdx === 'map' ? null : 'map')}
                     aria-expanded={dropdownOpenIdx === 'map'}
                     aria-haspopup="menu"
@@ -228,23 +225,19 @@ export default function Header() {
                       size={14}
                       className={`transition-transform duration-200 ${dropdownOpenIdx === 'map' ? 'rotate-180' : ''}`}
                     />
-                  </button>
+                  </Button>
 
                   {dropdownOpenIdx === 'map' && (
                     <div className="bg-popover border-border absolute top-full left-1/2 z-50 mt-2 w-56 -translate-x-1/2 overflow-hidden rounded-xl border p-1.5 shadow-xl">
                       {item.children.map((sub) => (
-                        <button
+                        <Button
                           key={sub.id}
+                          type="button"
+                          variant={isCategoryActive(sub.id) ? 'default' : 'ghost'}
                           onClick={() => handleCategoryNavigate(sub.raw)}
-                          className={[
-                            'flex w-full items-center rounded-lg px-3 py-2 text-left text-sm transition-colors',
-                            isCategoryActive(sub.id)
-                              ? 'bg-primary text-primary-foreground'
-                              : 'text-foreground hover:bg-(--surface-hover)',
-                          ].join(' ')}
                         >
                           {sub.label}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   )}
@@ -253,20 +246,16 @@ export default function Header() {
             }
 
             return (
-              <button
+              <Button
                 key={item.path}
-                className={[
-                  'relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                  isActive(item.path)
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-(--surface-hover)',
-                ].join(' ')}
+                type="button"
+                variant={isActive(item.path) ? 'default' : 'ghost'}
                 onClick={() => navigate(item.path)}
                 aria-current={isActive(item.path) ? 'page' : undefined}
               >
                 {item.icon}
                 <span>{item.label}</span>
-              </button>
+              </Button>
             );
           })}
         </nav>
@@ -278,9 +267,10 @@ export default function Header() {
 
           {isAuthenticated ? (
             <div className="relative" data-header-interactive>
-              <button
+              <Button
                 id="header-user-btn"
-                className="bg-card/80 border-border flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 transition-colors duration-200 hover:bg-(--muted-hover)"
+                type="button"
+                variant="outline"
                 onClick={() => setDropdownOpenIdx(dropdownOpenIdx === 'user' ? null : 'user')}
               >
                 {user?.avatar_url ? (
@@ -301,7 +291,7 @@ export default function Header() {
                   size={14}
                   className={`text-muted-foreground transition-transform duration-200 ${dropdownOpenIdx === 'user' ? 'rotate-180' : ''}`}
                 />
-              </button>
+              </Button>
 
               {dropdownOpenIdx === 'user' && (
                 <div className="bg-popover border-border absolute top-full right-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border py-1.5 shadow-xl">
@@ -311,9 +301,10 @@ export default function Header() {
                     </p>
                     <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
                   </div>
-                  <button
+                  <Button
                     id="header-profile-btn"
-                    className="text-foreground flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors hover:bg-(--surface-hover)"
+                    type="button"
+                    variant="ghost"
                     onClick={() => {
                       navigate('/profile');
                       setDropdownOpenIdx(null);
@@ -321,26 +312,22 @@ export default function Header() {
                   >
                     <Settings size={14} />
                     {t('common.settings')}
-                  </button>
+                  </Button>
                   <div className="border-border my-1 border-t" />
-                  <button
+                  <Button
                     id="header-logout-btn"
-                    className="text-destructive hover:text-destructive-foreground flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors hover:bg-(--destructive-hover)"
+                    type="button"
+                    variant="destructive"
                     onClick={handleLogout}
                   >
                     <LogOut size={14} />
                     {t('common.logout')}
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
           ) : (
-            <Button
-              id="header-login-btn"
-              size="sm"
-              onClick={() => navigate('/login')}
-              className="rounded-full px-5 font-semibold"
-            >
+            <Button id="header-login-btn" size="sm" onClick={() => navigate('/login')}>
               <LogIn size={14} className="mr-1.5" />
               {t('common.login')}
             </Button>
@@ -348,14 +335,18 @@ export default function Header() {
         </div>
 
         {/* HAMBURGER (mobile/tablet) */}
-        <button
-          id="header-hamburger-btn"
-          className="text-foreground rounded-lg p-2 transition-colors hover:bg-(--surface-hover) lg:hidden"
-          onClick={() => setIsMobileMenuOpen(true)}
-          aria-label={t('common.open_menu')}
-        >
-          <Menu size={22} />
-        </button>
+        <div className="lg:hidden">
+          <Button
+            id="header-hamburger-btn"
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label={t('common.open_menu')}
+          >
+            <Menu size={22} />
+          </Button>
+        </div>
       </header>
 
       {/* MOBILE SIDE MENU OVERLAY */}
@@ -373,14 +364,16 @@ export default function Header() {
             {/* Menu header */}
             <div className="border-border bg-card sticky top-0 z-10 flex items-center justify-between border-b px-5 py-4">
               <span className="text-primary text-base font-bold">{t('common.app_name')}</span>
-              <button
+              <Button
                 id="mobile-menu-close-btn"
+                type="button"
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-foreground rounded-lg p-1.5 transition-colors hover:bg-(--surface-hover)"
                 aria-label="Close menu"
               >
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             {/* Nav links */}
@@ -398,18 +391,14 @@ export default function Header() {
                       </div>
                       <div className="border-border ml-6 border-l pl-2">
                         {item.children.map((sub) => (
-                          <button
+                          <Button
                             key={sub.id}
+                            type="button"
+                            variant={isCategoryActive(sub.id) ? 'default' : 'ghost'}
                             onClick={() => handleCategoryNavigate(sub.raw)}
-                            className={[
-                              'mt-1 flex w-full items-center rounded-lg px-3 py-2 text-left text-sm transition-colors',
-                              isCategoryActive(sub.id)
-                                ? 'bg-primary text-primary-foreground'
-                                : 'text-foreground hover:bg-(--surface-hover)',
-                            ].join(' ')}
                           >
                             {sub.label}
-                          </button>
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -417,14 +406,10 @@ export default function Header() {
                 }
 
                 return (
-                  <button
+                  <Button
                     key={item.path}
-                    className={[
-                      'flex items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition-all duration-200',
-                      isActive(item.path)
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-foreground hover:bg-(--surface-hover)',
-                    ].join(' ')}
+                    type="button"
+                    variant={isActive(item.path) ? 'default' : 'ghost'}
                     onClick={() => {
                       navigate(item.path);
                       setIsMobileMenuOpen(false);
@@ -433,7 +418,7 @@ export default function Header() {
                   >
                     {item.icon}
                     {item.label}
-                  </button>
+                  </Button>
                 );
               })}
             </nav>
@@ -461,25 +446,27 @@ export default function Header() {
                       <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
                     </div>
                   </div>
-                  <button
+                  <Button
                     id="mobile-profile-btn"
+                    type="button"
+                    variant="ghost"
                     onClick={() => {
                       navigate('/profile');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="text-foreground flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-(--surface-hover)"
                   >
                     <Settings size={16} />
                     {t('common.settings')}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     id="mobile-logout-btn"
+                    type="button"
+                    variant="destructive"
                     onClick={handleLogout}
-                    className="text-destructive hover:text-destructive-foreground flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-(--destructive-hover)"
                   >
                     <LogOut size={16} />
                     {t('common.logout')}
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <Button
@@ -488,7 +475,6 @@ export default function Header() {
                     navigate('/login');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="w-full rounded-full"
                 >
                   <LogIn size={16} className="mr-2" />
                   {t('common.login')}

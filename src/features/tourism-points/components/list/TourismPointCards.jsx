@@ -84,15 +84,8 @@ export function TourismPointFeaturedCard({
                 : '20.000 đ'}
             </div>
             <div className="flex items-center gap-2">
-              <Button className="text-primary rounded-full font-medium shadow-sm">
-                {t('tourismPointPage.view_detail', 'Xem chi tiết')}
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className={`text-primary hover:text-primary-foreground rounded-full shadow-sm dark:border-(--border-primary) dark:bg-(--bg-secondary) ${isLiked ? 'text-primary' : ''}`}
-                onClick={onToggleLike}
-              >
+              <Button>{t('tourismPointPage.view_detail', 'Xem chi tiết')}</Button>
+              <Button variant="outline" size="icon" onClick={onToggleLike}>
                 <Bookmark size={16} className={isLiked ? 'fill-destructive' : ''} />
               </Button>
             </div>
@@ -179,12 +172,9 @@ export function TourismPointStandardCard({
           </span>
         </div>
         <div className="absolute top-3 right-3">
-          <button
-            onClick={onToggleLike}
-            className={`text-primary hover:text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full shadow-sm backdrop-blur-md transition-colors ${isLiked ? 'text-primary' : ''}`}
-          >
+          <Button type="button" variant="ghost" size="icon-xs" onClick={onToggleLike}>
             <Bookmark size={13} className={isLiked ? 'fill-destructive' : ''} />
-          </button>
+          </Button>
         </div>
       </div>
 

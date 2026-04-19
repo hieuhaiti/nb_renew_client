@@ -172,12 +172,7 @@ export default function TourismPointPage() {
                 )}
               </p>
             </div>
-            <Button
-              variant="outline"
-              className="text-primary-foreground hover:border-primary-foreground hover:text-primary-foreground bg-primary flex items-center gap-2 rounded-full px-6 whitespace-nowrap shadow-sm transition-all"
-              onClick={() => refetch?.()}
-              disabled={isFetching}
-            >
+            <Button variant="outline" onClick={() => refetch?.()} disabled={isFetching}>
               <RefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
               {t('tourismPointPage.refresh', 'Làm mới')}
             </Button>
@@ -209,25 +204,17 @@ export default function TourismPointPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <Button
-                  className="text-primary-foreground bg-primary h-9 rounded-full px-4 font-medium shadow-sm"
-                  size="sm"
-                >
+                <Button variant="default" size="sm">
                   <div className="bg-primary-foreground mr-2 h-1.5 w-1.5 rounded-full"></div>
                   {selectedCategoryName}
                 </Button>
-                <Button
-                  variant="outline"
-                  className="text-primary h-9 rounded-full px-4 font-medium text-[var(--foreground)] shadow-sm"
-                  size="sm"
-                >
+                <Button variant="outline" size="sm">
                   {t('tourismPointPage.filter', 'Bộ lọc')}
                 </Button>
                 <div className="text-primary hidden h-9 items-center overflow-hidden rounded-md border p-0.5 shadow-sm md:flex">
                   <Button
                     variant={currentSettings.viewMode === 'grid' ? 'default' : 'ghost'}
                     size="icon"
-                    className="h-full w-8 rounded-sm rounded-r-none"
                     onClick={() => setCurrentSettings({ viewMode: 'grid' })}
                   >
                     <LayoutGrid size={15} />
@@ -236,40 +223,34 @@ export default function TourismPointPage() {
                   <Button
                     variant={currentSettings.viewMode === 'list' ? 'default' : 'ghost'}
                     size="icon"
-                    className="h-full w-8 rounded-sm rounded-l-none"
                     onClick={() => setCurrentSettings({ viewMode: 'list' })}
                   >
                     <List size={15} />
                   </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="text-primary h-9 w-9 rounded-full text-[var(--foreground)] shadow-sm md:hidden"
-                >
+                <Button variant="outline" size="icon">
                   <SlidersHorizontal size={15} />
                 </Button>
               </div>
             </div>
 
             <div className="no-scrollbar flex w-full items-center gap-6 overflow-x-auto border-b-0 border-transparent">
-              <button
+              <Button
+                type="button"
+                variant={!currentSettings.selectedCategory ? 'default' : 'ghost'}
                 onClick={() =>
                   setCurrentSettings({ selectedCategory: 0, selectedSubcategory: 0, page: 1 })
                 }
-                className={`border-b-2 px-1 pb-3 text-sm whitespace-nowrap ${
-                  !currentSettings.selectedCategory
-                    ? 'text-primary text-primary dark:text-primary font-semibold'
-                    : 'text-primary hover:text-primary-foreground dark:text-primary border-transparent font-medium transition-colors'
-                }`}
               >
                 {t('tourismPointPage.all', 'All')}
-              </button>
+              </Button>
               {categories.map((cat) => {
                 const isActive = Number(currentSettings.selectedCategory) === Number(cat.id);
                 return (
-                  <button
+                  <Button
                     key={cat.id}
+                    type="button"
+                    variant={isActive ? 'default' : 'ghost'}
                     onClick={() =>
                       setCurrentSettings({
                         selectedCategory: cat.id,
@@ -277,46 +258,35 @@ export default function TourismPointPage() {
                         page: 1,
                       })
                     }
-                    className={`border-b-2 px-1 pb-3 text-sm whitespace-nowrap ${
-                      isActive
-                        ? 'text-primary text-primary dark:text-primary font-semibold'
-                        : 'text-primary hover:text-primary-foreground dark:text-primary border-transparent font-medium transition-colors'
-                    }`}
                   >
                     {cat.name}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
 
             {selectedCategoryId > 0 && (
               <div className="no-scrollbar mt-2 flex w-full items-center gap-4 overflow-x-auto border-t border-[var(--border-primary)] pt-2">
-                <button
+                <Button
+                  type="button"
+                  variant={!selectedSubcategoryId ? 'default' : 'ghost'}
                   onClick={() => setCurrentSettings({ selectedSubcategory: 0, page: 1 })}
-                  className={`border-b-2 px-1 pb-2 text-sm whitespace-nowrap ${
-                    !selectedSubcategoryId
-                      ? 'text-primary text-primary dark:text-primary font-semibold'
-                      : 'text-primary hover:text-primary-foreground dark:text-primary border-transparent font-medium transition-colors'
-                  }`}
                 >
                   {t('tourismPointPage.all_subcategories', 'Tất cả loại hình')} (
                   {selectedCategoryTotal})
-                </button>
+                </Button>
 
                 {subcategories.map((sub) => {
                   const isSubActive = Number(selectedSubcategoryId) === Number(sub.id);
                   return (
-                    <button
+                    <Button
                       key={sub.id}
+                      type="button"
+                      variant={isSubActive ? 'default' : 'ghost'}
                       onClick={() => setCurrentSettings({ selectedSubcategory: sub.id, page: 1 })}
-                      className={`border-b-2 px-1 pb-2 text-sm whitespace-nowrap ${
-                        isSubActive
-                          ? 'text-primary text-primary dark:text-primary font-semibold'
-                          : 'text-primary hover:text-primary-foreground dark:text-primary border-transparent font-medium transition-colors'
-                      }`}
                     >
                       {sub.name} ({subcategoryCountById.get(String(sub.id)) ?? 0})
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -412,7 +382,6 @@ export default function TourismPointPage() {
                       setCurrentSettings({ page: Math.max(1, currentSettings.page - 1) })
                     }
                     disabled={currentSettings.page <= 1}
-                    className="rounded-full shadow-sm"
                   >
                     <ChevronLeft size={16} className="mr-1" /> {t('common.prev', 'Trước')}
                   </Button>
@@ -426,7 +395,6 @@ export default function TourismPointPage() {
                       setCurrentSettings({ page: Math.min(pages, currentSettings.page + 1) })
                     }
                     disabled={currentSettings.page >= pages}
-                    className="rounded-full shadow-sm"
                   >
                     {t('common.next', 'Sau')} <ChevronRight size={16} className="ml-1" />
                   </Button>
