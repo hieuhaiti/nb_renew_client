@@ -10,6 +10,7 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
     en: { translation: enTranslation },
     vi: { translation: viTranslation },
   },
+  showSupportNotice: false,
   fallbackLng: 'vi',
   defaultNS: 'translation',
   interpolation: { escapeValue: false },

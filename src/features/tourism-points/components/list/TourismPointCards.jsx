@@ -24,7 +24,7 @@ export function TourismPointFeaturedCard({
 
   return (
     <div
-      className="group text-primary bg-card flex min-h-75 w-full cursor-pointer flex-col overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md md:flex-row dark:border-(--border-primary)"
+      className="group text-primary bg-card flex min-h-75 w-full cursor-pointer flex-col overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md md:flex-row"
       onClick={onClick}
     >
       <div className="text-primary relative w-full shrink-0 overflow-hidden md:w-[60%]">
@@ -45,7 +45,7 @@ export function TourismPointFeaturedCard({
       </div>
       <div className="relative flex flex-1 flex-col justify-center p-6 md:p-8">
         <div className="mb-3 flex items-center gap-2">
-          <span className="text-primary-foreground bg-primary rounded border px-2 py-0.5 text-[10px] font-bold shadow-sm">
+          <span className="text-primary-foreground bg-primary rounded border px-2 py-0.5 text-xs font-bold shadow-sm">
             Mới
           </span>
           <div className="text-primary flex items-center text-xs font-medium">
@@ -90,7 +90,7 @@ export function TourismPointFeaturedCard({
               <Button
                 variant="outline"
                 size="icon"
-                className={`text-primary hover:text-primary-foreground rounded-full shadow-sm dark:border-(--border-primary) dark:bg-(--bg-secondary) ${isLiked ? 'text-primary' : ''}`}
+                className={`text-primary hover:text-primary-foreground border-border bg-card rounded-full shadow-sm ${isLiked ? 'text-primary' : ''}`}
                 onClick={onToggleLike}
               >
                 <Bookmark size={16} className={isLiked ? 'fill-destructive' : ''} />
@@ -120,7 +120,7 @@ export function TourismPointStandardCard({
     return (
       <div
         onClick={onClick}
-        className="group text-primary bg-card flex cursor-pointer items-center gap-4 overflow-hidden rounded-xl border p-3 shadow-sm transition-shadow hover:shadow-md dark:border-(--border-primary)"
+        className="group text-primary bg-card flex cursor-pointer items-center gap-4 overflow-hidden rounded-xl border p-3 shadow-sm transition-shadow hover:shadow-md"
       >
         <div className="text-primary relative h-32 w-32 shrink-0 overflow-hidden rounded-lg">
           <img
@@ -174,30 +174,32 @@ export function TourismPointStandardCard({
         <div className="text-primary pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b to-transparent" />
 
         <div className="absolute top-3 left-3">
-          <span className="text-primary-foreground bg-primary/60 rounded-full border px-2.5 py-1 text-[10px] font-bold backdrop-blur-md">
+          <span className="text-primary-foreground bg-primary/60 rounded-full border px-2.5 py-1 text-xs font-bold backdrop-blur-md">
             {categoryName}
           </span>
         </div>
         <div className="absolute top-3 right-3">
-          <button
+          <Button
+            type="button"
+            variant="ghost"
             onClick={onToggleLike}
-            className={`text-primary hover:text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full shadow-sm backdrop-blur-md transition-colors ${isLiked ? 'text-primary' : ''}`}
+            className={`text-primary hover:text-primary-foreground h-7 w-7 rounded-full p-0 shadow-sm backdrop-blur-md transition-colors ${isLiked ? 'text-primary' : ''}`}
           >
             <Bookmark size={13} className={isLiked ? 'fill-destructive' : ''} />
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="relative flex flex-1 flex-col p-4">
-        <h3 className="shadow-sm-text group-hover:text-primary-foreground dark:group-hover:text-primary-foreground text-foreground mb-1 line-clamp-1 text-[17px] font-bold transition-colors">
+        <h3 className="shadow-sm-text group-hover:text-primary-foreground dark:group-hover:text-primary-foreground text-foreground mb-1 line-clamp-1 typo-search font-bold transition-colors">
           {point.name}
         </h3>
 
         <div className="mb-2 flex items-center gap-2">
-          <span className="text-primary rounded border px-1.5 py-px text-[10px] font-bold">
+          <span className="text-primary rounded border px-1.5 py-px text-xs font-bold">
             Mới
           </span>
-          <div className="text-foreground flex items-center text-[11px] font-semibold">
+          <div className="text-foreground flex items-center text-xs font-semibold">
             <Star size={11} className="text-primary mr-1" />
             {point.average_rating ? Number(point.average_rating).toFixed(1) : '4.5'}
           </div>

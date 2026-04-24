@@ -13,10 +13,12 @@
     "toggle_lang": "Switch language",
     "prev": "Previous",
     "next": "Next",
+    "all": "All",
     "yes": "Yes",
     "no": "No",
     "open_menu": "Open menu",
     "news": "News",
+    "vlog": "Vlog",
     "ocop_festival": "OCOP Festival",
     "see_all": "See all",
     "search_placeholder": "Search places / routes...",
@@ -179,8 +181,6 @@
     }
   },
   "error": {
-    "login": "Login",
-    "back_home": "Back to home",
     "400": {
       "title": "Bad request",
       "message": "The request is invalid or missing required information. Please review and try again."
@@ -204,7 +204,9 @@
     "503": {
       "title": "Service unavailable",
       "message": "The service is temporarily unavailable due to maintenance or high load. Please come back later."
-    }
+    },
+    "login": "Login",
+    "back_home": "Back to home"
   },
   "tourism": {
     "detail_title": "Tourism point",
@@ -333,6 +335,7 @@
   "headerAside": {
     "layerData": "Data layers",
     "direction": "Directions",
+    "destination": "Destination",
     "satellite": "Satellite",
     "event": "Events",
     "tour": "Tours"
@@ -357,7 +360,7 @@
       "tool2dDesc": "Switch to 2D mode (disable terrain and 3D buildings)",
       "tool3dDesc": "Switch to 3D mode (enable terrain and 3D buildings)",
       "floatWeather": "Weather",
-      "weatherFeelsLike": "Feels like",
+      "weatherTemperature": "Current temperature",
       "weatherHumidity": "Current humidity",
       "weatherWind": "Wind speed",
       "weatherAqi": "Air quality index (AQI)",
@@ -378,7 +381,70 @@
       "aqiVeryPoor": "Very poor",
       "aqiUnknown": "Unknown",
       "unsupportedTitle": "Map is not supported on this device",
-      "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience."
+      "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience.",
+      "toolResetDesc": "Reset map to the default center and viewing angle"
+    },
+    "toolbar": {
+      "searchPlaceholder": "Search destination, service, food, event...",
+      "searchButton": "Search",
+      "filter": "Filter",
+      "searchNoResult": "No matching destination found for current filters.",
+      "radiusPrototype": "Radius filter is currently in prototype mode.",
+      "styleUnavailable": "Selected map style is not configured.",
+      "geoUnsupported": "Geolocation is not supported by this browser.",
+      "mapNotReady": "Map is still loading, please try again in a moment.",
+      "geoFailed": "Could not retrieve current location.",
+      "routePrototype": "Directions integration is in prototype mode.",
+      "vrPrototype": "VR360 preview integration is in prototype mode.",
+      "radiusOptions": {
+        "3": "Within 3 km",
+        "5": "Within 5 km",
+        "10": "Within 10 km",
+        "20": "Within 20 km",
+        "all": "No radius limit"
+      }
+    },
+    "destination": {
+      "title": "Destination",
+      "empty": "Select a point on the map to view details.",
+      "inactiveSubcategory": "This point belongs to a disabled data layer. Re-enable the layer or select another point.",
+      "noImage": "No image available",
+      "noDescription": "No description available for this point.",
+      "category": "Category",
+      "subcategory": "Subcategory",
+      "flyTo": "Fly to",
+      "clear": "Close",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "viewWebsite": "View website",
+      "openingHours": "Opening hours",
+      "entranceFee": "Entrance fee",
+      "free": "Free",
+      "elevation": "Elevation",
+      "facilities": "Facilities",
+      "featured": "Featured",
+      "photos": "photos",
+      "rating": "Rating",
+      "reviews": "Reviews",
+      "visits": "Visits",
+      "openRoute": "Directions"
+    },
+    "direction": {
+      "driving": "Driving",
+      "walking": "Walking",
+      "cycling": "Cycling",
+      "startPlaceholder": "Enter start location",
+      "endPlaceholder": "Enter destination",
+      "searching": "Searching...",
+      "swap": "Swap",
+      "calculate": "Calculate route",
+      "clear": "Clear",
+      "totalDistance": "Total distance",
+      "totalDuration": "Total duration",
+      "stepsTitle": "Turn-by-turn steps",
+      "noInstruction": "No instruction"
     }
   }
 }

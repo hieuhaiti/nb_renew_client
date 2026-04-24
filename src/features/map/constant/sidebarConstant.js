@@ -1,20 +1,38 @@
-import { Calendar, Layers, MapPin, Navigation, Satellite } from 'lucide-react';
-import DataLayer from '@/features/map/components/sidebar/DataLayer';
+import { Calendar, MapPin, Navigation, Satellite } from 'lucide-react';
+import Destination from '@/features/map/components/rightSidebar/DetailPoint';
+import DirectionDetails from '@/features/map/components/rightSidebar/DirectionDetails';
+import EventPanel from '@/features/map/components/rightSidebar/EventPanel';
+import TourPanel from '@/features/map/components/rightSidebar/TourPanel';
 
 export const headerSidebar = [
   {
-    icon: Layers,
-    label: 'headerAside.layerData',
-    value: 'layerData',
-    component: DataLayer,
+    icon: Navigation,
+    label: 'headerAside.destination',
+    value: 'destination',
+    component: Destination,
     authen: false,
   },
-
   {
     icon: Navigation,
     label: 'headerAside.direction',
     value: 'direction',
-    component: 'DirectionMap Placeholder',
+    component: DirectionDetails,
+    authen: false,
+    requiresDirectionDetails: true,
+  },
+
+  {
+    icon: Calendar,
+    label: 'headerAside.event',
+    value: 'event',
+    component: EventPanel,
+    authen: false,
+  },
+  {
+    icon: MapPin,
+    label: 'headerAside.tour',
+    value: 'tour',
+    component: TourPanel,
     authen: false,
   },
   {
@@ -24,20 +42,6 @@ export const headerSidebar = [
     component: 'SatelliteImage Placeholder',
     authen: true,
   },
-  {
-    icon: Calendar,
-    label: 'headerAside.event',
-    value: 'event',
-    component: 'EventPanel Placeholder',
-    authen: false,
-  },
-  {
-    icon: MapPin,
-    label: 'headerAside.tour',
-    value: 'tour',
-    component: 'TourPanel Placeholder',
-    authen: false,
-  },
 ];
 
-export const currentHeaderSidebar = 'layerData';
+export const currentHeaderSidebar = 'destination';

@@ -1,13 +1,26 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { useQueries } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useMapStore } from '../store/useMapStore';
 import { defaultLatLong, defaultZoom, mapDelta, pitchDefault } from '../constant/mapConstant';
 import { useMapStyleStore } from '../store/useMapStyleStore';
 import ResetControl from './control/ToolResetControl';
-import ToolBaseMap from './control/ToolBaseMap';
+import ToolLocateControl from './control/ToolLocateControl';
 import ToolViewModeControl from './control/ToolViewModeControl';
+import { useLanguageStore } from '@/stores/useLanguageStore';
+import { fetchSubcategoryPoints } from '@/features/map/api/mapDataLayerService';
+import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
+import { useDestinationStore } from '@/features/map/store/useDestinationStore';
+import {
+  addOrUpdateSubcategoryLayer,
+  mapFeatureToDestination,
+  normalizePointsToFeatureCollection,
+  removeSubcategoryLayer,
+} from '@/features/map/utils/MapHelper';
 import { env } from '@/config/env';
+import { withBaseUrl } from '@/lib/utils';
+import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 
 mapboxgl.accessToken = env.mapboxToken;
 
@@ -15,7 +28,11 @@ mapboxgl.accessToken = env.mapboxToken;
  * MapBaseArea — main map canvas area that stays visible behind overlays.
  */
 export default function MapBaseArea() {
+  const DIRECTION_ROUTE_SOURCE_ID = 'direction-route-source';
+  const DIRECTION_ROUTE_LAYER_ID = 'direction-route-layer';
+
   // Map state
+
   const { t } = useTranslation();
   const mapContainer = useRef(null);
   const singleMapContainerRef = useRef(null);
@@ -40,6 +57,56 @@ export default function MapBaseArea() {
     lng: defaultLatLong.lng,
     zoom: defaultZoom,
   });
+  const lang = useLanguageStore((state) => state.lang);
+  const selectedSubcategoryIds = useDataLayerStore((state) => state.selectedSubcategoryIds);
+  const subcategories = useDataLayerStore((state) => state.subcategories);
+  const setSelectedDestination = useDestinationStore((state) => state.setSelectedDestination);
+  const directions = useDirectionsStore((state) => state.directions);
+  const startLocation = useDirectionsStore((state) => state.startLocation);
+  const endLocation = useDirectionsStore((state) => state.endLocation);
+
+  const routeMarkersRef = useRef({
+    start: null,
+    end: null,
+  });
+  const hadDirectionsRef = useRef(false);
+
+  const selectedSubcategoryIdsSafe = useMemo(
+    () => (Array.isArray(selectedSubcategoryIds) ? selectedSubcategoryIds.filter(Boolean) : []),
+    [selectedSubcategoryIds]
+  );
+
+  const colorBySubcategoryId = useMemo(() => {
+    const map = new Map();
+    subcategories.forEach((item) => {
+      if (item?.id == null) return;
+      map.set(String(item.id), item.color_code || '#3b82f6');
+    });
+    return map;
+  }, [subcategories]);
+
+  const iconBySubcategoryId = useMemo(() => {
+    const map = new Map();
+    subcategories.forEach((item) => {
+      if (item?.id == null || !item.icon_url) return;
+      map.set(String(item.id), {
+        iconUrl: withBaseUrl(item.icon_url),
+        iconImageId: `subcategory-icon-${item.id}`,
+      });
+    });
+    return map;
+  }, [subcategories]);
+
+  const subcategoryLayerQueries = useQueries({
+    queries: selectedSubcategoryIdsSafe.map((subcategoryId) => ({
+      queryKey: ['map', 'points', 'subcategory', lang, subcategoryId],
+      queryFn: () => fetchSubcategoryPoints({ subcategoryId, lang, format: 'geojson' }),
+      staleTime: 5 * 60 * 1000,
+      enabled: Boolean(subcategoryId),
+    })),
+  });
+
+  const prevRenderedSourceIdsRef = useRef(new Set());
 
   useEffect(() => {
     if (mapRef.current.single || !singleMapContainerRef.current) return;
@@ -74,6 +141,7 @@ export default function MapBaseArea() {
 
     // Use single map as main reference
     const map = mapRef.current.single;
+    const splitMap = mapRef.current.split;
 
     const handleSingleLoad = () => {
       setMapRef(map);
@@ -97,8 +165,8 @@ export default function MapBaseArea() {
         'bottom-right'
       );
       map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
+      map.addControl(new ToolLocateControl(), 'bottom-right');
       map.addControl(new ResetControl(), 'bottom-right');
-      map.addControl(new ToolBaseMap(), 'bottom-right');
       map.addControl(new ToolViewModeControl(), 'bottom-right');
 
       setMapsReady((prev) => ({ ...prev, single: true }));
@@ -156,6 +224,312 @@ export default function MapBaseArea() {
       setMapsReady({ single: false, split: false });
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current.single;
+    if (!map || !mapsReady.single) return;
+
+    const currentSourceIds = new Set();
+
+    selectedSubcategoryIdsSafe.forEach((subcategoryId, index) => {
+      const query = subcategoryLayerQueries[index];
+      if (!query?.data) return;
+
+      const sourceId = `subcategory-${subcategoryId}`;
+      const featureCollection = normalizePointsToFeatureCollection(query.data);
+      const color = colorBySubcategoryId.get(String(subcategoryId));
+
+      const icon = iconBySubcategoryId.get(String(subcategoryId));
+      addOrUpdateSubcategoryLayer(map, {
+        sourceId,
+        featureCollection,
+        color,
+        iconUrl: icon?.iconUrl,
+        iconImageId: icon?.iconImageId,
+      });
+      currentSourceIds.add(sourceId);
+    });
+
+    prevRenderedSourceIdsRef.current.forEach((sourceId) => {
+      if (!currentSourceIds.has(sourceId)) {
+        removeSubcategoryLayer(map, sourceId);
+      }
+    });
+
+    prevRenderedSourceIdsRef.current = currentSourceIds;
+  }, [
+    colorBySubcategoryId,
+    iconBySubcategoryId,
+    mapsReady.single,
+    selectedSubcategoryIdsSafe,
+    subcategoryLayerQueries.map((query) => query.dataUpdatedAt).join('|'),
+  ]);
+
+  useEffect(() => {
+    const map = mapRef.current.single;
+    if (!map || !mapsReady.single) return;
+
+    const getInteractiveLayerIds = () => {
+      const sourceIds = Array.from(prevRenderedSourceIdsRef.current);
+
+      return sourceIds
+        .map((sourceId) => `${sourceId}-circle`)
+        .filter((layerId) => Boolean(map.getLayer(layerId)));
+    };
+
+    const handleMapClick = (event) => {
+      const layerIds = getInteractiveLayerIds();
+      if (layerIds.length === 0) return;
+
+      const features = map.queryRenderedFeatures(event.point, { layers: layerIds });
+      if (!features.length) return;
+
+      const clickedFeature = features[0];
+      const destination = mapFeatureToDestination(clickedFeature);
+      if (!destination) return;
+
+      const clickedLayerId = clickedFeature?.layer?.id || '';
+      const clickedLayerMatch = clickedLayerId.match(/^subcategory-(.+)-(icon|circle)$/);
+      const subcategoryFromLayer = clickedLayerMatch?.[1] ?? null;
+
+      let normalizedSubcategoryId = destination.subcategory_id;
+      if (normalizedSubcategoryId == null && subcategoryFromLayer != null) {
+        const parsed = Number(subcategoryFromLayer);
+        normalizedSubcategoryId = Number.isNaN(parsed) ? subcategoryFromLayer : parsed;
+      }
+
+      setSelectedDestination({
+        ...destination,
+        subcategory_id: normalizedSubcategoryId,
+      });
+    };
+
+    const handleMouseMove = (event) => {
+      const layerIds = getInteractiveLayerIds();
+      const canvas = map?.getCanvas?.();
+      if (!canvas?.style) return;
+
+      if (layerIds.length === 0) {
+        canvas.style.cursor = '';
+        return;
+      }
+
+      const features = map.queryRenderedFeatures(event.point, { layers: layerIds });
+      canvas.style.cursor = features.length > 0 ? 'pointer' : '';
+    };
+
+    const clearCursor = () => {
+      const canvas = map?.getCanvas?.();
+      if (!canvas?.style) return;
+      canvas.style.cursor = '';
+    };
+
+    map.on('click', handleMapClick);
+    map.on('mousemove', handleMouseMove);
+    map.on('mouseout', clearCursor);
+
+    return () => {
+      map.off('click', handleMapClick);
+      map.off('mousemove', handleMouseMove);
+      map.off('mouseout', clearCursor);
+      clearCursor();
+    };
+  }, [mapsReady.single, setSelectedDestination]);
+
+  useEffect(() => {
+    const map = mapRef.current.single;
+    if (!map) return;
+
+    const handleStyleLoad = () => {
+      const currentSourceIds = new Set();
+
+      selectedSubcategoryIdsSafe.forEach((subcategoryId, index) => {
+        const query = subcategoryLayerQueries[index];
+        if (!query?.data) return;
+
+        const sourceId = `subcategory-${subcategoryId}`;
+        const featureCollection = normalizePointsToFeatureCollection(query.data);
+        const color = colorBySubcategoryId.get(String(subcategoryId)) || '#3b82f6';
+        const icon = iconBySubcategoryId.get(String(subcategoryId));
+
+        addOrUpdateSubcategoryLayer(map, {
+          sourceId,
+          featureCollection,
+          color,
+          iconUrl: icon?.iconUrl,
+          iconImageId: icon?.iconImageId,
+        });
+        currentSourceIds.add(sourceId);
+      });
+
+      prevRenderedSourceIdsRef.current = currentSourceIds;
+    };
+
+    map.on('style.load', handleStyleLoad);
+    return () => {
+      map.off('style.load', handleStyleLoad);
+    };
+  }, [
+    colorBySubcategoryId,
+    iconBySubcategoryId,
+    mapsReady.single,
+    selectedSubcategoryIdsSafe,
+    subcategoryLayerQueries.map((query) => query.dataUpdatedAt).join('|'),
+  ]);
+
+  useEffect(() => {
+    return () => {
+      const map = mapRef.current.single;
+      if (!map) return;
+
+      prevRenderedSourceIdsRef.current.forEach((sourceId) => {
+        removeSubcategoryLayer(map, sourceId);
+      });
+      prevRenderedSourceIdsRef.current.clear();
+
+      if (routeMarkersRef.current.start) {
+        routeMarkersRef.current.start.remove();
+      }
+      if (routeMarkersRef.current.end) {
+        routeMarkersRef.current.end.remove();
+      }
+      routeMarkersRef.current = { start: null, end: null };
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current.single;
+    if (!map || !mapsReady.single) return;
+
+    const removeRouteLayer = () => {
+      if (map.getLayer(DIRECTION_ROUTE_LAYER_ID)) {
+        map.removeLayer(DIRECTION_ROUTE_LAYER_ID);
+      }
+      if (map.getSource(DIRECTION_ROUTE_SOURCE_ID)) {
+        map.removeSource(DIRECTION_ROUTE_SOURCE_ID);
+      }
+    };
+
+    const clearRouteVisuals = () => {
+      removeRouteLayer();
+
+      if (routeMarkersRef.current.start) {
+        routeMarkersRef.current.start.remove();
+        routeMarkersRef.current.start = null;
+      }
+
+      if (routeMarkersRef.current.end) {
+        routeMarkersRef.current.end.remove();
+        routeMarkersRef.current.end = null;
+      }
+    };
+
+    const renderRoute = () => {
+      const geometryCoordinates = directions?.geometry?.coordinates;
+
+      if (!Array.isArray(geometryCoordinates) || geometryCoordinates.length < 2) {
+        return;
+      }
+
+      removeRouteLayer();
+
+      map.addSource(DIRECTION_ROUTE_SOURCE_ID, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: geometryCoordinates,
+          },
+        },
+      });
+
+      map.addLayer({
+        id: DIRECTION_ROUTE_LAYER_ID,
+        type: 'line',
+        source: DIRECTION_ROUTE_SOURCE_ID,
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': '#2563eb',
+          'line-width': 6,
+          'line-opacity': 0.92,
+        },
+      });
+
+      if (routeMarkersRef.current.start) {
+        routeMarkersRef.current.start.remove();
+      }
+
+      if (routeMarkersRef.current.end) {
+        routeMarkersRef.current.end.remove();
+      }
+
+      if (typeof startLocation?.lng === 'number' && typeof startLocation?.lat === 'number') {
+        routeMarkersRef.current.start = new mapboxgl.Marker({ color: '#16a34a' })
+          .setLngLat([startLocation.lng, startLocation.lat])
+          .addTo(map);
+      }
+
+      if (typeof endLocation?.lng === 'number' && typeof endLocation?.lat === 'number') {
+        routeMarkersRef.current.end = new mapboxgl.Marker({ color: '#dc2626' })
+          .setLngLat([endLocation.lng, endLocation.lat])
+          .addTo(map);
+      }
+
+      const bounds = geometryCoordinates.reduce(
+        (acc, coord) => acc.extend(coord),
+        new mapboxgl.LngLatBounds(geometryCoordinates[0], geometryCoordinates[0])
+      );
+
+      map.fitBounds(bounds, {
+        padding: 72,
+        duration: 800,
+      });
+    };
+
+    if (!directions) {
+      const shouldResetView = hadDirectionsRef.current;
+      clearRouteVisuals();
+      hadDirectionsRef.current = false;
+
+      if (shouldResetView) {
+        map.flyTo({
+          center: [defaultLatLong.lng, defaultLatLong.lat],
+          zoom: defaultZoom,
+          pitch: map.getPitch(),
+          bearing: map.getBearing(),
+          essential: true,
+        });
+      }
+
+      return;
+    }
+
+    const drawWhenReady = () => {
+      renderRoute();
+      hadDirectionsRef.current = true;
+    };
+
+    if (map.isStyleLoaded()) {
+      drawWhenReady();
+    } else {
+      map.once('style.load', drawWhenReady);
+      return () => {
+        map.off('style.load', drawWhenReady);
+      };
+    }
+  }, [
+    directions,
+    endLocation,
+    mapsReady.single,
+    startLocation,
+    DIRECTION_ROUTE_LAYER_ID,
+    DIRECTION_ROUTE_SOURCE_ID,
+  ]);
 
   return (
     <div className="relative size-full">

@@ -19,9 +19,9 @@ import { cn } from '@/lib/utils';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 
 /**
- * MapFloatingWeatherCard — compact weather panel shown above floating map tools.
+ * MapToolbarWeatherCard — compact weather panel embedded in map toolbar.
  */
-export default function MapFloatingWeatherCard({ className }) {
+export default function MapToolbarWeatherCard({ className, compact = false }) {
   const { t } = useTranslation();
   const lang = useLanguageStore((state) => state.lang);
 
@@ -45,7 +45,90 @@ export default function MapFloatingWeatherCard({ className }) {
   const cityName = weather?.name || t('mapPage.layout.weatherUnknownLocation');
   const conditionLabel = weather?.weather?.[0]?.description || t('mapPage.layout.weatherUnknown');
 
-  const content = (() => {
+  const compactContent = (() => {
+    if (!isConfigured) {
+      return (
+        <p className="text-muted-foreground truncate text-xs font-normal">
+          {t('mapPage.layout.weatherNotConfigured')}
+        </p>
+      );
+    }
+
+    if (isLoading) {
+      return (
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-6 w-24 rounded-md" />
+          <Skeleton className="h-6 w-16 rounded-md" />
+          <Skeleton className="h-6 w-20 rounded-md" />
+        </div>
+      );
+    }
+
+    if (isError || !weather) {
+      return (
+        <p className="text-destructive truncate text-xs font-normal">
+          {t('mapPage.layout.weatherUnavailable')}
+        </p>
+      );
+    }
+
+    return (
+      <div className="flex flex-wrap items-center gap-2 text-xs xl:flex-nowrap">
+        <div className="flex min-w-0 items-center gap-1.5 xl:max-w-44">
+          <WeatherIcon className={cn('h-4.5 w-4.5 shrink-0', weatherIconMeta.toneClass)} />
+          <p className="truncate font-semibold">{cityName}</p>
+        </div>
+
+        <p className="text-muted-foreground max-w-44 truncate capitalize">{conditionLabel}</p>
+
+        <div className="bg-muted/40 flex items-center gap-1 rounded-md px-2 py-1">
+          <Thermometer className="h-3.5 w-3.5 text-orange-500" />
+          <span className="font-semibold text-orange-600">{formatTemperature(weather?.main?.temp)}</span>
+        </div>
+
+        <div className="bg-muted/40 flex items-center gap-1 rounded-md px-2 py-1">
+          <Droplets className="h-3.5 w-3.5 text-blue-500" />
+          <span className="font-semibold text-blue-600">
+            {formatHumidity(weather?.main?.humidity)}
+          </span>
+        </div>
+
+        <div className="bg-muted/40 flex items-center gap-1 rounded-md px-2 py-1">
+          <Wind className="h-3.5 w-3.5 text-cyan-600" />
+          <span className="font-semibold text-cyan-700">
+            {formatWindSpeedKph(weather?.wind?.speed)}
+          </span>
+        </div>
+
+        <div className={cn('flex items-center gap-1 rounded-md px-2 py-1', aqiMeta.bgClass)}>
+          <img
+            src={aqiMeta.iconSrc}
+            alt={t(aqiMeta.labelKey)}
+            className="h-3.5 w-3.5 shrink-0 object-contain"
+          />
+          <span className={cn('font-semibold', aqiMeta.toneClass)}>
+            {aqiValue ?? '--'} · {t(aqiMeta.labelKey)}
+          </span>
+        </div>
+
+        {alert ? (
+          <Badge
+            variant="outline"
+            className={cn(
+              'max-w-44 truncate border-transparent text-xs',
+              getAlertToneClass(alert.severity),
+              alertSeverityMeta.bg
+            )}
+            title={t(alert.labelKey)}
+          >
+            {t(alert.labelKey)}
+          </Badge>
+        ) : null}
+      </div>
+    );
+  })();
+
+  const fullContent = (() => {
     if (!isConfigured) {
       return (
         <p className="text-muted-foreground line-clamp-3 text-xs font-normal">
@@ -60,7 +143,6 @@ export default function MapFloatingWeatherCard({ className }) {
           <Skeleton className="h-4 w-2/3" />
           <Skeleton className="h-9 w-full" />
           <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-7 w-full" />
         </div>
       );
     }
@@ -91,19 +173,19 @@ export default function MapFloatingWeatherCard({ className }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-4">
           <div className="bg-muted/40 rounded-md px-2 py-1.5">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center justify-center gap-1">
                   <Thermometer className="h-4.5 w-4.5 text-orange-500" />
                   <p className="mt-1 truncate font-bold text-orange-600">
-                    {formatTemperature(weather?.main?.feels_like)}
+                    {formatTemperature(weather?.main?.temp)}
                   </p>
                 </div>
               </TooltipTrigger>
               <TooltipContent className="z-80">
-                <span>{t('mapPage.layout.weatherFeelsLike')}</span>
+                <span>{t('mapPage.layout.weatherTemperature')}</span>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -128,8 +210,8 @@ export default function MapFloatingWeatherCard({ className }) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center justify-center gap-1">
-                  <Wind className="h-4.5 w-4.5 text-cyan-500" />
-                  <p className="mt-1 truncate font-bold text-cyan-600">
+                  <Wind className="h-4.5 w-4.5 text-cyan-600" />
+                  <p className="mt-1 truncate font-bold text-cyan-700">
                     {formatWindSpeedKph(weather?.wind?.speed)}
                   </p>
                 </div>
@@ -150,7 +232,7 @@ export default function MapFloatingWeatherCard({ className }) {
                     className="h-4.5 w-4.5 shrink-0 object-contain"
                   />
                   <p className={cn('mt-1 truncate font-bold', aqiMeta.toneClass)}>
-                    {t(aqiMeta.labelKey)}
+                    {aqiValue ?? '--'} · {t(aqiMeta.labelKey)}
                   </p>
                 </div>
               </TooltipTrigger>
@@ -189,15 +271,24 @@ export default function MapFloatingWeatherCard({ className }) {
     );
   })();
 
+  const content = compact ? compactContent : fullContent;
+
   return (
     <section aria-label={t('mapPage.layout.floatWeather')} className={cn('h-auto', className)}>
-      <Card className="bg-popover/95 border-border gap-2 py-3 shadow-xl backdrop-blur">
-        <CardHeader className="px-3 pb-0">
-          <CardTitle className="truncate text-sm font-bold">
-            {t('mapPage.layout.floatWeather')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-3 pt-0">{content}</CardContent>
+      <Card
+        className={cn(
+          'bg-popover/95 border-border shadow-md backdrop-blur',
+          compact ? 'gap-0 py-2' : 'gap-2 py-3'
+        )}
+      >
+        {compact ? null : (
+          <CardHeader className="px-3 pb-0">
+            <CardTitle className="truncate text-sm font-bold">
+              {t('mapPage.layout.floatWeather')}
+            </CardTitle>
+          </CardHeader>
+        )}
+        <CardContent className={cn(compact ? 'px-3 py-0' : 'px-3 pt-0')}>{content}</CardContent>
       </Card>
     </section>
   );

@@ -2,11 +2,11 @@ import React from 'react';
 
 export function TourismDetailIntroSection({ description, tags, t }) {
   return (
-    <section className="mb-3 rounded-[10px] border-[0.5px] border-[#ced4ce] bg-white px-4 py-3.5">
-      <h2 className="text-foreground mb-2 text-[14px] font-medium">
+    <section className="mb-3 rounded-[10px] border-[0.5px] border-nature-border bg-card px-4 py-3.5">
+      <h2 className="text-foreground mb-2 text-sm font-medium">
         {t('tourism.introduction', 'Giới thiệu')}
       </h2>
-      <p className="text-[12px] leading-[1.6] text-[#51625a]">
+      <p className="text-xs leading-relaxed text-nature-muted-foreground">
         {description || t('tourism.no_description', 'Chưa có thông tin giới thiệu.')}
       </p>
 
@@ -17,10 +17,10 @@ export function TourismDetailIntroSection({ description, tags, t }) {
             return (
               <span
                 key={`${tag}-${index}`}
-                className={`rounded-[12px] border-[0.5px] px-2.25 py-0.75 text-[11px] ${
+                className={`rounded-[12px] border-[0.5px] px-2.25 py-0.75 text-xs ${
                   isActive
-                    ? 'border-[#6aec8e] bg-[#cffcd8] text-[#1c4a29]'
-                    : 'border-[#ced4ce] bg-[#eff1ef] text-[#606360]'
+                    ? 'border-nature-accent bg-nature-foreground text-nature-dark'
+                    : 'border-nature-border bg-nature-soft text-nature-muted-foreground'
                 }`}
               >
                 {tag}

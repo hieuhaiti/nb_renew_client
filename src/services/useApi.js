@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { fetcher } from '@/services/fetcher';
 import { mutater } from '@/services/mutater';
 import { tokenManager } from '@/lib/tokenManager';
@@ -33,7 +33,12 @@ const toastSuccess = (content) =>
  */
 export function useApiQuery(key, endPoint, options = {}, loading = true, notification = false) {
   const navigate = useNavigate();
-  const setLoading = useLoadingStore((state) => state.setLoading);
+  const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
+  const loadingKeyRef = useRef(
+    `query:${Array.isArray(key) ? key.join('.') : key}:${endPoint}:${Math.random()
+      .toString(36)
+      .slice(2)}`
+  );
 
   const query = useQuery({
     queryKey: Array.isArray(key) ? key : [key],
@@ -43,8 +48,15 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
 
   // Sync global loading overlay
   useEffect(() => {
-    setLoading(loading ? (query.isLoading || query.isFetching) : false);
-  }, [query.isLoading, query.isFetching, setLoading, loading]);
+    const loadingKey = loadingKeyRef.current;
+    if (!loading) {
+      setLoadingByKey(loadingKey, false);
+      return undefined;
+    }
+
+    setLoadingByKey(loadingKey, query.isLoading || query.isFetching);
+    return () => setLoadingByKey(loadingKey, false);
+  }, [query.isLoading, query.isFetching, setLoadingByKey, loading]);
 
   // Success toast (opt-in)
   useEffect(() => {
@@ -97,8 +109,13 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
  */
 export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
   const navigate = useNavigate();
-  const setLoading = useLoadingStore((state) => state.setLoading);
+  const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
   const queryClient = useQueryClient();
+  const loadingKeyRef = useRef(
+    `mutation:${Array.isArray(key) ? key.join('.') : key || 'unknown'}:${endPoint}:${Math.random()
+      .toString(36)
+      .slice(2)}`
+  );
 
   const { onSuccess: optionsOnSuccess, onError: optionsOnError, ...restOptions } = options;
 
@@ -141,8 +158,10 @@ export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
 
   // Sync global loading overlay
   useEffect(() => {
-    setLoading(mutation.isPending);
-  }, [mutation.isPending, setLoading]);
+    const loadingKey = loadingKeyRef.current;
+    setLoadingByKey(loadingKey, mutation.isPending);
+    return () => setLoadingByKey(loadingKey, false);
+  }, [mutation.isPending, setLoadingByKey]);
 
   return mutation;
 }

@@ -3,15 +3,15 @@ import { Button } from '@/components/ui/button';
 
 export function TourismDetailGallerySection({ images, title, onPickImage, t }) {
   return (
-    <section className="mb-3 rounded-[10px] border-[0.5px] border-[#ced4ce] bg-white px-4 py-3.5">
+    <section className="mb-3 rounded-[10px] border-[0.5px] border-nature-border bg-card px-4 py-3.5">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-foreground text-[14px] font-medium">
+        <h2 className="text-foreground text-sm font-medium">
           {t('tourism.gallery', 'Thư viện ảnh')}
         </h2>
         <Button
           variant="link"
           size="sm"
-          className="h-auto p-0 text-[11px] font-medium text-[#2e6f40]"
+          className="h-auto p-0 text-xs font-medium text-nature"
           onClick={() => onPickImage(0)}
         >
           {t('tourism.view_all_photos', 'Xem tất cả')} ({images.length})

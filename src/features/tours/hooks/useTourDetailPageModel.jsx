@@ -262,19 +262,19 @@ export function useTourDetailPageModel(t) {
       label: t('tourPage.rating', 'Đánh giá'),
       value:
         averageDisplayRating > 0 ? (
-          <div className="flex items-center gap-1 text-[14px] font-medium text-[#2e6f40]">
+          <div className="flex items-center gap-1 text-sm font-medium text-nature">
             <span>{averageDisplayRating.toFixed(1)}</span>
             <Star className="h-3.5 w-3.5" />
           </div>
         ) : (
-          <span className="text-foreground text-[14px] font-medium">-</span>
+          <span className="text-foreground text-sm font-medium">-</span>
         ),
     },
     {
       key: 'duration',
       label: t('tourPage.duration', 'Thời lượng'),
       value: (
-        <span className="text-foreground inline-flex items-center gap-1 text-[14px] font-medium">
+        <span className="text-foreground inline-flex items-center gap-1 text-sm font-medium">
           <Clock3 className="text-primary h-3.5 w-3.5" />
           {durationLabel}
         </span>
@@ -285,10 +285,10 @@ export function useTourDetailPageModel(t) {
       label: t('tourPage.price', 'Giá vé'),
       value: (
         <span
-          className={`inline-flex items-center gap-1 text-[14px] font-medium ${
+          className={`inline-flex items-center gap-1 text-sm font-medium ${
             ticketDisplay === t('tourPage.contact', 'Liên hệ')
               ? 'text-foreground'
-              : 'text-[#2e6f40]'
+              : 'text-nature'
           }`}
         >
           <Ticket className="h-3.5 w-3.5" />
@@ -301,8 +301,8 @@ export function useTourDetailPageModel(t) {
       label: t('tourPage.crowdLevel', 'Lượng khách'),
       value: (
         <span
-          className={`inline-flex items-center gap-1 text-[14px] font-medium ${
-            isHighCrowd ? 'text-[#ba7517]' : 'text-[#2e6f40]'
+          className={`inline-flex items-center gap-1 text-sm font-medium ${
+            isHighCrowd ? 'text-warning' : 'text-nature'
           }`}
         >
           <Users className="h-3.5 w-3.5" />
@@ -317,25 +317,25 @@ export function useTourDetailPageModel(t) {
       key: 'location',
       label: t('tourPage.location', 'Vị trí'),
       value: tour?.address || t('tourPage.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-[#2e6f40]',
+      dotClass: 'bg-nature',
     },
     {
       key: 'duration',
       label: t('tourPage.duration', 'Thời lượng'),
       value: durationLabel,
-      dotClass: 'bg-[#2e6f40]',
+      dotClass: 'bg-nature',
     },
     {
       key: 'schedule',
       label: t('tourPage.schedule', 'Lịch khởi hành'),
       value: tour?.schedule || t('tourPage.daily', 'Hàng ngày'),
-      dotClass: 'bg-[#ba7517]',
+      dotClass: 'bg-warning',
     },
     {
       key: 'style',
       label: t('tourPage.type', 'Loại hình'),
       value: heroTags[0] || t('tourPage.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-[#f87171]',
+      dotClass: 'bg-red-400',
     },
   ];
 

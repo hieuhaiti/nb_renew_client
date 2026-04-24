@@ -14,6 +14,10 @@ export function formatVND(amount) {
   }).format(amount);
 }
 
+export function getLocaleFromLanguage(lang) {
+  return lang === 'en' ? 'en-US' : 'vi-VN';
+}
+
 export function withBaseUrl(path) {
   if (!path) return '';
   if (path.startsWith('http')) return path;
@@ -21,4 +25,19 @@ export function withBaseUrl(path) {
   // Use the env config instead of import.meta.env directly
   const base = env.apiBaseUrl || '';
   return `${base}${path.startsWith('/') ? '' : '/'}${path}`;
+}
+
+/** Hex color to rgba string for translucent backgrounds */
+export function hexToRgba(hex, alpha = 0.12) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(148,163,184,${alpha})`;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+export function hasHtmlMarkup(value) {
+  if (typeof value !== 'string') return false;
+  return /<\/?[a-z][\s\S]*>/i.test(value);
 }

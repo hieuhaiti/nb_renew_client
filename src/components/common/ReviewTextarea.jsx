@@ -30,15 +30,13 @@ export const ReviewTextarea = memo(({ onCommentChange, t }) => {
         )}
         value={displayValue}
         onChange={handleChange}
-        className={`min-h-[100px] resize-none
-                    focus:!outline-none focus:!ring-0
-                    ${
+        className={`min-h-25 resize-none focus:outline-none! focus:ring-0! ${
                       newComment.length > 0 && newComment.length < 10
                         ? 'border-red-300 focus:border-red-500'
                         : newComment.length >= 10
                         ? 'border-green-300 focus:border-green-500'
-                        : 'border-[var(--border-primary)]'
-                    } bg-[var(--bg-primary)] text-[var(--text-primary)]`}
+                        : 'border-border'
+                    }`}
         maxLength={500}
       />
       <div className="flex mt-1 justify-between text-xs">
@@ -54,7 +52,7 @@ export const ReviewTextarea = memo(({ onCommentChange, t }) => {
                 10 - newComment.length
               })`}
         </span>
-        <span className="text-[var(--text-tertiary)]">{newComment.length}/500</span>
+        <span className="text-muted-foreground">{newComment.length}/500</span>
       </div>
     </div>
   );

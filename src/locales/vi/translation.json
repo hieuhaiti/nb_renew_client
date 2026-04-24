@@ -13,10 +13,12 @@
     "toggle_lang": "Chuyển ngôn ngữ",
     "prev": "Trước",
     "next": "Tiếp",
+    "all": "Tất cả",
     "yes": "Có",
     "no": "Không",
     "open_menu": "Mở menu",
     "news": "Tin tức",
+    "vlog": "Vlog",
     "ocop_festival": "Lễ hội OCOP",
     "see_all": "Xem tất cả",
     "search_placeholder": "Tìm kiếm điểm / tuyến...",
@@ -179,8 +181,6 @@
     }
   },
   "error": {
-    "login": "Đăng nhập",
-    "back_home": "Về trang chủ",
     "400": {
       "title": "Yêu cầu không hợp lệ",
       "message": "Yêu cầu bạn gửi lên không hợp lệ hoặc thiếu thông tin. Vui lòng kiểm tra lại và thử lại."
@@ -204,7 +204,9 @@
     "503": {
       "title": "Dịch vụ tạm thời gián đoạn",
       "message": "Máy chủ đang bảo trì hoặc quá tải. Vui lòng quay lại sau."
-    }
+    },
+    "login": "Đăng nhập",
+    "back_home": "Về trang chủ"
   },
   "tourism": {
     "detail_title": "Điểm du lịch",
@@ -333,6 +335,7 @@
   "headerAside": {
     "layerData": "Lớp dữ liệu",
     "direction": "Chỉ đường",
+    "destination": "Điểm đến",
     "satellite": "Ảnh vệ tinh",
     "event": "Sự kiện",
     "tour": "Tour du lịch"
@@ -357,7 +360,7 @@
       "tool2dDesc": "Chuyển sang chế độ 2D (tắt địa hình và tòa nhà 3D)",
       "tool3dDesc": "Chuyển sang chế độ 3D (bật địa hình và tòa nhà 3D)",
       "floatWeather": "Thời tiết",
-      "weatherFeelsLike": "Nhiệt độ cảm nhận",
+      "weatherTemperature": "Nhiệt độ hiện tại",
       "weatherHumidity": "Độ ẩm hiện tại",
       "weatherWind": "Tốc độ gió",
       "weatherAqi": "Chất lượng không khí (AQI)",
@@ -378,7 +381,70 @@
       "aqiVeryPoor": "Rất kém",
       "aqiUnknown": "Không xác định",
       "unsupportedTitle": "Bản đồ chưa hỗ trợ trên thiết bị này",
-      "unsupportedMessage": "Vui lòng dùng màn hình từ laptop/desktop (>= 1024px) để trải nghiệm đầy đủ tính năng bản đồ."
+      "unsupportedMessage": "Vui lòng dùng màn hình từ laptop/desktop (>= 1024px) để trải nghiệm đầy đủ tính năng bản đồ.",
+      "toolResetDesc": "Reset map to the default center and viewing angle"
+    },
+    "toolbar": {
+      "searchPlaceholder": "Tìm kiếm điểm đến, dịch vụ, ẩm thực, sự kiện...",
+      "searchButton": "Tìm kiếm",
+      "filter": "Bộ lọc",
+      "searchNoResult": "Không tìm thấy điểm phù hợp với bộ lọc hiện tại.",
+      "radiusPrototype": "Bộ lọc bán kính hiện đang ở chế độ nguyên mẫu.",
+      "styleUnavailable": "Kiểu bản đồ được chọn chưa được cấu hình.",
+      "geoUnsupported": "Trình duyệt này không hỗ trợ định vị.",
+      "mapNotReady": "Bản đồ đang tải, vui lòng thử lại sau ít giây.",
+      "geoFailed": "Không thể lấy vị trí hiện tại.",
+      "routePrototype": "Tích hợp chỉ đường đang ở chế độ nguyên mẫu.",
+      "vrPrototype": "Tích hợp xem trước VR360 đang ở chế độ nguyên mẫu.",
+      "radiusOptions": {
+        "3": "Trong vòng 3 km",
+        "5": "Trong vòng 5 km",
+        "10": "Trong vòng 10 km",
+        "20": "Trong vòng 20 km",
+        "all": "Không giới hạn bán kính"
+      }
+    },
+    "destination": {
+      "title": "Điểm đến",
+      "empty": "Chọn một điểm trên bản đồ để xem thông tin chi tiết.",
+      "inactiveSubcategory": "Điểm bạn đang xem thuộc lớp dữ liệu đã tắt. Hãy bật lại lớp hoặc chọn điểm khác.",
+      "noImage": "Không có ảnh đại diện",
+      "noDescription": "Chưa có mô tả cho điểm này.",
+      "category": "Danh mục",
+      "subcategory": "Phân mục",
+      "flyTo": "Đến điểm",
+      "clear": "Đóng",
+      "address": "Địa chỉ",
+      "phone": "Điện thoại",
+      "email": "Email",
+      "website": "Website",
+      "viewWebsite": "Xem website",
+      "openingHours": "Giờ mở cửa",
+      "entranceFee": "Giá vé",
+      "free": "Miễn phí",
+      "elevation": "Độ cao",
+      "facilities": "Tiện ích",
+      "featured": "Nổi bật",
+      "photos": "ảnh",
+      "rating": "Điểm đánh giá",
+      "reviews": "Đánh giá",
+      "visits": "Lượt ghé thăm",
+      "openRoute": "Chỉ đường"
+    },
+    "direction": {
+      "driving": "Ô tô",
+      "walking": "Đi bộ",
+      "cycling": "Xe đạp",
+      "startPlaceholder": "Nhập điểm đi",
+      "endPlaceholder": "Nhập điểm đến",
+      "searching": "Đang tìm...",
+      "swap": "Đổi chiều",
+      "calculate": "Tính chỉ đường",
+      "clear": "Xóa",
+      "totalDistance": "Tổng quãng đường",
+      "totalDuration": "Tổng thời gian",
+      "stepsTitle": "Hướng dẫn từng bước",
+      "noInstruction": "Không có chỉ dẫn"
     }
   }
 }

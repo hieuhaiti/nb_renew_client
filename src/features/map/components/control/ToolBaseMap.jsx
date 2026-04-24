@@ -144,7 +144,7 @@ export default class ToolBaseMap {
       const label = document.createElement('span');
       label.textContent = i18n.t(item.name);
       Object.assign(label.style, {
-        fontSize: '11px',
+        fontSize: '0.75rem',
         fontWeight: '600',
         lineHeight: '1.2',
         whiteSpace: 'nowrap',

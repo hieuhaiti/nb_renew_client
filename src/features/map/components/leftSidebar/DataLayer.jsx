@@ -1,26 +1,29 @@
 import { useEffect, useMemo } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import { Layers, AlertCircle, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { subCategoriesService } from '@/features/categories/api/subCategoriesService';
+import {
+  fetchSubCategoriesByCategoryId,
+  subCategoriesService,
+} from '@/features/categories/api/subCategoriesService';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
-import { withBaseUrl } from '@/lib/utils';
+import { hexToRgba, withBaseUrl } from '@/lib/utils';
 
-/** Hex color to rgba string for translucent backgrounds */
-function hexToRgba(hex, alpha = 0.12) {
-  const h = hex.replace('#', '');
-  const r = parseInt(h.substring(0, 2), 16);
-  const g = parseInt(h.substring(2, 4), 16);
-  const b = parseInt(h.substring(4, 6), 16);
-  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(148,163,184,${alpha})`;
-  return `rgba(${r},${g},${b},${alpha})`;
+function subcategorySignature(items = []) {
+  return items
+    .map(
+      (item) =>
+        `${item?.id ?? ''}|${item?.name ?? ''}|${item?.color_code ?? ''}|${item?.icon_url ?? ''}`
+    )
+    .join('::');
 }
 
-export default function DataLayer({ categoryId }) {
+export default function DataLayer({ categoryId, categoryIds = [], showAllCategories = false }) {
   const { t } = useTranslation();
   const lang = useLanguageStore((state) => state.lang);
 
@@ -36,31 +39,93 @@ export default function DataLayer({ categoryId }) {
     category_id: categoryId || undefined,
   });
 
+  const normalizedCategoryIds = useMemo(
+    () => (Array.isArray(categoryIds) ? categoryIds.filter((id) => id != null) : []),
+    [categoryIds]
+  );
+
+  const allSubcategoryQueries = useQueries({
+    queries: showAllCategories
+      ? normalizedCategoryIds.map((id) => ({
+          queryKey: ['subcategories', lang, id],
+          queryFn: () => fetchSubCategoriesByCategoryId({ lang, category_id: id }),
+          enabled: Boolean(id),
+          staleTime: 5 * 60 * 1000,
+          retry: 1,
+        }))
+      : [],
+  });
+
   const apiSubcategories = useMemo(() => {
     if (Array.isArray(data?.data?.subcategories)) return data.data.subcategories;
     if (Array.isArray(data?.subcategories)) return data.subcategories;
     return [];
   }, [data]);
 
+  const allApiSubcategories = useMemo(() => {
+    if (!showAllCategories) return [];
+
+    const merged = allSubcategoryQueries.flatMap((query) => {
+      if (Array.isArray(query.data?.data?.subcategories)) return query.data.data.subcategories;
+      if (Array.isArray(query.data?.subcategories)) return query.data.subcategories;
+      return [];
+    });
+
+    return Array.from(new Map(merged.map((item) => [item.id, item])).values());
+  }, [allSubcategoryQueries, showAllCategories]);
+
+  const apiSubcategoriesSig = useMemo(
+    () => subcategorySignature(apiSubcategories),
+    [apiSubcategories]
+  );
+  const allApiSubcategoriesSig = useMemo(
+    () => subcategorySignature(allApiSubcategories),
+    [allApiSubcategories]
+  );
+
+  const isLoadingAll =
+    showAllCategories &&
+    normalizedCategoryIds.length > 0 &&
+    allSubcategoryQueries.some((query) => query.isLoading || query.isFetching);
+  const isErrorAll = showAllCategories && allSubcategoryQueries.some((query) => query.isError);
+
   useEffect(() => {
+    if (!showAllCategories) return;
+    setSubcategories({ categoryId: 'all', subcategories: allApiSubcategories });
+  }, [allApiSubcategories, allApiSubcategoriesSig, setSubcategories, showAllCategories]);
+
+  useEffect(() => {
+    if (showAllCategories) return;
+
     if (!categoryId) {
       setSubcategories({ categoryId: null, subcategories: [] });
       return;
     }
     if (!data) return;
     setSubcategories({ categoryId, subcategories: apiSubcategories });
-  }, [categoryId, data, apiSubcategories, setSubcategories]);
+  }, [
+    apiSubcategories,
+    apiSubcategoriesSig,
+    categoryId,
+    data,
+    setSubcategories,
+    showAllCategories,
+  ]);
 
-  if (!categoryId) {
+  if (!showAllCategories && !categoryId) {
     return (
       <div className="text-muted-foreground flex flex-col items-center gap-3 rounded-xl border border-dashed p-6 text-center text-sm">
         <Layers size={28} className="text-muted-foreground/50" />
-        <span>{t('mapPage.layerData.selectCategory', { defaultValue: 'Vui lòng chọn danh mục để tải lớp dữ liệu.' })}</span>
+        <span>
+          {t('mapPage.layerData.selectCategory', {
+            defaultValue: 'Vui lòng chọn danh mục để tải lớp dữ liệu.',
+          })}
+        </span>
       </div>
     );
   }
 
-  if (isLoading || isFetching) {
+  if (isLoading || isFetching || isLoadingAll) {
     return (
       <div className="flex flex-col gap-2">
         {[...Array(4)].map((_, i) => (
@@ -70,7 +135,7 @@ export default function DataLayer({ categoryId }) {
     );
   }
 
-  if (isError) {
+  if (isError || isErrorAll) {
     return (
       <div className="text-destructive flex items-center gap-2 rounded-xl border border-dashed p-4 text-sm">
         <AlertCircle size={16} className="shrink-0" />
@@ -79,7 +144,8 @@ export default function DataLayer({ categoryId }) {
     );
   }
 
-  const allSelected = selectedSubcategoryIds.length === subcategories.length && subcategories.length > 0;
+  const allSelected =
+    selectedSubcategoryIds.length === subcategories.length && subcategories.length > 0;
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -122,7 +188,9 @@ export default function DataLayer({ categoryId }) {
         {subcategories.length === 0 ? (
           <div className="text-muted-foreground flex flex-col items-center gap-3 rounded-xl border border-dashed p-6 text-center text-sm">
             <MapPin size={24} className="text-muted-foreground/50" />
-            <span>{t('mapPage.layerData.empty', { defaultValue: 'Không có lớp dữ liệu phù hợp.' })}</span>
+            <span>
+              {t('mapPage.layerData.empty', { defaultValue: 'Không có lớp dữ liệu phù hợp.' })}
+            </span>
           </div>
         ) : (
           <div className="min-h-0 space-y-1.5 overflow-y-auto pr-0.5">
@@ -138,12 +206,16 @@ export default function DataLayer({ categoryId }) {
                     <label
                       htmlFor={checkboxId}
                       className="group hover:bg-muted/50 relative flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors"
-                      style={checked ? { borderColor: colorCode, backgroundColor: hexToRgba(colorCode, 0.08) } : {}}
+                      style={
+                        checked
+                          ? { borderColor: colorCode, backgroundColor: hexToRgba(colorCode, 0.08) }
+                          : {}
+                      }
                     >
                       {/* Color accent bar */}
                       <span
                         aria-hidden="true"
-                        className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full transition-all"
+                        className="absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-r-full transition-all"
                         style={{ backgroundColor: checked ? colorCode : 'transparent' }}
                       />
 
@@ -166,7 +238,9 @@ export default function DataLayer({ categoryId }) {
                             alt=""
                             className="h-5 w-5 object-contain"
                             style={{ filter: checked ? 'none' : 'grayscale(60%) opacity(0.7)' }}
-                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
                           />
                         ) : (
                           <span

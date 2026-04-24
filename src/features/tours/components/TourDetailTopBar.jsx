@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 export function TourDetailTopBar({ onBack, isLiked, onToggleFavorite, onShare, t, shareStatus }) {
   return (
     <>
-      <div className="bg-card mb-3 flex items-center justify-between rounded-[10px] border-[0.5px] border-[#ced4ce] px-2.5 py-1.5">
+      <div className="bg-card mb-3 flex items-center justify-between rounded-[10px] border-[0.5px] border-nature-border px-2.5 py-1.5">
         <Button
           onClick={onBack}
           variant="ghost"
           size="sm"
-          className="text-primary h-8 gap-1.5 hover:bg-[#eff1ef]"
+          className="text-primary h-8 gap-1.5 hover:bg-nature-soft"
         >
           <ArrowLeft className="h-4 w-4" />
           {t('tourPage.back', 'Quay lại')}
@@ -24,8 +24,8 @@ export function TourDetailTopBar({ onBack, isLiked, onToggleFavorite, onShare, t
             size="icon-sm"
             className={`h-8 w-8 rounded-md border-[0.5px] ${
               isLiked
-                ? 'text-primary-foreground border-[#2e6f40] bg-[#2e6f40]'
-                : 'bg-card text-primary border-[#ced4ce] hover:bg-[#eff1ef]'
+                ? 'text-primary-foreground border-nature bg-nature'
+                : 'bg-card text-primary border-nature-border hover:bg-nature-soft'
             }`}
           >
             <Heart className="h-4 w-4" />
@@ -35,7 +35,7 @@ export function TourDetailTopBar({ onBack, isLiked, onToggleFavorite, onShare, t
             onClick={onShare}
             variant="ghost"
             size="icon-sm"
-            className="bg-card text-primary h-8 w-8 rounded-md border-[0.5px] border-[#ced4ce] hover:bg-[#eff1ef]"
+            className="bg-card text-primary h-8 w-8 rounded-md border-[0.5px] border-nature-border hover:bg-nature-soft"
           >
             <Share2 className="h-4 w-4" />
             <span className="sr-only">{t('tourPage.share', 'Chia sẻ')}</span>
@@ -44,7 +44,7 @@ export function TourDetailTopBar({ onBack, isLiked, onToggleFavorite, onShare, t
       </div>
 
       {shareStatus !== 'idle' && (
-        <div className="bg-card text-muted-foreground mb-3 rounded-[8px] border-[0.5px] border-[#ced4ce] px-3 py-1.5 text-[11px]">
+        <div className="bg-card text-muted-foreground mb-3 rounded-[8px] border-[0.5px] border-nature-border px-3 py-1.5 text-xs">
           {shareStatus === 'copied'
             ? t('tourPage.copied', 'Đã sao chép liên kết')
             : t('tourPage.shared', 'Đã chia sẻ')}

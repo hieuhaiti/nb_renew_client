@@ -1,22 +1,22 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoadingOverlay from '@/components/common/LoadingOverlay';
-import { categoriesService } from '@/features/categories/api/categoriesService';
+import PageSkeleton from '@/components/common/PageSkeleton';
 
-// Pages
-const HomePage = lazy(() => import('@/pages/HomePage'));
+// Features
+const HomePage = lazy(() => import('@/features/home/pages/HomePage'));
 
 // Auth
 const Login = lazy(() => import('@/features/auth/components/Login'));
 const Signup = lazy(() => import('@/features/auth/components/Signup'));
 const ProfilePage = lazy(() => import('@/features/auth/pages/ProfilePage'));
 
-// Features
 const TourismPointPage = lazy(() => import('@/features/tourism-points/pages/TourismPointPage'));
 const TourismDetailPage = lazy(() => import('@/features/tourism-points/pages/TourismDetailPage'));
 const TourPage = lazy(() => import('@/features/tours/pages/TourPage'));
 const TourDetailPage = lazy(() => import('@/features/tours/pages/TourDetailPage'));
 const MapPage = lazy(() => import('@/features/map/pages/MapPage'));
+const OcopPage = lazy(() => import('@/features/ocop/pages/OcopPage'));
+const VlogPage = lazy(() => import('@/features/vlog/pages/VlogPage'));
 
 // Error pages
 const NotFoundPage = lazy(() => import('@/pages/Errors/404NotFoundPage'));
@@ -27,11 +27,9 @@ const InternalServerErrorPage = lazy(() => import('@/pages/Errors/500InternalSer
 const ServiceUnavailablePage = lazy(() => import('@/pages/Errors/503ServiceUnavailablePage'));
 
 export function AppRouter() {
-  // useEffect(() => {}, []);
-
   return (
     <BrowserRouter>
-      <Suspense fallback={<LoadingOverlay />}>
+      <Suspense fallback={<PageSkeleton />}>
         <Routes>
           {/* Home */}
           <Route path="/" element={<HomePage />} />
@@ -48,7 +46,8 @@ export function AppRouter() {
           <Route path="/tour" element={<TourPage />} />
           <Route path="/tour/:id" element={<TourDetailPage />} />
           <Route path="/map" element={<MapPage />} />
-          <Route path="/:categorySlug" element={<MapPage />} />
+          <Route path="/ocop" element={<OcopPage />} />
+          <Route path="/vlog" element={<VlogPage />} />
 
           {/* Error pages */}
           <Route path="/400" element={<BadRequestPage />} />
