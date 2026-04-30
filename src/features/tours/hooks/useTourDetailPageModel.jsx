@@ -4,49 +4,41 @@ import { Star, Clock3, Ticket, Users } from 'lucide-react';
 import { toast } from 'react-toastify';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { formatVND, withBaseUrl } from '@/lib/utils';
-import { useGetTourById } from '@/features/tours/api/tourApi';
-import {
-  useGetTourReviewByTourId,
-  useTourReviewStats,
-  useCreateTourReview,
-} from '@/features/tours/api/tourReviewApi';
+import { useGetTourBySlug } from '@/services/api/tours/tourApi';
+import { useGetTourReviewByTourId, useCreateTourReview } from '@/services/api/tours/tourReviewApi';
 import {
   stripHtmlTags,
   getDurationLabel,
-  getDistanceLabel,
-  getHeroTags,
-  getIntroTags,
   getGalleryPreviewImages,
 } from '@/features/tours/utils/tourDetail.utils';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 
 function getTicketDisplay(tour, t) {
-  const price = Number(tour?.price ?? 0);
+  const price = Number(tour?.price_from_vnd ?? 0);
   if (Number.isFinite(price) && price > 0) return formatVND(price);
-  if (tour?.price_per_person) return t('tourPage.perPerson', 'Theo người');
   return t('tourPage.contact', 'Liên hệ');
 }
 
 export function useTourDetailPageModel(t) {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const lang = useLanguageStore((state) => state.lang);
 
-  const { data: tourResp, isLoading, isError } = useGetTourById(id);
-  const tour = useMemo(() => tourResp?.data?.tour || tourResp?.tour || null, [tourResp]);
+  const { data: tour, isLoading, isError } = useGetTourBySlug(slug);
+
+  const tourName = useMemo(
+    () =>
+      lang === 'en' ? tour?.name_en || tour?.name_vi || '' : tour?.name_vi || tour?.name_en || '',
+    [tour, lang]
+  );
+
   const images = useMemo(() => {
-    if (!tour) return [];
-    return (
-      (Array.isArray(tour.gallery_images) && tour.gallery_images.length > 0
-        ? tour.gallery_images
-        : null) || (tour.main_image_url ? [tour.main_image_url] : [])
-    );
+    if (!tour?.cover_image_url) return [];
+    return [tour.cover_image_url];
   }, [tour]);
 
-  const placeholderImage = placeholderImg;
-  const safeImages = useMemo(
-    () => (images && images.length > 0 ? images : [placeholderImage]),
-    [images]
-  );
+  const safeImages = useMemo(() => (images.length > 0 ? images : [placeholderImg]), [images]);
   const safeImagesMapped = useMemo(() => safeImages.map((s) => withBaseUrl(s)), [safeImages]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -59,19 +51,19 @@ export function useTourDetailPageModel(t) {
     try {
       const raw = localStorage.getItem('tour_favorites');
       const favs = raw ? JSON.parse(raw) : [];
-      setIsLiked(Boolean(favs && Array.isArray(favs) && favs.includes(String(id))));
+      setIsLiked(Boolean(Array.isArray(favs) && favs.includes(String(slug))));
     } catch {
       setIsLiked(false);
     }
-  }, [id]);
+  }, [slug]);
 
   const toggleFavorite = () => {
     try {
       const raw = localStorage.getItem('tour_favorites');
       const favs = raw && Array.isArray(JSON.parse(raw)) ? JSON.parse(raw) : [];
-      const idStr = String(id);
-      const exists = favs.includes(idStr);
-      const newFavs = exists ? favs.filter((x) => x !== idStr) : [...favs, idStr];
+      const slugStr = String(slug);
+      const exists = favs.includes(slugStr);
+      const newFavs = exists ? favs.filter((x) => x !== slugStr) : [...favs, slugStr];
       localStorage.setItem('tour_favorites', JSON.stringify(newFavs));
       setIsLiked(!exists);
     } catch (e) {
@@ -84,12 +76,9 @@ export function useTourDetailPageModel(t) {
     const url = window.location.href;
     try {
       if (navigator.share) {
-        await navigator.share({
-          title: tour?.name || t('tourPage.shareTitle', 'Tour details'),
-          url,
-        });
+        await navigator.share({ title: tourName || t('tourPage.shareTitle', 'Tour details'), url });
         setShareStatus('shared');
-      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
         setShareStatus('copied');
       } else {
@@ -114,37 +103,29 @@ export function useTourDetailPageModel(t) {
     limit: reviewLimit,
     id: tour?.id,
   });
-  const reviewStats = useTourReviewStats(tour?.id);
   const createReviewMut = useCreateTourReview({
     onSuccess: () => {
       reviewsQuery.refetch();
-      reviewStats.refetch();
     },
   });
 
-  const [newRating, setNewRating] = useState(0);
   const [cleanlinessRating, setCleanlinessRating] = useState(0);
   const [serviceRating, setServiceRating] = useState(0);
   const [valueRating, setValueRating] = useState(0);
   const [accessibilityRating, setAccessibilityRating] = useState(0);
   const [newComment, setNewComment] = useState('');
 
-  useEffect(() => {
+  const newRating = useMemo(() => {
     const c = Number(cleanlinessRating) || 0;
     const s = Number(serviceRating) || 0;
     const v = Number(valueRating) || 0;
     const a = Number(accessibilityRating) || 0;
-    if (c || s || v || a) {
-      const avg = (c + s + v + a) / 4;
-      setNewRating(Math.round(avg));
-    } else {
-      setNewRating(0);
-    }
+    if (!c && !s && !v && !a) return 0;
+    return Math.round((c + s + v + a) / 4);
   }, [cleanlinessRating, serviceRating, valueRating, accessibilityRating]);
 
   const handleResetReviewForm = () => {
     setNewComment('');
-    setNewRating(0);
     setCleanlinessRating(0);
     setServiceRating(0);
     setValueRating(0);
@@ -152,123 +133,110 @@ export function useTourDetailPageModel(t) {
   };
 
   const handleCreateReview = async () => {
-    if (!tour?.id) return;
+    if (!tour?.business_id) return;
     if (!cleanlinessRating || !serviceRating || !valueRating || !accessibilityRating) {
       toast.error(
         t(
           'tourPage.reviewErrorRatings',
-          'Please provide ratings for all criteria: cleanliness, service, value, and accessibility.'
+          'Vui lòng đánh giá tất cả tiêu chí: sạch sẽ, dịch vụ, giá trị và tiếp cận.'
         )
       );
       return;
     }
-
     const avg =
       (Number(cleanlinessRating) +
         Number(serviceRating) +
         Number(valueRating) +
         Number(accessibilityRating)) /
       4;
-
     const payload = {
-      tour_id: Number(tour.id),
-      rating: Number(Math.max(1, Math.min(5, Math.round(avg)))),
+      business_id: tour.business_id,
+      stars: Number(Math.max(1, Math.min(5, Math.round(avg)))),
+      content: newComment || '',
       cleanliness_rating: Number(cleanlinessRating),
       service_rating: Number(serviceRating),
       value_rating: Number(valueRating),
       accessibility_rating: Number(accessibilityRating),
-      comment: newComment || '',
     };
-
     createReviewMut.mutate(payload);
     handleResetReviewForm();
   };
 
-  const handleOpenMap = () => {
-    navigate('/map');
-  };
+  const handleOpenMap = () => navigate('/map');
 
   const handleContact = () => {
-    const phone = tour?.contact_phone || tour?.phone || tour?.contact?.phone;
-    if (!phone) {
-      toast.info(t('tourPage.contactNotAvailable', 'Chưa có thông tin liên hệ.'));
-      return;
-    }
-    window.location.href = `tel:${String(phone).trim()}`;
+    const name = tour?.business_name;
+    toast.info(
+      name
+        ? t('tourPage.contactBusiness', `Liên hệ nhà cung cấp: ${name}`, { name })
+        : t('tourPage.contactNotAvailable', 'Chưa có thông tin liên hệ.')
+    );
   };
 
   const qs = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const reviewId = qs.get('review_id');
+
+  const safeReviewItems = useMemo(() => {
+    const source =
+      reviewsQuery?.data?.data?.reviews || reviewsQuery?.data?.data || reviewsQuery?.data || [];
+    return Array.isArray(source) ? source : [];
+  }, [reviewsQuery.data]);
+
   const singleReview = useMemo(() => {
-    const source = reviewsQuery?.data?.data?.reviews || reviewsQuery?.data?.data || [];
-    const item = source.find?.((x) => String(x.id) === String(reviewId));
-    return item || null;
-  }, [reviewsQuery, reviewId]);
+    if (!reviewId) return null;
+    return safeReviewItems.find((x) => String(x.id) === String(reviewId)) || null;
+  }, [safeReviewItems, reviewId]);
 
-  const reviewItems =
-    reviewsQuery?.data?.data?.reviews || reviewsQuery?.data?.data || reviewsQuery?.data || [];
-  const safeReviewItems = Array.isArray(reviewItems) ? reviewItems : [];
-
-  const statsData = reviewStats?.data?.data || reviewStats?.data || {};
-  const fallbackStarCounts = safeReviewItems.reduce(
-    (acc, item) => {
-      const rating = Number(item?.rating || 0);
-      if (rating >= 1 && rating <= 5) acc[rating] += 1;
-      return acc;
-    },
-    { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+  const starCounts = useMemo(
+    () =>
+      safeReviewItems.reduce(
+        (acc, item) => {
+          const rating = Number(item?.rating || 0);
+          if (rating >= 1 && rating <= 5) acc[rating] += 1;
+          return acc;
+        },
+        { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+      ),
+    [safeReviewItems]
   );
-
-  const serverStarCounts = {
-    5: Number(statsData?.five_star ?? 0),
-    4: Number(statsData?.four_star ?? 0),
-    3: Number(statsData?.three_star ?? 0),
-    2: Number(statsData?.two_star ?? 0),
-    1: Number(statsData?.one_star ?? 0),
-  };
-
-  const hasServerStats = Object.values(serverStarCounts).some((x) => Number(x) > 0);
-  const starCounts = hasServerStats ? serverStarCounts : fallbackStarCounts;
 
   const serverPagination =
     reviewsQuery?.data?.data?.pagination || reviewsQuery?.data?.pagination || null;
-  const pageDisplay = serverPagination?.page ?? reviewPage ?? 1;
-  const pagesDisplay = serverPagination?.pages ?? serverPagination?.total_pages ?? 1;
+  const pageDisplay = serverPagination?.page ?? reviewPage;
+  const pagesDisplay =
+    serverPagination?.totalPages ?? serverPagination?.pages ?? serverPagination?.total_pages ?? 1;
 
-  const averageDisplayRating = Number(
-    statsData?.average_rating ?? statsData?.avg_rating ?? tour?.average_rating ?? 0
-  );
-
-  const totalReviewCount = Number(
-    statsData?.total_reviews ?? tour?.total_reviews ?? safeReviewItems.length
-  );
+  const averageDisplayRating = Number(tour?.rating_avg ?? 0);
+  const totalReviewCount = Number(tour?.rating_count ?? safeReviewItems.length);
 
   const durationLabel = getDurationLabel(tour, t);
-  const distanceLabel = getDistanceLabel(tour);
-  const heroTags = getHeroTags(tour, t);
-  const introTags = getIntroTags(tour, heroTags);
   const galleryPreviewImages = getGalleryPreviewImages(safeImagesMapped);
-  const plainDescription = stripHtmlTags(tour?.description);
+  const plainDescription = stripHtmlTags(tour?.description_vi || tour?.description_en || '');
   const ticketDisplay = getTicketDisplay(tour, t);
 
-  const subtitle = [tour?.address, durationLabel, distanceLabel].filter(Boolean).join(' • ');
-  const crowdStatus =
-    tour?.crowd_status || tour?.crowd_level || t('tourPage.peakStatus', 'Cao điểm');
-  const isHighCrowd = /cao|peak|high/i.test(String(crowdStatus));
+  const heroTags = useMemo(() => {
+    const tags = [];
+    if (tour?.is_featured) tags.push(t('tourPage.featured', 'Nổi bật'));
+    if (tour?.duration_days) tags.push(`${tour.duration_days} ${t('tourPage.days', 'ngày')}`);
+    return tags;
+  }, [tour, t]);
+
+  const subtitle = tour?.start_location_vi || '';
 
   const quickStats = [
     {
-      key: 'rating',
-      label: t('tourPage.rating', 'Đánh giá'),
-      value:
-        averageDisplayRating > 0 ? (
-          <div className="flex items-center gap-1 text-sm font-medium text-nature">
-            <span>{averageDisplayRating.toFixed(1)}</span>
-            <Star className="h-3.5 w-3.5" />
-          </div>
-        ) : (
-          <span className="text-foreground text-sm font-medium">-</span>
-        ),
+      key: 'price',
+      label: t('tourPage.price', 'Giá từ'),
+      value: (
+        <span
+          className={`inline-flex items-center gap-1 text-sm font-medium ${
+            ticketDisplay === t('tourPage.contact', 'Liên hệ') ? 'text-foreground' : 'text-nature'
+          }`}
+        >
+          <Ticket className="h-3.5 w-3.5" />
+          {ticketDisplay}
+        </span>
+      ),
     },
     {
       key: 'duration',
@@ -281,42 +249,41 @@ export function useTourDetailPageModel(t) {
       ),
     },
     {
-      key: 'ticket',
-      label: t('tourPage.price', 'Giá vé'),
+      key: 'guests',
+      label: t('tourPage.maxGuests', 'Sức chứa'),
       value: (
-        <span
-          className={`inline-flex items-center gap-1 text-sm font-medium ${
-            ticketDisplay === t('tourPage.contact', 'Liên hệ')
-              ? 'text-foreground'
-              : 'text-nature'
-          }`}
-        >
-          <Ticket className="h-3.5 w-3.5" />
-          {ticketDisplay}
+        <span className="text-foreground inline-flex items-center gap-1 text-sm font-medium">
+          <Users className="text-primary h-3.5 w-3.5" />
+          {tour?.max_guests ? `${tour.max_guests} ${t('tourPage.people', 'người')}` : '-'}
         </span>
       ),
     },
     {
-      key: 'crowd',
-      label: t('tourPage.crowdLevel', 'Lượng khách'),
-      value: (
-        <span
-          className={`inline-flex items-center gap-1 text-sm font-medium ${
-            isHighCrowd ? 'text-warning' : 'text-nature'
-          }`}
-        >
-          <Users className="h-3.5 w-3.5" />
-          {crowdStatus}
-        </span>
-      ),
+      key: 'rating',
+      label: t('tourPage.rating', 'Đánh giá'),
+      value:
+        averageDisplayRating > 0 ? (
+          <div className="text-nature flex items-center gap-1 text-sm font-medium">
+            <span>{averageDisplayRating.toFixed(1)}</span>
+            <Star className="h-3.5 w-3.5" />
+          </div>
+        ) : (
+          <span className="text-foreground text-sm font-medium">-</span>
+        ),
     },
   ];
 
   const sidebarRows = [
     {
-      key: 'location',
-      label: t('tourPage.location', 'Vị trí'),
-      value: tour?.address || t('tourPage.unknown', 'Chưa cập nhật'),
+      key: 'start_location',
+      label: t('tourPage.startLocation', '??a ?i?m ?i'),
+      value: tour?.start_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
+      dotClass: 'bg-nature',
+    },
+    {
+      key: 'end_location',
+      label: t('tourPage.endLocation', '??a ?i?m ??n'),
+      value: tour?.end_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
       dotClass: 'bg-nature',
     },
     {
@@ -326,45 +293,22 @@ export function useTourDetailPageModel(t) {
       dotClass: 'bg-nature',
     },
     {
-      key: 'schedule',
-      label: t('tourPage.schedule', 'Lịch khởi hành'),
-      value: tour?.schedule || t('tourPage.daily', 'Hàng ngày'),
+      key: 'provider',
+      label: t('tourPage.provider', 'Nhà cung cấp'),
+      value: tour?.business_name || t('tourPage.unknown', 'Chưa cập nhật'),
       dotClass: 'bg-warning',
-    },
-    {
-      key: 'style',
-      label: t('tourPage.type', 'Loại hình'),
-      value: heroTags[0] || t('tourPage.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-red-400',
     },
   ];
 
-  const nearbyTours = (() => {
-    const source = Array.isArray(tour?.nearby_tours) ? tour.nearby_tours : [];
-    if (source.length > 0) {
-      return source.slice(0, 4).map((item, index) => ({
-        id: item?.id || `nearby-tour-${index}`,
-        name: item?.name || t('tourPage.unknown', 'Tour gợi ý'),
-        meta: item?.duration_text || item?.price_text || durationLabel,
-        image: withBaseUrl(
-          item?.main_image_url || item?.image || safeImagesMapped[index % safeImagesMapped.length]
-        ),
-      }));
-    }
-
-    return galleryPreviewImages.slice(0, 4).map((img, index) => ({
-      id: `fallback-nearby-tour-${index}`,
-      name: t('tourPage.sampleNearbyTour', `Tour ${index + 1}`),
-      meta: durationLabel,
-      image: img,
-    }));
-  })();
+  const tourStops = useMemo(() => (Array.isArray(tour?.stops) ? tour.stops : []), [tour]);
 
   return {
     navigate,
     isLoading,
     isError,
     tour,
+    tourName,
+    tourStops,
     isLiked,
     toggleFavorite,
     shareStatus,
@@ -377,7 +321,6 @@ export function useTourDetailPageModel(t) {
     quickStats,
     galleryPreviewImages,
     plainDescription,
-    introTags,
     reviewId,
     singleReview,
     reviewsQuery,
@@ -405,7 +348,6 @@ export function useTourDetailPageModel(t) {
     handleResetReviewForm,
     ticketDisplay,
     sidebarRows,
-    nearbyTours,
     handleOpenMap,
     handleContact,
   };

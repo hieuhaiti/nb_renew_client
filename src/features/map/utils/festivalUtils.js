@@ -7,6 +7,19 @@ function getArrayCandidate(...candidates) {
   return candidates.find((items) => Array.isArray(items)) || [];
 }
 
+function normalizeTextValue(value, lang = 'vi') {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (!value || typeof value !== 'object') return '';
+
+  const preferVi = lang !== 'en';
+  const note = preferVi
+    ? value?.note_vi || value?.note_en
+    : value?.note_en || value?.note_vi;
+
+  return typeof note === 'string' ? note : '';
+}
+
 function normalizeFestivalTypeOption(item, index = 0) {
   if (typeof item === 'string' || typeof item === 'number') {
     const value = String(item);
@@ -72,11 +85,11 @@ function getLocalizedValue(item, lang = 'vi', baseField) {
   const viField = `${baseField}_vi`;
   const enField = `${baseField}_en`;
 
-  if (preferVi) {
-    return item?.[viField] || item?.[enField] || item?.[baseField] || '';
-  }
+  const localizedValue = preferVi
+    ? item?.[viField] || item?.[enField] || item?.[baseField]
+    : item?.[enField] || item?.[viField] || item?.[baseField];
 
-  return item?.[enField] || item?.[viField] || item?.[baseField] || '';
+  return normalizeTextValue(localizedValue, lang);
 }
 
 export function normalizeFestivalModel(item, { lang = 'vi', fallbackId } = {}) {

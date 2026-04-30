@@ -16,6 +16,9 @@ const TourPage = lazy(() => import('@/features/tours/pages/TourPage'));
 const TourDetailPage = lazy(() => import('@/features/tours/pages/TourDetailPage'));
 const MapPage = lazy(() => import('@/features/map/pages/MapPage'));
 const OcopPage = lazy(() => import('@/features/ocop/pages/OcopPage'));
+const OcopDetailPage = lazy(() => import('@/features/ocop/pages/OcopDetailPage'));
+const NewsPage = lazy(() => import('@/features/news/pages/NewsPage'));
+const NewsDetailPage = lazy(() => import('@/features/news/pages/NewsDetailPage'));
 const VlogPage = lazy(() => import('@/features/vlog/pages/VlogPage'));
 
 // Error pages
@@ -44,9 +47,12 @@ export function AppRouter() {
           <Route path="/tourism-point" element={<TourismPointPage />} />
           <Route path="/tourism-point/point/:id" element={<TourismDetailPage />} />
           <Route path="/tour" element={<TourPage />} />
-          <Route path="/tour/:id" element={<TourDetailPage />} />
+          <Route path="/tour/:slug" element={<TourDetailPage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/ocop" element={<OcopPage />} />
+          <Route path="/ocop/:id" element={<OcopDetailPage />} />
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/news/:slug" element={<NewsDetailPage />} />
           <Route path="/vlog" element={<VlogPage />} />
 
           {/* Error pages */}

@@ -85,6 +85,75 @@
       "partners": "Các doanh nghiệp hợp tác"
     }
   },
+  "newsPage": {
+    "hero": {
+      "badge": "Trung tâm tin tức du lịch, sự kiện và cảnh báo hành trình",
+      "title": "Cập nhật tin mới về điểm đến Ninh Bình theo thời gian thực.",
+      "description": "Theo dõi thông báo mới nhất về sự kiện, vận hành điểm du lịch và thông tin phục vụ hành trình ngay trên hệ sinh thái bản đồ số.",
+      "cta_latest": "Xem tin mới",
+      "cta_map": "Mở bản đồ du lịch"
+    },
+    "stats": {
+      "total": "Tổng số tin hiện có",
+      "featured": "Tin nổi bật trang hiện tại",
+      "page": "Trang hiện tại"
+    },
+    "highlights": {
+      "title": "Điểm nhấn",
+      "fast": {
+        "title": "Cập nhật nhanh",
+        "desc": "Tin quan trọng được tổng hợp để du khách nắm nhanh trước khi đi."
+      },
+      "time": {
+        "title": "Theo mốc thời gian",
+        "desc": "Dễ theo dõi ngày phát hành, ưu tiên thông báo mới nhất."
+      },
+      "map": {
+        "title": "Kết nối bản đồ",
+        "desc": "Kết hợp với bản đồ để kiểm tra vị trí và lên kế hoạch linh hoạt."
+      }
+    },
+    "filters": {
+      "title": "Bộ lọc tin tức",
+      "description": "Tìm theo từ khóa và trạng thái nổi bật",
+      "keyword": "Từ khóa",
+      "placeholder": "Ví dụ: lễ hội, giao thông, cảnh báo thời tiết...",
+      "featured": "Trạng thái",
+      "options": {
+        "all": "Tất cả",
+        "featured": "Tin nổi bật",
+        "normal": "Tin thường"
+      }
+    },
+    "actions": {
+      "refresh": "Làm mới dữ liệu",
+      "loading": "Đang tải...",
+      "reset": "Đặt lại",
+      "read_more": "Đọc chi tiết"
+    },
+    "list": {
+      "title": "Danh sách tin tức",
+      "description": "Đang hiển thị {{count}} tin phù hợp",
+      "featured": "Nổi bật",
+      "unknown_author": "Ban biên tập",
+      "no_summary": "Chưa có tóm tắt."
+    },
+    "pagination": {
+      "page": "Trang {{page}} / {{totalPages}}"
+    },
+    "states": {
+      "error": "Không thể tải danh sách tin tức lúc này.",
+      "empty": "Chưa có tin tức phù hợp."
+    },
+    "detail": {
+      "back": "Quay lại tin tức",
+      "not_found": "Không tìm thấy nội dung tin tức",
+      "no_content": "Chưa có nội dung chi tiết.",
+      "sidebar_title": "Khám phá trên bản đồ",
+      "sidebar_desc": "Sau khi đọc tin, bạn có thể mở bản đồ để xem nhanh vị trí liên quan và xây dựng lịch trình phù hợp.",
+      "cta_map": "Mở bản đồ ngay"
+    }
+  },
   "auth": {
     "login": {
       "title": "Đăng nhập",
@@ -262,6 +331,8 @@
     "all": "Tất cả",
     "showing": "Hiển thị",
     "of": "/",
+    "gridView": "Lưới",
+    "listView": "Danh sách",
     "results": "kết quả",
     "sort_by": "Sắp xếp",
     "featured": "Nổi bật",
@@ -279,14 +350,15 @@
     "total": "Tổng số tuyến",
     "refresh": "Làm mới",
     "searchPlaceholder": "Tìm kiếm tuyến du lịch...",
-    "gridView": "Dạng lưới",
-    "listView": "Dạng danh sách",
+    "gridView": "Lưới",
+    "listView": "Danh sách",
     "showing": "Hiển thị",
     "errorLoading": "Không thể tải danh sách tuyến du lịch",
     "noTours": "Không có tuyến du lịch phù hợp",
     "unknown": "Không xác định",
     "noDescription": "Chưa có mô tả",
     "loading": "Đang tải...",
+    "locationPending": "Đang cập nhật vị trí",
     "back": "Quay lại",
     "notFound": "Không tìm thấy thông tin tuyến du lịch.",
     "shareTitle": "Chi tiết tuyến du lịch",
@@ -338,7 +410,8 @@
     "destination": "Điểm đến",
     "satellite": "Ảnh vệ tinh",
     "event": "Sự kiện",
-    "tour": "Tour du lịch"
+    "tour": "Tour du lịch",
+    "chatbot": "Trợ lý ảo"
   },
   "mapPage": {
     "layout": {
@@ -389,20 +462,12 @@
       "searchButton": "Tìm kiếm",
       "filter": "Bộ lọc",
       "searchNoResult": "Không tìm thấy điểm phù hợp với bộ lọc hiện tại.",
-      "radiusPrototype": "Bộ lọc bán kính hiện đang ở chế độ nguyên mẫu.",
       "styleUnavailable": "Kiểu bản đồ được chọn chưa được cấu hình.",
       "geoUnsupported": "Trình duyệt này không hỗ trợ định vị.",
       "mapNotReady": "Bản đồ đang tải, vui lòng thử lại sau ít giây.",
       "geoFailed": "Không thể lấy vị trí hiện tại.",
       "routePrototype": "Tích hợp chỉ đường đang ở chế độ nguyên mẫu.",
-      "vrPrototype": "Tích hợp xem trước VR360 đang ở chế độ nguyên mẫu.",
-      "radiusOptions": {
-        "3": "Trong vòng 3 km",
-        "5": "Trong vòng 5 km",
-        "10": "Trong vòng 10 km",
-        "20": "Trong vòng 20 km",
-        "all": "Không giới hạn bán kính"
-      }
+      "vrPrototype": "Tích hợp xem trước VR360 đang ở chế độ nguyên mẫu."
     },
     "destination": {
       "title": "Điểm đến",

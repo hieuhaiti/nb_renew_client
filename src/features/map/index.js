@@ -1,9 +1,9 @@
 export { defaultLatLong } from '@/features/map/constant/mapConstant';
-export { useFestivalsQuery } from '@/features/map/api/festivalService';
+export { useFestivalsQuery } from '@/services/api/map/festivalService';
 export {
   normalizeSpotsSearchResults,
   useSearchSpotsQuery,
-} from '@/features/map/api/mapSearchService';
+} from '@/services/api/map/mapSearchService';
 export {
   formatFestivalDateRange,
   normalizeFestivalListPayload,

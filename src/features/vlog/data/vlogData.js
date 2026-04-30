@@ -10,7 +10,8 @@ export const VLOG_INITIAL_POSTS = [
     comments: 56,
     image:
       'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=900&q=80',
-    description: 'Cảnh sắc sông núi rất điện ảnh, nên đi buổi sáng để ánh sáng đẹp và ít đông hơn.',
+    description:
+      'Cảnh sắc sông núi rất điện ảnh, nên đi buổi sáng để ánh sáng đẹp và ít đông hơn.',
     dateLabel: 'Hôm nay',
   },
   {
@@ -38,7 +39,8 @@ export const VLOG_INITIAL_POSTS = [
     comments: 44,
     image:
       'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=900&q=80',
-    description: 'Gợi ý góc chụp đẹp, thời gian vàng và cách di chuyển nhanh trong khuôn viên.',
+    description:
+      'Gợi ý góc chụp đẹp, thời gian vàng và cách di chuyển nhanh trong khuôn viên.',
     dateLabel: 'Hôm qua',
   },
   {
@@ -81,7 +83,8 @@ export const VLOG_INITIAL_POSTS = [
     comments: 18,
     image:
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80',
-    description: 'Kinh nghiệm chọn trang phục, giờ chụp và cách di chuyển để có bộ ảnh nổi bật.',
+    description:
+      'Kinh nghiệm chọn trang phục, giờ chụp và cách di chuyển để có bộ ảnh nổi bật.',
     dateLabel: '1 tuần trước',
   },
 ];

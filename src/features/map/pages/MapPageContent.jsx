@@ -1,17 +1,16 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import MapLayout from '@/features/map/layout/MapLayout';
-import { categoriesService } from '@/features/categories/api/categoriesService';
+import { categoriesService } from '@/services/api/categories/categoriesService';
 import { env } from '@/config/env';
 import {
   mapBasemapOptions,
   mapDestinations,
   mapLayerToggles,
-  mapRadiusOptions,
   mapSatelliteCompareBlocks,
   mapTourSuggestions,
 } from '@/features/map/constant/mapPageMockData';
@@ -31,7 +30,7 @@ import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import {
   normalizeSpotsSearchResults,
   useSearchSpotsQuery,
-} from '@/features/map/api/mapSearchService';
+} from '@/services/api/map/mapSearchService';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import MapBaseArea from '../components/MapBase';
 
@@ -43,7 +42,6 @@ export default function MapPage() {
   const [activeTab, setActiveTab] = useState(currentHeaderSidebar);
   const [selectedPlaceId, setSelectedPlaceId] = useState(mapDestinations[0]?.id ?? 0);
   const [keyword, setKeyword] = useState('');
-  const [radiusFilter, setRadiusFilter] = useState('all');
   const [activeChip, setActiveChip] = useState('all');
   const [activeBasemap, setActiveBasemap] = useState('outdoor');
   const [pendingFlyCoordinates, setPendingFlyCoordinates] = useState(null);
@@ -102,14 +100,23 @@ export default function MapPage() {
   );
 
   const categoryDropdown = useMemo(
-    () =>
-      (categoriesData?.data?.categories || []).map((cat) => ({
+    () => {
+      const sourceItems = Array.isArray(categoriesData?.data?.tree)
+        ? categoriesData.data.tree
+        : Array.isArray(categoriesData?.data?.items)
+          ? categoriesData.data.items
+          : [];
+
+      return sourceItems
+        .filter((cat) => cat?.parent_id == null)
+        .map((cat) => ({
         id: cat.id,
-        slug: cat.slug,
-        label: cat.name,
+        code: cat.code,
+        label: lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en,
         raw: cat,
-      })),
-    [categoriesData]
+        }));
+    },
+    [categoriesData, lang]
   );
 
   const categoryFilterChips = useMemo(
@@ -363,14 +370,6 @@ export default function MapPage() {
     setSelectedPlaceId(first.id);
     setActiveTab('destination');
     flyToPlace(first);
-
-    if (radiusFilter !== 'all') {
-      toast.info(
-        t('mapPage.toolbar.radiusPrototype', {
-          defaultValue: 'Radius filter is in prototype mode for this layout.',
-        })
-      );
-    }
   };
 
   const handleChipChange = (value) => {
@@ -469,16 +468,13 @@ export default function MapPage() {
   return (
     <MapLayout>
       <section className="bg-background h-full overflow-hidden p-3">
-        <div className="mx-auto grid h-full w-full max-w-437.5 min-h-0 grid-rows-[auto_1fr] gap-3">
+        <div className="mx-auto grid h-full min-h-0 w-full max-w-437.5 grid-rows-[auto_1fr] gap-3">
           <MapToolbarCard
             keyword={keyword}
             onKeywordChange={setKeyword}
             searchResults={searchResults}
             isSearchLoading={isSearchLoading || isSearchFetching}
             onSelectSearchResult={handleSelectSearchResult}
-            radius={radiusFilter}
-            onRadiusChange={setRadiusFilter}
-            radiusOptions={mapRadiusOptions}
             filterChips={categoryFilterChips}
             activeChip={activeChip}
             onChipChange={handleChipChange}

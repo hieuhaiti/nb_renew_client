@@ -1,13 +1,19 @@
 import React from 'react';
 import { Camera } from 'lucide-react';
+import { withBaseUrl } from '@/lib/utils';
+import placeholderImg from '@/assets/images/placeholder.png';
 
 export function TourDetailHero({ imageSrc, title, subtitle, tags, totalImages, t }) {
   return (
-    <section className="bg-card relative overflow-hidden border-[0.5px] border-nature-border">
+    <section className="bg-card border-nature-border relative overflow-hidden border-[0.5px]">
       <img
-        src={imageSrc}
+        src={withBaseUrl(imageSrc)}
         alt={title || t('tourPage.unknown', 'Tour')}
         className="h-70 w-full object-cover"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = placeholderImg;
+        }}
       />
       <div className="absolute inset-0 bg-linear-to-t from-[rgba(0,0,0,0.55)] via-[rgba(0,0,0,0.2)] to-transparent" />
 
@@ -16,7 +22,7 @@ export function TourDetailHero({ imageSrc, title, subtitle, tags, totalImages, t
           {tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-[12px] border border-nature-accent/30 bg-nature/70 px-2.5 py-0.5 text-xs font-medium text-nature-foreground"
+              className="border-nature-accent/30 bg-nature/70 typo-badge text-nature-foreground rounded-[12px] border px-2.5 py-0.5"
               title={tag}
             >
               {tag}
@@ -28,7 +34,7 @@ export function TourDetailHero({ imageSrc, title, subtitle, tags, totalImages, t
           {title}
         </h1>
 
-        <p className="mt-1 truncate text-xs text-[rgba(255,255,255,0.75)]" title={subtitle}>
+        <p className="text-primary-foreground/75 mt-1 truncate text-xs" title={subtitle}>
           {subtitle || t('tourPage.locationPending', 'Đang cập nhật vị trí')}
         </p>
       </div>

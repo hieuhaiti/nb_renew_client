@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { VLOG_INITIAL_POSTS, VLOG_TRENDING } from '@/features/vlog/data/vlogData';
+import placeholderImg from '@/assets/images/placeholder.png';
 
 function SectionHeading({ title, description }) {
   return (
@@ -343,6 +344,10 @@ export default function VlogPage() {
                         src={item.image}
                         alt={item.title}
                         className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                       <span className="absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold">
                         {item.type} · {item.place}
@@ -397,6 +402,10 @@ export default function VlogPage() {
                         src={item.image}
                         alt={item.title}
                         className="h-20 w-28 rounded-xl object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                       <div className="min-w-0">
                         <h4 className="truncate font-semibold">{item.title}</h4>

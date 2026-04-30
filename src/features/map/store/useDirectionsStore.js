@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { toast } from 'react-toastify';
 import { env } from '@/config/env';
 import { useLoadingStore } from '@/stores/useLoadingStore';
-import { geocodeLocation, getLocationSuggestions } from '@/features/map/api/geocodingService';
+import { geocodeLocation, getLocationSuggestions } from '@/services/api/map/geocodingService';
 
 const DIRECTIONS_BASE_URL = 'https://api.mapbox.com/directions/v5/mapbox';
 

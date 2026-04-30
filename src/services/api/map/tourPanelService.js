@@ -32,6 +32,7 @@ function buildToursEndpoint({
   return `tours?${query.toString()}`;
 }
 
+// Returns: { tours: Tour[], pagination: { page, limit, total, totalPages } }
 export function useTourPanelListQuery(params = {}, options = {}) {
   const normalizedSearch = params?.search?.trim?.() || '';
 
@@ -44,7 +45,9 @@ export function useTourPanelListQuery(params = {}, options = {}) {
       params?.limit || 8,
       normalizedSearch,
       params?.status || 'all',
-      params?.is_featured ?? 'all',
+      params?.province_code || null,
+      params?.business_id || null,
+      params?.is_featured ?? null,
       params?.duration_days || null,
       params?.price_min ?? null,
       params?.price_max ?? null,
@@ -54,32 +57,22 @@ export function useTourPanelListQuery(params = {}, options = {}) {
     buildToursEndpoint({ ...params, search: normalizedSearch }),
     {
       staleTime: 60 * 1000,
+      select: (res) => res?.data ?? { tours: [], pagination: { page: 1, limit: 8, total: 0, totalPages: 0 } },
       ...options,
     },
     false
   );
 }
 
-export function useTourPanelDetailQuery(id, options = {}) {
+// Returns: Tour object
+export function useTourPanelDetailQuery(slug, options = {}) {
   return useApiQuery(
-    ['map', 'tour-panel', 'detail', id || null],
-    `tours/${id}`,
+    ['map', 'tour-panel', 'detail', slug ?? null],
+    `tours/slug/${slug}`,
     {
-      enabled: Boolean(id) && (options.enabled ?? true),
+      enabled: Boolean(slug) && (options.enabled ?? true),
       staleTime: 60 * 1000,
-      ...options,
-    },
-    false
-  );
-}
-
-export function useTourPanelStopsQuery(tourId, options = {}) {
-  return useApiQuery(
-    ['map', 'tour-panel', 'stops', tourId || null],
-    `tour-stops/tour/${tourId}`,
-    {
-      enabled: Boolean(tourId) && (options.enabled ?? true),
-      staleTime: 60 * 1000,
+      select: (res) => res?.data?.tour ?? null,
       ...options,
     },
     false

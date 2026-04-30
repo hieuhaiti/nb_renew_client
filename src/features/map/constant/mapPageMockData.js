@@ -48,14 +48,6 @@ export const mapDestinations = [
   },
 ];
 
-export const mapRadiusOptions = [
-  { value: 'all', label: 'No radius limit' },
-  { value: '3', label: 'Within 3 km' },
-  { value: '5', label: 'Within 5 km' },
-  { value: '10', label: 'Within 10 km' },
-  { value: '20', label: 'Within 20 km' },
-];
-
 export const mapLayerToggles = [
   { key: 'destinations', label: 'Destinations' },
   { key: 'services', label: 'Tourism services' },

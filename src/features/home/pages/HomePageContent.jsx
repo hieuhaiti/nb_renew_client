@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import RootLayout from '@/components/layout/RootLayout';
 import LoadingInline from '@/components/common/LoadingInline';
 import trangAnVideo from '@/assets/videos/trang_an.mp4';
+import placeholderImg from '@/assets/images/placeholder.png';
 import {
   defaultLatLong,
   formatFestivalDateRange,
@@ -497,6 +498,10 @@ export default function HomePage() {
                         src={item.image}
                         alt={item.name}
                         className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                       <div className="absolute inset-0 bg-linear-to-t from-slate-900/45 to-transparent" />
                       <div className="absolute top-3 left-3 flex flex-wrap gap-2">
@@ -679,6 +684,10 @@ export default function HomePage() {
                       src={service.image}
                       alt={service.name}
                       className="h-52 w-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = placeholderImg;
+                      }}
                     />
                     <div className="p-4">
                       <div className="text-muted-foreground mb-2 flex flex-wrap gap-2 text-xs">
@@ -731,6 +740,10 @@ export default function HomePage() {
                       src={product.image}
                       alt={product.name}
                       className="h-52 w-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = placeholderImg;
+                      }}
                     />
                     <div className="p-4">
                       <div className="text-muted-foreground mb-2 flex flex-wrap gap-2 text-xs">
@@ -775,7 +788,15 @@ export default function HomePage() {
                     key={story.title}
                     className="border-border/70 bg-card overflow-hidden rounded-2xl border shadow-sm"
                   >
-                    <img src={story.image} alt={story.title} className="h-52 w-full object-cover" />
+                    <img
+                      src={story.image}
+                      alt={story.title}
+                      className="h-52 w-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = placeholderImg;
+                      }}
+                    />
                     <div className="p-4">
                       <div className="text-muted-foreground mb-2 text-xs">
                         Tác giả: {story.author}

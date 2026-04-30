@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import RootLayout from '@/components/layout/RootLayout';
 import LoadingOverlay from '@/components/common/LoadingOverlay';
@@ -8,6 +8,7 @@ import { TourDetailHero } from '@/features/tours/components/TourDetailHero';
 import { TourDetailQuickStats } from '@/features/tours/components/TourDetailQuickStats';
 import { TourDetailGallerySection } from '@/features/tours/components/TourDetailGallerySection';
 import { TourDetailIntroSection } from '@/features/tours/components/TourDetailIntroSection';
+import { TourDetailStopsSection } from '@/features/tours/components/TourDetailStopsSection';
 import { TourDetailReviewsSection } from '@/features/tours/components/TourDetailReviewsSection';
 import { TourDetailSidebar } from '@/features/tours/components/TourDetailSidebar';
 import { useTourDetailPageModel } from '@/features/tours/hooks/useTourDetailPageModel';
@@ -19,6 +20,7 @@ export default function TourDetailPage() {
     isLoading,
     isError,
     tour,
+    tourName,
     isLiked,
     toggleFavorite,
     shareStatus,
@@ -31,7 +33,6 @@ export default function TourDetailPage() {
     quickStats,
     galleryPreviewImages,
     plainDescription,
-    introTags,
     reviewId,
     singleReview,
     reviewsQuery,
@@ -59,7 +60,7 @@ export default function TourDetailPage() {
     handleResetReviewForm,
     ticketDisplay,
     sidebarRows,
-    nearbyTours,
+    tourStops,
     handleOpenMap,
     handleContact,
   } = useTourDetailPageModel(t);
@@ -80,13 +81,13 @@ export default function TourDetailPage() {
         <div className="bg-background flex min-h-screen items-center justify-center px-4">
           <div className="text-center">
             <h2 className="text-foreground mb-4 text-2xl font-bold">
-              {t('tourPage.notFound', 'Tour information not found.')}
+              {t('tourPage.notFound', 'Không tìm thấy thông tin tour.')}
             </h2>
             <Button
               onClick={() => navigate('/tour')}
               className="bg-primary text-primary-foreground hover:bg-(--primary-hover)"
             >
-              {t('tourPage.back', 'Back')}
+              {t('tourPage.back', 'Quay lại')}
             </Button>
           </div>
         </div>
@@ -111,7 +112,7 @@ export default function TourDetailPage() {
             <main className="space-y-3">
               <TourDetailHero
                 imageSrc={safeImagesMapped[currentImageIndex]}
-                title={tour.name || t('tourPage.unknown', 'Tour chua rõ tên')}
+                title={tourName || t('tourPage.unknown', 'Tour')}
                 subtitle={subtitle}
                 tags={heroTags}
                 totalImages={safeImagesMapped.length}
@@ -122,12 +123,19 @@ export default function TourDetailPage() {
 
               <TourDetailGallerySection
                 images={galleryPreviewImages}
-                title={tour.name}
+                title={tourName}
                 onPickImage={(index) => setCurrentImageIndex(index % safeImagesMapped.length)}
                 t={t}
               />
 
-              <TourDetailIntroSection description={plainDescription} tags={introTags} t={t} />
+              <TourDetailIntroSection
+                description={plainDescription}
+                includes={tour?.includes}
+                excludes={tour?.excludes}
+                t={t}
+              />
+
+              <TourDetailStopsSection stops={tourStops} t={t} />
 
               <TourDetailReviewsSection
                 t={t}
@@ -148,25 +156,25 @@ export default function TourDetailPage() {
                   items: [
                     {
                       key: 'cleanliness',
-                      label: t('tourPage.cleanliness', 'S?ch s?'),
+                      label: t('tourPage.cleanliness', 'Sạch sẽ'),
                       value: cleanlinessRating,
                       setValue: setCleanlinessRating,
                     },
                     {
                       key: 'service',
-                      label: t('tourPage.service', 'D?ch v?'),
+                      label: t('tourPage.service', 'Dịch vụ'),
                       value: serviceRating,
                       setValue: setServiceRating,
                     },
                     {
                       key: 'value',
-                      label: t('tourPage.value', 'Giá tr?'),
+                      label: t('tourPage.value', 'Giá trị'),
                       value: valueRating,
                       setValue: setValueRating,
                     },
                     {
                       key: 'accessibility',
-                      label: t('tourPage.accessibility', 'Ti?p c?n'),
+                      label: t('tourPage.accessibility', 'Tiếp cận'),
                       value: accessibilityRating,
                       setValue: setAccessibilityRating,
                     },
@@ -182,11 +190,10 @@ export default function TourDetailPage() {
 
             <TourDetailSidebar
               ticketDisplay={ticketDisplay}
-              subtitle={t('tourPage.priceSub', 'Thông tin giá t? nhà cung c?p tour')}
+              subtitle={t('tourPage.priceSub', 'Thông tin giá từ nhà cung cấp tour')}
               onOpenMap={handleOpenMap}
               onContact={handleContact}
               rows={sidebarRows}
-              nearbyTours={nearbyTours}
               t={t}
             />
           </div>

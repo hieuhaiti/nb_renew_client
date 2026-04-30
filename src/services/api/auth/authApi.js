@@ -32,5 +32,5 @@ export function useUpdateProfileMutation(options = {}) {
 }
 
 export function useChangePasswordMutation(options = {}) {
-  return useApiMutation(null, 'auth/change-password', 'PUT', options);
+  return useApiMutation(null, 'auth/change-password', 'POST', options);
 }

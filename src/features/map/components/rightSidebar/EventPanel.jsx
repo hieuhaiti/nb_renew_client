@@ -6,9 +6,16 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useFestivalsQuery, useFestivalTypesQuery } from '@/features/map/api/festivalService';
+import { useFestivalsQuery, useFestivalTypesQuery } from '@/services/api/map/festivalService';
+import placeholderImg from '@/assets/images/placeholder.png';
 import {
   formatFestivalDateRange,
   getFestivalCoordinates,
@@ -46,7 +53,12 @@ export default function EventPanel() {
   const [debouncedSearch] = useDebounce(filters.search, 350);
 
   const { data: festivalTypesData } = useFestivalTypesQuery();
-  const { data: festivalsData, isLoading, isFetching, isError } = useFestivalsQuery({
+  const {
+    data: festivalsData,
+    isLoading,
+    isFetching,
+    isError,
+  } = useFestivalsQuery({
     ...filters,
     search: debouncedSearch,
   });
@@ -76,8 +88,10 @@ export default function EventPanel() {
       return;
     }
 
-    if (festival?.spot_id) {
-      navigate(`/tourism-point/point/${festival.spot_id}`);
+    const spotIdentifier = festival?.spot_slug || festival?.spot_id;
+
+    if (spotIdentifier) {
+      navigate(`/tourism-point/point/${spotIdentifier}`);
     }
   };
 
@@ -90,7 +104,7 @@ export default function EventPanel() {
           </p>
           <p className="text-muted-foreground text-xs">
             {isFetching
-              ? t('mapPage.eventPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
+              ? t('mapPage.eventPanel.syncing', { defaultValue: 'Äang đồng bộ...' })
               : t('mapPage.eventPanel.count', {
                   defaultValue: '{{count}} sự kiện',
                   count: festivals.length,
@@ -189,15 +203,18 @@ export default function EventPanel() {
                     src={cover}
                     alt={festival.name}
                     className="h-28 w-full rounded-md object-cover"
-                    onError={(event) => {
-                      event.currentTarget.style.display = 'none';
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = placeholderImg;
                     }}
                   />
                 ) : null}
 
                 <div className="space-y-1">
                   <div className="flex items-start justify-between gap-2">
-                    <h4 className="text-foreground line-clamp-2 text-sm font-semibold">{festival.name}</h4>
+                    <h4 className="text-foreground line-clamp-2 text-sm font-semibold">
+                      {festival.name}
+                    </h4>
                     {festival.festival_type && (
                       <Badge variant="outline" className="shrink-0">
                         {festival.festival_type}
@@ -218,7 +235,9 @@ export default function EventPanel() {
                   )}
 
                   {festival.description ? (
-                    <p className="text-muted-foreground line-clamp-2 text-xs">{festival.description}</p>
+                    <p className="text-muted-foreground line-clamp-2 text-xs">
+                      {festival.description}
+                    </p>
                   ) : null}
                 </div>
 
@@ -238,7 +257,13 @@ export default function EventPanel() {
                   </Button>
 
                   {festival.website ? (
-                    <Button type="button" size="sm" variant="outline" className="h-8 text-xs" asChild>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-8 text-xs"
+                      asChild
+                    >
                       <a href={festival.website} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3.5 w-3.5" />
                         {t('mapPage.eventPanel.website', { defaultValue: 'Website' })}

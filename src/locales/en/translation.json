@@ -85,6 +85,75 @@
       "partners": "Our Partners"
     }
   },
+  "newsPage": {
+    "hero": {
+      "badge": "Tourism news, events, and travel alerts center",
+      "title": "Stay updated with the latest Ninh Binh destination news.",
+      "description": "Follow official updates on events, attraction operations, and travel support information across the digital tourism map ecosystem.",
+      "cta_latest": "View latest news",
+      "cta_map": "Open tourism map"
+    },
+    "stats": {
+      "total": "Total available articles",
+      "featured": "Featured on current page",
+      "page": "Current page"
+    },
+    "highlights": {
+      "title": "Highlights",
+      "fast": {
+        "title": "Fast updates",
+        "desc": "Important updates are summarized so travelers can quickly prepare."
+      },
+      "time": {
+        "title": "Time-based feed",
+        "desc": "Easy to track publish dates with priority on the latest updates."
+      },
+      "map": {
+        "title": "Map-connected",
+        "desc": "Pair updates with the map to validate locations and adjust your plan."
+      }
+    },
+    "filters": {
+      "title": "News filters",
+      "description": "Search by keyword and featured status",
+      "keyword": "Keyword",
+      "placeholder": "Example: festival, traffic, weather alert...",
+      "featured": "Status",
+      "options": {
+        "all": "All",
+        "featured": "Featured",
+        "normal": "Regular"
+      }
+    },
+    "actions": {
+      "refresh": "Refresh data",
+      "loading": "Loading...",
+      "reset": "Reset",
+      "read_more": "Read details"
+    },
+    "list": {
+      "title": "News list",
+      "description": "Showing {{count}} matching articles",
+      "featured": "Featured",
+      "unknown_author": "Editorial team",
+      "no_summary": "No summary available."
+    },
+    "pagination": {
+      "page": "Page {{page}} / {{totalPages}}"
+    },
+    "states": {
+      "error": "Unable to load news at the moment.",
+      "empty": "No matching news found."
+    },
+    "detail": {
+      "back": "Back to news",
+      "not_found": "News content not found",
+      "no_content": "No detail content available.",
+      "sidebar_title": "Explore on map",
+      "sidebar_desc": "After reading the update, open the map to quickly check related locations and refine your itinerary.",
+      "cta_map": "Open map now"
+    }
+  },
   "auth": {
     "login": {
       "title": "Sign In",
@@ -262,6 +331,8 @@
     "all": "All",
     "showing": "Showing",
     "of": "/",
+    "gridView": "Grid View",
+    "listView": "List View",
     "results": "results",
     "sort_by": "Sort by",
     "featured": "Featured",
@@ -287,6 +358,7 @@
     "unknown": "Unknown",
     "noDescription": "No description",
     "loading": "Loading...",
+    "locationPending": "Location updating",
     "back": "Back",
     "notFound": "Tour information not found.",
     "shareTitle": "Tour details",
@@ -338,7 +410,8 @@
     "destination": "Destination",
     "satellite": "Satellite",
     "event": "Events",
-    "tour": "Tours"
+    "tour": "Tours",
+    "chatbot": "Chatbot"
   },
   "mapPage": {
     "layout": {
@@ -389,20 +462,12 @@
       "searchButton": "Search",
       "filter": "Filter",
       "searchNoResult": "No matching destination found for current filters.",
-      "radiusPrototype": "Radius filter is currently in prototype mode.",
       "styleUnavailable": "Selected map style is not configured.",
       "geoUnsupported": "Geolocation is not supported by this browser.",
       "mapNotReady": "Map is still loading, please try again in a moment.",
       "geoFailed": "Could not retrieve current location.",
       "routePrototype": "Directions integration is in prototype mode.",
-      "vrPrototype": "VR360 preview integration is in prototype mode.",
-      "radiusOptions": {
-        "3": "Within 3 km",
-        "5": "Within 5 km",
-        "10": "Within 10 km",
-        "20": "Within 20 km",
-        "all": "No radius limit"
-      }
+      "vrPrototype": "VR360 preview integration is in prototype mode."
     },
     "destination": {
       "title": "Destination",

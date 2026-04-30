@@ -19,7 +19,7 @@ function buildFestivalsEndpoint({
   if (sortBy) query.set('sortBy', String(sortBy));
   if (sortOrder) query.set('sortOrder', String(sortOrder));
 
-  return `events?${query.toString()}`;
+  return `festivals?${query.toString()}`;
 }
 
 function buildFestivalCalendarEndpoint({ from, to, province_code, festival_type } = {}) {
@@ -30,8 +30,7 @@ function buildFestivalCalendarEndpoint({ from, to, province_code, festival_type 
   if (province_code) query.set('province_code', String(province_code));
   if (festival_type) query.set('festival_type', String(festival_type));
 
-  // Current backend deployment exposes events list endpoint; calendar API is not published yet.
-  return `events?${query.toString()}`;
+  return `festivals/calendar?${query.toString()}`;
 }
 
 export function useFestivalsQuery(params = {}, options = {}) {
@@ -68,7 +67,7 @@ export function useFestivalsQuery(params = {}, options = {}) {
 export function useFestivalTypesQuery(options = {}) {
   return useApiQuery(
     ['festivals', 'types'],
-    'events?page=1&limit=100&sortBy=start_date&sortOrder=ASC',
+    'festivals/types',
     {
       staleTime: 5 * 60 * 1000,
       ...options,
@@ -102,7 +101,7 @@ export function useFestivalCalendarQuery(params = {}, options = {}) {
 export function useFestivalDetailQuery(id, options = {}) {
   return useApiQuery(
     ['festivals', 'detail', id || null],
-    `events/${id}`,
+    `festivals/${id}`,
     {
       enabled: Boolean(id) && (options.enabled ?? true),
       staleTime: 60 * 1000,

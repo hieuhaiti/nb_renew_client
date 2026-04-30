@@ -221,7 +221,7 @@ export function TourDetailReviewsSection({
 
         <div className="mb-3">
           <div className="text-muted-foreground mb-1 block text-xs">
-            {t('tourPage.starCount', 'Điểm sao tổng (tự tính)')}
+            {t('tourPage.starCount', '?i?m sao t?ng (t? t?nh)')}
           </div>
           <div className="flex items-center gap-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -298,7 +298,7 @@ export function TourDetailReviewsSection({
             disabled={isSubmitting}
             className="text-primary-foreground h-8 rounded-[7px] bg-nature px-3 text-xs hover:bg-nature-hover disabled:opacity-70"
           >
-            {isSubmitting ? t('tourPage.sending', 'Đang gửi...') : t('tourPage.sendReview', 'Gửi')}
+            {isSubmitting ? t('tourPage.sending', 'Äang gửi...') : t('tourPage.sendReview', 'Gửi')}
           </Button>
         </div>
       </div>

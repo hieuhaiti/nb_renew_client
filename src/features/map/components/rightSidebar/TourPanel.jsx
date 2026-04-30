@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTourPanelListQuery } from '@/features/map/api/tourPanelService';
+import { useTourPanelListQuery } from '@/services/api/map/tourPanelService';
+import placeholderImg from '@/assets/images/placeholder.png';
 import { useTourPanelStore } from '@/features/map/store/useTourPanelStore';
 import {
   formatTourDurationLabel,
@@ -62,7 +63,7 @@ export default function TourPanel({ onOpenRoute }) {
           </p>
           <p className="text-muted-foreground text-xs">
             {isFetching
-              ? t('mapPage.tourPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
+              ? t('mapPage.tourPanel.syncing', { defaultValue: 'Äang đồng bộ...' })
               : t('mapPage.tourPanel.count', {
                   defaultValue: '{{count}} tour',
                   count: tours.length,
@@ -145,8 +146,9 @@ export default function TourPanel({ onOpenRoute }) {
                     src={imageUrl}
                     alt={tour.name}
                     className="h-28 w-full rounded-md object-cover"
-                    onError={(event) => {
-                      event.currentTarget.style.display = 'none';
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = placeholderImg;
                     }}
                   />
                 ) : null}
@@ -193,14 +195,14 @@ export default function TourPanel({ onOpenRoute }) {
                     }}
                   >
                     <Route className="h-3.5 w-3.5" />
-                    {t('mapPage.tourPanel.openRoute', { defaultValue: 'Mở chỉ đường' })}
+                    {t('mapPage.tourPanel.openRoute', { defaultValue: 'M? ch? ???ng' })}
                   </Button>
                   <Button
                     type="button"
                     size="sm"
                     variant="outline"
                     className="h-8 text-xs"
-                    onClick={() => navigate(`/tour/${tour.id}`)}
+                    onClick={() => navigate(`/tour/${tour.slug}`)}
                   >
                     {t('tourismPointPage.view_detail', { defaultValue: 'Xem chi tiết' })}
                   </Button>

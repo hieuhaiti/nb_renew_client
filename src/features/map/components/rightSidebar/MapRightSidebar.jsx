@@ -32,8 +32,7 @@ export default function MapRightSidebar({
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const visibleSidebarItems = headerSidebar.filter(
     (item) =>
-      (!item.authen || isAuthenticated) &&
-      (!item.requiresDirectionDetails || hasDirectionDetails)
+      (!item.authen || isAuthenticated) && (!item.requiresDirectionDetails || hasDirectionDetails)
   );
   const sidebarTabValues = visibleSidebarItems.map((item) => item.value);
   const defaultSidebarTab = sidebarTabValues.includes(currentHeaderSidebar)
@@ -112,7 +111,7 @@ export default function MapRightSidebar({
                   activeTab={activeSidebarTab}
                   setActiveTab={onTabChange}
                   className={cn(
-                    'h-8 gap-1 rounded-none border-b-2 bg-transparent px-2 text-xs shadow-none whitespace-nowrap',
+                    'h-8 gap-1 rounded-none border-b-2 bg-transparent px-2 text-xs whitespace-nowrap shadow-none',
                     isActive
                       ? 'border-primary text-foreground'
                       : 'text-muted-foreground border-transparent'
@@ -126,7 +125,7 @@ export default function MapRightSidebar({
           </TabsList>
         </CardTitle>
       </CardHeader>
-      <CardContent className="min-h-0 flex-1 overflow-y-auto px-3 pt-3">
+      <CardContent className="min-h-0 flex-1 overflow-y-auto px-3 pt-1">
         {renderSidebarContent()}
       </CardContent>
     </Card>

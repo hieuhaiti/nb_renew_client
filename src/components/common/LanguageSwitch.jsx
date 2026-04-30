@@ -29,7 +29,7 @@ export default function LanguageSwitch() {
             size="sm"
             id="language-switch-btn"
             aria-label="Toggle language"
-            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-[var(--surface-hover)]"
+            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-(--surface-hover)"
             onClick={handleToggle}
             type="button"
           >

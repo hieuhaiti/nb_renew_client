@@ -2,6 +2,17 @@ function isObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function buildPointGeometryFromCoordinates(input) {
+  const lng = Number(input?.longitude ?? input?.lng);
+  const lat = Number(input?.latitude ?? input?.lat);
+  if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+
+  return {
+    type: 'Point',
+    coordinates: [lng, lat],
+  };
+}
+
 function toFeature(input, fallbackId) {
   if (!isObject(input)) return null;
 
@@ -15,13 +26,30 @@ function toFeature(input, fallbackId) {
     };
   }
 
-  const geometry = input.geometry_data || input.geometry;
+  const geometry =
+    input.geometry_data || input.geometry || input.geojson || buildPointGeometryFromCoordinates(input);
   if (!isObject(geometry) || !geometry.type) return null;
 
+  const topLevelProps = { ...input };
+  delete topLevelProps.geometry;
+  delete topLevelProps.geometry_data;
+  delete topLevelProps.geojson;
+  delete topLevelProps.properties;
+
   const mergedProperties = {
+    ...topLevelProps,
     ...(isObject(input.properties) ? input.properties : {}),
     id: input.id,
-    name: input.name,
+    slug: input.slug,
+    name: toDisplayText(input.name) || toDisplayText(input.name_vi) || toDisplayText(input.name_en),
+    name_vi: input.name_vi,
+    name_en: input.name_en,
+    description: input.description || input.description_vi || input.description_en,
+    description_vi: input.description_vi,
+    description_en: input.description_en,
+    address: input.address || input.address_vi || input.address_en,
+    address_vi: input.address_vi,
+    address_en: input.address_en,
     category_id: input.category_id,
     subcategory_id: input.subcategory_id,
   };
@@ -46,6 +74,8 @@ export function normalizePointsToFeatureCollection(payload) {
   }
 
   const candidateArrays = [
+    payload?.data?.spots,
+    payload?.spots,
     payload?.data?.points,
     payload?.points,
     payload?.data?.mapLayers,
@@ -233,6 +263,13 @@ function toNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function toDisplayText(value) {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (!value || typeof value !== 'object') return '';
+  return value?.note_vi || value?.note_en || '';
+}
+
 function getPointCoordinates(geometry) {
   if (!isObject(geometry)) return null;
 
@@ -260,12 +297,33 @@ export function mapFeatureToDestination(feature) {
 
   return {
     id: properties.id ?? feature.id ?? null,
-    name: properties.name_vi || properties.name_en || properties.name || 'Unknown destination',
+    slug: properties.slug || null,
+    name:
+      toDisplayText(properties.name_vi) ||
+      toDisplayText(properties.name_en) ||
+      toDisplayText(properties.name) ||
+      'Unknown destination',
     description:
-      properties.description_vi || properties.description_en || properties.description || '',
+      toDisplayText(properties.description_vi) ||
+      toDisplayText(properties.description_en) ||
+      toDisplayText(properties.description) ||
+      '',
     category_id: properties.category_id ?? null,
     subcategory_id: properties.subcategory_id ?? null,
-    address: properties.address_vi || properties.address_en || properties.address || '',
+    address:
+      toDisplayText(properties.address_vi) ||
+      toDisplayText(properties.address_en) ||
+      toDisplayText(properties.address) ||
+      '',
+    opening_hours: properties.opening_hours ?? null,
+    main_image_url:
+      properties.primary_image ||
+      properties.main_image_url ||
+      properties.cover_image_url ||
+      properties.main_image ||
+      null,
+    average_rating: properties.rating_avg ?? properties.average_rating ?? null,
+    rating_count: properties.rating_count ?? properties.total_reviews ?? null,
     coordinates: normalizedCoordinates,
     source: 'map-feature',
     raw: feature,
@@ -284,6 +342,7 @@ export function addOrUpdateSubcategoryLayer(
   const lineLayerId = `${sourceId}-line`;
   const circleLayerId = `${sourceId}-circle`;
   const iconLayerId = `${sourceId}-icon`;
+  const labelLayerId = `${sourceId}-label`;
   const clusterLayerId = `${sourceId}-cluster`;
   const clusterCountLayerId = `${sourceId}-cluster-count`;
 
@@ -359,6 +418,31 @@ export function addOrUpdateSubcategoryLayer(
     },
   });
 
+  ensureLayer(map, {
+    id: labelLayerId,
+    type: 'symbol',
+    source: sourceId,
+    filter: [
+      'all',
+      ['in', ['geometry-type'], ['literal', ['Point', 'MultiPoint']]],
+      ['!', ['has', 'point_count']],
+      ['has', 'name'],
+    ],
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+      'text-size': 13,
+      'text-offset': [0, 1.5],
+      'text-anchor': 'top',
+      'text-padding': 2,
+    },
+    paint: {
+      'text-color': 'black',
+      'text-halo-color': 'white',
+      'text-halo-width': 2,
+    },
+  });
+
   // Keep style updated when color changes.
   if (map.getLayer(fillLayerId)) {
     map.setPaintProperty(fillLayerId, 'fill-color', color);
@@ -403,6 +487,9 @@ export function addOrUpdateSubcategoryLayer(
       // Ensure icon is always above the point circle.
       if (map.getLayer(iconLayerId)) {
         map.moveLayer(iconLayerId);
+      }
+      if (map.getLayer(labelLayerId)) {
+        map.moveLayer(labelLayerId);
       }
 
       // Hide base point circle when composed SVG marker is visible.
@@ -458,6 +545,7 @@ export function removeSubcategoryLayer(map, sourceId) {
     `${sourceId}-line`,
     `${sourceId}-circle`,
     `${sourceId}-icon`,
+    `${sourceId}-label`,
     `${sourceId}-cluster`,
     `${sourceId}-cluster-count`,
   ];

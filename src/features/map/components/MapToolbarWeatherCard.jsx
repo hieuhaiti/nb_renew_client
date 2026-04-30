@@ -73,49 +73,59 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
     }
 
     return (
-      <div className="flex flex-wrap items-center gap-2 text-xs xl:flex-nowrap">
-        <div className="flex min-w-0 items-center gap-1.5 xl:max-w-44">
-          <WeatherIcon className={cn('h-4.5 w-4.5 shrink-0', weatherIconMeta.toneClass)} />
-          <p className="truncate font-semibold">{cityName}</p>
+      <div className="space-y-2 text-xs">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 xl:flex-nowrap">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <WeatherIcon className={cn('h-4.5 w-4.5 shrink-0', weatherIconMeta.toneClass)} />
+            <p className="truncate font-semibold">{cityName}</p>
+          </div>
+
+          <p className="text-muted-foreground min-w-0 flex-1 truncate capitalize">
+            {conditionLabel}
+          </p>
         </div>
 
-        <p className="text-muted-foreground max-w-44 truncate capitalize">{conditionLabel}</p>
+        <div className="grid grid-cols-4 gap-2 xl:grid-cols-2">
+          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
+            <Thermometer className="text-warning h-3.5 w-3.5 shrink-0" />
+            <span className="text-warning truncate font-semibold">
+              {formatTemperature(weather?.main?.temp)}
+            </span>
+          </div>
 
-        <div className="bg-muted/40 flex items-center gap-1 rounded-md px-2 py-1">
-          <Thermometer className="h-3.5 w-3.5 text-orange-500" />
-          <span className="font-semibold text-orange-600">{formatTemperature(weather?.main?.temp)}</span>
-        </div>
+          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
+            <Droplets className="text-primary h-3.5 w-3.5 shrink-0" />
+            <span className="text-primary truncate font-semibold">
+              {formatHumidity(weather?.main?.humidity)}
+            </span>
+          </div>
 
-        <div className="bg-muted/40 flex items-center gap-1 rounded-md px-2 py-1">
-          <Droplets className="h-3.5 w-3.5 text-blue-500" />
-          <span className="font-semibold text-blue-600">
-            {formatHumidity(weather?.main?.humidity)}
-          </span>
-        </div>
+          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
+            <Wind className="text-secondary h-3.5 w-3.5 shrink-0" />
+            <span className="text-secondary truncate font-semibold">
+              {formatWindSpeedKph(weather?.wind?.speed)}
+            </span>
+          </div>
 
-        <div className="bg-muted/40 flex items-center gap-1 rounded-md px-2 py-1">
-          <Wind className="h-3.5 w-3.5 text-cyan-600" />
-          <span className="font-semibold text-cyan-700">
-            {formatWindSpeedKph(weather?.wind?.speed)}
-          </span>
-        </div>
-
-        <div className={cn('flex items-center gap-1 rounded-md px-2 py-1', aqiMeta.bgClass)}>
-          <img
-            src={aqiMeta.iconSrc}
-            alt={t(aqiMeta.labelKey)}
-            className="h-3.5 w-3.5 shrink-0 object-contain"
-          />
-          <span className={cn('font-semibold', aqiMeta.toneClass)}>
-            {aqiValue ?? '--'} · {t(aqiMeta.labelKey)}
-          </span>
+          <div
+            className={cn('flex min-w-0 items-center gap-1 rounded-md px-2 py-1', aqiMeta.bgClass)}
+          >
+            <img
+              src={aqiMeta.iconSrc}
+              alt={t(aqiMeta.labelKey)}
+              className="h-3.5 w-3.5 shrink-0 object-contain"
+            />
+            <span className={cn('truncate font-semibold', aqiMeta.toneClass)}>
+              {aqiValue ?? '--'} · {t(aqiMeta.labelKey)}
+            </span>
+          </div>
         </div>
 
         {alert ? (
           <Badge
             variant="outline"
             className={cn(
-              'max-w-44 truncate border-transparent text-xs',
+              'max-w-full truncate border-transparent text-xs',
               getAlertToneClass(alert.severity),
               alertSeverityMeta.bg
             )}
@@ -178,8 +188,8 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center justify-center gap-1">
-                  <Thermometer className="h-4.5 w-4.5 text-orange-500" />
-                  <p className="mt-1 truncate font-bold text-orange-600">
+                  <Thermometer className="text-warning h-4.5 w-4.5" />
+                  <p className="text-warning mt-1 truncate font-bold">
                     {formatTemperature(weather?.main?.temp)}
                   </p>
                 </div>
@@ -194,8 +204,8 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center justify-center gap-1">
-                  <Droplets className="h-4.5 w-4.5 text-blue-500" />
-                  <p className="mt-1 truncate font-bold text-blue-600">
+                  <Droplets className="text-primary h-4.5 w-4.5" />
+                  <p className="text-primary mt-1 truncate font-bold">
                     {formatHumidity(weather?.main?.humidity)}
                   </p>
                 </div>
@@ -210,8 +220,8 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center justify-center gap-1">
-                  <Wind className="h-4.5 w-4.5 text-cyan-600" />
-                  <p className="mt-1 truncate font-bold text-cyan-700">
+                  <Wind className="text-secondary h-4.5 w-4.5" />
+                  <p className="text-secondary mt-1 truncate font-bold">
                     {formatWindSpeedKph(weather?.wind?.speed)}
                   </p>
                 </div>

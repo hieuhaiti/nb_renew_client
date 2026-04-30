@@ -1,16 +1,15 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Star, Clock3, MapPin, CalendarDays, Leaf } from 'lucide-react';
+import { Star, Clock3, MapPin, Globe, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import RootLayout from '@/components/layout/RootLayout';
-import { useGetDataPointById } from '@/features/tourism-points/api/tourismPointsApi';
+import { useGetDataPointById } from '@/services/api/tourism-points/tourismPointsApi';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import {
   useGetTourismReviewByTourismPointId,
   useCreateTourismReview,
-  useReviewStats,
-} from '@/features/tourism-points/api/tourismPointsReviewApi';
+} from '@/services/api/tourism-points/tourismPointsReviewApi';
 import { mutater } from '@/services/mutater';
 // TODO: map states removed for now
 import { useQueryClient } from '@tanstack/react-query';
@@ -36,11 +35,44 @@ const stripHtmlTags = (value) => {
     .trim();
 };
 
+const OPENING_DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+const formatOpeningHoursDisplay = (openingHours, language = 'vi') => {
+  if (typeof openingHours === 'string') return openingHours;
+  if (typeof openingHours === 'number') return String(openingHours);
+  if (!openingHours || typeof openingHours !== 'object') return '';
+
+  const directDaily = openingHours?.daily || openingHours?.default;
+  if (typeof directDaily === 'string' || typeof directDaily === 'number') {
+    return String(directDaily);
+  }
+
+  const note =
+    language === 'en'
+      ? openingHours?.note_en || openingHours?.note_vi
+      : openingHours?.note_vi || openingHours?.note_en;
+  if (typeof note === 'string' && note.trim()) return note.trim();
+
+  for (const dayKey of OPENING_DAY_KEYS) {
+    const dayRange = openingHours?.[dayKey];
+    if (!dayRange || typeof dayRange !== 'object') continue;
+    const open = dayRange?.open;
+    const close = dayRange?.close;
+    if (typeof open === 'string' && typeof close === 'string') {
+      return `${open} - ${close}`;
+    }
+  }
+
+  return '';
+};
+
 export default function TourismDetailPage() {
   const queryClient = useQueryClient();
-  const { id } = useParams();
+  const { slug, id } = useParams();
+  const pointSlug = slug || id;
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.startsWith('en') ? 'en' : 'vi';
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [shareStatus, setShareStatus] = useState('idle'); // 'idle' | 'copied' | 'shared'
@@ -53,27 +85,41 @@ export default function TourismDetailPage() {
     isError,
     isLoading,
   } = useGetDataPointById({
-    point_id: id,
+    point_id: pointSlug,
     format: 'json',
   });
   const attraction = useMemo(() => {
     if (!pointResp) return null;
-    // common shapes: pointResp.data.point OR pointResp.data OR pointResp.point
-    return pointResp.data?.point || pointResp.data || pointResp.point || null;
+    // Common shapes:
+    // - { data: { spot: {...} } }  (current API)
+    // - { data: { point: {...} } }
+    // - { spot: {...} } / { point: {...} } / {...}
+    return (
+      pointResp.data?.spot ||
+      pointResp.data?.point ||
+      pointResp.spot ||
+      pointResp.point ||
+      pointResp.data ||
+      null
+    );
   }, [pointResp]);
 
+  const attractionName =
+    attraction?.name_vi ||
+    attraction?.name_en ||
+    attraction?.name ||
+    t('tourism.detail_title', 'Tourism point');
+  const attractionAddress =
+    attraction?.address_vi || attraction?.address_en || attraction?.address || '';
+
   // Compute images safely and keep them memoized so hooks below are stable
+  // TODO: gallery images from API — use GET /spots/:spotId/media (not yet wired)
   const images = useMemo(() => {
     if (!attraction) return [];
     return (
-      (Array.isArray(attraction.gallery_images) && attraction.gallery_images?.length > 0
-        ? attraction.gallery_images
-        : null) ||
-      (Array.isArray(attraction.images) && attraction.images?.length > 0
-        ? attraction.images
-        : null) ||
+      (attraction.primary_image ? [attraction.primary_image] : null) ||
+      (attraction.cover_image_url ? [attraction.cover_image_url] : null) ||
       (attraction.main_image_url ? [attraction.main_image_url] : null) ||
-      (attraction.featured_image ? [attraction.featured_image] : null) ||
       []
     );
   }, [attraction]);
@@ -94,25 +140,30 @@ export default function TourismDetailPage() {
     }
   }, [safeImages, currentImageIndex]);
 
+  const favoriteKey = useMemo(
+    () => String(attraction?.id || pointSlug || ''),
+    [attraction?.id, pointSlug]
+  );
+
   // Favorites: persist liked point ids in localStorage under key 'favorites'
   useEffect(() => {
     try {
       const raw = localStorage.getItem('favorites');
       const favs = raw ? JSON.parse(raw) : [];
-      setIsLiked(Boolean(favs && Array.isArray(favs) && favs.includes(String(id))));
+      setIsLiked(Boolean(favoriteKey && Array.isArray(favs) && favs.includes(favoriteKey)));
     } catch {
       // ignore malformed localStorage
       setIsLiked(false);
     }
-  }, [id]);
+  }, [favoriteKey]);
 
   const toggleFavorite = () => {
+    if (!favoriteKey) return;
     try {
       const raw = localStorage.getItem('favorites');
       const favs = raw && Array.isArray(JSON.parse(raw)) ? JSON.parse(raw) : [];
-      const idStr = String(id);
-      const exists = favs.includes(idStr);
-      const newFavs = exists ? favs.filter((x) => x !== idStr) : [...favs, idStr];
+      const exists = favs.includes(favoriteKey);
+      const newFavs = exists ? favs.filter((x) => x !== favoriteKey) : [...favs, favoriteKey];
       localStorage.setItem('favorites', JSON.stringify(newFavs));
       setIsLiked(!exists);
     } catch {
@@ -125,7 +176,7 @@ export default function TourismDetailPage() {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: attraction?.name || t('tourism.detail_title', 'Tourism point'),
+          title: attractionName,
           url,
         });
         setShareStatus('shared');
@@ -157,13 +208,9 @@ export default function TourismDetailPage() {
     limit: reviewLimit,
     tourismPointId: attraction?.id,
   });
-  const statsId = attraction?.id || attraction?.point_id || attraction?._id || null;
-  const reviewStats = useReviewStats(statsId);
   const createReviewMut = useCreateTourismReview({
     onSuccess: () => {
-      // refetch list and stats after success
       reviewsQuery.refetch();
-      reviewStats.refetch();
     },
   });
 
@@ -229,38 +276,28 @@ export default function TourismDetailPage() {
         4
     );
 
-    // Build JSON payload expected by backend Joi schema
+    // Build JSON payload — field names per Postman /ratings spec.
+    // TODO: cleanliness_rating / service_rating / value_rating / accessibility_rating /
+    //       visit_season / recommend are not in the Postman /ratings spec — verify with backend.
     const payload = {
-      tourism_point_id: Number(attraction.id),
-      rating: Number(overall),
-      title: '',
-      comment: newComment || '',
+      spot_id: String(attraction.id),
+      stars: Number(overall),
+      content: newComment || '',
+      // TODO: photo_urls not confirmed in Postman spec — replace images[] with photo_urls[].
+      photo_urls: [],
+      visit_date: newVisitDate ? new Date(newVisitDate).toISOString() : null,
       cleanliness_rating: Number(newCleanliness) || null,
       service_rating: Number(newService) || null,
       value_rating: Number(newValue) || null,
       accessibility_rating: Number(newAccessibility) || null,
-      images: [],
-      visit_date: newVisitDate ? new Date(newVisitDate).toISOString() : null,
-      visit_season: newVisitDate
-        ? (function () {
-            const month = new Date(newVisitDate).getMonth() + 1;
-            if ([3, 4, 5].includes(month)) return 'spring';
-            if ([6, 7, 8].includes(month)) return 'summer';
-            if ([9, 10, 11].includes(month)) return 'autumn';
-            return 'winter';
-          })()
-        : null,
       recommend: Boolean(newRecommend),
     };
 
-    // If there are files, submit as multipart/form-data with files attached.
-    // If there are no files, send a JSON payload (matches sample shape with images: []).
     if (selectedFiles && selectedFiles.length > 0) {
       const fd = new FormData();
-      fd.append('tourism_point_id', String(payload.tourism_point_id));
-      fd.append('rating', String(payload.rating));
-      fd.append('title', payload.title || '');
-      fd.append('comment', payload.comment || '');
+      fd.append('spot_id', String(payload.spot_id));
+      fd.append('stars', String(payload.stars));
+      fd.append('content', payload.content || '');
       if (payload.cleanliness_rating !== null)
         fd.append('cleanliness_rating', String(payload.cleanliness_rating));
       if (payload.service_rating !== null)
@@ -269,13 +306,11 @@ export default function TourismDetailPage() {
       if (payload.accessibility_rating !== null)
         fd.append('accessibility_rating', String(payload.accessibility_rating));
       if (payload.visit_date) fd.append('visit_date', payload.visit_date);
-      if (payload.visit_season) fd.append('visit_season', payload.visit_season);
       fd.append('recommend', payload.recommend ? 'true' : 'false');
 
-      selectedFiles.forEach((f) => fd.append('images', f));
+      selectedFiles.forEach((f) => fd.append('photo_urls', f));
       createReviewMut.mutate(fd);
     } else {
-      // No files: send JSON matching the shape you provided (images: [])
       createReviewMut.mutate(payload);
     }
 
@@ -303,7 +338,7 @@ export default function TourismDetailPage() {
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      await mutater(`tourism-reviews/${reviewId}`, 'DELETE');
+      await mutater(`ratings/${reviewId}`, 'DELETE');
       reviewsQuery.refetch();
     } catch {
       // ignore
@@ -356,7 +391,7 @@ export default function TourismDetailPage() {
             </h2>
             <Button
               onClick={() => navigate('/tourism-point')}
-              className="bg-primary text-primary-foreground hover:text-primary-foreground hover:bg-(--primary-hover)"
+              className="bg-primary text-primary-foreground hover:bg-primary-hover hover:text-primary-foreground"
             >
               {t('tourism.back_to_list', 'Back to list')}
             </Button>
@@ -378,8 +413,6 @@ export default function TourismDetailPage() {
   };
 
   /* Two-column detail layout */
-  const avgRatingValue = attraction.average_rating ? Number(attraction.average_rating) : null;
-  const totalReviewsValue = attraction.total_reviews ? Number(attraction.total_reviews) : 0;
 
   // Pagination display: use server-provided pagination when available,
   // otherwise fall back to sensible defaults (page 1 / pages 1).
@@ -407,100 +440,66 @@ export default function TourismDetailPage() {
     { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, total: 0 }
   );
 
-  const statsData = reviewStats?.data?.data || reviewStats?.data || {};
-  const statsCounts = {
-    5: Number(statsData?.five_star ?? 0),
-    4: Number(statsData?.four_star ?? 0),
-    3: Number(statsData?.three_star ?? 0),
-    2: Number(statsData?.two_star ?? 0),
-    1: Number(statsData?.one_star ?? 0),
+  const starCounts = {
+    5: derivedStarCounts[5],
+    4: derivedStarCounts[4],
+    3: derivedStarCounts[3],
+    2: derivedStarCounts[2],
+    1: derivedStarCounts[1],
   };
-  const hasServerStats = Object.values(statsCounts).some((n) => Number(n) > 0);
-  const starCounts = hasServerStats
-    ? statsCounts
-    : {
-        5: derivedStarCounts[5],
-        4: derivedStarCounts[4],
-        3: derivedStarCounts[3],
-        2: derivedStarCounts[2],
-        1: derivedStarCounts[1],
-      };
 
   const totalReviewCount =
-    Number(statsData?.total_reviews ?? attraction.total_reviews ?? derivedStarCounts.total) || 0;
+    Number(attraction.rating_count ?? attraction.total_reviews ?? derivedStarCounts.total) || 0;
 
-  const avgReviewFromStats = Number(
-    statsData?.average_rating ?? statsData?.avg_rating ?? attraction.average_rating
-  );
+  const avgReviewFromStats = Number(attraction.rating_avg ?? attraction.average_rating);
   const averageDisplayRating =
     Number.isFinite(avgReviewFromStats) && avgReviewFromStats > 0 ? avgReviewFromStats : 0;
 
   const openingHours =
-    attraction?.opening_hours?.default ||
-    attraction?.opening_hours ||
-    attraction?.business_hours ||
-    t('tourism.unknown', 'Chưa cập nhật');
+    formatOpeningHoursDisplay(attraction?.opening_hours, lang) ||
+    t('tourism.unknown', 'Chua c?p nh?t');
 
   const entranceFeeRaw =
-    attraction?.entrance_fee ?? attraction?.ticket_price ?? attraction?.price ?? 0;
+    attraction?.ticket_price_adult ?? attraction?.entrance_fee ?? attraction?.ticket_price ?? 0;
   const entranceFeeNumber = Number(entranceFeeRaw);
   const ticketDisplay =
     Number.isFinite(entranceFeeNumber) && entranceFeeNumber > 0
       ? formatVND(entranceFeeNumber)
-      : t('tourism.free', 'Miễn phí');
+      : t('tourism.free', 'Mi?n phí');
 
-  const crowdStatus =
-    attraction?.crowd_status || attraction?.crowd_level || t('tourism.peak_status', 'Cao điểm');
-  const isHighCrowd = /cao|peak|high/i.test(String(crowdStatus));
+  const capacityPct =
+    attraction?.current_capacity_pct != null ? Number(attraction.current_capacity_pct) : null;
+  const capacityThreshold = Number(attraction?.alert_threshold_pct) || 75;
+  const isHighCrowd = capacityPct !== null && capacityPct > capacityThreshold;
+  const crowdDisplay =
+    capacityPct !== null ? `${Math.round(capacityPct)}%` : t('tourism.unknown', 'Chua c?p nh?t');
 
-  const distanceValue =
-    attraction?.distance_text ??
-    attraction?.distance_km ??
-    attraction?.distance ??
-    attraction?.distanceKm;
-  const distanceText =
-    typeof distanceValue === 'number'
-      ? `${distanceValue.toFixed(1)} km`
-      : typeof distanceValue === 'string' && distanceValue.trim()
-        ? distanceValue
-        : '';
+  const ticketChildRaw = attraction?.ticket_price_child ?? 0;
+  const ticketChildNumber = Number(ticketChildRaw);
+  const ticketChildDisplay =
+    Number.isFinite(ticketChildNumber) && ticketChildNumber > 0
+      ? formatVND(ticketChildNumber)
+      : t('tourism.free', 'Mi?n phí');
 
   const heroTags = (() => {
-    const extracted = [
-      attraction?.category_name,
-      attraction?.classification,
-      attraction?.type,
-      attraction?.theme,
-      ...(Array.isArray(attraction?.tags) ? attraction.tags : []),
-      ...(Array.isArray(attraction?.categories)
-        ? attraction.categories
-            .map((item) => (typeof item === 'string' ? item : item?.name))
-            .filter(Boolean)
-        : []),
-    ]
+    const extracted = [attraction?.category_name, attraction?.province_name]
       .filter(Boolean)
       .map((item) => String(item).trim());
-
-    const unique = [...new Set(extracted)];
-    if (unique.length > 0) return unique.slice(0, 2);
-    return [
-      t('tourism.default_tag_national', 'Di tích quốc gia'),
-      t('tourism.default_tag_spiritual', 'Tâm linh'),
-    ];
+    return [...new Set(extracted)].slice(0, 2);
   })();
 
   const introTags = (() => {
-    const extra = [
-      ...heroTags,
-      attraction?.visit_type,
-      attraction?.best_time,
-      attraction?.suitable_for,
-      attraction?.highlight,
+    const tags = [
+      attraction?.category_name,
+      attraction?.province_name,
+      attraction?.commune_name,
+      attraction?.has_vr_360 ? t('tourism.feature_vr360', 'VR 360°') : null,
+      attraction?.has_ar_support ? t('tourism.feature_ar', 'AR') : null,
+      attraction?.has_audio_guide ? t('tourism.feature_audio_guide', 'Audio guide') : null,
     ]
       .filter(Boolean)
       .map((item) => String(item).trim());
-    const unique = [...new Set(extra)];
-    return unique.slice(0, 6);
+    return [...new Set(tags)].slice(0, 6);
   })();
 
   const galleryPreviewImages = (() => {
@@ -514,7 +513,9 @@ export default function TourismDetailPage() {
     return filled;
   })();
 
-  const plainDescription = stripHtmlTags(attraction?.description);
+  const plainDescription = stripHtmlTags(
+    attraction?.description_vi || attraction?.description_en || attraction?.description
+  );
 
   const nearbyPoints = (() => {
     const source = Array.isArray(attraction?.nearby_points)
@@ -522,35 +523,29 @@ export default function TourismDetailPage() {
       : Array.isArray(attraction?.nearby)
         ? attraction.nearby
         : [];
-
-    if (source.length > 0) {
-      return source.slice(0, 4).map((item, index) => ({
-        id: item?.id || `nearby-${index}`,
-        name: item?.name || t('tourism.nearby_point_name', `Điểm ${index + 1}`),
-        distance:
-          item?.distance_text ||
-          (typeof item?.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : null) ||
-          item?.distance ||
-          t('tourism.nearby_distance_unknown', 'Chưa rõ khoảng cách'),
-        image: withBaseUrl(
-          item?.main_image_url || item?.image || safeImagesMapped[index % safeImagesMapped.length]
-        ),
-      }));
-    }
-
-    return galleryPreviewImages.slice(0, 4).map((image, index) => ({
-      id: `placeholder-nearby-${index}`,
-      name: t('tourism.nearby_point_name', `Điểm ${index + 1}`),
-      distance: `${(index + 1) * 0.7} km`,
-      image,
+    return source.slice(0, 4).map((item, index) => ({
+      id: item?.id || `nearby-${index}`,
+      name:
+        item?.name_vi ||
+        item?.name_en ||
+        item?.name ||
+        t('tourism.nearby_point_name', `Ði?m ${index + 1}`),
+      distance:
+        item?.distance_text ||
+        (typeof item?.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : null) ||
+        item?.distance ||
+        t('tourism.nearby_distance_unknown', 'Chua rõ kho?ng cách'),
+      image: withBaseUrl(
+        item?.primary_image || item?.cover_image_url || item?.main_image_url || item?.image || ''
+      ),
     }));
   })();
 
   const sidebarRows = [
     {
       key: 'location',
-      label: t('tourism.location', 'Vị trí'),
-      value: attraction?.address || t('tourism.unknown', 'Chưa cập nhật'),
+      label: t('tourism.location', 'V? trí'),
+      value: attractionAddress || t('tourism.unknown', 'Chưa cập nhật'),
       dotClass: 'bg-nature',
       icon: <MapPin className="text-primary h-3.5 w-3.5" />,
     },
@@ -562,19 +557,19 @@ export default function TourismDetailPage() {
       icon: <Clock3 className="text-primary h-3.5 w-3.5" />,
     },
     {
-      key: 'season',
-      label: t('tourism.season', 'Mùa phù hợp'),
-      value:
-        attraction?.best_season || attraction?.visit_season || t('tourism.all_year', 'Quanh năm'),
-      dotClass: 'bg-warning',
-      icon: <CalendarDays className="h-3.5 w-3.5 text-warning" />,
+      key: 'website',
+      label: t('tourism.website', 'Website'),
+      value: attraction?.website || t('tourism.unknown', 'Chưa cập nhật'),
+      href: attraction?.website || null,
+      dotClass: 'bg-primary',
+      icon: <Globe className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'type',
       label: t('tourism.type', 'Loại hình'),
-      value: heroTags[0] || t('tourism.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-red-400',
-      icon: <Leaf className="h-3.5 w-3.5 text-red-400" />,
+      value: attraction?.category_name || t('tourism.unknown', 'Chưa cập nhật'),
+      dotClass: 'bg-warning',
+      icon: <Leaf className="text-warning h-3.5 w-3.5" />,
     },
   ];
 
@@ -584,7 +579,7 @@ export default function TourismDetailPage() {
       label: t('tourism.rating', 'Đánh giá'),
       value:
         averageDisplayRating > 0 ? (
-          <div className="flex items-center gap-1 text-sm font-medium text-nature">
+          <div className="text-nature flex items-center gap-1 text-sm font-medium">
             <span>{averageDisplayRating.toFixed(1)}</span>
             <Star className="h-3.5 w-3.5" />
           </div>
@@ -614,10 +609,8 @@ export default function TourismDetailPage() {
       key: 'crowd',
       label: t('tourism.crowd_level', 'Lượng người'),
       value: (
-        <span
-          className={`text-sm font-medium ${isHighCrowd ? 'text-warning' : 'text-nature'}`}
-        >
-          {crowdStatus}
+        <span className={`text-sm font-medium ${isHighCrowd ? 'text-warning' : 'text-nature'}`}>
+          {crowdDisplay}
         </span>
       ),
     },
@@ -640,10 +633,9 @@ export default function TourismDetailPage() {
             <main className="space-y-3">
               <TourismDetailHero
                 imageSrc={safeImagesMapped[currentImageIndex]}
-                title={attraction.name || t('tourism.unknown', 'Địa điểm chưa rõ tên')}
+                title={attractionName}
                 subtitle={
-                  [attraction.address, distanceText].filter(Boolean).join(' • ') ||
-                  t('tourism.location_pending', 'Đang cập nhật vị trí')
+                  attractionAddress || t('tourism.location_pending', 'Ðang c?p nh?t v? trí')
                 }
                 tags={heroTags}
                 totalImages={safeImagesMapped.length}
@@ -654,7 +646,7 @@ export default function TourismDetailPage() {
 
               <TourismDetailGallerySection
                 images={galleryPreviewImages}
-                title={attraction.name}
+                title={attractionName}
                 onPickImage={(index) => setCurrentImageIndex(index % safeImagesMapped.length)}
                 t={t}
               />
@@ -726,6 +718,7 @@ export default function TourismDetailPage() {
 
             <TourismDetailSidebar
               ticketDisplay={ticketDisplay}
+              childTicketDisplay={ticketChildDisplay}
               onOpenMap={handleOpenMap}
               onContact={handleContact}
               rows={sidebarRows}

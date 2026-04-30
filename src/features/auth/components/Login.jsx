@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'react-toastify';
 import { tokenManager } from '@/lib/tokenManager';
-import { useLoginMutation } from '@/features/auth/api/authApi';
+import { useLoginMutation } from '@/services/api/auth/authApi';
 import useAuthStore from '@/stores/useAuthStore';
 import RootLayout from '@/components/layout/RootLayout';
 

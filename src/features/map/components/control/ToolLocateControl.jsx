@@ -8,29 +8,14 @@ export default class ToolLocateControl {
 
     this._btn = document.createElement('button');
     this._btn.type = 'button';
-    this._btn.className = 'mapboxgl-ctrl-icon';
+    this._btn.className = 'mapboxgl-ctrl-geolocate';
     this._btn.title = i18n.t('mapPage.layout.toolLocate');
     this._btn.setAttribute('aria-label', i18n.t('mapPage.layout.toolLocate'));
-    Object.assign(this._btn.style, {
-      width: '1.8125rem',
-      height: '1.8125rem',
-      background: '#ffffff',
-      border: 'none',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    });
 
-    this._btn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path d="M12 2v3"></path>
-        <path d="M12 19v3"></path>
-        <path d="M2 12h3"></path>
-        <path d="M19 12h3"></path>
-      </svg>
-    `;
+    const icon = document.createElement('span');
+    icon.className = 'mapboxgl-ctrl-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    this._btn.appendChild(icon);
 
     this._onLocateClick = () => {
       if (!navigator.geolocation) {
@@ -38,6 +23,7 @@ export default class ToolLocateControl {
       }
 
       this._btn.disabled = true;
+      this._btn.classList.add('mapboxgl-ctrl-geolocate-waiting');
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -47,7 +33,13 @@ export default class ToolLocateControl {
             this._marker.remove();
           }
 
-          this._marker = new mapboxgl.Marker({ color: '#18b76a' }).setLngLat(center).addTo(map);
+          const el = document.createElement('div');
+          el.className = 'mapboxgl-user-location';
+          const dot = document.createElement('div');
+          dot.className = 'mapboxgl-user-location-dot';
+          el.appendChild(dot);
+
+          this._marker = new mapboxgl.Marker({ element: el }).setLngLat(center).addTo(map);
 
           map.flyTo({
             center,
@@ -56,9 +48,12 @@ export default class ToolLocateControl {
           });
 
           this._btn.disabled = false;
+          this._btn.classList.remove('mapboxgl-ctrl-geolocate-waiting');
+          this._btn.classList.add('mapboxgl-ctrl-geolocate-active');
         },
         () => {
           this._btn.disabled = false;
+          this._btn.classList.remove('mapboxgl-ctrl-geolocate-waiting');
         },
         {
           enableHighAccuracy: true,

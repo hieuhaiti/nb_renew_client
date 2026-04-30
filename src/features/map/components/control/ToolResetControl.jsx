@@ -1,4 +1,4 @@
-﻿import i18n from '@/i18n';
+import i18n from '@/i18n';
 import { defaultLatLong, defaultZoom, pitchDefault } from '../../constant/mapConstant';
 import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
 

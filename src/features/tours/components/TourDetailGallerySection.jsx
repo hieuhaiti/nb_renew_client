@@ -1,5 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { withBaseUrl } from '@/lib/utils';
+import placeholderImg from '@/assets/images/placeholder.png';
 
 export function TourDetailGallerySection({ images, title, onPickImage, t }) {
   return (
@@ -27,9 +29,13 @@ export function TourDetailGallerySection({ images, title, onPickImage, t }) {
             className={`h-full w-full overflow-hidden rounded-[8px] p-0 ${idx === 0 ? 'row-span-2' : ''}`}
           >
             <img
-              src={src}
+              src={withBaseUrl(src)}
               alt={`${title || 'tour'}-${idx + 1}`}
               className="h-full w-full object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = placeholderImg;
+              }}
             />
           </Button>
         ))}

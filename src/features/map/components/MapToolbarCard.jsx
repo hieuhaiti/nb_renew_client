@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { searchDataPointByName } from '@/features/map/api/mapDataLayerService';
+import { searchDataPointByName } from '@/services/api/map/mapDataLayerService';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 
@@ -72,9 +72,6 @@ export default function MapToolbarCard({
   searchResults = [],
   isSearchLoading = false,
   onSelectSearchResult,
-  radius,
-  onRadiusChange,
-  radiusOptions,
   filterChips,
   activeChip,
   onChipChange,
@@ -155,9 +152,6 @@ export default function MapToolbarCard({
     ],
     [t]
   );
-
-  const getRadiusLabel = (item) =>
-    t(`mapPage.toolbar.radiusOptions.${item.value}`, { defaultValue: item.label });
 
   const handleSelectResult = (item) => {
     if (!item) return;
@@ -389,21 +383,6 @@ export default function MapToolbarCard({
                 </div>
               ) : null}
             </div>
-
-            <div className="w-full shrink-0 sm:w-60 xl:w-56">
-              <Select value={radius} onValueChange={onRadiusChange}>
-                <SelectTrigger size="toolbar" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {radiusOptions.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {getRadiusLabel(item)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <div className="grid w-full min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:max-w-[60%] xl:basis-[60%] xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(88px,0.8fr)_minmax(84px,0.75fr)_minmax(84px,0.75fr)]">
@@ -558,8 +537,8 @@ export default function MapToolbarCard({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+          <div className="flex min-w-0 flex-wrap items-center gap-3 xl:flex-1">
             <span className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-xs font-medium">
               <SlidersHorizontal size={13} />
               {t('mapPage.toolbar.filter', { defaultValue: 'Filter' })}
@@ -578,7 +557,11 @@ export default function MapToolbarCard({
               ))}
             </div>
           </div>
-          {weatherSlot ? <div className="w-full xl:w-auto">{weatherSlot}</div> : null}
+          {weatherSlot ? (
+            <div className="w-full max-w-full min-w-0 xl:ml-3 xl:w-[clamp(150px,25vw,350px)] xl:shrink-0">
+              {weatherSlot}
+            </div>
+          ) : null}
         </div>
       </CardContent>
     </Card>

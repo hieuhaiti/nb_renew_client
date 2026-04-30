@@ -5,21 +5,27 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  RefreshCw,
+  ChevronDown,
   Inbox,
   LayoutGrid,
   List,
-  SlidersHorizontal,
+  X,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import RootLayout from '@/components/layout/RootLayout';
-import { useGetAllDataPoints } from '@/features/tourism-points/api/tourismPointsApi';
-import { categoriesService } from '@/features/categories/api/categoriesService';
-import { subCategoriesService } from '@/features/categories/api/subCategoriesService';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useGetAllDataPoints } from '@/services/api/tourism-points/tourismPointsApi';
+import { categoriesService } from '@/services/api/categories/categoriesService';
+import { subCategoriesService } from '@/services/api/categories/subCategoriesService';
 import { useDebounce } from 'use-debounce';
-import { useQuery, useQueries } from '@tanstack/react-query';
-import { fetcher } from '@/services/fetcher';
+import { useApiQueries, useApiQuery } from '@/services/useApi';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
 import {
@@ -27,6 +33,8 @@ import {
   TourismPointSkeletonCard,
   TourismPointStandardCard,
 } from '@/features/tourism-points/components/list/TourismPointCards';
+
+const PAGE_SIZE_OPTIONS = [6, 12, 24, 48];
 
 export default function TourismPointPage() {
   const { t } = useTranslation();
@@ -39,44 +47,38 @@ export default function TourismPointPage() {
   const selectedCategoryId = Number(currentSettings.selectedCategory) || 0;
   const selectedSubcategoryId = Number(currentSettings.selectedSubcategory) || 0;
 
-  const { data, refetch, isLoading, isFetching, isError } = useGetAllDataPoints({
-    format: 'json',
+  const { data, isLoading, isError } = useGetAllDataPoints({
     limit: currentSettings.limit,
     page: currentSettings.page,
     search: debouncedQuery,
-    // subcategory_id: selectedSubcategoryId || undefined,
+    category_id: selectedSubcategoryId || selectedCategoryId || undefined,
   });
 
   const { data: categoriesData } = categoriesService({ lang });
-  const categories = categoriesData?.data?.categories || [];
+  const categories = (categoriesData?.data?.items || []).filter((c) => c.parent_id === null);
 
   const { data: subCategoriesData } = subCategoriesService({
     lang,
     category_id: selectedCategoryId || undefined,
   });
-  const subcategories =
-    subCategoriesData?.subcategories || subCategoriesData?.data?.subcategories || [];
+  const subcategories = subCategoriesData?.data?.items || [];
 
   const getPaginationTotal = (payload) =>
     payload?.data?.pagination?.total ?? payload?.pagination?.total ?? 0;
-  const getFeatureCount = (payload) =>
-    payload?.data?.features?.length ?? payload?.features?.length ?? 0;
 
-  const { data: selectedCategoryCountData } = useQuery({
-    queryKey: ['points-total-by-category', lang, selectedCategoryId],
-    queryFn: () =>
-      fetcher(
-        `points?lang=${lang}&format=json&is_active=true&limit=1&page=1&category_id=${selectedCategoryId}`
-      ),
-    staleTime: 5 * 60 * 1000,
-    enabled: !!selectedCategoryId,
-  });
+  const { data: selectedCategoryCountData } = useApiQuery(
+    ['spots-count-by-category', selectedCategoryId],
+    `spots?category_id=${selectedCategoryId}&limit=1&page=1`,
+    {
+      staleTime: 5 * 60 * 1000,
+      enabled: !!selectedCategoryId,
+    }
+  );
 
-  const subcategoryCountQueries = useQueries({
+  const subcategoryCountQueries = useApiQueries({
     queries: subcategories.map((sub) => ({
-      queryKey: ['points-total-by-subcategory', lang, selectedCategoryId, sub.id],
-      queryFn: () =>
-        fetcher(`points/subcategory/${sub.id}?lang=${lang}&format=geojson&is_active=true`),
+      queryKey: ['spots-count-by-subcategory', sub.id],
+      endPoint: `spots?category_id=${sub.id}&limit=1&page=1`,
       staleTime: 5 * 60 * 1000,
       enabled: !!selectedCategoryId,
     })),
@@ -85,7 +87,7 @@ export default function TourismPointPage() {
   const subcategoryCountById = useMemo(() => {
     const map = new Map();
     subcategories.forEach((sub, idx) => {
-      map.set(String(sub.id), getFeatureCount(subcategoryCountQueries[idx]?.data));
+      map.set(String(sub.id), getPaginationTotal(subcategoryCountQueries[idx]?.data));
     });
     return map;
   }, [subcategories, subcategoryCountQueries]);
@@ -96,28 +98,26 @@ export default function TourismPointPage() {
 
   const points = useMemo(() => {
     if (!data) return [];
-    if (data.data && Array.isArray(data.data.points)) return data.data.points;
-    if (Array.isArray(data.points)) return data.points;
+    if (data.data && Array.isArray(data.data.spots)) return data.data.spots;
+    if (Array.isArray(data.spots)) return data.spots;
     return [];
   }, [data]);
 
   const paginationFromApi = data?.data?.pagination || null;
   const total = paginationFromApi?.total ?? points.length;
   const pages =
-    paginationFromApi?.total_pages ?? Math.max(1, Math.ceil(total / (currentSettings.limit || 12)));
+    paginationFromApi?.totalPages ?? Math.max(1, Math.ceil(total / (currentSettings.limit || 12)));
 
   const categoryNameById = useMemo(
-    () => new Map(categories.map((c) => [String(c.id), c.name])),
-    [categories]
+    () =>
+      new Map(
+        categories.map((c) => [
+          String(c.id),
+          lang === 'en' ? c.name_en || c.name_vi : c.name_vi || c.name_en,
+        ])
+      ),
+    [categories, lang]
   );
-
-  const selectedCategoryName = useMemo(() => {
-    if (!currentSettings.selectedCategory) return t('tourismPointPage.all', 'All');
-    return (
-      categoryNameById.get(String(currentSettings.selectedCategory)) ||
-      t('tourismPointPage.all', 'All')
-    );
-  }, [currentSettings.selectedCategory, categoryNameById, t]);
 
   const getCategoryName = (point) =>
     point?.category_name ||
@@ -150,51 +150,50 @@ export default function TourismPointPage() {
 
   const handleOpenDetail = (point) => {
     if (!point) return;
-    navigate(`/tourism-point/point/${point.id}`);
+    const pointSlug = point.slug || point.spot_slug;
+    const pointIdentifier = pointSlug || point.id;
+    if (!pointIdentifier) return;
+    navigate(`/tourism-point/point/${encodeURIComponent(String(pointIdentifier))}`);
   };
 
-  const currentCountText = points.length;
+  const catChipClass = (active) =>
+    cn(
+      'shrink-0 rounded-full text-xs font-medium transition-colors',
+      active
+        ? 'bg-background text-foreground hover:bg-background/90'
+        : 'bg-transparent text-white/60 hover:bg-white/10 hover:text-white'
+    );
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen">
-        {/* --- Header Banner --- */}
-        <div className="bg-primary text-primary-foreground relative w-full shrink-0 overflow-hidden py-8">
-          <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-4 sm:px-6 md:flex-row md:items-center lg:px-8">
-            <div>
-              <h1 className="mb-2 text-3xl font-bold">
-                {t('tourismPointPage.title', 'Điểm du lịch')}
-              </h1>
-              <p className="mb-4 text-sm font-medium">
-                {t(
-                  'tourismPointPage.subtitle',
-                  'Khám phá các điểm tham quan nổi bật tại Ninh Bình'
-                )}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="text-primary-foreground hover:border-primary-foreground hover:text-primary-foreground bg-primary flex items-center gap-2 rounded-full px-6 whitespace-nowrap shadow-sm transition-all"
-              onClick={() => refetch?.()}
-              disabled={isFetching}
-            >
-              <RefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
-              {t('tourismPointPage.refresh', 'Làm mới')}
-            </Button>
-          </div>
-          {/* Background Decorators */}
-          <div className="text-primary pointer-events-none absolute top-0 right-0 h-96 w-96 translate-x-1/4 -translate-y-1/4 rounded-full blur-3xl"></div>
-          <div className="text-primary pointer-events-none absolute right-1/4 bottom-0 h-64 w-64 translate-y-1/4 rounded-full blur-2xl"></div>
-        </div>
+      <div className="min-h-screen">
+        {/* ── Banner ── */}
+        <div className="bg-primary text-primary-foreground relative overflow-hidden pt-8 pb-6">
+          {/* Decorators */}
+          <div className="pointer-events-none absolute top-0 right-0 h-80 w-80 translate-x-1/3 -translate-y-1/3 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute right-1/3 bottom-0 h-56 w-56 translate-y-1/3 rounded-full bg-white/5 blur-2xl" />
 
-        {/* --- Filter & Search Row --- */}
-        <div className="border-border bg-background sticky top-[64px] z-20 w-full flex-shrink-0 border-b pt-4 pb-0">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-4 flex flex-col items-stretch justify-between gap-4 md:flex-row md:items-center">
-              <div className="relative w-full md:w-[400px]">
+          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {/* Badge */}
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+              {total} {t('tourismPointPage.total_spots', 'Điểm tham quan')}
+            </div>
+
+            <h1 className="mb-1 text-3xl font-bold">
+              {t('tourismPointPage.title', 'Điểm du lịch Ninh Bình')}
+            </h1>
+            <p className="text-primary-foreground/75 mb-5 text-sm">
+              {t('tourismPointPage.subtitle', 'Khám phá các điểm tham quan nổi bật tại Ninh Bình')}
+            </p>
+
+            {/* Search row */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              {/* Search input */}
+              <div className="relative min-w-0 flex-1">
                 <Search
-                  size={18}
-                  className="text-primary absolute top-1/2 left-3.5 -translate-y-1/2"
+                  size={16}
+                  className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                 />
                 <Input
                   type="text"
@@ -204,72 +203,87 @@ export default function TourismPointPage() {
                   )}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="text-primary placeholder:text-primary focus-visible:ring-ring h-10 w-full rounded-full pl-10 text-sm shadow-sm focus-visible:ring-1"
+                  className="text-foreground placeholder:text-muted-foreground border-0 bg-white pr-9 pl-9 shadow-sm focus-visible:ring-2 focus-visible:ring-white/50"
                 />
+                {query && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
+                    onClick={() => setQuery('')}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <Button
-                  className="text-primary-foreground bg-primary h-9 rounded-full px-4 font-medium shadow-sm"
-                  size="sm"
-                >
-                  <div className="bg-primary-foreground mr-2 h-1.5 w-1.5 rounded-full"></div>
-                  {selectedCategoryName}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-primary h-9 rounded-full px-4 font-medium text-[var(--foreground)] shadow-sm"
-                  size="sm"
-                >
-                  {t('tourismPointPage.filter', 'Bộ lọc')}
-                </Button>
-                <div className="text-primary hidden h-9 items-center overflow-hidden rounded-md border p-0.5 shadow-sm md:flex">
-                  <Button
-                    variant={currentSettings.viewMode === 'grid' ? 'default' : 'ghost'}
-                    size="icon"
-                    className="h-full w-8 rounded-sm rounded-r-none"
-                    onClick={() => setCurrentSettings({ viewMode: 'grid' })}
-                  >
-                    <LayoutGrid size={15} />
-                  </Button>
-                  <div className="bg-border text-primary h-4 w-[1px]"></div>
-                  <Button
-                    variant={currentSettings.viewMode === 'list' ? 'default' : 'ghost'}
-                    size="icon"
-                    className="h-full w-8 rounded-sm rounded-l-none"
-                    onClick={() => setCurrentSettings({ viewMode: 'list' })}
-                  >
-                    <List size={15} />
-                  </Button>
-                </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="text-primary h-9 w-9 rounded-full text-[var(--foreground)] shadow-sm md:hidden"
-                >
-                  <SlidersHorizontal size={15} />
-                </Button>
+              {/* Per-page selector */}
+              <div className="text-primary-foreground/80 flex shrink-0 items-center gap-2 text-sm">
+                {t('tourismPointPage.show', 'Hiển thị')}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-primary-foreground hover:text-primary-foreground w-18 justify-between gap-1 rounded-lg border-white/25 bg-white/10 hover:bg-white/20"
+                    >
+                      {currentSettings.limit}
+                      <ChevronDown size={13} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="min-w-20">
+                    {PAGE_SIZE_OPTIONS.map((n) => (
+                      <DropdownMenuItem
+                        key={n}
+                        className={cn(
+                          'justify-center',
+                          currentSettings.limit === n && 'text-primary font-semibold'
+                        )}
+                        onClick={() => setCurrentSettings({ limit: n, page: 1 })}
+                      >
+                        {n}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <span>/ {t('tourismPointPage.per_page', 'trang')}</span>
               </div>
-            </div>
 
-            <div className="no-scrollbar flex w-full items-center gap-6 overflow-x-auto border-b-0 border-transparent">
-              <Button type="button" variant="ghost"
-                onClick={() =>
-                  setCurrentSettings({ selectedCategory: 0, selectedSubcategory: 0, page: 1 })
-                }
-                className={`h-auto rounded-none border-b-2 px-1 pb-3 text-sm whitespace-nowrap ${
-                  !currentSettings.selectedCategory
-                    ? 'text-primary text-primary dark:text-primary font-semibold'
-                    : 'text-primary hover:text-primary-foreground dark:text-primary border-transparent font-medium transition-colors'
-                }`}
+              {/* Search button */}
+              <Button
+                className="text-primary shrink-0 bg-white hover:bg-white/90"
+                onClick={() => setCurrentSettings({ page: 1 })}
               >
-                {t('tourismPointPage.all', 'All')}
+                <Search size={14} />
+                {t('tourismPointPage.search_btn', 'Tìm kiếm')}
               </Button>
-              {categories.map((cat) => {
-                const isActive = Number(currentSettings.selectedCategory) === Number(cat.id);
-                return (
-                  <Button type="button" variant="ghost"
+            </div>
+          </div>
+        </div>
+
+        {/* ── Dark filter bar ── */}
+        <div className="bg-background/80 text-foreground sticky top-0 z-40 backdrop-blur-sm">
+          <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-2">
+              {/* Category chips */}
+              <div className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto">
+                <Button
+                  size="sm"
+                  className={catChipClass(!selectedCategoryId)}
+                  onClick={() =>
+                    setCurrentSettings({ selectedCategory: 0, selectedSubcategory: 0, page: 1 })
+                  }
+                >
+                  {t('tourismPointPage.all', 'Tất cả')}
+                </Button>
+                {categories.map((cat) => (
+                  <Button
                     key={cat.id}
+                    size="sm"
+                    className={catChipClass(
+                      Number(currentSettings.selectedCategory) === Number(cat.id)
+                    )}
                     onClick={() =>
                       setCurrentSettings({
                         selectedCategory: cat.id,
@@ -277,67 +291,82 @@ export default function TourismPointPage() {
                         page: 1,
                       })
                     }
-                    className={`h-auto rounded-none border-b-2 px-1 pb-3 text-sm whitespace-nowrap ${
-                      isActive
-                        ? 'text-primary text-primary dark:text-primary font-semibold'
-                        : 'text-primary hover:text-primary-foreground dark:text-primary border-transparent font-medium transition-colors'
-                    }`}
                   >
-                    {cat.name}
+                    {lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en}
                   </Button>
-                );
-              })}
+                ))}
+              </div>
+
+              {/* View mode toggle */}
+              <div className="flex shrink-0 items-center gap-0.5 rounded-lg border border-white/10 p-0.5">
+                <Button
+                  size="icon-sm"
+                  className={cn(
+                    'rounded-md',
+                    currentSettings.viewMode === 'grid'
+                      ? 'bg-white/20 text-white'
+                      : 'bg-transparent text-white/40 hover:bg-white/10 hover:text-white'
+                  )}
+                  onClick={() => setCurrentSettings({ viewMode: 'grid' })}
+                >
+                  <LayoutGrid size={15} />
+                </Button>
+                <Button
+                  size="icon-sm"
+                  className={cn(
+                    'rounded-md',
+                    currentSettings.viewMode === 'list'
+                      ? 'bg-white/20 text-white'
+                      : 'bg-transparent text-white/40 hover:bg-white/10 hover:text-white'
+                  )}
+                  onClick={() => setCurrentSettings({ viewMode: 'list' })}
+                >
+                  <List size={15} />
+                </Button>
+              </div>
             </div>
 
+            {/* Subcategory chips (conditional) */}
             {selectedCategoryId > 0 && (
-              <div className="no-scrollbar mt-2 flex w-full items-center gap-4 overflow-x-auto border-t border-border pt-2">
-                <Button type="button" variant="ghost"
+              <div className="no-scrollbar mt-2 flex items-center gap-2 overflow-x-auto border-t border-white/10 pt-2">
+                <Button
+                  size="sm"
+                  className={catChipClass(!selectedSubcategoryId)}
                   onClick={() => setCurrentSettings({ selectedSubcategory: 0, page: 1 })}
-                  className={`h-auto rounded-none border-b-2 px-1 pb-2 text-sm whitespace-nowrap ${
-                    !selectedSubcategoryId
-                      ? 'text-primary text-primary dark:text-primary font-semibold'
-                      : 'text-primary hover:text-primary-foreground dark:text-primary border-transparent font-medium transition-colors'
-                  }`}
                 >
                   {t('tourismPointPage.all_subcategories', 'Tất cả loại hình')} (
                   {selectedCategoryTotal})
                 </Button>
-
-                {subcategories.map((sub) => {
-                  const isSubActive = Number(selectedSubcategoryId) === Number(sub.id);
-                  return (
-                    <Button type="button" variant="ghost"
-                      key={sub.id}
-                      onClick={() => setCurrentSettings({ selectedSubcategory: sub.id, page: 1 })}
-                      className={`h-auto rounded-none border-b-2 px-1 pb-2 text-sm whitespace-nowrap ${
-                        isSubActive
-                          ? 'text-primary text-primary dark:text-primary font-semibold'
-                          : 'text-primary hover:text-primary-foreground dark:text-primary border-transparent font-medium transition-colors'
-                      }`}
-                    >
-                      {sub.name} ({subcategoryCountById.get(String(sub.id)) ?? 0})
-                    </Button>
-                  );
-                })}
+                {subcategories.map((sub) => (
+                  <Button
+                    key={sub.id}
+                    size="sm"
+                    className={catChipClass(Number(selectedSubcategoryId) === Number(sub.id))}
+                    onClick={() => setCurrentSettings({ selectedSubcategory: sub.id, page: 1 })}
+                  >
+                    {lang === 'en' ? sub.name_en || sub.name_vi : sub.name_vi || sub.name_en} (
+                    {subcategoryCountById.get(String(sub.id)) ?? 0})
+                  </Button>
+                ))}
               </div>
             )}
           </div>
         </div>
 
-        {/* --- Content Area --- */}
-        <div className="bg-background w-full flex-1 overflow-y-auto">
+        {/* ── Content Area ── */}
+        <div className="bg-background w-full flex-1">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mb-6 flex items-center justify-between text-sm text-[var(--muted-foreground)]">
+            <div className="text-muted-foreground mb-6 flex items-center justify-between text-sm">
               <div>
                 {t('tourismPointPage.showing', 'Hiển thị')}{' '}
-                <b className="text-[var(--foreground)]">
-                  {currentCountText} {t('tourismPointPage.of', '/')} {total}
+                <b className="text-foreground">
+                  {points.length} {t('tourismPointPage.of', '/')} {total}
                 </b>{' '}
                 {t('tourismPointPage.results', 'kết quả')}
               </div>
               <div className="flex cursor-pointer items-center gap-1.5">
                 {t('tourismPointPage.sort_by', 'Sắp xếp')}:{' '}
-                <b className="flex items-center font-semibold text-[var(--foreground)]">
+                <b className="text-foreground flex items-center font-semibold">
                   {t('tourismPointPage.featured', 'Nổi bật')}{' '}
                   <ChevronRight size={14} className="ml-0.5 rotate-90" />
                 </b>
@@ -351,7 +380,12 @@ export default function TourismPointPage() {
                     <TourismPointSkeletonCard isFeatured={true} />
                   )}
                   <div
-                    className={`grid gap-6 ${currentSettings.viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'flex flex-col'}`}
+                    className={cn(
+                      'grid gap-6',
+                      currentSettings.viewMode === 'grid'
+                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+                        : 'flex flex-col'
+                    )}
                   >
                     {Array.from({ length: 8 }).map((_, i) => (
                       <TourismPointSkeletonCard key={i} />
@@ -359,18 +393,17 @@ export default function TourismPointPage() {
                   </div>
                 </>
               ) : isError ? (
-                <div className="py-20 text-center text-[var(--destructive)]">Lỗi tải dữ liệu.</div>
+                <div className="text-destructive py-20 text-center">Lỗi tải dữ liệu.</div>
               ) : points.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-[var(--muted-foreground)]">
+                <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
                   <Inbox size={48} className="mb-4 opacity-30" />
-                  <h3 className="text-lg font-semibold text-[var(--foreground)]">
+                  <h3 className="text-foreground text-lg font-semibold">
                     {t('tourismPointPage.no_results', 'Không tìm thấy kết quả')}
                   </h3>
                   <p>Thử tìm kiếm với từ khóa khác.</p>
                 </div>
               ) : (
                 <>
-                  {/* Featured Double/Full Span Card */}
                   {currentSettings.viewMode === 'grid' && points.length > 0 && (
                     <TourismPointFeaturedCard
                       point={points[0]}
@@ -381,10 +414,13 @@ export default function TourismPointPage() {
                       onToggleLike={(e) => toggleFavorite(points[0].id, e)}
                     />
                   )}
-
-                  {/* Standard Grid/List Cards */}
                   <div
-                    className={`grid gap-5 ${currentSettings.viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'flex flex-col'}`}
+                    className={cn(
+                      'grid gap-5',
+                      currentSettings.viewMode === 'grid'
+                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+                        : 'flex flex-col'
+                    )}
                   >
                     {(currentSettings.viewMode === 'grid' ? points.slice(1) : points).map((p) => (
                       <TourismPointStandardCard
@@ -402,9 +438,9 @@ export default function TourismPointPage() {
                 </>
               )}
 
-              {/* Pagination block */}
+              {/* Pagination */}
               {pages > 1 && (
-                <div className="mt-8 flex items-center justify-between border-t border-border pt-6 font-medium">
+                <div className="border-border mt-8 flex items-center justify-between border-t pt-6 font-medium">
                   <Button
                     variant="outline"
                     size="sm"
@@ -416,7 +452,7 @@ export default function TourismPointPage() {
                   >
                     <ChevronLeft size={16} className="mr-1" /> {t('common.prev', 'Trước')}
                   </Button>
-                  <div className="text-primary rounded-full border px-4 py-1.5 text-sm shadow-sm">
+                  <div className="border-border text-primary rounded-full border px-4 py-1.5 text-sm shadow-sm">
                     {currentSettings.page} / {pages}
                   </div>
                   <Button

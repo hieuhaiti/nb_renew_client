@@ -1,4 +1,4 @@
-﻿const HOME_DATA_BY_LANG = {
+const HOME_DATA_BY_LANG = {
   vi: {
     HERO_STATS: [
       { label: 'Ði?m n?i b?t', value: '03' },

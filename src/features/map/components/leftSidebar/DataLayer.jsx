@@ -1,15 +1,11 @@
 import { useEffect, useMemo } from 'react';
-import { useQueries } from '@tanstack/react-query';
 import { Layers, AlertCircle, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  fetchSubCategoriesByCategoryId,
-  subCategoriesService,
-} from '@/features/categories/api/subCategoriesService';
+import { categoriesService } from '@/services/api/categories/categoriesService';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import { hexToRgba, withBaseUrl } from '@/lib/utils';
@@ -18,7 +14,7 @@ function subcategorySignature(items = []) {
   return items
     .map(
       (item) =>
-        `${item?.id ?? ''}|${item?.name ?? ''}|${item?.color_code ?? ''}|${item?.icon_url ?? ''}`
+        `${item?.id ?? ''}|${item?.name_vi ?? ''}|${item?.color_hex ?? ''}|${item?.icon_url ?? ''}`
     )
     .join('::');
 }
@@ -34,45 +30,45 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
   const selectAllSubcategories = useDataLayerStore((state) => state.selectAllSubcategories);
   const clearSelectedSubcategories = useDataLayerStore((state) => state.clearSelectedSubcategories);
 
-  const { data, isLoading, isFetching, isError } = subCategoriesService({
-    lang,
-    category_id: categoryId || undefined,
-  });
+  const { data: categoriesData, isLoading, isFetching, isError } = categoriesService({ lang });
+
+  const categoryTree = useMemo(() => {
+    if (Array.isArray(categoriesData?.data?.tree)) return categoriesData.data.tree;
+    if (Array.isArray(categoriesData?.data?.items)) return categoriesData.data.items;
+    return [];
+  }, [categoriesData]);
 
   const normalizedCategoryIds = useMemo(
     () => (Array.isArray(categoryIds) ? categoryIds.filter((id) => id != null) : []),
     [categoryIds]
   );
 
-  const allSubcategoryQueries = useQueries({
-    queries: showAllCategories
-      ? normalizedCategoryIds.map((id) => ({
-          queryKey: ['subcategories', lang, id],
-          queryFn: () => fetchSubCategoriesByCategoryId({ lang, category_id: id }),
-          enabled: Boolean(id),
-          staleTime: 5 * 60 * 1000,
-          retry: 1,
-        }))
-      : [],
-  });
+  const scopedCategoryTree = useMemo(() => {
+    if (!showAllCategories || normalizedCategoryIds.length === 0) return categoryTree;
 
-  const apiSubcategories = useMemo(() => {
-    if (Array.isArray(data?.data?.subcategories)) return data.data.subcategories;
-    if (Array.isArray(data?.subcategories)) return data.subcategories;
-    return [];
-  }, [data]);
+    return categoryTree.filter((item) =>
+      normalizedCategoryIds.some((id) => String(id) === String(item?.id))
+    );
+  }, [categoryTree, normalizedCategoryIds, showAllCategories]);
 
   const allApiSubcategories = useMemo(() => {
     if (!showAllCategories) return [];
 
-    const merged = allSubcategoryQueries.flatMap((query) => {
-      if (Array.isArray(query.data?.data?.subcategories)) return query.data.data.subcategories;
-      if (Array.isArray(query.data?.subcategories)) return query.data.subcategories;
-      return [];
-    });
+    const merged = scopedCategoryTree.flatMap((category) =>
+      Array.isArray(category?.children) ? category.children : []
+    );
 
     return Array.from(new Map(merged.map((item) => [item.id, item])).values());
-  }, [allSubcategoryQueries, showAllCategories]);
+  }, [scopedCategoryTree, showAllCategories]);
+
+  const apiSubcategories = useMemo(() => {
+    if (!categoryId) return [];
+
+    const matchedCategory = categoryTree.find((item) => String(item?.id) === String(categoryId));
+    if (!matchedCategory || !Array.isArray(matchedCategory.children)) return [];
+
+    return matchedCategory.children;
+  }, [categoryId, categoryTree]);
 
   const apiSubcategoriesSig = useMemo(
     () => subcategorySignature(apiSubcategories),
@@ -83,11 +79,8 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
     [allApiSubcategories]
   );
 
-  const isLoadingAll =
-    showAllCategories &&
-    normalizedCategoryIds.length > 0 &&
-    allSubcategoryQueries.some((query) => query.isLoading || query.isFetching);
-  const isErrorAll = showAllCategories && allSubcategoryQueries.some((query) => query.isError);
+  const isLoadingAll = showAllCategories && (isLoading || isFetching);
+  const isErrorAll = showAllCategories && isError;
 
   useEffect(() => {
     if (!showAllCategories) return;
@@ -101,13 +94,13 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
       setSubcategories({ categoryId: null, subcategories: [] });
       return;
     }
-    if (!data) return;
+    if (!categoriesData) return;
     setSubcategories({ categoryId, subcategories: apiSubcategories });
   }, [
     apiSubcategories,
     apiSubcategoriesSig,
+    categoriesData,
     categoryId,
-    data,
     setSubcategories,
     showAllCategories,
   ]);
@@ -196,8 +189,9 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
           <div className="min-h-0 space-y-1.5 overflow-y-auto pr-0.5">
             {subcategories.map((item) => {
               const checked = selectedSubcategoryIds.includes(item.id);
-              const colorCode = item.color_code || '#94a3b8';
+              const colorCode = item.color_hex || '#94a3b8';
               const iconUrl = withBaseUrl(item.icon_url);
+              const itemName = lang === 'en' ? (item.name_en || item.name_vi) : (item.name_vi || item.name_en);
               const checkboxId = `map-layer-subcategory-${item.id}`;
 
               return (
@@ -251,7 +245,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                       </span>
 
                       {/* Name */}
-                      <span className="truncate text-sm font-medium">{item.name}</span>
+                      <span className="truncate text-sm font-medium">{itemName}</span>
 
                       {/* Active indicator dot */}
                       {checked && (
@@ -264,7 +258,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                     </label>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-45 text-xs">
-                    {item.name}
+                    {itemName}
                   </TooltipContent>
                 </Tooltip>
               );

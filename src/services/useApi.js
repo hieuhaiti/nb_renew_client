@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import { fetcher } from '@/services/fetcher';
@@ -91,6 +91,80 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
   }, [query.error, navigate]);
 
   return query;
+}
+
+/**
+ * useApiQueries — wraps TanStack useQueries with:
+ * - queryFn defaulted to fetcher(endpoint) per query item
+ * - global loading overlay (opt-out with `loading: false`)
+ * - shared auth/validation error handling with useApiQuery
+ *
+ * @param {{queries: Array<{
+ *   queryKey: string|string[],
+ *   endPoint?: string,
+ *   queryFn?: () => Promise<unknown>,
+ *   [key: string]: unknown
+ * }>}} config
+ * @param {boolean} [loading=true] - sync to global loading overlay
+ */
+export function useApiQueries(config = {}, loading = true) {
+  const navigate = useNavigate();
+  const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
+  const rawQueries = Array.isArray(config?.queries) ? config.queries : [];
+  const loadingKeyRef = useRef(`queries:${Math.random().toString(36).slice(2)}`);
+
+  const queries = useQueries({
+    queries: rawQueries.map((queryConfig) => {
+      const {
+        queryKey,
+        endPoint,
+        queryFn,
+        ...rest
+      } = queryConfig || {};
+
+      return {
+        queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
+        queryFn: queryFn || (() => fetcher(endPoint)),
+        ...rest,
+      };
+    }),
+  });
+
+  const isAnyLoading = queries.some((query) => query.isLoading || query.isFetching);
+
+  useEffect(() => {
+    const loadingKey = loadingKeyRef.current;
+    if (!loading) {
+      setLoadingByKey(loadingKey, false);
+      return undefined;
+    }
+
+    setLoadingByKey(loadingKey, isAnyLoading);
+    return () => setLoadingByKey(loadingKey, false);
+  }, [isAnyLoading, loading, setLoadingByKey]);
+
+  const errorSignature = queries.map((query) => query.errorUpdatedAt || 0).join('|');
+
+  useEffect(() => {
+    const firstError = queries.find((query) => query.error && !query.error?.meta?.suppressGlobalError)
+      ?.error;
+    if (!firstError) return;
+
+    const { status, isAuthRequest, errors, message } = firstError;
+
+    if (status === 401 && !isAuthRequest) {
+      tokenManager.clearTokens();
+      toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+      navigate('/login');
+      return;
+    }
+
+    if (status === 400 && Array.isArray(errors) && errors.length) {
+      toastError(renderValidationErrors(errors), 8000);
+    }
+  }, [errorSignature, navigate, queries]);
+
+  return queries;
 }
 
 // ─── useApiMutation ───────────────────────────────────────────────────────────

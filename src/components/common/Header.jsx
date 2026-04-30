@@ -21,8 +21,10 @@ import {
   ChevronDown,
   ShoppingBag,
   Video,
+  Newspaper,
 } from 'lucide-react';
 import { withBaseUrl } from '@/lib/utils';
+import placeholderImg from '@/assets/images/placeholder.png';
 
 /**
  * Header — sticky top navigation bar.
@@ -73,6 +75,12 @@ export default function Header() {
       icon: <ShoppingBag size={17} />,
       authen: false,
     },
+    {
+      path: '/news',
+      label: t('common.news'),
+      icon: <Newspaper size={17} />,
+      authen: false,
+    },
     { path: '/map', label: t('common.map'), icon: <Map size={17} />, authen: false },
     { path: '/vlog', label: t('common.vlog'), icon: <Video size={17} />, authen: false },
   ];
@@ -96,7 +104,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-background/85 border-border/80 sticky top-0 z-50 flex h-16 items-center justify-between border-b px-4 shadow-sm backdrop-blur-md transition-colors duration-200 sm:px-6">
+      <header className="bg-background/90 border-border/80 supports-backdrop-filter:bg-background/80 sticky top-0 z-50 flex h-16 items-center justify-between border-b px-4 shadow-[0_1px_0_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] backdrop-blur-xl transition-colors duration-200 sm:px-6">
         {/* LOGO */}
         <Button
           id="header-logo-btn"
@@ -146,6 +154,10 @@ export default function Header() {
                     src={withBaseUrl(user.avatar_url)}
                     alt="avatar"
                     className="h-6 w-6 rounded-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = placeholderImg;
+                    }}
                   />
                 ) : (
                   <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full">
@@ -282,6 +294,10 @@ export default function Header() {
                           src={withBaseUrl(user.avatar_url)}
                           alt="avatar"
                           className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = placeholderImg;
+                          }}
                         />
                       ) : (
                         <User size={18} className="text-primary-foreground" />

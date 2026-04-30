@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { useQueries } from '@tanstack/react-query';
+import { useApiQueries } from '@/services/useApi';
 import { useTranslation } from 'react-i18next';
 import { useMapStore } from '../store/useMapStore';
 import { defaultLatLong, defaultZoom, mapDelta, pitchDefault } from '../constant/mapConstant';
@@ -9,7 +9,6 @@ import ResetControl from './control/ToolResetControl';
 import ToolLocateControl from './control/ToolLocateControl';
 import ToolViewModeControl from './control/ToolViewModeControl';
 import { useLanguageStore } from '@/stores/useLanguageStore';
-import { fetchSubcategoryPoints } from '@/features/map/api/mapDataLayerService';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import { useDestinationStore } from '@/features/map/store/useDestinationStore';
 import {
@@ -80,7 +79,7 @@ export default function MapBaseArea() {
     const map = new Map();
     subcategories.forEach((item) => {
       if (item?.id == null) return;
-      map.set(String(item.id), item.color_code || '#3b82f6');
+      map.set(String(item.id), item.color_hex || item.color_code || '#3b82f6');
     });
     return map;
   }, [subcategories]);
@@ -97,14 +96,14 @@ export default function MapBaseArea() {
     return map;
   }, [subcategories]);
 
-  const subcategoryLayerQueries = useQueries({
+  const subcategoryLayerQueries = useApiQueries({
     queries: selectedSubcategoryIdsSafe.map((subcategoryId) => ({
       queryKey: ['map', 'points', 'subcategory', lang, subcategoryId],
-      queryFn: () => fetchSubcategoryPoints({ subcategoryId, lang, format: 'geojson' }),
+      endPoint: `spots?category_id=${subcategoryId}&status=active&limit=100`,
       staleTime: 5 * 60 * 1000,
       enabled: Boolean(subcategoryId),
     })),
-  });
+  }, false);
 
   const prevRenderedSourceIdsRef = useRef(new Set());
 

@@ -22,14 +22,14 @@ export default function ThemeSwitch() {
             size="sm"
             id="theme-switch-btn"
             aria-label={t('theme.toggle')}
-            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-[var(--surface-hover)]"
+            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-(--surface-hover)"
             onClick={toggleDark}
             type="button"
           >
             {isDark ? (
-              <Moon className="h-4 w-4 text-indigo-400" />
+              <Moon className="text-primary h-4 w-4" />
             ) : (
-              <Sun className="h-4 w-4 text-amber-400" />
+              <Sun className="text-warning h-4 w-4" />
             )}
             <span className="text-foreground hidden text-xs font-medium sm:inline">
               {isDark ? t('theme.dark') : t('theme.light')}

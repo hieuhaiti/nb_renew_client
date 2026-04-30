@@ -30,27 +30,21 @@ export const ReviewTextarea = memo(({ onCommentChange, t }) => {
         )}
         value={displayValue}
         onChange={handleChange}
-        className={`min-h-25 resize-none focus:outline-none! focus:ring-0! ${
-                      newComment.length > 0 && newComment.length < 10
-                        ? 'border-red-300 focus:border-red-500'
-                        : newComment.length >= 10
-                        ? 'border-green-300 focus:border-green-500'
-                        : 'border-border'
-                    }`}
+        className={`min-h-25 resize-none focus:ring-0! focus:outline-none! ${
+          newComment.length > 0 && newComment.length < 10
+            ? 'border-destructive/40 focus:border-destructive'
+            : newComment.length >= 10
+              ? 'border-nature/40 focus:border-nature'
+              : 'border-border'
+        }`}
         maxLength={500}
       />
-      <div className="flex mt-1 justify-between text-xs">
-        <span
-          className={`${
-            newComment.length < 10 ? 'text-red-500' : 'text-green-600'
-          }`}
-        >
+      <div className="mt-1 flex justify-between text-xs">
+        <span className={`${newComment.length < 10 ? 'text-destructive' : 'text-nature'}`}>
           {t('tourism.min_characters', 'Tối thiểu 10 ký tự')}{' '}
           {newComment.length >= 10
             ? '✓'
-            : `(${t('tourism.characters_left', 'còn')} ${
-                10 - newComment.length
-              })`}
+            : `(${t('tourism.characters_left', 'còn')} ${10 - newComment.length})`}
         </span>
         <span className="text-muted-foreground">{newComment.length}/500</span>
       </div>
