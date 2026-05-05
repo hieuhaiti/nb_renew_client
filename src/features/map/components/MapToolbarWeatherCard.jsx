@@ -74,8 +74,8 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
 
     return (
       <div className="space-y-2 text-xs">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 xl:flex-nowrap">
-          <div className="flex min-w-0 items-center gap-1.5">
+        <div className="flex flex-nowrap items-center gap-2 overflow-hidden">
+          <div className="flex shrink-0 items-center gap-1.5">
             <WeatherIcon className={cn('h-4.5 w-4.5 shrink-0', weatherIconMeta.toneClass)} />
             <p className="truncate font-semibold">{cityName}</p>
           </div>
@@ -85,22 +85,22 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 xl:grid-cols-2">
-          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
+        <div className="flex flex-nowrap gap-2 overflow-hidden">
+          <div className="bg-muted/40 flex min-w-0 flex-1 items-center gap-1 rounded-md px-2 py-1">
             <Thermometer className="text-warning h-3.5 w-3.5 shrink-0" />
             <span className="text-warning truncate font-semibold">
               {formatTemperature(weather?.main?.temp)}
             </span>
           </div>
 
-          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
+          <div className="bg-muted/40 flex min-w-0 flex-1 items-center gap-1 rounded-md px-2 py-1">
             <Droplets className="text-primary h-3.5 w-3.5 shrink-0" />
             <span className="text-primary truncate font-semibold">
               {formatHumidity(weather?.main?.humidity)}
             </span>
           </div>
 
-          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
+          <div className="bg-muted/40 flex min-w-0 flex-1 items-center gap-1 rounded-md px-2 py-1">
             <Wind className="text-secondary h-3.5 w-3.5 shrink-0" />
             <span className="text-secondary truncate font-semibold">
               {formatWindSpeedKph(weather?.wind?.speed)}
@@ -108,7 +108,10 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
           </div>
 
           <div
-            className={cn('flex min-w-0 items-center gap-1 rounded-md px-2 py-1', aqiMeta.bgClass)}
+            className={cn(
+              'flex min-w-0 flex-1 items-center gap-1 rounded-md px-2 py-1',
+              aqiMeta.bgClass
+            )}
           >
             <img
               src={aqiMeta.iconSrc}

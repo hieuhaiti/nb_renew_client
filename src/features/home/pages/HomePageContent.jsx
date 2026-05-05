@@ -38,9 +38,7 @@ import {
   useWeatherOverview,
 } from '@/features/weather';
 import { useLanguageStore } from '@/stores/useLanguageStore';
-import {
-  getHomeData,
-} from '@/features/home/data/homeData';
+import { getHomeData } from '@/features/home/data/homeData';
 
 function SectionHeader({ eyebrow, title, description }) {
   return (
@@ -62,7 +60,7 @@ export default function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const lang = useLanguageStore((state) => state.lang);
-  const sectionContainerClass = 'mx-auto w-full px-4 sm:px-6 lg:w-[88%] lg:px-0';
+  const sectionContainerClass = 'mx-auto w-full px-4 sm:px-6 lg:w-[75%] lg:px-0';
   const cardClass = 'rounded-3xl border border-border/60 bg-card shadow-sm';
   const homeData = useMemo(() => getHomeData(lang), [lang]);
   const {
@@ -458,7 +456,7 @@ export default function HomePage() {
                     type="button"
                     variant="ghost"
                     onClick={() => navigate(item.path)}
-                    className="group bg-card hover:border-primary/40 border-border/70 h-auto rounded-2xl border p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                    className="group bg-card hover:border-primary/40 border-border/70 h-auto flex-col items-start overflow-visible rounded-2xl border p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
                   >
                     <div className="bg-primary/10 text-primary mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl">
                       {item.icon === 'map' && <MapPinned size={18} />}
@@ -467,10 +465,12 @@ export default function HomePage() {
                       {item.icon === 'service' && <Sun size={18} />}
                       {item.icon === 'ocop' && <ArrowRight size={18} />}
                     </div>
-                    <h3 className="text-sm font-bold">{item.title}</h3>
-                    <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
-                      {item.description}
-                    </p>
+                    <div className="w-full min-w-0">
+                      <h3 className="text-sm font-bold">{item.title}</h3>
+                      <p className="text-muted-foreground mt-1 line-clamp-2 wrap-break-word text-xs leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
                   </Button>
                 ))}
               </div>

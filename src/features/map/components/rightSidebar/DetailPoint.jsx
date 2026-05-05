@@ -307,7 +307,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
         <MapPin className="text-muted-foreground/60 h-6 w-6" />
         <p>
           {t('mapPage.destination.empty', {
-            defaultValue: 'Ch?n m?t di?m trên b?n d? d? xem thông tin chi ti?t.',
+            defaultValue: 'Chọn một điểm trên bản đồ để xem thông tin chi tiết.',
           })}
         </p>
       </div>
@@ -322,7 +322,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
           <p>
             {t('mapPage.destination.inactiveSubcategory', {
               defaultValue:
-                'Ði?m b?n dang xem thu?c subcategory dã t?t. Hãy b?t l?i l?p d? li?u ho?c ch?n di?m khác trên b?n d?.',
+                'Điểm bạn đang xem thuộc subcategory đã tắt. Hãy bật lại lớp dữ liệu hoặc chọn điểm khác trên bản đồ.',
             })}
           </p>
         </div>
@@ -351,7 +351,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
       ) : (
         <div className="text-muted-foreground bg-muted/30 flex h-49 items-center justify-center gap-2 text-sm">
           <ImageOff className="h-4 w-4" />
-          {t('mapPage.destination.noImage', { defaultValue: 'Không có ?nh d?i di?n' })}
+          {t('mapPage.destination.noImage', { defaultValue: 'Không có ảnh đại diện' })}
         </div>
       )}
 
@@ -366,7 +366,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
           )}
           {destination.average_rating != null && (
             <Badge variant="secondary" className="rounded-full px-2.5 py-1 text-xs font-bold">
-              {parseFloat(destination.average_rating).toFixed(1)} ?
+              {parseFloat(destination.average_rating).toFixed(1)} ★
             </Badge>
           )}
         </div>
@@ -384,7 +384,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
           <p className="text-muted-foreground text-sm leading-relaxed">
             {detailDescription ||
               t('mapPage.destination.noDescription', {
-                defaultValue: 'Chua có mô t? cho di?m này.',
+                defaultValue: 'Chưa có mô tả cho điểm này.',
               })}
           </p>
         )}
@@ -397,7 +397,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
             className="h-11.5 w-full rounded-[14px] font-bold"
             onClick={() => {}}
           >
-            {t('mapPage.destination.viewDetail', { defaultValue: 'Xem chi ti?t bài vi?t' })}
+            {t('mapPage.destination.viewDetail', { defaultValue: 'Xem chi tiết bài viết' })}
           </Button>
           <Button
             type="button"
@@ -405,7 +405,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
             className="h-11.5 w-full rounded-[14px] font-bold"
             onClick={() => onOpenVr?.(destination)}
           >
-            {t('mapPage.destination.openVr', { defaultValue: 'M? tham quan VR360' })}
+            {t('mapPage.destination.openVr', { defaultValue: 'Mở tham quan VR360' })}
           </Button>
           <Button
             type="button"
@@ -413,7 +413,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
             className="h-11.5 w-full rounded-[14px] font-bold"
             onClick={() => onOpenRoute?.(destination)}
           >
-            {t('mapPage.destination.openRoute', { defaultValue: 'Ch? du?ng thông minh' })}
+            {t('mapPage.destination.openRoute', { defaultValue: 'Chỉ đường thông minh' })}
           </Button>
         </div>
 
@@ -421,12 +421,12 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
           <div className="flex items-center justify-between gap-2">
             <p className="text-foreground text-sm font-bold">
               {t('mapPage.destination.featuredSuggestions', {
-                defaultValue: 'G?i ý di?m n?i b?t',
+                defaultValue: 'Gợi ý điểm nổi bật',
               })}
             </p>
             {isFeaturedLoading ? (
               <span className="text-muted-foreground text-xs">
-                {t('common.loading', { defaultValue: 'Ðang t?i...' })}
+                {t('common.loading', { defaultValue: 'Đang tải...' })}
               </span>
             ) : null}
           </div>
@@ -434,7 +434,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
           {featuredSuggestions.length === 0 ? (
             <div className="text-muted-foreground rounded-lg border border-dashed p-2.5 text-xs">
               {t('mapPage.destination.noFeaturedSuggestions', {
-                defaultValue: 'Chua có d? li?u g?i ý.',
+                defaultValue: 'Chưa có dữ liệu gợi ý.',
               })}
             </div>
           ) : (
@@ -455,11 +455,11 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
                       <span className="max-w-[70%] truncate">
                         {item.displayCategory ||
                           t('mapPage.destination.unknownCategory', {
-                            defaultValue: 'Chua phân lo?i',
+                            defaultValue: 'Chưa phân loại',
                           })}
                       </span>
                       {item.ratingText ? (
-                        <span className="shrink-0">• {item.ratingText} ?</span>
+                        <span className="shrink-0">• {item.ratingText} ★</span>
                       ) : null}
                     </span>
                   </span>

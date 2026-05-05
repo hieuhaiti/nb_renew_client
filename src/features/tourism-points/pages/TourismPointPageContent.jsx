@@ -174,12 +174,6 @@ export default function TourismPointPage() {
           <div className="pointer-events-none absolute right-1/3 bottom-0 h-56 w-56 translate-y-1/3 rounded-full bg-white/5 blur-2xl" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {/* Badge */}
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-medium">
-              <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-              {total} {t('tourismPointPage.total_spots', 'Điểm tham quan')}
-            </div>
-
             <h1 className="mb-1 text-3xl font-bold">
               {t('tourismPointPage.title', 'Điểm du lịch Ninh Bình')}
             </h1>

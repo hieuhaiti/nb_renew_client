@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import MapLayout from '@/features/map/layout/MapLayout';
 import { categoriesService } from '@/services/api/categories/categoriesService';
@@ -33,10 +33,12 @@ import {
 } from '@/services/api/map/mapSearchService';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import MapBaseArea from '../components/MapBase';
+import { fetchSubcategoryPoints } from '../api/mapDataLayerService';
 
 export default function MapPage() {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const prefillHandledRef = useRef(false);
   const [activeSidebar, setActiveSidebar] = useState(currentHeaderSidebar);
   const [activeTab, setActiveTab] = useState(currentHeaderSidebar);
@@ -99,25 +101,22 @@ export default function MapPage() {
     [searchSpotsData]
   );
 
-  const categoryDropdown = useMemo(
-    () => {
-      const sourceItems = Array.isArray(categoriesData?.data?.tree)
-        ? categoriesData.data.tree
-        : Array.isArray(categoriesData?.data?.items)
-          ? categoriesData.data.items
-          : [];
+  const categoryDropdown = useMemo(() => {
+    const sourceItems = Array.isArray(categoriesData?.data?.tree)
+      ? categoriesData.data.tree
+      : Array.isArray(categoriesData?.data?.items)
+        ? categoriesData.data.items
+        : [];
 
-      return sourceItems
-        .filter((cat) => cat?.parent_id == null)
-        .map((cat) => ({
+    return sourceItems
+      .filter((cat) => cat?.parent_id == null)
+      .map((cat) => ({
         id: cat.id,
         code: cat.code,
         label: lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en,
         raw: cat,
-        }));
-    },
-    [categoriesData, lang]
-  );
+      }));
+  }, [categoriesData, lang]);
 
   const categoryFilterChips = useMemo(
     () => [
@@ -372,7 +371,7 @@ export default function MapPage() {
     flyToPlace(first);
   };
 
-  const handleChipChange = (value) => {
+  const handleChipChange = async (value) => {
     setActiveChip(value);
 
     if (value === 'all') {
@@ -386,16 +385,29 @@ export default function MapPage() {
     }
 
     const matchedCategory = categoryDropdown.find((cat) => String(cat.id) === String(value));
-    if (!matchedCategory?.raw) {
-      return;
+    if (matchedCategory?.raw) {
+      setCategory(matchedCategory.raw);
     }
+    const normalizedCategoryId = Number.isNaN(Number(value)) ? value : Number(value);
 
-    setCategory(matchedCategory.raw);
+    setCategoryID(normalizedCategoryId);
     setCurrentTourismPointSettings({
-      selectedCategory: Number(matchedCategory.id) || matchedCategory.id,
+      selectedCategory: Number(normalizedCategoryId) || normalizedCategoryId,
       selectedSubcategory: 0,
       page: 1,
     });
+
+    try {
+      const payload = await fetchSubcategoryPoints({ subcategoryId: normalizedCategoryId });
+      const firstSpot = normalizeSpotsSearchResults(payload).find(
+        (item) => Array.isArray(item.coordinates) && item.coordinates.length >= 2
+      );
+
+      if (!firstSpot) return;
+      handleSelectSearchResult(firstSpot);
+    } catch (_error) {
+      // Ignore fetch errors and keep only the filter state update.
+    }
   };
 
   function handleBasemapChange(basemapId) {
@@ -445,12 +457,9 @@ export default function MapPage() {
     }
   };
 
-  const handleOpenVr = () => {
-    toast.info(
-      t('mapPage.toolbar.vrPrototype', {
-        defaultValue: 'VR360 preview integration is in prototype mode.',
-      })
-    );
+  const handleOpenVr = (target) => {
+    const spotId = target?.id || target?.spot_id || null;
+    navigate('/vr360', spotId ? { state: { spotId } } : undefined);
   };
 
   function handleLayerToggle(key, checked) {

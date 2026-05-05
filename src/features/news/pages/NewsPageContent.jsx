@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 import { useTranslation } from 'react-i18next';
+import LoadingInline from '@/components/common/LoadingInline';
 import RootLayout from '@/components/layout/RootLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -83,7 +84,7 @@ export default function NewsPageContent() {
           />
 
           <section className="mt-4">
-            <Card className="gap-0 rounded-3xl border-border/70 py-0 shadow-sm">
+            <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
               <CardContent className="space-y-4 px-5 py-5">
                 <SectionHeading
                   title={t('newsPage.filters.title')}
@@ -92,9 +93,11 @@ export default function NewsPageContent() {
 
                 <div className="grid gap-3 lg:grid-cols-[2fr_1fr_auto]">
                   <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">{t('newsPage.filters.keyword')}</label>
+                    <label className="typo-meta text-muted-foreground">
+                      {t('newsPage.filters.keyword')}
+                    </label>
                     <div className="relative">
-                      <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                       <Input
                         value={keyword}
                         onChange={(event) => setKeyword(event.target.value)}
@@ -105,22 +108,40 @@ export default function NewsPageContent() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">{t('newsPage.filters.featured')}</label>
+                    <label className="typo-meta text-muted-foreground">
+                      {t('newsPage.filters.featured')}
+                    </label>
                     <Select value={featuredFilter} onValueChange={setFeaturedFilter}>
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">{t('newsPage.filters.options.all')}</SelectItem>
-                        <SelectItem value="featured">{t('newsPage.filters.options.featured')}</SelectItem>
-                        <SelectItem value="normal">{t('newsPage.filters.options.normal')}</SelectItem>
+                        <SelectItem value="featured">
+                          {t('newsPage.filters.options.featured')}
+                        </SelectItem>
+                        <SelectItem value="normal">
+                          {t('newsPage.filters.options.normal')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="flex items-end gap-2">
-                    <Button variant="outline" className="h-11 rounded-xl" onClick={() => refetch?.()} disabled={isFetching}>
-                      {isFetching ? t('newsPage.actions.loading') : t('newsPage.actions.refresh')}
+                    <Button
+                      variant="outline"
+                      className="h-11 rounded-xl"
+                      onClick={() => refetch?.()}
+                      disabled={isFetching}
+                    >
+                      {isFetching ? (
+                        <span className="inline-flex items-center gap-2">
+                          <LoadingInline size="small" color="muted" />
+                          {t('newsPage.actions.loading')}
+                        </span>
+                      ) : (
+                        t('newsPage.actions.refresh')
+                      )}
                     </Button>
                     <Button
                       className="h-11 rounded-xl"
@@ -150,14 +171,18 @@ export default function NewsPageContent() {
                 {Array.from({ length: 6 }).map((_, index) => (
                   <div
                     key={`news-skeleton-${index}`}
-                    className="h-80 animate-pulse rounded-2xl border border-border/70 bg-card"
+                    className="border-border/70 bg-card h-80 animate-pulse rounded-2xl border"
                   />
                 ))}
               </div>
             ) : isError ? (
-              <div className="py-12 text-center text-sm text-destructive">{t('newsPage.states.error')}</div>
+              <div className="text-destructive py-12 text-center text-sm">
+                {t('newsPage.states.error')}
+              </div>
             ) : items.length === 0 ? (
-              <div className="py-12 text-center text-sm text-muted-foreground">{t('newsPage.states.empty')}</div>
+              <div className="text-muted-foreground py-12 text-center text-sm">
+                {t('newsPage.states.empty')}
+              </div>
             ) : (
               <>
                 <NewsCardsGrid items={items} t={t} locale={locale} formatDate={formatDate} />

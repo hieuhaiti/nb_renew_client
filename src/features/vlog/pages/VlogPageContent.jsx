@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { MessageCircle, Play, Search, Heart, Sparkles } from 'lucide-react';
+import { useDebounce } from 'use-debounce';
 import RootLayout from '@/components/layout/RootLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,6 +35,7 @@ export default function VlogPage() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [placeFilter, setPlaceFilter] = useState('all');
   const [topicFilter, setTopicFilter] = useState('all');
+  const [debouncedKeyword] = useDebounce(keyword.trim(), 400);
 
   const [newTitle, setNewTitle] = useState('');
   const [newPlace, setNewPlace] = useState('Tràng An');
@@ -43,7 +45,7 @@ export default function VlogPage() {
   const topics = useMemo(() => [...new Set(posts.map((item) => item.topic))], [posts]);
 
   const filteredPosts = useMemo(() => {
-    const normalizedKeyword = keyword.trim().toLowerCase();
+    const normalizedKeyword = debouncedKeyword.toLowerCase();
 
     return posts.filter((item) => {
       const haystack = [
@@ -64,7 +66,7 @@ export default function VlogPage() {
 
       return matchedKeyword && matchedType && matchedPlace && matchedTopic;
     });
-  }, [posts, keyword, typeFilter, placeFilter, topicFilter]);
+  }, [posts, debouncedKeyword, typeFilter, placeFilter, topicFilter]);
 
   const handleResetFilter = () => {
     setKeyword('');
@@ -211,7 +213,7 @@ export default function VlogPage() {
                   <Textarea
                     value={newDescription}
                     onChange={(event) => setNewDescription(event.target.value)}
-                    className="min-h-[120px]"
+                    className="min-h-30"
                     placeholder="Chia sẻ cảm nhận, mẹo lịch trình, món ăn ngon hoặc trải nghiệm nổi bật..."
                   />
                 </div>

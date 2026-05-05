@@ -104,7 +104,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-background/90 border-border/80 supports-backdrop-filter:bg-background/80 sticky top-0 z-50 flex h-16 items-center justify-between border-b px-4 shadow-[0_1px_0_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] backdrop-blur-xl transition-colors duration-200 sm:px-6">
+      <header className="bg-background/90 supports-backdrop-filter:bg-background/80 sticky top-0 z-50 flex h-16 items-center justify-between border-b px-4 shadow-[0_1px_0_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] backdrop-blur-xl transition-colors duration-200 sm:px-6">
         {/* LOGO */}
         <Button
           id="header-logo-btn"

@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'use-debounce';
 import LoadingInline from '@/components/common/LoadingInline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,13 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { searchDataPointByName } from '@/services/api/map/mapDataLayerService';
+import { searchDataPointByName } from '@/features/map/api/mapDataLayerService';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 
 function normalizeSuggestionFromPoint(item, index = 0) {
   const properties = item?.properties || {};
-  const geometry = item?.geometry_data || item?.geometry;
+  const geometry = item?.geometry_data || item?.geometry || item?.geojson;
   const coordinates =
     geometry?.type === 'Point' && Array.isArray(geometry?.coordinates)
       ? geometry.coordinates
@@ -36,8 +37,8 @@ function normalizeSuggestionFromPoint(item, index = 0) {
         ? item.coordinates
         : null;
 
-  const lng = Number(coordinates?.[0]);
-  const lat = Number(coordinates?.[1]);
+  const lng = Number(coordinates?.[0] ?? item?.longitude);
+  const lat = Number(coordinates?.[1] ?? item?.latitude);
 
   if (Number.isNaN(lng) || Number.isNaN(lat)) {
     return null;
@@ -97,6 +98,8 @@ export default function MapToolbarCard({
   const [showEndSuggestions, setShowEndSuggestions] = useState(false);
   const [isSearchingStart, setIsSearchingStart] = useState(false);
   const [isSearchingEnd, setIsSearchingEnd] = useState(false);
+  const [debouncedStartLocation] = useDebounce(startLocationInput.placeName, 350);
+  const [debouncedEndLocation] = useDebounce(endLocationInput.placeName, 350);
 
   const {
     vehicle,
@@ -159,81 +162,119 @@ export default function MapToolbarCard({
     setIsInputFocused(false);
   };
 
-  const handleStartLocationChange = async (value) => {
-    setStartLocationInput({ placeName: value, lat: null, lng: null });
-    setShowStartSuggestions(true);
+  useEffect(() => {
+    if (!showStartSuggestions) return;
 
-    if (!value || value.trim().length < 2) {
+    const value = debouncedStartLocation.trim();
+    if (value.length < 2) {
       setStartSuggestions([]);
+      setIsSearchingStart(false);
       return;
     }
 
+    let isActive = true;
     setIsSearchingStart(true);
 
-    try {
-      const suggestions = await getLocationSuggestions(value, {
-        language: lang,
-        limit: 5,
-      });
+    (async () => {
+      try {
+        const suggestions = await getLocationSuggestions(value, {
+          language: lang,
+          limit: 5,
+        });
 
-      const normalized = suggestions
-        .map((item) => {
-          const lng = Number(item?.coordinates?.[0]);
-          const lat = Number(item?.coordinates?.[1]);
+        if (!isActive) return;
 
-          if (Number.isNaN(lng) || Number.isNaN(lat)) return null;
+        const normalized = suggestions
+          .map((item) => {
+            const lng = Number(item?.coordinates?.[0]);
+            const lat = Number(item?.coordinates?.[1]);
 
-          return {
-            id: item.id,
-            placeName: item.placeName,
-            address: item.address,
-            lat,
-            lng,
-          };
-        })
-        .filter(Boolean);
+            if (Number.isNaN(lng) || Number.isNaN(lat)) return null;
 
-      setStartSuggestions(normalized);
-    } catch (_error) {
-      setStartSuggestions([]);
-    } finally {
-      setIsSearchingStart(false);
-    }
-  };
+            return {
+              id: item.id,
+              placeName: item.placeName,
+              address: item.address,
+              lat,
+              lng,
+            };
+          })
+          .filter(Boolean);
 
-  const handleDestinationSearch = async (value) => {
-    setEndLocationInput({ placeName: value, lat: null, lng: null });
-    setShowEndSuggestions(true);
+        setStartSuggestions(normalized);
+      } catch (_error) {
+        if (isActive) {
+          setStartSuggestions([]);
+        }
+      } finally {
+        if (isActive) {
+          setIsSearchingStart(false);
+        }
+      }
+    })();
 
-    if (!value || value.trim().length < 2) {
+    return () => {
+      isActive = false;
+    };
+  }, [debouncedStartLocation, getLocationSuggestions, lang, showStartSuggestions]);
+
+  useEffect(() => {
+    if (!showEndSuggestions) return;
+
+    const value = debouncedEndLocation.trim();
+    if (value.length < 2) {
       setEndSuggestions([]);
+      setIsSearchingEnd(false);
       return;
     }
 
+    let isActive = true;
     setIsSearchingEnd(true);
 
-    try {
-      const payload = await searchDataPointByName({
-        search: value,
-        lang,
-        page: 1,
-        limit: 5,
-      });
+    (async () => {
+      try {
+        const payload = await searchDataPointByName({
+          search: value,
+          lang,
+          page: 1,
+          limit: 5,
+        });
 
-      const root = payload?.data || payload;
-      const list =
-        root?.points || root?.spots || root?.features || root?.data?.points || root?.data || [];
+        if (!isActive) return;
 
-      const normalized = (Array.isArray(list) ? list : [])
-        .map((item, index) => normalizeSuggestionFromPoint(item, index))
-        .filter(Boolean);
+        const root = payload?.data || payload;
+        const list =
+          root?.points || root?.spots || root?.features || root?.data?.points || root?.data || [];
 
-      setEndSuggestions(normalized);
-    } catch (_error) {
-      setEndSuggestions([]);
-    } finally {
-      setIsSearchingEnd(false);
-    }
+        const normalized = (Array.isArray(list) ? list : [])
+          .map((item, index) => normalizeSuggestionFromPoint(item, index))
+          .filter(Boolean);
+
+        setEndSuggestions(normalized);
+      } catch (_error) {
+        if (isActive) {
+          setEndSuggestions([]);
+        }
+      } finally {
+        if (isActive) {
+          setIsSearchingEnd(false);
+        }
+      }
+    })();
+
+    return () => {
+      isActive = false;
+    };
+  }, [debouncedEndLocation, lang, showEndSuggestions]);
+
+  const handleStartLocationChange = (value) => {
+    setStartLocationInput({ placeName: value, lat: null, lng: null });
+    setShowStartSuggestions(true);
+  };
+
+  const handleDestinationSearch = (value) => {
+    setEndLocationInput({ placeName: value, lat: null, lng: null });
+    setShowEndSuggestions(true);
   };
 
   const handleStartSuggestionClick = (suggestion) => {
@@ -410,9 +451,9 @@ export default function MapToolbarCard({
               {showStartSuggestions && (startSuggestions.length > 0 || isSearchingStart) && (
                 <div className="bg-popover absolute z-20 mt-1 w-full rounded-md border p-1 shadow-md">
                   {isSearchingStart ? (
-                    <p className="text-muted-foreground px-2 py-1 text-xs">
-                      {t('mapPage.direction.searching', { defaultValue: 'Searching...' })}
-                    </p>
+                    <div className="flex items-center justify-center px-2 py-2">
+                      <LoadingInline size="small" color="muted" />
+                    </div>
                   ) : (
                     startSuggestions.map((suggestion) => (
                       <Button
@@ -460,9 +501,9 @@ export default function MapToolbarCard({
               {showEndSuggestions && (endSuggestions.length > 0 || isSearchingEnd) && (
                 <div className="bg-popover absolute z-20 mt-1 w-full rounded-md border p-1 shadow-md">
                   {isSearchingEnd ? (
-                    <p className="text-muted-foreground px-2 py-1 text-xs">
-                      {t('mapPage.direction.searching', { defaultValue: 'Searching...' })}
-                    </p>
+                    <div className="flex items-center justify-center px-2 py-2">
+                      <LoadingInline size="small" color="muted" />
+                    </div>
                   ) : (
                     endSuggestions.map((suggestion) => (
                       <Button

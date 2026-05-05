@@ -413,6 +413,33 @@
     "tour": "Tours",
     "chatbot": "Chatbot"
   },
+  "vr360": {
+    "title": "Virtual 360° Tour",
+    "subtitle": "Experience immersive VR360 scenes at Ninh Binh tourist destinations",
+    "scene_badge": "360°",
+    "main_badge": "Main",
+    "back_to_map": "Back to map",
+    "pick_spot": "Select a destination",
+    "pick_spot_placeholder": "Choose a destination to view VR scenes...",
+    "scene_list_title": "VR Scene List",
+    "no_scenes": "No VR scenes available for this destination.",
+    "no_scenes_select": "Select a destination to view its VR scenes.",
+    "error_scenes": "Unable to load VR scenes.",
+    "viewer_placeholder": "Select a VR scene from the list to start exploring",
+    "hotspots": "hotspots",
+    "current_scene": "Currently viewing",
+    "play_narration": "Play sample narration",
+    "minimap_title": "Map location",
+    "minimap_placeholder": "Minimap will appear here",
+    "features": {
+      "interactive": "Interactive hotspots",
+      "interactive_desc": "Tap hotspots in the scene to switch views or open extended information.",
+      "multilang": "Multilingual support",
+      "multilang_desc": "Layout includes a language selection area for narration and description text.",
+      "webgis": "WebGIS integration",
+      "webgis_desc": "Each scene can be pinned to the exact point on the map for a seamless experience."
+    }
+  },
   "mapPage": {
     "layout": {
       "mapArea": "Map area",

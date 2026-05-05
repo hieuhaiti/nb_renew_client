@@ -1,58 +1,59 @@
 const HOME_DATA_BY_LANG = {
   vi: {
     HERO_STATS: [
-      { label: 'Ði?m n?i b?t', value: '03' },
-      { label: 'T?i trung bình', value: '70%' },
-      { label: 'S? ki?n & uu dãi', value: '12+' },
-      { label: 'VR360', value: 'S?n sàng' },
+      { label: 'Điểm nổi bật', value: '03' },
+      { label: 'Tải trung bình', value: '70%' },
+      { label: 'Sự kiện & ưu đãi', value: '12+' },
+      { label: 'VR360', value: 'Sẵn sàng' },
     ],
     HERO_EVENTS: [
-      { title: 'L? h?i Hoa Lu', time: 'Tháng 4' },
-      { title: 'Tu?n du l?ch Ninh Bình 2026', time: 'Ðang di?n ra' },
-      { title: 'Trình di?n ánh sáng dêm di s?n', time: 'Cu?i tu?n' },
+      { title: 'Lễ hội Hoa Lũ', time: 'Tháng 4' },
+      { title: 'Tuần du lịch Ninh Bình 2026', time: 'Đang diễn ra' },
+      { title: 'Trình diễn ánh sáng đêm di sản', time: 'Cuối tuần' },
     ],
     PROMO_BANNER: {
-      title: 'Uu dãi mùa hè 2026',
+      title: 'Ưu đãi mùa hè 2026',
       description:
-        'Voucher cho tour, khách s?n và tr?i nghi?m ?m th?c dang du?c c?p nh?t trên b?n d?.',
-      cta: 'Xem uu dãi g?n b?n',
+        'Voucher cho tour, khách sạn và trải nghiệm ẩm thực đang được cập nhật trên bản đồ.',
+      cta: 'Xem ưu đãi gần bạn',
       path: '/map',
     },
     QUICK_LINKS: [
       {
         id: 'map',
         icon: 'map',
-        title: 'B?n d? GIS',
+        title: 'Bản đồ GIS',
         description:
-          'Xem di?m du l?ch, l?p d?ch v?, th?i ti?t, t?i tr?ng và chatbot tuong tác b?n d?.',
+          'Xem điểm du lịch, lập dịch vụ, thời tiết, tải trọng và chatbot tương tác bản đồ.',
         path: '/map',
       },
       {
         id: 'vr',
         icon: 'vr',
         title: 'VR360',
-        description: 'Tham quan ?nh và video 360, hotspot, audio thuy?t minh và b?n d? toàn c?nh.',
+        description: 'Tham quan ảnh và video 360, hotspot, audio thuyết minh và bản đồ toàn cảnh.',
         path: '/vr360',
       },
       {
         id: 'plan',
         icon: 'plan',
-        title: 'L?ch trình',
-        description: 'T?o k? ho?ch chuy?n di, luu nhi?u hành trình và chia s? qua liên k?t.',
+        title: 'Lịch trình',
+        description: 'Tạo kế hoạch chuyến đi, lưu nhiều hành trình và chia sẻ qua liên kết.',
         path: '/tour',
       },
       {
         id: 'service',
         icon: 'service',
-        title: 'D?ch v?',
-        description: 'Khách s?n, nhà hàng, v?n chuy?n, voucher khuy?n mãi và dashboard doanh nghi?p.',
+        title: 'Dịch vụ',
+        description:
+          'Khách sạn, nhà hàng, vận chuyển, voucher khuyến mãi và dashboard doanh nghiệp.',
         path: '/tourism-point',
       },
       {
         id: 'ocop',
         icon: 'ocop',
         title: 'OCOP',
-        description: 'S?n ph?m d?a phuong, x?p h?ng sao, ngu?n g?c và k?t n?i d?t hàng tr?c tuy?n.',
+        description: 'Sản phẩm địa phương, xếp hạng sao, nguồn gốc và kết nối đặt hàng trực tuyến.',
         path: '/ocop',
       },
     ],
@@ -64,145 +65,146 @@ const HOME_DATA_BY_LANG = {
         subtitle: 'Di s?n thiên nhiên - van hóa',
         rating: 4.9,
         description:
-          'Khu du l?ch sinh thái v?i h? th?ng núi dá vôi, hang d?ng và tuy?n dò xuyên th?y n?i ti?ng.',
+          'Khu du lịch sinh thái với hệ thống núi đá vôi, hang động và tuyến dò xuyên thủy nội tiếng',
         image:
           'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&q=80',
       },
       {
         id: 'hoa-lu',
-        name: 'C? dô Hoa Lu',
+        name: 'Cố đô Hoa Lũ',
         province: 'Ninh Bình',
-        subtitle: 'Di tích l?ch s?',
+        subtitle: 'Di tích lịch sử',
         rating: 4.7,
-        description: 'Qu?n th? di tích l?ch s? g?n v?i tri?u Ðinh - Ti?n Lê cùng ki?n trúc c? d?c s?c.',
+        description:
+          'Quần thể di tích lịch sử gắn với triều Đinh - Tiền Lê cùng kiến trúc cổ độc sắc',
         image:
           'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80',
       },
       {
         id: 'bai-dinh',
-        name: 'Chùa Bái Ðính',
+        name: 'Chùa Bái Đính',
         province: 'Ninh Bình',
         subtitle: 'Tâm linh',
         rating: 4.8,
-        description: 'Qu?n th? chùa l?n v?i hành lang La Hán, phù h?p tham quan k?t h?p l? h?i.',
+        description: 'Quần thể chùa lớn với hành lang La Hán, phù hợp tham quan kết hợp lễ hội',
         image:
           'https://images.unsplash.com/photo-1549692520-acc6669e2f0c?auto=format&fit=crop&w=1200&q=80',
       },
     ],
     NEWS_ITEMS: [
       {
-        title: 'Tu?n du l?ch Ninh Bình 2026 khai m?c v?i chu?i tr?i nghi?m dêm',
+        title: 'Tuần du lịch Ninh Bình 2026 khai mạc với chuỗi trải nghiệm đêm',
         date: '18/04/2026',
         excerpt:
-          'S? ki?n n?i b?t v?i tour dêm di s?n, trình di?n ánh sáng và s?n ph?m OCOP d?a phuong.',
+          'Sự kiện nổi bật với tour đêm di sản, trình diễn ánh sáng và sản phẩm OCOP địa phương',
       },
       {
-        title: 'C?nh báo n?ng nóng c?c b? t?i m?t s? di?m du l?ch tâm linh',
+        title: 'Cảnh báo nóng cực bộ tại một số điểm du lịch tâm linh',
         date: '17/04/2026',
-        excerpt: 'H? th?ng khuy?n ngh? khách ch? d?ng th?i gian tham quan và b? sung nu?c.',
+        excerpt: 'Hệ thống khuyên nghị khách chỉ đứng thời gian tham quan và bổ sung nước',
       },
       {
-        title: 'Doanh nghi?p du l?ch m? chi?n d?ch voucher liên vùng mùa hè',
+        title: 'Doanh nghiệp du lịch mở chiến dịch voucher liên vùng mùa hè',
         date: '15/04/2026',
-        excerpt: 'Nhi?u don v? luu trú, an u?ng và tour n?i t?nh d?ng lo?t phát hành voucher.',
+        excerpt: 'Nhiều đơn vị lưu trú, ăn uống và tour nội tỉnh đồng loạt phát hành voucher',
       },
     ],
     ITINERARY_ITEMS: [
-      { time: '07:30', activity: 'Kh?i hành t? trung tâm thành ph?' },
+      { time: '07:30', activity: 'Khởi hành từ trung tâm thành phố' },
       { time: '08:15', activity: 'Check-in Tràng An' },
-      { time: '11:30', activity: 'An trua d?c s?n d?a phuong' },
-      { time: '14:00', activity: 'C? dô Hoa Lu / Bái Ðính' },
-      { time: '17:30', activity: 'M? VR360 d? xem di?m cho ngày mai' },
+      { time: '11:30', activity: 'Ăn trưa đặc sản địa phương' },
+      { time: '14:00', activity: 'Cố đô Hoa Lũ / Bái Đính' },
+      { time: '17:30', activity: 'Mở VR360 để xem điểm cho ngày mai' },
     ],
-    FOOD_TAGS: ['Dê núi Ninh Bình', 'Com cháy', '?c núi', '?m th?c d?a phuong'],
+    FOOD_TAGS: ['Dê núi Ninh Bình', 'Cơm cháy', 'Ốc núi', 'Ẩm thực địa phương'],
     FOOD_BULLETS: [
-      { label: 'Nhà hàng Dê Núi C? Ðô', value: '? 4.7' },
-      { label: 'Ph? ?m th?c ven sông', value: 'M? t?i' },
-      { label: 'Voucher ?m th?c liên k?t', value: 'DECO20' },
+      { label: 'Nhà hàng Dê Núi Cố Đô', value: '⭐ 4.7' },
+      { label: 'Phố ẩm thực ven sông', value: 'Mở tối' },
+      { label: 'Voucher ẩm thực liên kết', value: 'DECO20' },
     ],
     SERVICES: [
       {
         name: 'Ninh Bình Heritage Hotel',
-        type: 'Khách s?n',
+        type: 'Khách sạn',
         rating: 4.6,
-        price: '950.000d/dêm',
+        price: '950.000đ/đêm',
         voucher: 'NBSTAY10',
-        description: 'Luu trú g?n trung tâm, thu?n ti?n k?t n?i Tràng An và Hoa Lu.',
+        description: 'Lưu trú gần trung tâm, thuận tiện kết nối Tràng An và Hoa Lũ',
         image:
           'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
       },
       {
-        name: 'Nhà hàng Dê Núi C? Ðô',
+        name: 'Nhà hàng Dê Núi Cố Đô',
         type: 'Nhà hàng',
         rating: 4.7,
-        price: '120.000d - 350.000d',
+        price: '120.000đ - 350.000đ',
         voucher: 'DECO20',
-        description: '?m th?c d?c s?n d?a phuong, phù h?p tour gia dình và doàn khách.',
+        description: 'Ẩm thực đặc sản địa phương, phù hợp tour gia đình và đoàn khách',
         image:
           'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=80',
       },
       {
         name: 'Eco Boat Tràng An',
-        type: 'V?n chuy?n',
+        type: 'Vận chuyển',
         rating: 4.5,
-        price: 'Theo tuy?n',
+        price: 'Theo tuyến',
         voucher: 'BOAT15',
-        description: 'D?ch v? thuy?n sinh thái và h? tr? d?t ch? tr?c tuy?n.',
+        description: 'Dịch vụ thuyền sinh thái và hỗ trợ đặt chỗ trực tuyến',
         image:
           'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80',
       },
     ],
     OCOP_PRODUCTS: [
       {
-        name: 'Trà sen d?t ng?p nu?c',
+        name: 'Trà sen đất ngập nước',
         stars: '4 sao',
         origin: 'Ninh Bình',
-        price: '180.000d',
-        description: 'S?n ph?m d?a phuong g?n v?i câu chuy?n vùng sinh thái d?c trung.',
+        price: '180.000đ',
+        description: 'Sản phẩm địa phương gắn với câu chuyện vùng sinh thái độc trung',
         image:
           'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80',
       },
       {
-        name: 'M?t ong r?ng ng?p m?n',
+        name: 'Mật ong rừng ngập mặn',
         stars: '4 sao',
         origin: 'Ninh Bình',
-        price: '240.000d',
-        description: 'Ngu?n g?c rõ ràng, phù h?p làm quà t?ng du l?ch.',
+        price: '240.000đ',
+        description: 'Nguồn gốc rõ ràng, phù hợp làm quà tặng du lịch',
         image:
           'https://images.unsplash.com/photo-1587049352851-8d4e89133924?auto=format&fit=crop&w=1200&q=80',
       },
       {
-        name: 'G?m th? công di s?n',
+        name: 'Gốm thủ công di sản',
         stars: '5 sao',
-        origin: 'Qu?ng Ninh',
-        price: '320.000d',
-        description: 'S?n ph?m th? công ph?c v? trung bày và quà luu ni?m.',
+        origin: 'Quảng Ninh',
+        price: '320.000đ',
+        description: 'Sản phẩm thủ công phục vụ trưng bày và quà lưu niệm',
         image:
           'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=1200&q=80',
       },
     ],
     VLOG_STORIES: [
       {
-        title: 'M?t ngày khám phá Tràng An t? sáng d?n dêm',
+        title: 'Một ngày khám phá Tràng An từ sáng đến đêm',
         author: 'Lan Anh',
         description:
-          'G?i ý l?ch trình cân b?ng gi?a tr?i nghi?m, ch?p ?nh và thu?ng th?c ?m th?c d?a phuong.',
+          'Gợi ý lịch trình cân bằng giữa trải nghiệm, chụp ảnh và thưởng thức ẩm thực địa phương',
         image:
           'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80',
       },
       {
-        title: 'Kinh nghi?m tránh dông khi di Bái Ðính mùa l? h?i',
+        title: 'Kinh nghiệm tránh đông khi đi Bái Đính mùa lễ hội',
         author: 'Minh Khoa',
         description:
-          'M?o ch?n khung gi?, tuy?n tham quan và di?m thay th? g?n dó khi lu?ng khách tang cao.',
+          'Mẹo chọn khung giờ, tuyến tham quan và điểm thay thế gần đó khi lượng khách tăng cao',
         image:
           'https://images.unsplash.com/photo-1549692520-acc6669e2f0c?auto=format&fit=crop&w=1200&q=80',
       },
       {
-        title: 'VR360 có giúp ch?n di?m d?n chính xác hon không?',
-        author: 'Ng?c Mai',
+        title: 'VR360 có giúp chọn điểm đến chính xác hơn không?',
+        author: 'Ngọc Mai',
         description:
-          'Tr?i nghi?m xem tru?c không gian th?c t? và so sánh tru?c khi lên k? ho?ch chuy?n di.',
+          'Trải nghiệm xem trước không gian thực tế và so sánh trước khi lên kế hoạch chuyến đi',
         image:
           'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80',
       },
@@ -252,7 +254,8 @@ const HOME_DATA_BY_LANG = {
         id: 'service',
         icon: 'service',
         title: 'Services',
-        description: 'Hotels, restaurants, transport, promo vouchers, and business dashboard tools.',
+        description:
+          'Hotels, restaurants, transport, promo vouchers, and business dashboard tools.',
         path: '/tourism-point',
       },
       {
@@ -292,7 +295,8 @@ const HOME_DATA_BY_LANG = {
         province: 'Ninh Binh',
         subtitle: 'Spiritual tourism',
         rating: 4.8,
-        description: 'Large pagoda complex suitable for worship, sightseeing, and festival journeys.',
+        description:
+          'Large pagoda complex suitable for worship, sightseeing, and festival journeys.',
         image:
           'https://images.unsplash.com/photo-1549692520-acc6669e2f0c?auto=format&fit=crop&w=1200&q=80',
       },
@@ -417,4 +421,3 @@ const HOME_DATA_BY_LANG = {
 export function getHomeData(lang) {
   return HOME_DATA_BY_LANG[lang === 'en' ? 'en' : 'vi'];
 }
-

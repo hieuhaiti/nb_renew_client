@@ -413,6 +413,33 @@
     "tour": "Tour du lịch",
     "chatbot": "Trợ lý ảo"
   },
+  "vr360": {
+    "title": "Tham quan ảo 360°",
+    "subtitle": "Trải nghiệm không gian VR360 tại các điểm du lịch Ninh Bình",
+    "scene_badge": "360°",
+    "main_badge": "Chính",
+    "back_to_map": "Về bản đồ",
+    "pick_spot": "Chọn điểm du lịch",
+    "pick_spot_placeholder": "Chọn điểm để xem cảnh VR...",
+    "scene_list_title": "Danh sách cảnh VR",
+    "no_scenes": "Điểm này chưa có cảnh VR.",
+    "no_scenes_select": "Chọn điểm du lịch để xem các cảnh VR.",
+    "error_scenes": "Không thể tải danh sách cảnh VR.",
+    "viewer_placeholder": "Chọn một cảnh VR từ danh sách để bắt đầu tham quan",
+    "hotspots": "hotspot",
+    "current_scene": "Điểm đang xem",
+    "play_narration": "Bật thuyết minh mẫu",
+    "minimap_title": "Vị trí trên bản đồ",
+    "minimap_placeholder": "Minimap sẽ hiển thị tại đây",
+    "features": {
+      "interactive": "Hotspot tương tác",
+      "interactive_desc": "Nhấn vào hotspot trong ảnh để chuyển cảnh hoặc mở thông tin mở rộng.",
+      "multilang": "Hỗ trợ đa ngôn ngữ",
+      "multilang_desc": "Bố cục đã chứa vùng cho chọn ngôn ngữ thuyết minh và text mô tả.",
+      "webgis": "Liên kết WebGIS",
+      "webgis_desc": "Mỗi cảnh có thể gắn về đúng điểm trên bản đồ, phục vụ trải nghiệm liền mạch."
+    }
+  },
   "mapPage": {
     "layout": {
       "mapArea": "Khu vực bản đồ",

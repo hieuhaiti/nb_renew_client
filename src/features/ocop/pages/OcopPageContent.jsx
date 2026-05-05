@@ -24,24 +24,24 @@ const PROVINCE_LABELS = {
 const FEATURED_VENDORS = [
   {
     id: 'vendor-1',
-    icon: '??',
-    name: 'HTX Sinh Du?c Ninh Bình',
+    icon: '🌿',
+    name: 'HTX Sinh Dược Ninh Bình',
     description:
-      'Chuyên các dòng trà th?o m?c, m? ph?m thiên nhiên và quà t?ng du l?ch g?n v?i hành trình sinh thái.',
+      'Chuyên các dòng trà thảo mộc, mỹ phẩm thiên nhiên và quà tặng du lịch gắn với hành trình sinh thái.',
   },
   {
     id: 'vendor-2',
-    icon: '??',
-    name: 'Trang tr?i Cúc Phuong',
+    icon: '🍯',
+    name: 'Trang trại Cúc Phương',
     description:
-      'Cung c?p m?t ong, du?c li?u và s?n ph?m thiên nhiên cho tuy?n du l?ch r?ng và ngh? du?ng.',
+      'Cung cấp mật ong, dược liệu và sản phẩm thiên nhiên cho tuyến du lịch rừng và nghỉ dưỡng.',
   },
   {
     id: 'vendor-3',
-    icon: '??',
-    name: 'Xu?ng G?m An Nhiên',
+    icon: '🏺',
+    name: 'Xưởng Gốm An Nhiên',
     description:
-      'Phát tri?n s?n ph?m th? công cao c?p, phù h?p quà t?ng, trang trí và tr?i nghi?m làng ngh?.',
+      'Phát triển sản phẩm thủ công cao cấp, phù hợp quà tặng, trang trí và trải nghiệm làng nghề.',
   },
 ];
 
@@ -55,7 +55,7 @@ function getCategoryLabel(category, labelMap = {}) {
 function getProvinceLabel(product) {
   const provinceCode = String(product?.province_code || '').trim();
   if (!provinceCode) return '--';
-  return PROVINCE_LABELS[provinceCode] || `T?nh ${provinceCode}`;
+  return PROVINCE_LABELS[provinceCode] || `Tỉnh ${provinceCode}`;
 }
 
 function getProductName(product) {
@@ -240,16 +240,16 @@ export default function OcopPageContent() {
               <div className="from-card/95 via-card/88 to-card/82 absolute inset-0 bg-linear-to-r" />
               <CardContent className="relative px-6 py-8 sm:px-8 sm:py-9">
                 <span className="typo-badge bg-primary/10 text-primary inline-flex rounded-full px-3 py-1">
-                  Gian hàng OCOP g?n v?i di?m d?n du l?ch và tr?i nghi?m d?a phuong
+                  Gian hàng OCOP gắn với điểm đến du lịch và trải nghiệm địa phương
                 </span>
 
                 <h1 className="typo-hero text-foreground mt-4 max-w-4xl">
-                  Khám phá s?n ph?m OCOP d?c s?c, d? tìm, d? l?c và d? k?t n?i mua hàng.
+                  Khám phá sản phẩm OCOP đặc sắc, dễ tìm, dễ lọc và dễ kết nối mua hàng.
                 </h1>
 
                 <p className="typo-body text-muted-foreground mt-3 max-w-3xl leading-relaxed">
-                  Trang này t?p trung gi?i thi?u s?n ph?m OCOP theo d?a phuong, h?ng sao, danh m?c
-                  và don v? cung c?p, d?ng th?i liên k?t ch?t v?i b?n d?, di?m du l?ch và uu dãi
+                  Trang này tập trung giới thiệu sản phẩm OCOP theo địa phương, hạng sao, danh mục
+                  và đơn vị cung cấp, đồng thời liên kết chặt với bản đồ, điểm du lịch và ưu đãi
                   theo mùa.
                 </p>
 
@@ -273,24 +273,24 @@ export default function OcopPageContent() {
                         ?.scrollIntoView({ behavior: 'smooth' })
                     }
                   >
-                    Ðon v? cung c?p
+                    Đơn vị cung cấp
                   </Button>
                 </div>
 
                 <div className="mt-6 grid gap-2 sm:grid-cols-3">
                   <div className="border-border/60 bg-card/90 rounded-2xl border p-4">
                     <p className="typo-kpi text-foreground">{total}</p>
-                    <p className="typo-meta text-muted-foreground">S?n ph?m OCOP dang gi?i thi?u</p>
+                    <p className="typo-meta text-muted-foreground">Sản phẩm OCOP đang giới thiệu</p>
                   </div>
                   <div className="border-border/60 bg-card/90 rounded-2xl border p-4">
                     <p className="typo-kpi text-foreground">{FEATURED_VENDORS.length}</p>
-                    <p className="typo-meta text-muted-foreground">Ðon v? cung c?p tiêu bi?u</p>
+                    <p className="typo-meta text-muted-foreground">Đơn vị cung cấp tiêu biểu</p>
                   </div>
                   <div className="border-border/60 bg-card/90 rounded-2xl border p-4">
                     <p className="typo-kpi text-foreground">
                       {averageRating ? `${averageRating.toFixed(1)}/5` : '--'}
                     </p>
-                    <p className="typo-meta text-muted-foreground">Ði?m hài lòng trung bình</p>
+                    <p className="typo-meta text-muted-foreground">Điểm hài lòng trung bình</p>
                   </div>
                 </div>
               </CardContent>
@@ -298,7 +298,7 @@ export default function OcopPageContent() {
 
             <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
               <CardContent className="px-5 py-5">
-                <SectionHeading title="Ði?m nh?n hôm nay" />
+                <SectionHeading title="Điểm nhấn hôm nay" />
 
                 <div className="mt-4 grid gap-3">
                   <div className="border-border/70 bg-primary/5 flex gap-3 rounded-2xl border p-4">
@@ -306,9 +306,9 @@ export default function OcopPageContent() {
                       <Gift className="text-primary h-5 w-5" />
                     </div>
                     <div>
-                      <p className="typo-section-title text-foreground">Combo quà t?ng du l?ch</p>
+                      <p className="typo-section-title text-foreground">Combo quà tặng du lịch</p>
                       <p className="typo-meta text-muted-foreground mt-1">
-                        G?i ý gi? quà OCOP cho du khách v?i m?c giá theo ngân sách.
+                        Gợi ý giỏ quà OCOP cho du khách với mức giá theo ngân sách.
                       </p>
                     </div>
                   </div>
@@ -318,9 +318,9 @@ export default function OcopPageContent() {
                       <Sparkles className="text-secondary h-5 w-5" />
                     </div>
                     <div>
-                      <p className="typo-section-title text-foreground">L?c theo h?ng sao</p>
+                      <p className="typo-section-title text-foreground">Lọc theo hạng sao</p>
                       <p className="typo-meta text-muted-foreground mt-1">
-                        Tìm nhanh s?n ph?m 3 sao, 4 sao, 5 sao theo t?nh và nhóm ngành.
+                        Tìm nhanh sản phẩm 3 sao, 4 sao, 5 sao theo tỉnh và nhóm ngành.
                       </p>
                     </div>
                   </div>
@@ -330,9 +330,9 @@ export default function OcopPageContent() {
                       <MapPinned className="text-warning h-5 w-5" />
                     </div>
                     <div>
-                      <p className="typo-section-title text-foreground">G?n v?i di?m tham quan</p>
+                      <p className="typo-section-title text-foreground">Gắn với điểm tham quan</p>
                       <p className="typo-meta text-muted-foreground mt-1">
-                        M?i s?n ph?m liên k?t v?i di?m du l?ch d? g?i ý mua s?m theo hành trình.
+                        Mỗi sản phẩm liên kết với điểm du lịch để gợi ý mua sắm theo hành trình.
                       </p>
                     </div>
                   </div>
@@ -345,35 +345,35 @@ export default function OcopPageContent() {
             <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
               <CardContent className="space-y-4 px-5 py-5">
                 <SectionHeading
-                  title="B? l?c s?n ph?m"
-                  description="Tìm theo tên, d?a phuong, h?ng sao và danh m?c"
+                  title="Bộ lọc sản phẩm"
+                  description="Tìm theo tên, địa phương, hạng sao và danh mục"
                 />
 
                 <div className="grid gap-3 lg:grid-cols-[2fr_1.2fr_1fr_1fr_auto]">
                   <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">T? khóa</label>
+                    <label className="typo-meta text-muted-foreground">Từ khóa</label>
                     <div className="relative">
                       <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                       <Input
                         value={keyword}
                         onChange={(event) => setKeyword(event.target.value)}
-                        placeholder="Ví d?: trà, m?t ong, g?m, tinh d?u..."
+                        placeholder="Ví dụ: trà, mật ong, gốm, tinh dầu..."
                         className="h-11 pl-9"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">Ð?a phuong</label>
+                    <label className="typo-meta text-muted-foreground">Địa phương</label>
                     <Select value={provinceFilter} onValueChange={setProvinceFilter}>
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">T?t c? d?a phuong</SelectItem>
+                        <SelectItem value="all">Tất cả địa phương</SelectItem>
                         {provinces.map((item) => (
                           <SelectItem key={item} value={item}>
-                            {PROVINCE_LABELS[item] || `T?nh ${item}`}
+                            {PROVINCE_LABELS[item] || `Tỉnh ${item}`}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -381,13 +381,13 @@ export default function OcopPageContent() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">H?ng sao</label>
+                    <label className="typo-meta text-muted-foreground">Hạng sao</label>
                     <Select value={starFilter} onValueChange={setStarFilter}>
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">T?t c?</SelectItem>
+                        <SelectItem value="all">Tất cả</SelectItem>
                         <SelectItem value="3">3 sao</SelectItem>
                         <SelectItem value="4">4 sao</SelectItem>
                         <SelectItem value="5">5 sao</SelectItem>
@@ -396,13 +396,13 @@ export default function OcopPageContent() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">Danh m?c</label>
+                    <label className="typo-meta text-muted-foreground">Danh mục</label>
                     <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">T?t c?</SelectItem>
+                        <SelectItem value="all">Tất cả</SelectItem>
                         {categories.map((item) => (
                           <SelectItem key={item} value={item}>
                             {getCategoryLabel(item, categoryLabelMap)}
@@ -414,7 +414,7 @@ export default function OcopPageContent() {
 
                   <div className="flex items-end">
                     <Button className="h-11 rounded-xl" onClick={handleReset}>
-                      Làm m?i
+                      Làm mới
                     </Button>
                   </div>
                 </div>
@@ -426,7 +426,7 @@ export default function OcopPageContent() {
                     className="rounded-full"
                     onClick={() => setChipCategory('all')}
                   >
-                    T?t c?
+                    Tất cả
                   </Button>
 
                   {categories.map((item) => (
@@ -448,8 +448,8 @@ export default function OcopPageContent() {
           <section id="ocop-products" className="mt-6">
             <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
               <SectionHeading
-                title="S?n ph?m OCOP n?i b?t"
-                description={`Ðang hi?n th? ${filteredProducts.length} s?n ph?m phù h?p`}
+                title="Sản phẩm OCOP nổi bật"
+                description={`Đang hiển thị ${filteredProducts.length} sản phẩm phù hợp`}
               />
               <Button
                 variant="outline"
@@ -457,7 +457,7 @@ export default function OcopPageContent() {
                 onClick={() => refetch?.()}
                 disabled={isFetching}
               >
-                {isFetching ? 'Ðang t?i...' : 'Làm m?i d? li?u'}
+                {isFetching ? 'Đang tải...' : 'Làm mới dữ liệu'}
               </Button>
             </div>
 
@@ -472,11 +472,11 @@ export default function OcopPageContent() {
               </div>
             ) : isError ? (
               <div className="text-destructive py-12 text-center text-sm">
-                Không th? t?i d? li?u OCOP lúc này.
+                Không thể tải dữ liệu OCOP lúc này.
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="text-muted-foreground py-12 text-center text-sm">
-                Chua có s?n ph?m OCOP phù h?p.
+                Chưa có sản phẩm OCOP phù hợp.
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -541,9 +541,9 @@ export default function OcopPageContent() {
 
                         <p
                           className="typo-body text-muted-foreground line-clamp-3"
-                          title={description || 'Chua có mô t?'}
+                          title={description || 'Chưa có mô tả'}
                         >
-                          {description || 'Chua có mô t?.'}
+                          {description || 'Chưa có mô tả.'}
                         </p>
 
                         <div className="mt-2 flex flex-wrap gap-1.5">
@@ -568,7 +568,7 @@ export default function OcopPageContent() {
                             }}
                             disabled={!item?.id}
                           >
-                            Xem chi ti?t
+                            Xem chi tiết
                           </Button>
                         </div>
                       </CardContent>
@@ -583,14 +583,14 @@ export default function OcopPageContent() {
             <Card className="from-primary/90 via-primary to-secondary/90 text-primary-foreground gap-0 rounded-3xl border-0 bg-linear-to-r py-0 shadow-sm">
               <CardContent className="px-6 py-6 sm:px-7">
                 <span className="typo-badge border-primary-foreground/40 bg-primary-foreground/10 text-primary-foreground inline-flex rounded-full border px-3 py-1">
-                  Uu dãi theo mùa du l?ch
+                  Ưu đãi theo mùa du lịch
                 </span>
                 <h3 className="mt-3 text-3xl leading-tight font-bold">
-                  Mua quà d?a phuong ngay trong hành trình khám phá.
+                  Mua quà địa phương ngay trong hành trình khám phá.
                 </h3>
                 <p className="text-primary-foreground/90 mt-2 text-sm">
-                  K?t n?i gian hàng OCOP v?i b?n d? di?m d?n, khu tr?i nghi?m, nhà hàng và tour d?
-                  du khách mua s?m thu?n ti?n hon.
+                  Kết nối gian hàng OCOP với bản đồ điểm đến, khu trải nghiệm, nhà hàng và tour để
+                  du khách mua sắm thuận tiện hơn.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button
@@ -598,14 +598,14 @@ export default function OcopPageContent() {
                     className="border-primary-foreground/50 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 rounded-xl"
                     onClick={() => navigate('/map')}
                   >
-                    M? b?n d?
+                    Mở bản đồ
                   </Button>
                   <Button
                     variant="outline"
                     className="border-primary-foreground/50 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 rounded-xl"
                     onClick={() => navigate('/tourism-point')}
                   >
-                    Xem di?m du l?ch
+                    Xem điểm du lịch
                   </Button>
                 </div>
               </CardContent>
@@ -614,8 +614,8 @@ export default function OcopPageContent() {
             <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
               <CardContent className="px-5 py-5">
                 <SectionHeading
-                  title="Danh m?c ph? bi?n"
-                  description="Nhóm s?n ph?m du?c quan tâm nhi?u"
+                  title="Danh mục phổ biến"
+                  description="Nhóm sản phẩm được quan tâm nhiều"
                 />
                 <div className="mt-4 flex flex-wrap gap-2">
                   {popularCategories.map((item, index) => (
@@ -643,8 +643,8 @@ export default function OcopPageContent() {
           <section id="ocop-vendors" className="mt-6">
             <div className="mb-4">
               <SectionHeading
-                title="Ðon v? cung c?p tiêu bi?u"
-                description="Các co s? s?n xu?t và h?p tác xã g?n v?i du l?ch tr?i nghi?m"
+                title="Đơn vị cung cấp tiêu biểu"
+                description="Các cơ sở sản xuất và hợp tác xã gắn với du lịch trải nghiệm"
               />
             </div>
 
@@ -673,7 +673,7 @@ export default function OcopPageContent() {
                     </div>
 
                     <Button variant="outline" className="mt-4 rounded-xl">
-                      Liên h? don v?
+                      Liên hệ đơn vị
                     </Button>
                   </CardContent>
                 </Card>
