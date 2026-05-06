@@ -75,7 +75,7 @@ export function useSubcategoryLayerQuery({ subcategoryIds = [], lang = 'vi' } = 
           ? [
               {
                 queryKey: ['map', 'points', 'subcategory', lang, ids],
-                endPoint: `spots?category_ids=${JSON.stringify(ids)}&status=active&limit=100`,
+                endPoint: `spots?category_ids=${JSON.stringify(ids)}&status=active&limit=100&capacity=true`,
                 staleTime: 5 * 60 * 1000,
                 enabled: Boolean(ids.length),
               },
