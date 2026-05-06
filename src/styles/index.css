@@ -193,20 +193,6 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Nature / Tourism accent palette */
-  --color-nature: var(--nature);
-  --color-nature-hover: var(--nature-hover);
-  --color-nature-foreground: var(--nature-foreground);
-  --color-nature-foreground-hover: var(--nature-foreground-hover);
-  --color-nature-dark: var(--nature-dark);
-  --color-nature-border: var(--nature-border);
-  --color-nature-soft: var(--nature-soft);
-  --color-nature-soft-hover: var(--nature-soft-hover);
-  --color-nature-muted-foreground: var(--nature-muted-foreground);
-  --color-nature-label: var(--nature-label);
-  --color-nature-accent: var(--nature-accent);
-  --color-nature-map-bg: var(--nature-map-bg);
-
   /* ===== Shadows ===== */
   --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.05);
   --shadow-md:

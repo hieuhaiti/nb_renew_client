@@ -5,6 +5,7 @@ import { useDebounce } from 'use-debounce';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import MapLayout from '@/features/map/layout/MapLayout';
+import MapDirectionPanel from '@/features/map/components/MapDirectionPanel';
 import { categoriesService } from '@/services/api/categories/categoriesService';
 import { env } from '@/config/env';
 import {
@@ -15,14 +16,12 @@ import {
   mapTourSuggestions,
 } from '@/features/map/constant/mapPageMockData';
 import DataLayer from '@/features/map/components/leftSidebar/DataLayer';
-import DataLayerMapStylePanel from '@/features/map/components/leftSidebar/DataLayerMapStylePanel';
 import { currentHeaderSidebar } from '@/features/map/constant/sidebarConstant';
-import MapToolbarCard from '@/features/map/components/MapToolbarCard';
-import MapToolbarWeatherCard from '@/features/map/components/MapToolbarWeatherCard';
+import MapToolbarCard from '@/features/map/components/toolbar/MapToolbarCard';
+import MapToolbarWeatherCard from '@/features/map/components/toolbar/MapToolbarWeatherCard';
 import MapRightSidebar from '@/features/map/components/rightSidebar/MapRightSidebar';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
-import { useDestinationStore } from '@/features/map/store/useDestinationStore';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
@@ -33,7 +32,9 @@ import {
 } from '@/services/api/map/mapSearchService';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import MapBaseArea from '../components/MapBase';
-import { fetchSubcategoryPoints } from '../api/mapDataLayerService';
+import ModalMarker from '@/features/map/components/ModalMarker';
+import ModalCarousel from '@/features/map/components/ModalCarousel';
+import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
 
 export default function MapPage() {
   const { t } = useTranslation();
@@ -48,6 +49,7 @@ export default function MapPage() {
   const [activeBasemap, setActiveBasemap] = useState('outdoor');
   const [pendingFlyCoordinates, setPendingFlyCoordinates] = useState(null);
   const [pendingSearchSelection, setPendingSearchSelection] = useState(null);
+  const [isDirectionPanelOpen, setIsDirectionPanelOpen] = useState(true);
   const [layerState, setLayerState] = useState({
     destinations: true,
     services: true,
@@ -63,11 +65,11 @@ export default function MapPage() {
   const setCurrentTourismPointSettings = useTourismPointSettingStore(
     (state) => state.setCurrentSettings
   );
+  const openSpotModal = useSpotDetailModalStore((state) => state.openSpotModal);
   const mapRef = useMapStore((state) => state.mapRef);
   const mapRefObj = useMapStore((state) => state.mapRefObj);
+  const setHighlightedPoint = useMapStore((state) => state.setHighlightedPoint);
   const setMapStyle = useMapStyleStore((state) => state.setMapStyle);
-  const selectedDestination = useDestinationStore((state) => state.selectedDestination);
-  const setSelectedDestination = useDestinationStore((state) => state.setSelectedDestination);
   const directions = useDirectionsStore((state) => state.directions);
   const setEndLocation = useDirectionsStore((state) => state.setEndLocation);
   const clearDirections = useDirectionsStore((state) => state.clearDirections);
@@ -192,23 +194,20 @@ export default function MapPage() {
   const hasDirectionDetails = Boolean(directions?.legs?.[0]?.steps?.length || directions);
 
   useEffect(() => {
-    if (selectedDestination) {
-      setActiveTab('destination');
-      setActiveSidebar('destination');
-    }
-  }, [selectedDestination]);
-
-  useEffect(() => {
     if (!directions) return;
-    setActiveSidebar('direction');
-    setActiveTab('direction');
+    setIsDirectionPanelOpen(true);
   }, [directions]);
 
   useEffect(() => {
     if (hasDirectionDetails || activeTab !== 'direction') return;
-    setActiveSidebar('destination');
-    setActiveTab('destination');
+    setActiveSidebar('event');
+    setActiveTab('event');
   }, [activeTab, hasDirectionDetails]);
+
+  useEffect(() => {
+    if (hasDirectionDetails) return;
+    setIsDirectionPanelOpen(false);
+  }, [hasDirectionDetails]);
 
   const flyToPlace = (place) => {
     if (!place || !mapRef) return;
@@ -224,7 +223,7 @@ export default function MapPage() {
     const next = mapDestinations.find((item) => item.id === placeId);
     if (!next) return;
     setSelectedPlaceId(placeId);
-    setSelectedDestination({
+    setHighlightedPoint({
       id: next.id,
       name: next.name,
       description: next.description,
@@ -234,7 +233,6 @@ export default function MapPage() {
       source: 'mock',
       raw: next,
     });
-    setActiveTab('destination');
     flyToPlace(next);
   };
 
@@ -254,7 +252,7 @@ export default function MapPage() {
           ? result.subcategory_id
           : Number(result.subcategory_id);
 
-    setSelectedDestination({
+    setHighlightedPoint({
       id: result.id,
       slug: result.slug,
       name: result.name,
@@ -295,8 +293,9 @@ export default function MapPage() {
       setPendingFlyCoordinates(result.coordinates);
     }
 
-    setActiveTab('destination');
-    setActiveSidebar('destination');
+    if (result.id) {
+      openSpotModal(result.id, result.slug ?? null);
+    }
   };
 
   useEffect(() => {
@@ -367,7 +366,6 @@ export default function MapPage() {
 
     const first = filteredDestinations[0];
     setSelectedPlaceId(first.id);
-    setActiveTab('destination');
     flyToPlace(first);
   };
 
@@ -396,18 +394,6 @@ export default function MapPage() {
       selectedSubcategory: 0,
       page: 1,
     });
-
-    try {
-      const payload = await fetchSubcategoryPoints({ subcategoryId: normalizedCategoryId });
-      const firstSpot = normalizeSpotsSearchResults(payload).find(
-        (item) => Array.isArray(item.coordinates) && item.coordinates.length >= 2
-      );
-
-      if (!firstSpot) return;
-      handleSelectSearchResult(firstSpot);
-    } catch (_error) {
-      // Ignore fetch errors and keep only the filter state update.
-    }
   };
 
   function handleBasemapChange(basemapId) {
@@ -445,8 +431,7 @@ export default function MapPage() {
     const lat = Number(coordinates?.[1]);
 
     clearDirections();
-    setActiveSidebar('direction');
-    setActiveTab('direction');
+    setIsDirectionPanelOpen(true);
 
     if (!Number.isNaN(lng) && !Number.isNaN(lat)) {
       setEndLocation({
@@ -476,6 +461,8 @@ export default function MapPage() {
 
   return (
     <MapLayout>
+      <ModalMarker />
+      <ModalCarousel />
       <section className="bg-background h-full overflow-hidden p-3">
         <div className="mx-auto grid h-full min-h-0 w-full max-w-437.5 grid-rows-[auto_1fr] gap-3">
           <MapToolbarCard
@@ -488,7 +475,7 @@ export default function MapPage() {
             activeChip={activeChip}
             onChipChange={handleChipChange}
             onSearch={handleSearch}
-            weatherSlot={<MapToolbarWeatherCard compact className="w-full xl:w-auto" />}
+            weatherSlot={<MapToolbarWeatherCard compact className="size-full" />}
           />
 
           <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[300px_minmax(0,1fr)_340px] 2xl:grid-cols-[320px_minmax(0,1fr)_380px]">
@@ -502,17 +489,15 @@ export default function MapPage() {
                   />
                 </CardContent>
               </Card>
-              <Card className="border-border shrink-0 rounded-2xl shadow-sm">
-                <CardContent className="p-3">
-                  <DataLayerMapStylePanel
-                    basemapOptions={mapBasemapOptions}
-                    activeBasemap={activeBasemap}
-                    onBasemapChange={handleBasemapChange}
-                  />
-                </CardContent>
-              </Card>
             </div>
             <div className="border-border relative h-full min-h-0 overflow-hidden rounded-3xl p-0 shadow-sm">
+              {hasDirectionDetails && (
+                <MapDirectionPanel
+                  isOpen={isDirectionPanelOpen}
+                  onOpen={() => setIsDirectionPanelOpen(true)}
+                  onClose={() => setIsDirectionPanelOpen(false)}
+                />
+              )}
               <MapBaseArea />
             </div>
 

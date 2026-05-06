@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "app_name": "Travel Ninh Bình",
     "home": "Trang chủ",
@@ -19,6 +19,7 @@
     "open_menu": "Mở menu",
     "news": "Tin tức",
     "vlog": "Vlog",
+    "vr360": "360° Thực tế ảo",
     "ocop_festival": "Lễ hội OCOP",
     "see_all": "Xem tất cả",
     "search_placeholder": "Tìm kiếm điểm / tuyến...",
@@ -151,7 +152,14 @@
       "no_content": "Chưa có nội dung chi tiết.",
       "sidebar_title": "Khám phá trên bản đồ",
       "sidebar_desc": "Sau khi đọc tin, bạn có thể mở bản đồ để xem nhanh vị trí liên quan và xây dựng lịch trình phù hợp.",
-      "cta_map": "Mở bản đồ ngay"
+      "cta_map": "Mở bản đồ ngay",
+      "share": "Chia sẻ",
+      "views": "lượt xem",
+      "min_read": "phút đọc",
+      "link_copied": "Đã sao chép liên kết!",
+      "tags_title": "Chủ đề",
+      "related_title": "Tin cùng chủ đề",
+      "no_related": "Chưa có tin liên quan."
     }
   },
   "auth": {
@@ -316,6 +324,10 @@
       "copied": "Đã sao chép",
       "shared": "Đã chia sẻ"
     },
+    "actions": {
+      "save": "Lưu",
+      "share": "Chia sẻ"
+    },
     "review": {
       "missing_rating": "Vui lòng đánh giá đầy đủ các tiêu chí."
     }
@@ -341,13 +353,14 @@
     "reviews": "đánh giá",
     "view_detail": "Xem chi tiết",
     "free": "Miễn phí",
-    "no_results": "Không tìm thấy kết quả"
+    "no_results": "Không tìm thấy kết quả",
+    "errorLoading": "Không thể tải dữ liệu.",
+    "tryDifferentKeyword": "Thử tìm kiếm với từ khóa khác."
   },
   "tourPage": {
     "title": "Tuyến du lịch",
     "description": "Khám phá các tuyến du lịch từ dữ liệu thực tế",
     "detailDescriptionTitle": "Mô tả tuyến du lịch",
-    "total": "Tổng số tuyến",
     "refresh": "Làm mới",
     "searchPlaceholder": "Tìm kiếm tuyến du lịch...",
     "gridView": "Lưới",
@@ -365,6 +378,8 @@
     "copied": "Đã sao chép",
     "shared": "Đã chia sẻ",
     "review": "Đánh giá",
+    "save": "Lưu",
+    "share": "Chia sẻ",
     "by": "bởi",
     "guest": "Khách",
     "createdAt": "Ngày tạo",
@@ -402,7 +417,7 @@
     "outdoorDesc": "Bản đồ địa hình phù hợp khám phá thiên nhiên.",
     "streetDesc": "Bản đồ đường phố với nhãn và giao thông chi tiết.",
     "satelliteDesc": "Ảnh vệ tinh độ phân giải cao.",
-    "satelliteStreetDesc": "Nền vệ tinh kèm nhãn đường và địa điểm."
+    "satelliteStreetDesc": "Nền vệ tinh kèm nhãn đường."
   },
   "headerAside": {
     "layerData": "Lớp dữ liệu",
@@ -487,8 +502,13 @@
     "toolbar": {
       "searchPlaceholder": "Tìm kiếm điểm đến, dịch vụ, ẩm thực, sự kiện...",
       "searchButton": "Tìm kiếm",
+      "category": "Danh mục",
       "filter": "Bộ lọc",
+      "baseMap": "Bản đồ nền",
+      "radius": "Bán kính",
+      "radiusAll": "Không giới hạn bán kính",
       "searchNoResult": "Không tìm thấy điểm phù hợp với bộ lọc hiện tại.",
+      "locationError": "Không thể lấy vị trí của bạn. Vui lòng bật quyền truy cập vị trí.",
       "styleUnavailable": "Kiểu bản đồ được chọn chưa được cấu hình.",
       "geoUnsupported": "Trình duyệt này không hỗ trợ định vị.",
       "mapNotReady": "Bản đồ đang tải, vui lòng thử lại sau ít giây.",
@@ -498,9 +518,11 @@
     },
     "destination": {
       "title": "Điểm đến",
+      "unknownName": "Điểm đến không xác định",
       "empty": "Chọn một điểm trên bản đồ để xem thông tin chi tiết.",
       "inactiveSubcategory": "Điểm bạn đang xem thuộc lớp dữ liệu đã tắt. Hãy bật lại lớp hoặc chọn điểm khác.",
       "noImage": "Không có ảnh đại diện",
+      "noAddress": "Chưa có địa chỉ",
       "noDescription": "Chưa có mô tả cho điểm này.",
       "category": "Danh mục",
       "subcategory": "Phân mục",
@@ -523,16 +545,41 @@
       "visits": "Lượt ghé thăm",
       "openRoute": "Chỉ đường"
     },
+    "tourPanel": {
+      "title": "Tour du lịch",
+      "syncing": "Đang đồng bộ...",
+      "count": "{{count}} tour",
+      "reset": "Đặt lại",
+      "searchPlaceholder": "Tìm tour...",
+      "featuredOnly": "Nổi bật",
+      "nonFeatured": "Không nổi bật",
+      "error": "Không thể tải danh sách tour.",
+      "empty": "Không có tour phù hợp với bộ lọc.",
+      "openRoute": "Mở chỉ đường",
+      "loadingRoute": "Đang mở...",
+      "hideOtherPoints": "Ẩn điểm khác",
+      "showOtherPoints": "Hiện điểm khác",
+      "clearRoute": "Xóa tuyến",
+      "routeReady": "Đã hiển thị tuyến tour trên bản đồ.",
+      "routeFailed": "Không thể hiển thị tuyến tour lúc này.",
+      "routeCleared": "Đã xóa tuyến tour khỏi bản đồ.",
+      "routeInsufficientStops": "Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường."
+    },
     "direction": {
       "driving": "Ô tô",
       "walking": "Đi bộ",
       "cycling": "Xe đạp",
+      "transportType": "Phương tiện",
       "startPlaceholder": "Nhập điểm đi",
       "endPlaceholder": "Nhập điểm đến",
       "searching": "Đang tìm...",
       "swap": "Đổi chiều",
       "calculate": "Tính chỉ đường",
+      "calculateReadyHint": "Nhấn để tính chỉ đường.",
+      "calculateDisabledHint": "Vui lòng nhập đủ điểm đi và điểm đến để tính chỉ đường.",
       "clear": "Xóa",
+      "clearReadyHint": "Xóa tuyến đang hiển thị trên bản đồ.",
+      "clearDisabledHint": "Chưa có tuyến để xóa.",
       "totalDistance": "Tổng quãng đường",
       "totalDuration": "Tổng thời gian",
       "stepsTitle": "Hướng dẫn từng bước",

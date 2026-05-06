@@ -2,9 +2,11 @@ import { useApiQuery } from '@/services/useApi';
 import { fetcher } from '@/services/fetcher';
 
 export function useSubcategoryPointsQuery({ subcategoryId } = {}, options = {}) {
+  const categoryIds = JSON.stringify([subcategoryId]);
+
   return useApiQuery(
     ['map', 'points', 'subcategory', subcategoryId],
-    `spots?category_id=${subcategoryId}&status=active&limit=500`,
+    `spots?category_ids=${categoryIds}&status=active&limit=500`,
     {
       staleTime: 5 * 60 * 1000,
       enabled: Boolean(subcategoryId) && (options.enabled ?? true),
@@ -15,7 +17,8 @@ export function useSubcategoryPointsQuery({ subcategoryId } = {}, options = {}) 
 }
 
 export function fetchSubcategoryPoints({ subcategoryId } = {}) {
-  return fetcher(`spots?category_id=${subcategoryId}&status=active&limit=100`);
+  const categoryIds = JSON.stringify([subcategoryId]);
+  return fetcher(`spots?category_ids=${categoryIds}&status=active&limit=100`);
 }
 
 function buildPointDetailEndpoint({ pointSlug, pointId }) {

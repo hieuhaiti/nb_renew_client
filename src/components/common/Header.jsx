@@ -22,6 +22,7 @@ import {
   ShoppingBag,
   Video,
   Newspaper,
+  RectangleGoggles,
 } from 'lucide-react';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
@@ -82,6 +83,12 @@ export default function Header() {
       authen: false,
     },
     { path: '/map', label: t('common.map'), icon: <Map size={17} />, authen: false },
+    {
+      path: '/vr360',
+      label: t('common.vr360'),
+      icon: <RectangleGoggles size={17} />,
+      authen: false,
+    },
     { path: '/vlog', label: t('common.vlog'), icon: <Video size={17} />, authen: false },
   ];
   const visibleNavItems = navItems.filter((item) => !item.authen || isAuthenticated);

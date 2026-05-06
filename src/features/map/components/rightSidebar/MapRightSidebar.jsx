@@ -31,8 +31,7 @@ export default function MapRightSidebar({
   const { t } = useTranslation();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const visibleSidebarItems = headerSidebar.filter(
-    (item) =>
-      (!item.authen || isAuthenticated) && (!item.requiresDirectionDetails || hasDirectionDetails)
+    (item) => item.value !== 'direction' && (!item.authen || isAuthenticated)
   );
   const sidebarTabValues = visibleSidebarItems.map((item) => item.value);
   const defaultSidebarTab = sidebarTabValues.includes(currentHeaderSidebar)

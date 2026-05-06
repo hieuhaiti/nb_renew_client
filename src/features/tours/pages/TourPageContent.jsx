@@ -19,7 +19,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import RootLayout from '@/components/layout/RootLayout';
 import { useGetAllTours } from '@/services/api/tours/tourApi';
 import { useDebounce } from 'use-debounce';
@@ -105,99 +104,89 @@ export default function TourPageContent() {
     <RootLayout>
       <div className="bg-background min-h-screen">
         {/* Hero banner */}
-        <div className="bg-primary relative w-full shrink-0 overflow-hidden py-8">
-          <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-4 sm:px-6 md:flex-row md:items-center lg:px-8">
-            <div>
-              <h1 className="text-primary-foreground mb-2 text-3xl font-bold">
+        <div className="bg-primary text-primary-foreground relative w-full shrink-0 overflow-hidden py-8">
+          <div className="bg-primary/10 pointer-events-none absolute top-0 right-0 h-96 w-96 translate-x-1/4 -translate-y-1/4 rounded-full blur-3xl" />
+          <div className="bg-primary/5 pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 translate-y-1/3 rounded-full blur-2xl" />
+
+          <div className="relative z-10 mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,7fr)] lg:items-end lg:px-8">
+            <div className="space-y-2 lg:max-w-xl">
+              <h1 className="text-primary-foreground text-3xl font-bold">
                 {t('tourPage.title', 'Tour du lịch')}
               </h1>
-              <p className="text-primary-foreground/90 mb-4 text-sm font-medium">
+              <p className="text-primary-foreground/80 text-sm leading-relaxed font-medium">
                 {t('tourPage.description', 'Khám phá các tour du lịch Ninh Bình')}
               </p>
-              <span className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30 rounded-full border px-3 py-1.5 text-xs font-medium">
-                {t('tourPage.total', 'Tổng số')}: {total}
-              </span>
             </div>
-            <Button
-              variant="outline"
-              className="border-primary-foreground/50 bg-primary text-primary-foreground flex items-center gap-2 rounded-full px-6 shadow-sm transition-all hover:bg-(--primary-hover)"
-              onClick={() => refetch?.()}
-              disabled={isFetching}
-            >
-              <RefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
-              {t('tourPage.refresh', 'Làm mới')}
-            </Button>
-          </div>
-          <div className="bg-primary-foreground/5 pointer-events-none absolute top-0 right-0 h-96 w-96 translate-x-1/4 -translate-y-1/4 rounded-full blur-3xl" />
-        </div>
 
-        {/* Toolbar */}
-        <div className="sticky top-0 z-20 w-full shrink-0 bg-background py-3">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <Card className="border-border rounded-3xl shadow-sm">
-              <CardContent className="space-y-3">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="relative min-w-0 flex-1">
-                    <Search
-                      size={16}
-                      className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
-                    />
-                    <Input
-                      size="toolbar"
-                      type="text"
-                      placeholder={t('tourPage.searchPlaceholder', 'Tìm kiếm tour...')}
-                      value={search}
-                      onChange={(e) => {
-                        setSearch(e.target.value);
-                        setCurrentSettings((prev) => ({ ...prev, page: 1 }));
-                      }}
-                      className="pr-9 pl-9"
-                    />
-                    {search ? (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        className="absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
-                        onClick={() => setSearch('')}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    ) : null}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-xs font-medium">
-                      <SlidersHorizontal size={13} />
-                      {t('tourPage.view', 'Hiển thị')}
-                    </span>
+            <div className="border-border bg-card/90 rounded-3xl border p-4 shadow-sm backdrop-blur md:p-5">
+              <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto_auto] xl:items-center">
+                <div className="relative min-w-0 flex-1">
+                  <Search
+                    size={16}
+                    className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
+                  />
+                  <Input
+                    size="toolbar"
+                    type="text"
+                    placeholder={t('tourPage.searchPlaceholder', 'Tìm kiếm tour...')}
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setCurrentSettings((prev) => ({ ...prev, page: 1 }));
+                    }}
+                    className="border-border bg-background/90 focus-visible:ring-primary pr-9 pl-9 shadow-none"
+                  />
+                  {search ? (
                     <Button
-                      size="sm"
-                      variant={currentSettings.viewMode === 'grid' ? 'default' : 'outline'}
-                      className="rounded-full gap-1.5"
-                      onClick={() =>
-                        setCurrentSettings((prev) => ({ ...prev, viewMode: 'grid' }))
-                      }
-                      aria-label={t('tourPage.gridView', 'Dạng lưới')}
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
+                      onClick={() => setSearch('')}
                     >
-                      <LayoutGrid size={14} />
-                      {t('tourPage.gridView', 'Lưới')}
+                      <X className="h-3.5 w-3.5" />
                     </Button>
-                    <Button
-                      size="sm"
-                      variant={currentSettings.viewMode === 'list' ? 'default' : 'outline'}
-                      className="rounded-full gap-1.5"
-                      onClick={() =>
-                        setCurrentSettings((prev) => ({ ...prev, viewMode: 'list' }))
-                      }
-                      aria-label={t('tourPage.listView', 'Dạng danh sách')}
-                    >
-                      <List size={14} />
-                      {t('tourPage.listView', 'Danh sách')}
-                    </Button>
-                  </div>
+                  ) : null}
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-xs font-medium">
+                    <SlidersHorizontal size={13} />
+                    {t('tourPage.view', 'Hiển thị')}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant={currentSettings.viewMode === 'grid' ? 'default' : 'outline'}
+                    className="gap-1.5 rounded-full"
+                    onClick={() => setCurrentSettings((prev) => ({ ...prev, viewMode: 'grid' }))}
+                    aria-label={t('tourPage.gridView', 'Dạng lưới')}
+                  >
+                    <LayoutGrid size={14} />
+                    {t('tourPage.gridView', 'Lưới')}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={currentSettings.viewMode === 'list' ? 'default' : 'outline'}
+                    className="gap-1.5 rounded-full"
+                    onClick={() => setCurrentSettings((prev) => ({ ...prev, viewMode: 'list' }))}
+                    aria-label={t('tourPage.listView', 'Dạng danh sách')}
+                  >
+                    <List size={14} />
+                    {t('tourPage.listView', 'Danh sách')}
+                  </Button>
+                </div>
+
+                <Button
+                  variant="default"
+                  className="flex items-center gap-2 rounded-full px-6 shadow-sm"
+                  onClick={() => refetch?.()}
+                  disabled={isFetching}
+                >
+                  <RefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
+                  {t('tourPage.refresh', 'Làm mới')}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -260,8 +249,8 @@ export default function TourPageContent() {
                         }}
                       />
                       {featuredTour.is_featured && (
-                        <Badge className="bg-nature text-nature-foreground absolute top-3 left-3">
-                          <Star size={11} className="mr-1" />
+                        <Badge className="bg-primary text-primary-foreground absolute top-3 left-3">
+                          <Star size={11} className="mr-1 fill-yellow-400 text-yellow-400" />
                           {t('tourPage.featured', 'Nổi bật')}
                         </Badge>
                       )}
@@ -275,8 +264,8 @@ export default function TourPageContent() {
                           {getTourName(featuredTour, lang) || t('tourPage.unknown', 'Tour')}
                         </h2>
                         {Number(featuredTour.rating_avg) > 0 && (
-                          <div className="text-nature flex shrink-0 items-center gap-1 text-xs font-medium">
-                            <Star size={13} />
+                          <div className="text-primary flex shrink-0 items-center gap-1 text-xs font-medium">
+                            <Star size={13} className="fill-yellow-400 text-yellow-400" />
                             {Number(featuredTour.rating_avg).toFixed(1)}
                           </div>
                         )}
@@ -315,7 +304,7 @@ export default function TourPageContent() {
                       </div>
 
                       {formatPrice(featuredTour) && (
-                        <div className="text-nature mt-3 text-lg font-bold">
+                        <div className="text-primary mt-3 text-lg font-bold">
                           {formatPrice(featuredTour)}
                         </div>
                       )}
@@ -359,8 +348,8 @@ export default function TourPageContent() {
                             }}
                           />
                           {tour.is_featured && !isList && (
-                            <Badge className="bg-nature text-nature-foreground absolute top-2 left-2 text-xs">
-                              <Star size={10} className="mr-1" />
+                            <Badge className="bg-primary text-primary-foreground absolute top-2 left-2 text-xs">
+                              <Star size={10} className="mr-1 fill-yellow-400 text-yellow-400" />
                               {t('tourPage.featured', 'Nổi bật')}
                             </Badge>
                           )}
@@ -372,8 +361,8 @@ export default function TourPageContent() {
                               {name || t('tourPage.unknown', 'Tour')}
                             </h3>
                             {Number(tour.rating_avg) > 0 && (
-                              <span className="text-nature inline-flex shrink-0 items-center gap-1 text-xs font-medium">
-                                <Star size={12} />
+                              <span className="text-primary inline-flex shrink-0 items-center gap-1 text-xs font-medium">
+                                <Star size={12} className="fill-yellow-400 text-yellow-400" />
                                 {Number(tour.rating_avg).toFixed(1)}
                               </span>
                             )}
@@ -408,7 +397,7 @@ export default function TourPageContent() {
                           </div>
 
                           {price && (
-                            <div className="text-nature mt-2 text-sm font-semibold">{price}</div>
+                            <div className="text-primary mt-2 text-sm font-semibold">{price}</div>
                           )}
                         </div>
                       </div>

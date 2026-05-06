@@ -7,7 +7,7 @@ const HOME_DATA_BY_LANG = {
       { label: 'VR360', value: 'Sẵn sàng' },
     ],
     HERO_EVENTS: [
-      { title: 'Lễ hội Hoa Lũ', time: 'Tháng 4' },
+      { title: 'Lễ hội Hoa Lư', time: 'Tháng 4' },
       { title: 'Tuần du lịch Ninh Bình 2026', time: 'Đang diễn ra' },
       { title: 'Trình diễn ánh sáng đêm di sản', time: 'Cuối tuần' },
     ],
@@ -60,23 +60,23 @@ const HOME_DATA_BY_LANG = {
     FEATURED_DESTINATIONS: [
       {
         id: 'trang-an',
-        name: 'Qu?n th? danh th?ng Tràng An',
+        name: 'Quần thể danh thắng Tràng An',
         province: 'Ninh Bình',
-        subtitle: 'Di s?n thiên nhiên - van hóa',
+        subtitle: 'Di sản thiên nhiên - văn hóa',
         rating: 4.9,
         description:
-          'Khu du lịch sinh thái với hệ thống núi đá vôi, hang động và tuyến dò xuyên thủy nội tiếng',
+          'Khu du lịch sinh thái với hệ thống núi đá vôi, hang động và tuyến đò xuyên thủy nổi tiếng',
         image:
           'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&q=80',
       },
       {
         id: 'hoa-lu',
-        name: 'Cố đô Hoa Lũ',
+        name: 'Cố đô Hoa Lư',
         province: 'Ninh Bình',
         subtitle: 'Di tích lịch sử',
         rating: 4.7,
         description:
-          'Quần thể di tích lịch sử gắn với triều Đinh - Tiền Lê cùng kiến trúc cổ độc sắc',
+          'Quần thể di tích lịch sử gắn với triều Đinh - Tiền Lê cùng kiến trúc cổ độc đáo',
         image:
           'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80',
       },
@@ -101,7 +101,7 @@ const HOME_DATA_BY_LANG = {
       {
         title: 'Cảnh báo nóng cực bộ tại một số điểm du lịch tâm linh',
         date: '17/04/2026',
-        excerpt: 'Hệ thống khuyên nghị khách chỉ đứng thời gian tham quan và bổ sung nước',
+        excerpt: 'Hệ thống khuyến nghị khách điều chỉnh thời gian tham quan và bổ sung nước',
       },
       {
         title: 'Doanh nghiệp du lịch mở chiến dịch voucher liên vùng mùa hè',
@@ -113,7 +113,7 @@ const HOME_DATA_BY_LANG = {
       { time: '07:30', activity: 'Khởi hành từ trung tâm thành phố' },
       { time: '08:15', activity: 'Check-in Tràng An' },
       { time: '11:30', activity: 'Ăn trưa đặc sản địa phương' },
-      { time: '14:00', activity: 'Cố đô Hoa Lũ / Bái Đính' },
+      { time: '14:00', activity: 'Cố đô Hoa Lư / Bái Đính' },
       { time: '17:30', activity: 'Mở VR360 để xem điểm cho ngày mai' },
     ],
     FOOD_TAGS: ['Dê núi Ninh Bình', 'Cơm cháy', 'Ốc núi', 'Ẩm thực địa phương'],
@@ -129,7 +129,7 @@ const HOME_DATA_BY_LANG = {
         rating: 4.6,
         price: '950.000đ/đêm',
         voucher: 'NBSTAY10',
-        description: 'Lưu trú gần trung tâm, thuận tiện kết nối Tràng An và Hoa Lũ',
+        description: 'Lưu trú gần trung tâm, thuận tiện kết nối Tràng An và Hoa Lư',
         image:
           'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
       },
@@ -160,7 +160,7 @@ const HOME_DATA_BY_LANG = {
         stars: '4 sao',
         origin: 'Ninh Bình',
         price: '180.000đ',
-        description: 'Sản phẩm địa phương gắn với câu chuyện vùng sinh thái độc trung',
+        description: 'Sản phẩm địa phương gắn với câu chuyện vùng sinh thái đặc trưng',
         image:
           'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80',
       },
@@ -327,7 +327,7 @@ const HOME_DATA_BY_LANG = {
     ],
     FOOD_TAGS: ['Ninh Binh goat', 'Crispy rice', 'Mountain snails', 'Local cuisine'],
     FOOD_BULLETS: [
-      { label: 'Co Do Goat Restaurant', value: '? 4.7' },
+      { label: 'Co Do Goat Restaurant', value: '⭐ 4.7' },
       { label: 'Riverside food street', value: 'Open at night' },
       { label: 'Partner food voucher', value: 'DECO20' },
     ],

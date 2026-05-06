@@ -48,7 +48,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
   const compactContent = (() => {
     if (!isConfigured) {
       return (
-        <p className="text-muted-foreground truncate text-xs font-normal">
+        <p className="text-muted-foreground truncate text-sm font-normal">
           {t('mapPage.layout.weatherNotConfigured')}
         </p>
       );
@@ -66,18 +66,18 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
 
     if (isError || !weather) {
       return (
-        <p className="text-destructive truncate text-xs font-normal">
+        <p className="text-destructive truncate text-sm font-normal">
           {t('mapPage.layout.weatherUnavailable')}
         </p>
       );
     }
 
     return (
-      <div className="space-y-2 text-xs">
-        <div className="flex flex-nowrap items-center gap-2 overflow-hidden">
-          <div className="flex shrink-0 items-center gap-1.5">
+      <div className="flex flex-col space-y-2">
+        <div className="text-normal flex flex-nowrap items-center gap-2 overflow-hidden">
+          <div className="flex shrink-0 items-center gap-1.5 font-semibold">
             <WeatherIcon className={cn('h-4.5 w-4.5 shrink-0', weatherIconMeta.toneClass)} />
-            <p className="truncate font-semibold">{cityName}</p>
+            <p className="truncate">{cityName}</p>
           </div>
 
           <p className="text-muted-foreground min-w-0 flex-1 truncate capitalize">
@@ -85,22 +85,22 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
           </p>
         </div>
 
-        <div className="flex flex-nowrap gap-2 overflow-hidden">
-          <div className="bg-muted/40 flex min-w-0 flex-1 items-center gap-1 rounded-md px-2 py-1">
+        <div className="flex flex-nowrap gap-2 overflow-hidden text-sm">
+          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
             <Thermometer className="text-warning h-3.5 w-3.5 shrink-0" />
             <span className="text-warning truncate font-semibold">
               {formatTemperature(weather?.main?.temp)}
             </span>
           </div>
 
-          <div className="bg-muted/40 flex min-w-0 flex-1 items-center gap-1 rounded-md px-2 py-1">
+          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
             <Droplets className="text-primary h-3.5 w-3.5 shrink-0" />
             <span className="text-primary truncate font-semibold">
               {formatHumidity(weather?.main?.humidity)}
             </span>
           </div>
 
-          <div className="bg-muted/40 flex min-w-0 flex-1 items-center gap-1 rounded-md px-2 py-1">
+          <div className="bg-muted/40 flex min-w-0 items-center gap-1 rounded-md px-2 py-1">
             <Wind className="text-secondary h-3.5 w-3.5 shrink-0" />
             <span className="text-secondary truncate font-semibold">
               {formatWindSpeedKph(weather?.wind?.speed)}
@@ -108,10 +108,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
           </div>
 
           <div
-            className={cn(
-              'flex min-w-0 flex-1 items-center gap-1 rounded-md px-2 py-1',
-              aqiMeta.bgClass
-            )}
+            className={cn('flex min-w-0 items-center gap-1 rounded-md px-2 py-1', aqiMeta.bgClass)}
           >
             <img
               src={aqiMeta.iconSrc}
@@ -128,7 +125,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
           <Badge
             variant="outline"
             className={cn(
-              'max-w-full truncate border-transparent text-xs',
+              'max-w-full truncate border-transparent text-sm',
               getAlertToneClass(alert.severity),
               alertSeverityMeta.bg
             )}
@@ -144,7 +141,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
   const fullContent = (() => {
     if (!isConfigured) {
       return (
-        <p className="text-muted-foreground line-clamp-3 text-xs font-normal">
+        <p className="text-muted-foreground line-clamp-3 text-sm font-normal">
           {t('mapPage.layout.weatherNotConfigured')}
         </p>
       );
@@ -162,7 +159,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
 
     if (isError || !weather) {
       return (
-        <p className="text-destructive line-clamp-3 text-xs font-normal">
+        <p className="text-destructive line-clamp-3 text-sm font-normal">
           {t('mapPage.layout.weatherUnavailable')}
         </p>
       );
@@ -177,7 +174,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <p className="text-muted-foreground truncate text-xs font-normal capitalize">
+                <p className="text-muted-foreground truncate text-sm font-normal capitalize">
                   {conditionLabel}
                 </p>
               </TooltipTrigger>
@@ -186,7 +183,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-4">
+        <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-4">
           <div className="bg-muted/40 rounded-md px-2 py-1.5">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -257,7 +254,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
         </div>
 
         {alert && (
-          <div className="bg-muted/40 rounded-md px-2 py-1.5 text-xs">
+          <div className="bg-muted/40 rounded-md px-2 py-1.5 text-sm">
             <div className="mb-1 flex items-center gap-1 font-normal">
               <AlertTriangle className={cn('h-4.5 w-4.5', alertSeverityMeta.color)} />
               <span>{t('mapPage.layout.weatherAlert')}</span>
@@ -287,10 +284,10 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
   const content = compact ? compactContent : fullContent;
 
   return (
-    <section aria-label={t('mapPage.layout.floatWeather')} className={cn('h-auto', className)}>
+    <section aria-label={t('mapPage.layout.floatWeather')} className={cn('h-full', className)}>
       <Card
         className={cn(
-          'bg-popover/95 border-border shadow-md backdrop-blur',
+          'bg-popover/95 border-border h-full shadow-md backdrop-blur',
           compact ? 'gap-0 py-2' : 'gap-2 py-3'
         )}
       >

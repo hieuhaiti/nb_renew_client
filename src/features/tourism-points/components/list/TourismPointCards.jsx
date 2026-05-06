@@ -110,7 +110,7 @@ export function TourismPointFeaturedCard({
             Mới
           </span>
           <div className="text-primary flex items-center text-xs font-medium">
-            <Star size={13} className="text-primary mr-1" />
+            <Star size={13} className="mr-1 fill-yellow-400 text-yellow-400" />
             {rating ? Number(rating).toFixed(1) : '—'} - {reviewCount}{' '}
             {t('tourismPointPage.reviews', 'đánh giá')}
           </div>
@@ -267,7 +267,7 @@ export function TourismPointStandardCard({
             </span>
           )}
           <div className="text-foreground flex items-center text-xs font-semibold">
-            <Star size={11} className="text-primary mr-1" />
+            <Star size={11} className="mr-1 fill-yellow-400 text-yellow-400" />
             {rating ? Number(rating).toFixed(1) : '—'}
           </div>
         </div>

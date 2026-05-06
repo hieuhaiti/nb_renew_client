@@ -546,14 +546,14 @@ export default function TourismDetailPage() {
       key: 'location',
       label: t('tourism.location', 'V? trí'),
       value: attractionAddress || t('tourism.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-nature',
+      dotClass: 'bg-primary',
       icon: <MapPin className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'hours',
       label: t('tourism.opening_hours', 'Giờ mở'),
       value: openingHours,
-      dotClass: 'bg-nature',
+      dotClass: 'bg-primary',
       icon: <Clock3 className="text-primary h-3.5 w-3.5" />,
     },
     {
@@ -579,9 +579,9 @@ export default function TourismDetailPage() {
       label: t('tourism.rating', 'Đánh giá'),
       value:
         averageDisplayRating > 0 ? (
-          <div className="text-nature flex items-center gap-1 text-sm font-medium">
+          <div className="text-primary flex items-center gap-1 text-sm font-medium">
             <span>{averageDisplayRating.toFixed(1)}</span>
-            <Star className="h-3.5 w-3.5" />
+            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
           </div>
         ) : (
           <span className="text-foreground text-sm font-medium">-</span>
@@ -598,7 +598,7 @@ export default function TourismDetailPage() {
       value: (
         <span
           className={`text-sm font-medium ${
-            ticketDisplay === t('tourism.free', 'Miễn phí') ? 'text-nature' : 'text-foreground'
+            ticketDisplay === t('tourism.free', 'Miễn phí') ? 'text-primary' : 'text-foreground'
           }`}
         >
           {ticketDisplay}
@@ -609,7 +609,7 @@ export default function TourismDetailPage() {
       key: 'crowd',
       label: t('tourism.crowd_level', 'Lượng người'),
       value: (
-        <span className={`text-sm font-medium ${isHighCrowd ? 'text-warning' : 'text-nature'}`}>
+        <span className={`text-sm font-medium ${isHighCrowd ? 'text-warning' : 'text-primary'}`}>
           {crowdDisplay}
         </span>
       ),

@@ -2,13 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, withBaseUrl } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import LoadingInline from '@/components/common/LoadingInline';
 import { Box } from 'lucide-react';
 
 const AFRAME_CDN = 'https://aframe.io/releases/1.5.0/aframe.min.js';
 
 function loadAFrame() {
   return new Promise((resolve) => {
-    if (window.AFRAME) { resolve(); return; }
+    if (window.AFRAME) {
+      resolve();
+      return;
+    }
     const existing = document.querySelector(`script[src="${AFRAME_CDN}"]`);
     if (existing) {
       existing.addEventListener('load', resolve, { once: true });
@@ -29,6 +33,7 @@ export default function Vr360SceneViewer({ scene, hotspots = [], className }) {
   const aCameraRef = useRef(null);
   const hotspotsRootRef = useRef(null);
   const [aframeReady, setAframeReady] = useState(!!window.AFRAME);
+  const [isSceneImageLoading, setIsSceneImageLoading] = useState(false);
 
   useEffect(() => {
     loadAFrame().then(() => setAframeReady(true));
@@ -69,7 +74,9 @@ export default function Vr360SceneViewer({ scene, hotspots = [], className }) {
     container.appendChild(aScene);
 
     return () => {
-      try { container.removeChild(aScene); } catch {}
+      try {
+        container.removeChild(aScene);
+      } catch {}
       aSceneRef.current = null;
       aSkyRef.current = null;
       hotspotsRootRef.current = null;
@@ -80,14 +87,33 @@ export default function Vr360SceneViewer({ scene, hotspots = [], className }) {
   useEffect(() => {
     if (!scene || !aSkyRef.current) return;
     const rawUrl = scene.equirectangular_image_url;
-    const imageUrl = rawUrl ? (withBaseUrl(rawUrl) || rawUrl) : '';
+    const imageUrl = rawUrl ? withBaseUrl(rawUrl) || rawUrl : '';
 
     if (imageUrl) {
-      aSkyRef.current.setAttribute('src', imageUrl);
-      aSkyRef.current.setAttribute('color', '#ffffff');
-      return;
+      setIsSceneImageLoading(true);
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+      image.decoding = 'async';
+
+      image.onload = () => {
+        if (!aSkyRef.current) return;
+        aSkyRef.current.setAttribute('src', imageUrl);
+        aSkyRef.current.setAttribute('color', '#ffffff');
+        setIsSceneImageLoading(false);
+      };
+
+      image.onerror = () => {
+        setIsSceneImageLoading(false);
+      };
+
+      image.src = imageUrl;
+      return () => {
+        image.onload = null;
+        image.onerror = null;
+      };
     }
 
+    setIsSceneImageLoading(false);
     aSkyRef.current.removeAttribute('src');
     aSkyRef.current.setAttribute('color', '#1a1a2e');
   }, [scene?.id, scene?.equirectangular_image_url]);
@@ -95,7 +121,10 @@ export default function Vr360SceneViewer({ scene, hotspots = [], className }) {
   useEffect(() => {
     if (!scene || !aCameraRef.current) return;
     const camPos = scene.camera_position || { x: 0, y: 1.6, z: 0 };
-    aCameraRef.current.setAttribute('position', `${camPos.x ?? 0} ${camPos.y ?? 1.6} ${camPos.z ?? 0}`);
+    aCameraRef.current.setAttribute(
+      'position',
+      `${camPos.x ?? 0} ${camPos.y ?? 1.6} ${camPos.z ?? 0}`
+    );
     aCameraRef.current.setAttribute('fov', String(scene.camera_fov ?? 80));
   }, [
     scene?.id,
@@ -133,17 +162,31 @@ export default function Vr360SceneViewer({ scene, hotspots = [], className }) {
   }, [hotspots]);
 
   if (!aframeReady) {
-    return <Skeleton className={cn('w-full h-full', className)} />;
+    return <Skeleton className={cn('h-full w-full', className)} />;
   }
 
   if (!scene) {
     return (
-      <div className={cn('w-full h-full flex flex-col items-center justify-center gap-3 text-center p-6', className)}>
-        <Box className="w-12 h-12 text-muted-foreground/40" />
+      <div
+        className={cn(
+          'flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center',
+          className
+        )}
+      >
+        <Box className="text-muted-foreground/40 h-12 w-12" />
         <p className="text-muted-foreground typo-body max-w-xs">{t('vr360.viewer_placeholder')}</p>
       </div>
     );
   }
 
-  return <div ref={containerRef} className={cn('w-full h-full', className)} />;
+  return (
+    <div className={cn('relative h-full w-full', className)}>
+      <div ref={containerRef} className="h-full w-full" />
+      {isSceneImageLoading ? (
+        <div className="bg-background/30 pointer-events-none absolute inset-0">
+          <LoadingInline position="center" size="small" color="muted" className="h-full py-0" />
+        </div>
+      ) : null}
+    </div>
+  );
 }

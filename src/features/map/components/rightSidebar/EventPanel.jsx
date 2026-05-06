@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 import { CalendarDays, ExternalLink, LocateFixed, MapPin, Search, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -14,12 +14,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useFestivalsQuery, useFestivalTypesQuery } from '@/services/api/map/festivalService';
+import {
+  fetchFestivalDetailById,
+  useFestivalsQuery,
+  useFestivalTypesQuery,
+} from '@/services/api/map/festivalService';
 import placeholderImg from '@/assets/images/placeholder.png';
 import {
   formatFestivalDateRange,
   getFestivalCoordinates,
   normalizeFestivalListPayload,
+  normalizeFestivalModel,
   normalizeFestivalTypesPayload,
 } from '@/features/map/utils/festivalUtils';
 import { useFestivalStore } from '@/features/map/store/useFestivalStore';
@@ -49,6 +54,7 @@ export default function EventPanel() {
   const setFestivalFilters = useFestivalStore((state) => state.setFestivalFilters);
   const setSelectedFestival = useFestivalStore((state) => state.setSelectedFestival);
   const resetFestivalFilters = useFestivalStore((state) => state.resetFestivalFilters);
+  const [openingFestivalId, setOpeningFestivalId] = useState(null);
 
   const [debouncedSearch] = useDebounce(filters.search, 350);
 
@@ -75,7 +81,7 @@ export default function EventPanel() {
 
   const locale = getLocaleFromLanguage(lang);
 
-  const handleOpenFestivalOnMap = (festival) => {
+  const openFestivalTarget = (festival) => {
     const coordinates = getFestivalCoordinates(festival);
 
     if (coordinates && mapRef) {
@@ -85,14 +91,70 @@ export default function EventPanel() {
         speed: 0.85,
         essential: true,
       });
-      return;
+      return true;
     }
 
-    const spotIdentifier = festival?.spot_slug || festival?.spot_id;
-
-    if (spotIdentifier) {
-      navigate(`/tourism-point/point/${spotIdentifier}`);
+    // Only use slug for navigation when no coordinates
+    if (festival?.spot_slug) {
+      navigate(`/tourism-point/point/${festival.spot_slug}`);
+      return true;
     }
+
+    return false;
+  };
+
+  const handleOpenFestivalOnMap = async (festival) => {
+    if (!festival?.id) return;
+
+    setOpeningFestivalId(festival.id);
+
+    try {
+      const detail = await fetchFestivalDetailById(festival.id);
+      //       {
+      //     "message": "Chi tiết lễ hội",
+      //     "status": 200,
+      //     "data": {
+      //         "id": "1e2c982a-f19d-4f16-a18f-1671fa5732ab",
+      //         "province_code": "37",
+      //         "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
+      //         "name_vi": "Lễ Phật Đản Bái Đính - Lễ Hội Tôn Giáo Lớn Nhất",
+      //         "name_en": "Bai Dinh Buddha Birthday Festival",
+      //         "festival_type": "religious",
+      //         "description_vi": "Lễ Phật Đản kéo dài 10 ngày tại Chùa Bái Đính với hàng chục ngàn người tham dự. Có các buổi lễ cầu nguyện, thắp nến dâng Phật, các bài giảng pháp từ các cao tăng nổi tiếng, múa mâm (múa cầu bình an), và những pháp hành thiêng liêng trong hang động. Có các gian hàng bán hương, hoa, lưu niệm tôn giáo và ẩm thực chay.",
+      //         "start_date": "2026-05-15T05:00:00.000Z",
+      //         "end_date": "2026-05-25T05:00:00.000Z",
+      //         "is_recurring": true,
+      //         "recurrence_rule": "FREQ=YEARLY;BYMONTH=5;BYMONTHDAY=15",
+      //         "geom": null,
+      //         "cover_image_url": "/uploads/festivals/bai-dinh-buddha.jpg",
+      //         "website": null,
+      //         "is_published": true,
+      //         "location_name": "Chùa Bái Đính Cổ, Nho Quan, Ninh Bình",
+      //         "created_at": "2026-05-05T09:15:36.450Z",
+      //         "updated_at": "2026-05-05T09:15:36.450Z",
+      //         "name": "Lễ Phật Đản Bái Đính - Lễ Hội Tôn Giáo Lớn Nhất",
+      //         "province_name": "Ninh Bình",
+      //         "spot_name": "Chùa Bái Đính cổ",
+      //         "lng": null,
+      //         "lat": null
+      //     }
+      // }
+      const normalizedDetail = detail
+        ? normalizeFestivalModel(detail, { lang, fallbackId: festival.id })
+        : null;
+      const resolvedFestival = normalizedDetail ? { ...festival, ...normalizedDetail } : festival;
+      console.log(resolvedFestival);
+
+      setSelectedFestival(resolvedFestival);
+      if (openFestivalTarget(resolvedFestival)) return;
+    } catch (_error) {
+      // Fallback to list payload when detail endpoint is temporarily unavailable.
+    } finally {
+      setOpeningFestivalId(null);
+    }
+
+    setSelectedFestival(festival);
+    openFestivalTarget(festival);
   };
 
   return (
@@ -104,7 +166,7 @@ export default function EventPanel() {
           </p>
           <p className="text-muted-foreground text-xs">
             {isFetching
-              ? t('mapPage.eventPanel.syncing', { defaultValue: 'Äang đồng bộ...' })
+              ? t('mapPage.eventPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
               : t('mapPage.eventPanel.count', {
                   defaultValue: '{{count}} sự kiện',
                   count: festivals.length,
@@ -189,6 +251,8 @@ export default function EventPanel() {
             const isActive =
               selectedFestival != null && String(selectedFestival.id) === String(festival.id);
             const cover = withBaseUrl(festival.cover_image_url);
+            const isOpening =
+              openingFestivalId != null && String(openingFestivalId) === String(festival.id);
 
             return (
               <article
@@ -246,14 +310,13 @@ export default function EventPanel() {
                     type="button"
                     size="sm"
                     className="h-8 text-xs"
-                    onClick={() => {
-                      setSelectedFestival(festival);
-                      handleOpenFestivalOnMap(festival);
-                    }}
-                    disabled={!festival.coordinates && !festival.spot_id}
+                    onClick={() => handleOpenFestivalOnMap(festival)}
+                    disabled={!festival?.id || openingFestivalId != null}
                   >
                     <LocateFixed className="h-3.5 w-3.5" />
-                    {t('mapPage.eventPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
+                    {isOpening
+                      ? t('mapPage.eventPanel.openingMap', { defaultValue: 'Đang mở...' })
+                      : t('mapPage.eventPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
                   </Button>
 
                   {festival.website ? (

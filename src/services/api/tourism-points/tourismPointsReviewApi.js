@@ -39,11 +39,38 @@ export function useCreateTourismReview(options = {}) {
   );
 }
 
+export function useUpdateTourismReview(id, options = {}) {
+  return useApiMutation(
+    ['ratings', 'update', id],
+    `${BASE}/${id}`,
+    'PATCH',
+    options
+  );
+}
+
 export function useDeleteTourismReview(id, options = {}) {
   return useApiMutation(
     ['ratings', 'delete', id],
     `${BASE}/${id}`,
     'DELETE',
+    options
+  );
+}
+
+export function useReplyTourismReview(id, options = {}) {
+  return useApiMutation(
+    ['ratings', 'reply', id],
+    `${BASE}/${id}/reply`,
+    'POST',
+    options
+  );
+}
+
+export function useMarkTourismReviewHelpful(id, options = {}) {
+  return useApiMutation(
+    ['ratings', 'helpful', id],
+    `${BASE}/${id}/helpful`,
+    'POST',
     options
   );
 }

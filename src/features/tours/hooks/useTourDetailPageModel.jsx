@@ -230,7 +230,7 @@ export function useTourDetailPageModel(t) {
       value: (
         <span
           className={`inline-flex items-center gap-1 text-sm font-medium ${
-            ticketDisplay === t('tourPage.contact', 'Liên hệ') ? 'text-foreground' : 'text-nature'
+            ticketDisplay === t('tourPage.contact', 'Liên hệ') ? 'text-foreground' : 'text-primary'
           }`}
         >
           <Ticket className="h-3.5 w-3.5" />
@@ -263,9 +263,9 @@ export function useTourDetailPageModel(t) {
       label: t('tourPage.rating', 'Đánh giá'),
       value:
         averageDisplayRating > 0 ? (
-          <div className="text-nature flex items-center gap-1 text-sm font-medium">
+          <div className="text-primary flex items-center gap-1 text-sm font-medium">
             <span>{averageDisplayRating.toFixed(1)}</span>
-            <Star className="h-3.5 w-3.5" />
+            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
           </div>
         ) : (
           <span className="text-foreground text-sm font-medium">-</span>
@@ -276,21 +276,21 @@ export function useTourDetailPageModel(t) {
   const sidebarRows = [
     {
       key: 'start_location',
-      label: t('tourPage.startLocation', '??a ?i?m ?i'),
+      label: t('tourPage.startLocation', 'Địa điểm đi'),
       value: tour?.start_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-nature',
+      dotClass: 'bg-primary',
     },
     {
       key: 'end_location',
-      label: t('tourPage.endLocation', '??a ?i?m ??n'),
+      label: t('tourPage.endLocation', 'Địa điểm đến'),
       value: tour?.end_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-nature',
+      dotClass: 'bg-primary',
     },
     {
       key: 'duration',
       label: t('tourPage.duration', 'Thời lượng'),
       value: durationLabel,
-      dotClass: 'bg-nature',
+      dotClass: 'bg-primary',
     },
     {
       key: 'provider',

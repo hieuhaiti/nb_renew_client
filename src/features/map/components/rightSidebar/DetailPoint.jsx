@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useDestinationStore } from '@/features/map/store/useDestinationStore';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
@@ -125,9 +124,9 @@ function DestinationSkeleton() {
 export default function Destination({ onOpenRoute, onOpenVr }) {
   const { t } = useTranslation();
   const lang = useLanguageStore((state) => state.lang);
-  const selectedDestination = useDestinationStore((state) => state.selectedDestination);
-  const setSelectedDestination = useDestinationStore((state) => state.setSelectedDestination);
-  const selectedAt = useDestinationStore((state) => state.selectedAt);
+  const selectedDestination = useMapStore((state) => state.highlightedPoint);
+  const selectedAt = useMapStore((state) => state.highlightedPointAt);
+  const setHighlightedPoint = useMapStore((state) => state.setHighlightedPoint);
   const selectedSubcategoryIds = useDataLayerStore((state) => state.selectedSubcategoryIds);
   const dataLayerSubcategories = useDataLayerStore((state) => state.subcategories);
   const setSelectedSubcategoryIds = useDataLayerStore((state) => state.setSelectedSubcategoryIds);
@@ -256,7 +255,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
           ? item.subcategory_id
           : Number(item.subcategory_id);
 
-    setSelectedDestination({
+    setHighlightedPoint({
       id: item.id,
       slug: item.slug || null,
       name: item.displayName || item.name,

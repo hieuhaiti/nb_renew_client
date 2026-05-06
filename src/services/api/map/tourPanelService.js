@@ -1,4 +1,5 @@
 import { useApiQuery } from '@/services/useApi';
+import { fetcher } from '@/services/fetcher';
 
 function buildToursEndpoint({
   page = 1,
@@ -57,7 +58,8 @@ export function useTourPanelListQuery(params = {}, options = {}) {
     buildToursEndpoint({ ...params, search: normalizedSearch }),
     {
       staleTime: 60 * 1000,
-      select: (res) => res?.data ?? { tours: [], pagination: { page: 1, limit: 8, total: 0, totalPages: 0 } },
+      select: (res) =>
+        res?.data ?? { tours: [], pagination: { page: 1, limit: 8, total: 0, totalPages: 0 } },
       ...options,
     },
     false
@@ -77,4 +79,69 @@ export function useTourPanelDetailQuery(slug, options = {}) {
     },
     false
   );
+}
+
+function pickFirstArrayCandidate(...candidates) {
+  return candidates.find((candidate) => Array.isArray(candidate)) || [];
+}
+
+export async function fetchTourStopsByTourId(tourId) {
+  if (!tourId) return [];
+
+  const endpoints = [`tour/${tourId}/stops`, `tours/${tourId}/stops`, `tour-stops/tour/${tourId}`];
+
+  let lastError = null;
+  for (const endpoint of endpoints) {
+    try {
+      const response = await fetcher(endpoint);
+      const root = response?.data || response;
+      const stops = pickFirstArrayCandidate(
+        root?.stops,
+        root?.tour_stops,
+        root?.items,
+        root?.data?.stops,
+        root?.data?.tour_stops,
+        response?.stops,
+        response?.tour_stops,
+        response?.items,
+        response?.data?.stops,
+        response?.data?.tour_stops
+      );
+
+      if (stops.length > 0) return stops;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  return [];
+}
+
+export async function fetchPointById(pointId) {
+  if (!pointId) return null;
+
+  const endpoints = [`points/${pointId}`, `spots/${pointId}`];
+  let lastError = null;
+
+  for (const endpoint of endpoints) {
+    try {
+      const response = await fetcher(endpoint);
+      const root = response?.data || response;
+      const candidate =
+        root?.point || root?.spot || root?.item || root?.data?.point || root?.data?.spot || root;
+      if (candidate) return candidate;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  return null;
 }

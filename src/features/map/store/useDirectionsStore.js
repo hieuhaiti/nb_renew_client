@@ -25,11 +25,14 @@ export const useDirectionsStore = create((set, get) => ({
   vehicle: 'driving',
   startLocation: null,
   endLocation: null,
+  shouldFocusStart: false,
 
   setDirections: (directionsData) => set({ directions: directionsData }),
   setVehicle: (vehicle) => set({ vehicle }),
   setStartLocation: (location) => set({ startLocation: normalizeCoordinate(location) }),
   setEndLocation: (location) => set({ endLocation: normalizeCoordinate(location) }),
+  triggerFocusStart: () => set({ shouldFocusStart: true }),
+  clearFocusStart: () => set({ shouldFocusStart: false }),
 
   geocodeLocation: async (locationString, options = {}) => {
     return geocodeLocation(locationString, options);

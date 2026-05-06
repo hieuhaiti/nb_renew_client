@@ -47,7 +47,7 @@ export function TourismDetailSidebar({
       </section>
 
       {/* Info rows */}
-      <section className="border-border bg-card rounded-[10px] border px-4 py-3.5">
+      <section className="border-primary/20 bg-card rounded-[10px] border px-4 py-3.5">
         {rows.map((row, index) => (
           <div
             key={row.key}
@@ -85,7 +85,7 @@ export function TourismDetailSidebar({
         <h3 className="text-foreground mb-2 text-xs font-medium">
           {t('tourism.mini_map', 'Bản đồ mini')}
         </h3>
-        <div className="bg-nature-map-bg relative h-25 overflow-hidden rounded-[9px]">
+        <div className="bg-primary-soft relative h-25 overflow-hidden rounded-[9px]">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%]">
             <span className="border-primary-foreground bg-primary block h-4 w-4 rotate-45 rounded-[55%_55%_55%_0] border-2 shadow-sm" />
           </div>

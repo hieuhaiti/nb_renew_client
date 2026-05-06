@@ -1,4 +1,5 @@
 import { useApiQuery } from '@/services/useApi';
+import { fetcher } from '@/services/fetcher';
 
 function buildFestivalsEndpoint({
   page = 1,
@@ -108,5 +109,21 @@ export function useFestivalDetailQuery(id, options = {}) {
       ...options,
     },
     false
+  );
+}
+
+export async function fetchFestivalDetailById(id) {
+  if (!id) return null;
+
+  const response = await fetcher(`festivals/${id}`);
+  const root = response?.data || response;
+
+  return (
+    root?.festival ||
+    root?.event ||
+    root?.item ||
+    root?.data?.festival ||
+    root?.data?.event ||
+    root
   );
 }

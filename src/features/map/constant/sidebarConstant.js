@@ -1,26 +1,9 @@
-import { Bot, Calendar, MapPin, Navigation, Satellite } from 'lucide-react';
-import Destination from '@/features/map/components/rightSidebar/DetailPoint';
-import DirectionDetails from '@/features/map/components/rightSidebar/DirectionDetails';
+import { Bot, Calendar, MapPin, Satellite } from 'lucide-react';
 import EventPanel from '@/features/map/components/rightSidebar/EventPanel';
 import ChatbotPanel from '@/features/map/components/rightSidebar/ChatbotPanel';
 import TourPanel from '@/features/map/components/rightSidebar/TourPanel';
 
 export const headerSidebar = [
-  {
-    icon: Navigation,
-    label: 'headerAside.destination',
-    value: 'destination',
-    component: Destination,
-    authen: false,
-  },
-  {
-    icon: Navigation,
-    label: 'headerAside.direction',
-    value: 'direction',
-    component: DirectionDetails,
-    authen: false,
-    requiresDirectionDetails: true,
-  },
   {
     icon: Calendar,
     label: 'headerAside.event',
@@ -51,4 +34,4 @@ export const headerSidebar = [
   },
 ];
 
-export const currentHeaderSidebar = 'destination';
+export const currentHeaderSidebar = 'event';

@@ -1,10 +1,12 @@
-import { useApiQuery } from '@/services/useApi';
+import { useApiQuery, useApiQueries } from '@/services/useApi';
 import { fetcher } from '@/services/fetcher';
 
 export function useSubcategoryPointsQuery({ subcategoryId } = {}, options = {}) {
+  const categoryIds = JSON.stringify([subcategoryId]);
+
   return useApiQuery(
     ['map', 'points', 'subcategory', subcategoryId],
-    `spots?category_id=${subcategoryId}&status=active&limit=500`,
+    `spots?category_ids=${categoryIds}&status=active&limit=500`,
     {
       staleTime: 5 * 60 * 1000,
       enabled: Boolean(subcategoryId) && (options.enabled ?? true),
@@ -15,7 +17,8 @@ export function useSubcategoryPointsQuery({ subcategoryId } = {}, options = {}) 
 }
 
 export function fetchSubcategoryPoints({ subcategoryId } = {}) {
-  return fetcher(`spots?category_id=${subcategoryId}&status=active&limit=100`);
+  const categoryIds = JSON.stringify([subcategoryId]);
+  return fetcher(`spots?category_ids=${categoryIds}&status=active&limit=100`);
 }
 
 function buildPointDetailEndpoint({ pointSlug, pointId }) {
@@ -60,4 +63,25 @@ export function searchDataPointByName({ search, lang = 'vi', page = 1, limit = 5
   queryParams.set('sortOrder', 'DESC');
 
   return fetcher(`spots?${queryParams.toString()}`);
+}
+
+export function useSubcategoryLayerQuery({ subcategoryIds = [], lang = 'vi' } = {}) {
+  const ids = Array.isArray(subcategoryIds) ? subcategoryIds.filter(Boolean) : [];
+
+  return useApiQueries(
+    {
+      queries:
+        ids.length > 0
+          ? [
+              {
+                queryKey: ['map', 'points', 'subcategory', lang, ids],
+                endPoint: `spots?category_ids=${JSON.stringify(ids)}&status=active&limit=100`,
+                staleTime: 5 * 60 * 1000,
+                enabled: Boolean(ids.length),
+              },
+            ]
+          : [],
+    },
+    false
+  );
 }

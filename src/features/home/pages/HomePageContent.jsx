@@ -29,7 +29,7 @@ import {
   useFestivalsQuery,
   useSearchSpotsQuery,
 } from '@/features/map';
-import { getLocaleFromLanguage } from '@/lib/utils';
+import { formatVND, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
 import {
   formatHumidity,
   formatTemperature,
@@ -39,6 +39,25 @@ import {
 } from '@/features/weather';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { getHomeData } from '@/features/home/data/homeData';
+import { useGetFeaturedSpots } from '@/services/api/tourism-points/tourismPointsApi';
+import { useGetNewsList } from '@/services/api/news/newsService';
+import { useGetOcopProducts } from '@/services/api/ocop/ocopService';
+import { useGetAllTours } from '@/services/api/tours/tourApi';
+import { useGetNearbyVouchers } from '@/services/api/businesses/businessService';
+
+function formatNewsDate(dateStr) {
+  if (!dateStr) return '--';
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return '--';
+  return new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium' }).format(d);
+}
+
+function formatVoucherDiscount(voucher) {
+  const value = parseFloat(voucher.discount_value || 0);
+  if (voucher.discount_type === 'percentage') return `-${Math.round(value)}%`;
+  if (voucher.discount_type === 'fixed_amount') return `-${formatVND(value)}`;
+  return '';
+}
 
 function SectionHeader({ eyebrow, title, description }) {
   return (
@@ -70,11 +89,8 @@ export default function HomePage() {
     HERO_EVENTS,
     HERO_STATS,
     ITINERARY_ITEMS,
-    NEWS_ITEMS,
-    OCOP_PRODUCTS,
     PROMO_BANNER,
     QUICK_LINKS,
-    SERVICES,
     VLOG_STORIES,
   } = homeData;
 
@@ -137,6 +153,60 @@ export default function HomePage() {
     () => normalizeSpotsSearchResults(homeSearchData),
     [homeSearchData]
   );
+
+  const { data: featuredSpotsData } = useGetFeaturedSpots();
+  const { data: newsListData } = useGetNewsList({ page: 1, limit: 3, is_published: true });
+  const { data: ocopListData } = useGetOcopProducts({ page: 1, limit: 3 });
+  const { data: toursListData } = useGetAllTours({ page: 1, limit: 1 });
+
+  const featuredSpots = useMemo(() => {
+    const raw = featuredSpotsData?.data;
+    const items = Array.isArray(raw) ? raw : (raw?.spots ?? raw?.items ?? []);
+    if (items.length === 0) return FEATURED_DESTINATIONS;
+    return items.map((s) => ({
+      id: s.id,
+      name: s.name,
+      subtitle: s.category_name || '',
+      description: s.description || '',
+      image: (s.primary_image || s.primary_image_url)
+        ? withBaseUrl(s.primary_image || s.primary_image_url)
+        : '',
+      province: s.province_name || s.address || '',
+      rating: s.rating_avg ? parseFloat(s.rating_avg).toFixed(1) : null,
+    }));
+  }, [featuredSpotsData, FEATURED_DESTINATIONS]);
+
+  const newsList = useMemo(() => {
+    const raw =
+      newsListData?.data?.items ||
+      newsListData?.data?.news ||
+      newsListData?.items ||
+      newsListData?.news ||
+      [];
+    return Array.isArray(raw) ? raw : [];
+  }, [newsListData]);
+
+  const ocopProducts = useMemo(() => {
+    const raw = ocopListData?.data?.items || ocopListData?.items || [];
+    return Array.isArray(raw) ? raw : [];
+  }, [ocopListData]);
+
+  const featuredTour = toursListData?.tours?.[0] ?? null;
+
+  const { data: nearbyVouchersData } = useGetNearbyVouchers({
+    lat: defaultLatLong.lat,
+    lng: defaultLatLong.lng,
+    radius_m: 50000,
+  });
+  const nearbyVouchers = useMemo(() => {
+    const raw =
+      nearbyVouchersData?.data?.vouchers ||
+      nearbyVouchersData?.data?.items ||
+      nearbyVouchersData?.data ||
+      [];
+    return Array.isArray(raw) ? raw.slice(0, 3) : [];
+  }, [nearbyVouchersData]);
+
   const shouldShowSearchOverlay = isSearchFocused && keyword.trim().length > 0;
 
   const handleGoMapWithSearch = (result) => {
@@ -401,7 +471,7 @@ export default function HomePage() {
                     Điểm nên xem trước khi đi
                   </h3>
                   <div className="mt-4 grid gap-2">
-                    {FEATURED_DESTINATIONS.slice(0, 3).map((item) => (
+                    {featuredSpots.slice(0, 3).map((item) => (
                       <Button
                         key={item.id}
                         type="button"
@@ -467,7 +537,7 @@ export default function HomePage() {
                     </div>
                     <div className="w-full min-w-0">
                       <h3 className="text-sm font-bold">{item.title}</h3>
-                      <p className="text-muted-foreground mt-1 line-clamp-2 wrap-break-word text-xs leading-relaxed">
+                      <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed wrap-break-word">
                         {item.description}
                       </p>
                     </div>
@@ -488,7 +558,7 @@ export default function HomePage() {
               />
 
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                {FEATURED_DESTINATIONS.map((item) => (
+                {featuredSpots.map((item) => (
                   <article
                     key={item.id}
                     className="border-border/70 bg-card overflow-hidden rounded-2xl border shadow-sm"
@@ -550,18 +620,33 @@ export default function HomePage() {
               <div className={cardClass + ' p-5 sm:p-6'}>
                 <SectionHeader eyebrow="Tin tức ngắn" title="Thông tin mới" />
                 <div className="grid gap-3">
-                  {NEWS_ITEMS.map((item) => (
+                  {newsList.map((item) => (
                     <article
-                      key={item.title}
-                      className="border-border/70 border-b border-dashed pb-3 last:border-b-0"
+                      key={item.id}
+                      className="border-border/70 flex gap-3 border-b border-dashed pb-3 last:border-b-0"
                     >
-                      <span className="border-border/70 text-muted-foreground inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold">
-                        {item.date}
-                      </span>
-                      <h4 className="mt-2 text-sm font-bold text-slate-900">{item.title}</h4>
-                      <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
-                        {item.excerpt}
-                      </p>
+                      {item.thumbnail_url && (
+                        <img
+                          src={withBaseUrl(item.thumbnail_url)}
+                          alt={item.title}
+                          className="h-16 w-16 shrink-0 rounded-lg object-cover"
+                          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                        />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="border-border/70 text-muted-foreground inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold">
+                            {formatNewsDate(item.published_at || item.created_at)}
+                          </span>
+                          {item.author_name && (
+                            <span className="text-muted-foreground text-xs">{item.author_name}</span>
+                          )}
+                        </div>
+                        <h4 className="mt-1 line-clamp-2 text-sm font-bold text-foreground" title={item.title}>{item.title}</h4>
+                        <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed">
+                          {item.summary}
+                        </p>
+                      </div>
                     </article>
                   ))}
                 </div>
@@ -572,28 +657,56 @@ export default function HomePage() {
                   <span className="text-primary text-xs font-semibold tracking-widest uppercase">
                     Tour gợi ý
                   </span>
-                  <h3 className="mt-2 text-2xl font-bold text-slate-900">
-                    Tuyến di sản Ninh Bình 2 ngày
+                  {featuredTour?.cover_image_url && (
+                    <div className="mt-3 h-36 overflow-hidden rounded-xl">
+                      <img
+                        src={withBaseUrl(featuredTour.cover_image_url)}
+                        alt={featuredTour.name || ''}
+                        className="h-full w-full object-cover"
+                        onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                      />
+                    </div>
+                  )}
+                  <h3 className="mt-3 line-clamp-2 text-xl font-bold text-foreground" title={featuredTour?.name}>
+                    {featuredTour
+                      ? (featuredTour.name || featuredTour.name_vi || 'Tour gợi ý')
+                      : 'Tuyến di sản Ninh Bình 2 ngày'}
                   </h3>
-                  <p className="text-muted-foreground mt-2 text-sm">
-                    Tràng An → Hoa Lư → Bái Đính → Tam Cốc → Hang Múa. Gợi ý theo logic điều phối
-                    tải trọng và thời tiết.
+                  {featuredTour?.business_name && (
+                    <p className="text-muted-foreground mt-1 text-xs">{featuredTour.business_name}</p>
+                  )}
+                  <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-relaxed">
+                    {featuredTour
+                      ? (featuredTour.description_vi || featuredTour.description_en || '')
+                      : 'Tràng An → Hoa Lư → Bái Đính → Tam Cốc → Hang Múa. Gợi ý theo logic điều phối tải trọng và thời tiết.'}
                   </p>
                   <div className="mt-4 grid grid-cols-3 gap-2">
-                    <div className="border-border/70 bg-muted/40 rounded-xl border p-3 text-sm">
-                      <p className="font-bold">5 điểm</p>
-                      <p className="text-muted-foreground text-xs">liên kết tuyến</p>
+                    <div className="border-border/70 bg-muted/40 rounded-xl border p-3">
+                      <p className="typo-meta font-bold">
+                        {featuredTour?.duration_days ? `${featuredTour.duration_days} ngày` : '2 ngày'}
+                      </p>
+                      <p className="typo-meta text-muted-foreground">lịch trình</p>
                     </div>
-                    <div className="border-border/70 bg-muted/40 rounded-xl border p-3 text-sm">
-                      <p className="font-bold">2 ngày</p>
-                      <p className="text-muted-foreground text-xs">lịch trình tối ưu</p>
+                    <div className="border-border/70 bg-muted/40 rounded-xl border p-3">
+                      <p className="typo-meta font-bold">
+                        {featuredTour?.price_from_vnd
+                          ? formatVND(Number(featuredTour.price_from_vnd))
+                          : 'Liên hệ'}
+                      </p>
+                      <p className="typo-meta text-muted-foreground">từ / khách</p>
                     </div>
-                    <div className="border-border/70 bg-muted/40 rounded-xl border p-3 text-sm">
-                      <p className="font-bold">VR trước chuyến</p>
-                      <p className="text-muted-foreground text-xs">xem trước trải nghiệm</p>
+                    <div className="border-border/70 bg-muted/40 rounded-xl border p-3">
+                      <p className="typo-meta font-bold">
+                        {featuredTour?.rating_avg
+                          ? `⭐ ${parseFloat(featuredTour.rating_avg).toFixed(1)}`
+                          : 'VR360'}
+                      </p>
+                      <p className="typo-meta text-muted-foreground">
+                        {featuredTour?.rating_count ? `${featuredTour.rating_count} đánh giá` : 'xem trước'}
+                      </p>
                     </div>
                   </div>
-                  <Button className="mt-4 rounded-xl" onClick={() => navigate('/map')}>
+                  <Button className="mt-4 w-full rounded-xl" onClick={() => navigate('/map')}>
                     Xem tuyến trên bản đồ
                   </Button>
                 </div>
@@ -671,53 +784,64 @@ export default function HomePage() {
             <div className={cardClass + ' p-5 sm:p-6'}>
               <SectionHeader
                 eyebrow="Doanh nghiệp du lịch"
-                title="Dịch vụ và voucher đang mở trên hệ thống"
-                description="Thiết kế phần thẻ dịch vụ theo hướng thương mại hơn để phù hợp khối chức năng doanh nghiệp."
+                title="Voucher đang có gần bạn"
+                description="Voucher ưu đãi từ các doanh nghiệp du lịch trong khu vực."
               />
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                {SERVICES.map((service) => (
-                  <article
-                    key={service.name}
-                    className="border-border/70 bg-card overflow-hidden rounded-2xl border shadow-sm"
-                  >
-                    <img
-                      src={service.image}
-                      alt={service.name}
-                      className="h-52 w-full object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = placeholderImg;
-                      }}
-                    />
-                    <div className="p-4">
-                      <div className="text-muted-foreground mb-2 flex flex-wrap gap-2 text-xs">
-                        <span>{service.type}</span>
-                        <span>⭐ {service.rating}</span>
-                        <span>{service.voucher}</span>
+              {nearbyVouchers.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                  {nearbyVouchers.map((voucher) => (
+                    <article
+                      key={voucher.id}
+                      className="border-border/70 bg-card overflow-hidden rounded-2xl border shadow-sm"
+                    >
+                      <div className="from-primary/15 to-primary/5 flex items-center justify-between gap-3 bg-linear-to-r px-4 py-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="typo-badge text-muted-foreground truncate">{voucher.business_name}</p>
+                          <p className="typo-section-title font-bold text-foreground line-clamp-1" title={voucher.title_vi}>
+                            {voucher.title_vi}
+                          </p>
+                        </div>
+                        <span className="bg-primary text-primary-foreground shrink-0 rounded-full px-3 py-1 text-sm font-bold">
+                          {formatVoucherDiscount(voucher)}
+                        </span>
                       </div>
-                      <h3 className="text-base font-bold text-slate-900">{service.name}</h3>
-                      <p className="text-muted-foreground mt-2 text-sm">{service.description}</p>
-                      <div className="mt-4 flex gap-2">
-                        <Button
-                          size="sm"
-                          className="rounded-lg"
-                          onClick={() => navigate('/tourism-point')}
-                        >
-                          Đặt ngay
-                        </Button>
+                      <div className="p-4">
+                        <p className="border-primary/30 bg-primary/5 text-primary rounded-lg border px-3 py-2 text-center font-mono text-sm font-bold tracking-wider">
+                          {voucher.code}
+                        </p>
+                        <div className="mt-3 grid gap-1.5">
+                          {voucher.min_order_value && (
+                            <div className="flex items-center justify-between">
+                              <span className="typo-meta text-muted-foreground">Đơn tối thiểu</span>
+                              <span className="typo-meta font-semibold">
+                                {formatVND(Number(voucher.min_order_value))}
+                              </span>
+                            </div>
+                          )}
+                          {voucher.valid_until && (
+                            <div className="flex items-center justify-between">
+                              <span className="typo-meta text-muted-foreground">Hạn sử dụng</span>
+                              <span className="typo-meta font-semibold">{formatNewsDate(voucher.valid_until)}</span>
+                            </div>
+                          )}
+                        </div>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="rounded-lg"
-                          onClick={() => navigate('/tourism-point')}
+                          className="mt-4 w-full rounded-lg"
+                          onClick={() => navigate('/map')}
                         >
-                          {service.price}
+                          Xem doanh nghiệp trên bản đồ
                         </Button>
                       </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground py-6 text-center text-sm">
+                  Không có voucher nào trong khu vực hiện tại.
+                </p>
+              )}
             </div>
           </div>
         </section>
@@ -731,14 +855,14 @@ export default function HomePage() {
                 description="Giới thiệu sản phẩm, chứng nhận, địa phương và liên kết đặt hàng ngay trong trang chủ."
               />
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                {OCOP_PRODUCTS.map((product) => (
+                {ocopProducts.map((product) => (
                   <article
-                    key={product.name}
+                    key={product.id}
                     className="border-border/70 bg-card overflow-hidden rounded-2xl border shadow-sm"
                   >
                     <img
-                      src={product.image}
-                      alt={product.name}
+                      src={withBaseUrl(product.cover_image_url)}
+                      alt={product.name_vi || product.name_en || ''}
                       className="h-52 w-full object-cover"
                       onError={(e) => {
                         e.target.onerror = null;
@@ -746,14 +870,27 @@ export default function HomePage() {
                       }}
                     />
                     <div className="p-4">
-                      <div className="text-muted-foreground mb-2 flex flex-wrap gap-2 text-xs">
-                        <span>{product.origin}</span>
-                        <span>{product.stars}</span>
-                        <span>{product.price}</span>
+                      <div className="text-muted-foreground mb-2 flex flex-wrap items-center gap-2 text-xs">
+                        <span>{product.province_name || product.province_code || '--'}</span>
+                        {product.star_rating && (
+                          <span>{'⭐'.repeat(Number(product.star_rating))}</span>
+                        )}
                       </div>
-                      <h3 className="text-base font-bold text-slate-900">{product.name}</h3>
-                      <p className="text-muted-foreground mt-2 text-sm">{product.description}</p>
-                      <div className="mt-4 flex gap-2">
+                      <h3 className="text-base font-bold text-foreground" title={product.name_vi || product.name_en}>
+                        {product.name_vi || product.name_en}
+                      </h3>
+                      <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-relaxed">
+                        {product.description_vi || product.description_en || ''}
+                      </p>
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-foreground text-sm font-bold">
+                          {product.price_vnd ? formatVND(Number(product.price_vnd)) : '--'}
+                        </span>
+                        {product.unit && (
+                          <span className="text-muted-foreground text-xs">/ {product.unit}</span>
+                        )}
+                      </div>
+                      <div className="mt-3 flex gap-2">
                         <Button size="sm" className="rounded-lg" onClick={() => navigate('/ocop')}>
                           Xem sản phẩm
                         </Button>
@@ -782,6 +919,7 @@ export default function HomePage() {
                 title="Câu chuyện du lịch từ cộng đồng"
                 description="Tăng chiều sâu nội dung cộng đồng với trải nghiệm thực tế, mẹo di chuyển và gợi ý lên lịch trình."
               />
+              {/* TODO: create vlog API service (GET /vlogs) */}
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                 {VLOG_STORIES.map((story) => (
                   <article
@@ -815,10 +953,7 @@ export default function HomePage() {
           <div className={sectionContainerClass}>
             <div className="border-border/70 text-muted-foreground border-t pt-5 text-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p>
-                  Du lịch số Việt Nam · Giao diện trang chủ sáng màu, nổi bật hơn và bổ sung thêm
-                  thông tin
-                </p>
+                <p>Du lịch số Ninh Bình</p>
                 <p className="flex items-center gap-2">
                   <Button
                     type="button"

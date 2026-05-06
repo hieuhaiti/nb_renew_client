@@ -191,7 +191,8 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
               const checked = selectedSubcategoryIds.includes(item.id);
               const colorCode = item.color_hex || '#94a3b8';
               const iconUrl = withBaseUrl(item.icon_url);
-              const itemName = lang === 'en' ? (item.name_en || item.name_vi) : (item.name_vi || item.name_en);
+              const itemName =
+                lang === 'en' ? item.name_en || item.name_vi : item.name_vi || item.name_en;
               const checkboxId = `map-layer-subcategory-${item.id}`;
 
               return (
@@ -199,7 +200,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                   <TooltipTrigger asChild>
                     <label
                       htmlFor={checkboxId}
-                      className="group hover:bg-muted/50 relative flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors"
+                      className="group hover:bg-muted/50 relative flex cursor-pointer items-center gap-3 rounded-lg border p-2 transition-colors"
                       style={
                         checked
                           ? { borderColor: colorCode, backgroundColor: hexToRgba(colorCode, 0.08) }
@@ -207,11 +208,6 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                       }
                     >
                       {/* Color accent bar */}
-                      <span
-                        aria-hidden="true"
-                        className="absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-r-full transition-all"
-                        style={{ backgroundColor: checked ? colorCode : 'transparent' }}
-                      />
 
                       <Checkbox
                         id={checkboxId}
@@ -223,14 +219,14 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                       {/* Icon badge */}
                       <span
                         aria-hidden="true"
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
                         style={{ backgroundColor: hexToRgba(colorCode, 0.15) }}
                       >
                         {iconUrl ? (
                           <img
                             src={iconUrl}
                             alt=""
-                            className="h-5 w-5 object-contain"
+                            className="h-4 w-4 object-contain"
                             style={{ filter: checked ? 'none' : 'grayscale(60%) opacity(0.7)' }}
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';

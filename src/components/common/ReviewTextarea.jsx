@@ -34,13 +34,13 @@ export const ReviewTextarea = memo(({ onCommentChange, t }) => {
           newComment.length > 0 && newComment.length < 10
             ? 'border-destructive/40 focus:border-destructive'
             : newComment.length >= 10
-              ? 'border-nature/40 focus:border-nature'
+              ? 'border-primary/40 focus:border-primary'
               : 'border-border'
         }`}
         maxLength={500}
       />
       <div className="mt-1 flex justify-between text-xs">
-        <span className={`${newComment.length < 10 ? 'text-destructive' : 'text-nature'}`}>
+        <span className={`${newComment.length < 10 ? 'text-destructive' : 'text-primary'}`}>
           {t('tourism.min_characters', 'Tối thiểu 10 ký tự')}{' '}
           {newComment.length >= 10
             ? '✓'

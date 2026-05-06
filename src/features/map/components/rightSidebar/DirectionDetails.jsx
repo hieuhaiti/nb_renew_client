@@ -7,10 +7,10 @@ export default function DirectionDetails({ className }) {
   const { directions, formatDuration, formatDistance } = useDirectionsStore();
 
   return (
-    <div className={cn('h-full space-y-3', className)}>
+    <div className={cn('flex h-full flex-col space-y-3 overflow-hidden', className)}>
       {directions ? (
-        <div className="space-y-2">
-          <div className="bg-muted/40 grid grid-cols-2 gap-2 rounded-lg border p-2.5">
+        <div className="flex h-full flex-col space-y-2">
+          <div className="bg-muted/40 grid flex-shrink-0 grid-cols-2 gap-2 rounded-lg border p-2.5">
             <div className="bg-background rounded-md px-2 py-1.5">
               <p className="text-muted-foreground text-xs">
                 {t('mapPage.direction.totalDistance', { defaultValue: 'Total distance' })}
@@ -25,11 +25,11 @@ export default function DirectionDetails({ className }) {
             </div>
           </div>
 
-          <div className="space-y-1.5 rounded-lg border p-2.5">
+          <div className="flex flex-1 flex-col space-y-1.5 overflow-hidden rounded-lg border p-2.5">
             <p className="text-xs font-semibold">
               {t('mapPage.direction.stepsTitle', { defaultValue: 'Step-by-step guidance' })}
             </p>
-            <div className="max-h-[38vh] space-y-1.5 overflow-y-auto pr-1">
+            <div className="flex-1 space-y-1.5 overflow-y-auto pr-1">
               {(directions.legs?.[0]?.steps || []).map((step, index) => (
                 <div
                   key={`${step?.maneuver?.instruction || 'step'}-${index}`}

@@ -1,3 +1,59 @@
+const EMPTY_FEATURE_COLLECTION = {
+  type: 'FeatureCollection',
+  features: [],
+};
+
+const SOURCE_CLUSTER_MAX_ZOOM = 14;
+const SOURCE_CLUSTER_RADIUS = 50;
+
+const GEOMETRY_TYPES = {
+  POINT: ['Point', 'MultiPoint'],
+  POLYGON: ['Polygon', 'MultiPolygon'],
+  LINE: ['LineString', 'MultiLineString'],
+};
+
+const SVG_DEFAULT_VIEWBOX = '0 0 24 24';
+const DEFAULT_MARKER_COLOR = '#3b82f6';
+
+const MARKER_SIZE = 40;
+const MARKER_RADIUS = 19;
+const MARKER_STROKE_WIDTH = 2;
+const MARKER_ICON_SIZE = 20;
+const DEFAULT_MARKER_DOT_RADIUS = 5;
+
+const MARKER_PROGRESS_CURRENT = 50;
+const MARKER_PROGRESS_TOTAL = 100;
+const MARKER_PROGRESS_BAR_WIDTH = 55;
+const MARKER_PROGRESS_BAR_HEIGHT = 4;
+const MARKER_PROGRESS_GAP = 1;
+const MARKER_PROGRESS_CORNER_RADIUS = 2;
+const MARKER_PROGRESS_TRACK_COLOR = '#22c55e';
+const MARKER_PROGRESS_FILL_COLOR = '#ef4444';
+
+const FILL_OPACITY = 0.18;
+const LINE_WIDTH = 2;
+const LINE_OPACITY = 0.9;
+const CLUSTER_STROKE_COLOR = '#ffffff';
+const CLUSTER_STROKE_WIDTH = 2;
+const CLUSTER_OPACITY = 0.9;
+const CLUSTER_RADIUS_STEPS = ['step', ['get', 'point_count'], 16, 10, 20, 50, 24, 100, 28];
+
+const MAP_LABEL_FONT = ['Open Sans Semibold', 'Arial Unicode MS Bold'];
+const CLUSTER_COUNT_TEXT_SIZE = 12;
+const CLUSTER_COUNT_TEXT_COLOR = '#111827';
+const CLUSTER_COUNT_TEXT_HALO_COLOR = '#ffffff';
+const CLUSTER_COUNT_TEXT_HALO_WIDTH = 1.5;
+
+const POINT_ICON_OPACITY = 0.95;
+const POINT_ICON_SIZE_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 0.9, 12, 1, 16, 1.12];
+const POINT_TEXT_SIZE = 13;
+const POINT_TEXT_OFFSET = [0, 1.9];
+const POINT_TEXT_PADDING = 2;
+const POINT_TEXT_COLOR = 'black';
+const POINT_TEXT_HALO_COLOR = 'white';
+const POINT_TEXT_HALO_WIDTH = 2;
+const POINT_TEXT_OPACITY = 1;
+
 function isObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -27,7 +83,10 @@ function toFeature(input, fallbackId) {
   }
 
   const geometry =
-    input.geometry_data || input.geometry || input.geojson || buildPointGeometryFromCoordinates(input);
+    input.geometry_data ||
+    input.geometry ||
+    input.geojson ||
+    buildPointGeometryFromCoordinates(input);
   if (!isObject(geometry) || !geometry.type) return null;
 
   const topLevelProps = { ...input };
@@ -63,11 +122,6 @@ function toFeature(input, fallbackId) {
 }
 
 export function normalizePointsToFeatureCollection(payload) {
-  const fallback = {
-    type: 'FeatureCollection',
-    features: [],
-  };
-
   const directGeojson = payload?.data?.geojson || payload?.geojson;
   if (directGeojson?.type === 'FeatureCollection' && Array.isArray(directGeojson.features)) {
     return directGeojson;
@@ -87,7 +141,7 @@ export function normalizePointsToFeatureCollection(payload) {
   const sourceArray = candidateArrays.find((items) => Array.isArray(items)) || [];
   const features = sourceArray.map((item, index) => toFeature(item, `${index}`)).filter(Boolean);
 
-  if (features.length === 0) return fallback;
+  if (features.length === 0) return EMPTY_FEATURE_COLLECTION;
 
   return {
     type: 'FeatureCollection',
@@ -106,8 +160,8 @@ function ensureSource(map, sourceId, data) {
     type: 'geojson',
     data,
     cluster: true,
-    clusterMaxZoom: 14,
-    clusterRadius: 50,
+    clusterMaxZoom: SOURCE_CLUSTER_MAX_ZOOM,
+    clusterRadius: SOURCE_CLUSTER_RADIUS,
   });
 }
 
@@ -120,7 +174,7 @@ function normalizeSvgIcon(iconSvg) {
   const svgString = String(iconSvg || '').trim();
 
   const viewBoxMatch = svgString.match(/viewBox=["']([^"']+)["']/i);
-  const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 24 24';
+  const viewBox = viewBoxMatch ? viewBoxMatch[1] : SVG_DEFAULT_VIEWBOX;
 
   let content = svgString
     .replace(/<svg[^>]*>/i, '')
@@ -131,42 +185,127 @@ function normalizeSvgIcon(iconSvg) {
 }
 
 function createCategorySvg(iconSvg, color) {
-  const markerSize = 30;
-  const iconSize = 16;
-  const markerColor = color || '#3b82f6';
+  const markerColor = color || DEFAULT_MARKER_COLOR;
+  const progressCurrent = MARKER_PROGRESS_CURRENT;
+  const progressTotal = MARKER_PROGRESS_TOTAL;
+  const progressRatio = Math.max(0, Math.min(1, progressCurrent / progressTotal));
+  const progressBarWidth = MARKER_PROGRESS_BAR_WIDTH;
+  const progressBarHeight = MARKER_PROGRESS_BAR_HEIGHT;
+  const progressGap = MARKER_PROGRESS_GAP;
+  const canvasWidth = Math.max(MARKER_SIZE, progressBarWidth + 2);
+  const markerCenterX = canvasWidth / 2;
+  const markerCenterY = MARKER_SIZE / 2;
+  const progressBarX = (canvasWidth - progressBarWidth) / 2;
+  const progressBarY = MARKER_SIZE + progressGap;
+  const progressFillWidth = progressBarWidth * progressRatio;
+  const totalHeight = MARKER_SIZE + progressGap + progressBarHeight + 2;
 
   const { viewBox, content } = normalizeSvgIcon(iconSvg);
 
-  const iconX = (markerSize - iconSize) / 2;
-  const iconY = (markerSize - iconSize) / 2;
+  const iconX = markerCenterX - MARKER_ICON_SIZE / 2;
+  const iconY = (MARKER_SIZE - MARKER_ICON_SIZE) / 2;
 
   return `
     <svg
-      width="${markerSize}"
-      height="${markerSize}"
-      viewBox="0 0 ${markerSize} ${markerSize}"
+      width="${canvasWidth}"
+      height="${totalHeight}"
+      viewBox="0 0 ${canvasWidth} ${totalHeight}"
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
     >
       <circle
-        cx="${markerSize / 2}"
-        cy="${markerSize / 2}"
-        r="14"
+        cx="${markerCenterX}"
+        cy="${markerCenterY}"
+        r="${MARKER_RADIUS}"
         fill="white"
         stroke="${markerColor}"
-        stroke-width="2"
+        stroke-width="${MARKER_STROKE_WIDTH}"
       />
 
       <svg
         x="${iconX}"
         y="${iconY}"
-        width="${iconSize}"
-        height="${iconSize}"
+        width="${MARKER_ICON_SIZE}"
+        height="${MARKER_ICON_SIZE}"
         viewBox="${viewBox}"
         preserveAspectRatio="xMidYMid meet"
       >
         ${content}
       </svg>
+
+      <rect
+        x="${progressBarX}"
+        y="${progressBarY}"
+        width="${progressBarWidth}"
+        height="${progressBarHeight}"
+        rx="${MARKER_PROGRESS_CORNER_RADIUS}"
+        fill="${MARKER_PROGRESS_TRACK_COLOR}"
+      />
+      <rect
+        x="${progressBarX}"
+        y="${progressBarY}"
+        width="${progressFillWidth}"
+        height="${progressBarHeight}"
+        rx="${MARKER_PROGRESS_CORNER_RADIUS}"
+        fill="${MARKER_PROGRESS_FILL_COLOR}"
+      />
+    </svg>
+  `;
+}
+
+function createDefaultCategorySvg(color) {
+  const markerColor = color || DEFAULT_MARKER_COLOR;
+  const progressCurrent = MARKER_PROGRESS_CURRENT;
+  const progressTotal = MARKER_PROGRESS_TOTAL;
+  const progressRatio = Math.max(0, Math.min(1, progressCurrent / progressTotal));
+  const progressBarWidth = MARKER_PROGRESS_BAR_WIDTH;
+  const progressBarHeight = MARKER_PROGRESS_BAR_HEIGHT;
+  const progressGap = MARKER_PROGRESS_GAP;
+  const canvasWidth = Math.max(MARKER_SIZE, progressBarWidth + 2);
+  const markerCenterX = canvasWidth / 2;
+  const markerCenterY = MARKER_SIZE / 2;
+  const progressBarX = (canvasWidth - progressBarWidth) / 2;
+  const progressBarY = MARKER_SIZE + progressGap;
+  const progressFillWidth = progressBarWidth * progressRatio;
+  const totalHeight = MARKER_SIZE + progressGap + progressBarHeight + 2;
+
+  return `
+    <svg
+      width="${canvasWidth}"
+      height="${totalHeight}"
+      viewBox="0 0 ${canvasWidth} ${totalHeight}"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        cx="${markerCenterX}"
+        cy="${markerCenterY}"
+        r="${MARKER_RADIUS}"
+        fill="white"
+        stroke="${markerColor}"
+        stroke-width="${MARKER_STROKE_WIDTH}"
+      />
+      <circle
+        cx="${markerCenterX}"
+        cy="${markerCenterY}"
+        r="${DEFAULT_MARKER_DOT_RADIUS}"
+        fill="${markerColor}"
+      />
+      <rect
+        x="${progressBarX}"
+        y="${progressBarY}"
+        width="${progressBarWidth}"
+        height="${progressBarHeight}"
+        rx="${MARKER_PROGRESS_CORNER_RADIUS}"
+        fill="${MARKER_PROGRESS_TRACK_COLOR}"
+      />
+      <rect
+        x="${progressBarX}"
+        y="${progressBarY}"
+        width="${progressFillWidth}"
+        height="${progressBarHeight}"
+        rx="${MARKER_PROGRESS_CORNER_RADIUS}"
+        fill="${MARKER_PROGRESS_FILL_COLOR}"
+      />
     </svg>
   `;
 }
@@ -258,6 +397,11 @@ function loadMapIconImage(map, iconUrl, color, callback) {
     .catch((svgError) => loadBitmapFallback(svgError));
 }
 
+function loadDefaultMarkerImage(color, callback) {
+  const markerSvg = createDefaultCategorySvg(color);
+  loadSvgStringAsImage(markerSvg, callback);
+}
+
 function toNumber(value) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
@@ -340,20 +484,31 @@ export function addOrUpdateSubcategoryLayer(
 
   const fillLayerId = `${sourceId}-fill`;
   const lineLayerId = `${sourceId}-line`;
-  const circleLayerId = `${sourceId}-circle`;
-  const iconLayerId = `${sourceId}-icon`;
-  const labelLayerId = `${sourceId}-label`;
+  const pointLayerId = `${sourceId}-point`;
   const clusterLayerId = `${sourceId}-cluster`;
   const clusterCountLayerId = `${sourceId}-cluster-count`;
+  const fallbackMarkerImageId = `${sourceId}-marker`;
+  const pointFilter = [
+    'all',
+    ['in', ['geometry-type'], ['literal', GEOMETRY_TYPES.POINT]],
+    ['!', ['has', 'point_count']],
+  ];
+
+  // Clean up legacy split point layers so only one symbol layer remains.
+  [`${sourceId}-circle`, `${sourceId}-icon`, `${sourceId}-label`].forEach((legacyLayerId) => {
+    if (map.getLayer(legacyLayerId)) {
+      map.removeLayer(legacyLayerId);
+    }
+  });
 
   ensureLayer(map, {
     id: fillLayerId,
     type: 'fill',
     source: sourceId,
-    filter: ['in', ['geometry-type'], ['literal', ['Polygon', 'MultiPolygon']]],
+    filter: ['in', ['geometry-type'], ['literal', GEOMETRY_TYPES.POLYGON]],
     paint: {
       'fill-color': color,
-      'fill-opacity': 0.18,
+      'fill-opacity': FILL_OPACITY,
     },
   });
 
@@ -361,29 +516,11 @@ export function addOrUpdateSubcategoryLayer(
     id: lineLayerId,
     type: 'line',
     source: sourceId,
-    filter: ['in', ['geometry-type'], ['literal', ['LineString', 'MultiLineString']]],
+    filter: ['in', ['geometry-type'], ['literal', GEOMETRY_TYPES.LINE]],
     paint: {
       'line-color': color,
-      'line-width': 2,
-      'line-opacity': 0.9,
-    },
-  });
-
-  ensureLayer(map, {
-    id: circleLayerId,
-    type: 'circle',
-    source: sourceId,
-    filter: [
-      'all',
-      ['in', ['geometry-type'], ['literal', ['Point', 'MultiPoint']]],
-      ['!', ['has', 'point_count']],
-    ],
-    paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 14, 12, 16, 16, 18],
-      'circle-stroke-width': 3,
-      'circle-color': color,
-      'circle-stroke-color': '#ffffff',
-      'circle-opacity': 0.95,
+      'line-width': LINE_WIDTH,
+      'line-opacity': LINE_OPACITY,
     },
   });
 
@@ -394,10 +531,10 @@ export function addOrUpdateSubcategoryLayer(
     filter: ['has', 'point_count'],
     paint: {
       'circle-color': color,
-      'circle-radius': ['step', ['get', 'point_count'], 16, 10, 20, 50, 24, 100, 28],
-      'circle-stroke-color': '#ffffff',
-      'circle-stroke-width': 2,
-      'circle-opacity': 0.9,
+      'circle-radius': CLUSTER_RADIUS_STEPS,
+      'circle-stroke-color': CLUSTER_STROKE_COLOR,
+      'circle-stroke-width': CLUSTER_STROKE_WIDTH,
+      'circle-opacity': CLUSTER_OPACITY,
     },
   });
 
@@ -408,38 +545,13 @@ export function addOrUpdateSubcategoryLayer(
     filter: ['has', 'point_count'],
     layout: {
       'text-field': ['get', 'point_count_abbreviated'],
-      'text-size': 12,
-      'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+      'text-size': CLUSTER_COUNT_TEXT_SIZE,
+      'text-font': MAP_LABEL_FONT,
     },
     paint: {
-      'text-color': '#111827',
-      'text-halo-color': '#ffffff',
-      'text-halo-width': 1.5,
-    },
-  });
-
-  ensureLayer(map, {
-    id: labelLayerId,
-    type: 'symbol',
-    source: sourceId,
-    filter: [
-      'all',
-      ['in', ['geometry-type'], ['literal', ['Point', 'MultiPoint']]],
-      ['!', ['has', 'point_count']],
-      ['has', 'name'],
-    ],
-    layout: {
-      'text-field': ['get', 'name'],
-      'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-      'text-size': 13,
-      'text-offset': [0, 1.5],
-      'text-anchor': 'top',
-      'text-padding': 2,
-    },
-    paint: {
-      'text-color': 'black',
-      'text-halo-color': 'white',
-      'text-halo-width': 2,
+      'text-color': CLUSTER_COUNT_TEXT_COLOR,
+      'text-halo-color': CLUSTER_COUNT_TEXT_HALO_COLOR,
+      'text-halo-width': CLUSTER_COUNT_TEXT_HALO_WIDTH,
     },
   });
 
@@ -450,63 +562,78 @@ export function addOrUpdateSubcategoryLayer(
   if (map.getLayer(lineLayerId)) {
     map.setPaintProperty(lineLayerId, 'line-color', color);
   }
-  if (map.getLayer(circleLayerId)) {
-    map.setPaintProperty(circleLayerId, 'circle-color', color);
-    map.setPaintProperty(circleLayerId, 'circle-stroke-color', '#ffffff');
-    map.setPaintProperty(circleLayerId, 'circle-stroke-width', 1.5);
-  }
   if (map.getLayer(clusterLayerId)) {
     map.setPaintProperty(clusterLayerId, 'circle-color', color);
   }
 
-  // Icon symbol layer on top of circle
+  const ensurePointLayer = (markerImageId) => {
+    ensureLayer(map, {
+      id: pointLayerId,
+      type: 'symbol',
+      source: sourceId,
+      filter: pointFilter,
+      layout: {
+        'icon-image': markerImageId,
+        // Icon bitmap is normalized from constants in the marker SVG generator.
+        'icon-size': POINT_ICON_SIZE_BY_ZOOM,
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-anchor': 'center',
+        'text-field': ['coalesce', ['get', 'name'], ''],
+        'text-font': MAP_LABEL_FONT,
+        'text-size': POINT_TEXT_SIZE,
+        'text-offset': POINT_TEXT_OFFSET,
+        'text-anchor': 'top',
+        'text-padding': POINT_TEXT_PADDING,
+      },
+      paint: {
+        'icon-opacity': POINT_ICON_OPACITY,
+        'text-color': POINT_TEXT_COLOR,
+        'text-halo-color': POINT_TEXT_HALO_COLOR,
+        'text-halo-width': POINT_TEXT_HALO_WIDTH,
+        'text-opacity': POINT_TEXT_OPACITY,
+      },
+    });
+
+    if (map.getLayer(pointLayerId)) {
+      map.setLayoutProperty(pointLayerId, 'icon-image', markerImageId);
+      map.setPaintProperty(pointLayerId, 'icon-opacity', POINT_ICON_OPACITY);
+      map.setPaintProperty(pointLayerId, 'text-opacity', POINT_TEXT_OPACITY);
+      map.moveLayer(pointLayerId);
+    }
+  };
+
+  const ensureFallbackPointLayer = () => {
+    if (map.hasImage(fallbackMarkerImageId)) {
+      ensurePointLayer(fallbackMarkerImageId);
+      return;
+    }
+
+    loadDefaultMarkerImage(color, (loadedImage, loadError) => {
+      if (!map.getSource(sourceId)) return;
+
+      if (loadError || !loadedImage) {
+        console.warn('[MapHelper] Failed to render fallback marker image', {
+          sourceId,
+          markerImageId: fallbackMarkerImageId,
+          error: loadError,
+        });
+        return;
+      }
+
+      if (!map.hasImage(fallbackMarkerImageId)) {
+        map.addImage(fallbackMarkerImageId, loadedImage);
+      }
+      ensurePointLayer(fallbackMarkerImageId);
+    });
+  };
+
   if (iconUrl && iconImageId) {
-    const addIconLayer = () => {
-      ensureLayer(map, {
-        id: iconLayerId,
-        type: 'symbol',
-        source: sourceId,
-        filter: [
-          'all',
-          ['in', ['geometry-type'], ['literal', ['Point', 'MultiPoint']]],
-          ['!', ['has', 'point_count']],
-        ],
-        layout: {
-          'icon-image': iconImageId,
-          // Icon bitmap is normalized to 30x30 with a centered 16x16 glyph.
-          'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.9, 12, 1, 16, 1.12],
-          'icon-allow-overlap': true,
-          'icon-ignore-placement': true,
-          'icon-anchor': 'center',
-        },
-        paint: {
-          'icon-opacity': 0.95,
-        },
-      });
-
-      // Ensure icon is always above the point circle.
-      if (map.getLayer(iconLayerId)) {
-        map.moveLayer(iconLayerId);
-      }
-      if (map.getLayer(labelLayerId)) {
-        map.moveLayer(labelLayerId);
-      }
-
-      // Hide base point circle when composed SVG marker is visible.
-      if (map.getLayer(circleLayerId)) {
-        map.setPaintProperty(circleLayerId, 'circle-opacity', 0);
-        map.setPaintProperty(circleLayerId, 'circle-stroke-opacity', 0);
-      }
-    };
-
     if (map.hasImage(iconImageId)) {
-      addIconLayer();
+      ensurePointLayer(iconImageId);
     } else {
       loadMapIconImage(map, iconUrl, color, (loadedImage, loadError) => {
-        // Layer may be toggled off before async icon loading finishes.
-        if (!map.getSource(sourceId)) {
-          return;
-        }
+        if (!map.getSource(sourceId)) return;
 
         if (loadError || !loadedImage) {
           console.warn('[MapHelper] Failed to load subcategory icon image', {
@@ -515,26 +642,20 @@ export function addOrUpdateSubcategoryLayer(
             iconImageId,
             error: loadError,
           });
+          ensureFallbackPointLayer();
           return;
         }
 
         if (!map.hasImage(iconImageId)) {
           map.addImage(iconImageId, loadedImage);
         }
-        addIconLayer();
+        ensurePointLayer(iconImageId);
       });
     }
-  } else {
-    if (map.getLayer(iconLayerId)) {
-      map.removeLayer(iconLayerId);
-    }
-
-    // Restore base point circle when icon marker is not available.
-    if (map.getLayer(circleLayerId)) {
-      map.setPaintProperty(circleLayerId, 'circle-opacity', 0.95);
-      map.setPaintProperty(circleLayerId, 'circle-stroke-opacity', 1);
-    }
+    return;
   }
+
+  ensureFallbackPointLayer();
 }
 
 export function removeSubcategoryLayer(map, sourceId) {
@@ -543,6 +664,7 @@ export function removeSubcategoryLayer(map, sourceId) {
   const layerIds = [
     `${sourceId}-fill`,
     `${sourceId}-line`,
+    `${sourceId}-point`,
     `${sourceId}-circle`,
     `${sourceId}-icon`,
     `${sourceId}-label`,

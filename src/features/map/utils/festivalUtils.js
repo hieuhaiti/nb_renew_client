@@ -13,9 +13,7 @@ function normalizeTextValue(value, lang = 'vi') {
   if (!value || typeof value !== 'object') return '';
 
   const preferVi = lang !== 'en';
-  const note = preferVi
-    ? value?.note_vi || value?.note_en
-    : value?.note_en || value?.note_vi;
+  const note = preferVi ? value?.note_vi || value?.note_en : value?.note_en || value?.note_vi;
 
   return typeof note === 'string' ? note : '';
 }
@@ -92,9 +90,43 @@ function getLocalizedValue(item, lang = 'vi', baseField) {
   return normalizeTextValue(localizedValue, lang);
 }
 
+function extractCoordinatesFromGeom(geom) {
+  if (!geom || typeof geom !== 'object') return null;
+
+  // GeoJSON Point: { type: "Point", coordinates: [lng, lat] }
+  if (geom.type === 'Point' && Array.isArray(geom.coordinates)) {
+    const [lng, lat] = geom.coordinates;
+    return [toNumber(lng), toNumber(lat)].every((v) => v != null)
+      ? [toNumber(lng), toNumber(lat)]
+      : null;
+  }
+
+  // Direct coordinates array
+  if (Array.isArray(geom.coordinates)) {
+    const [lng, lat] = geom.coordinates;
+    return [toNumber(lng), toNumber(lat)].every((v) => v != null)
+      ? [toNumber(lng), toNumber(lat)]
+      : null;
+  }
+
+  return null;
+}
+
 export function normalizeFestivalModel(item, { lang = 'vi', fallbackId } = {}) {
-  const lng = toNumber(item?.lng ?? item?.longitude);
-  const lat = toNumber(item?.lat ?? item?.latitude);
+  let coordinates = null;
+
+  // Try GeoJSON geom first
+  const geomCoordinates = extractCoordinatesFromGeom(item?.geom);
+  if (geomCoordinates) {
+    coordinates = geomCoordinates;
+  } else {
+    // Fallback to direct lng/lat fields
+    const lng = toNumber(item?.lng ?? item?.longitude);
+    const lat = toNumber(item?.lat ?? item?.latitude);
+    if (lng != null && lat != null) {
+      coordinates = [lng, lat];
+    }
+  }
 
   return {
     id: item?.id ?? fallbackId ?? null,
@@ -109,13 +141,13 @@ export function normalizeFestivalModel(item, { lang = 'vi', fallbackId } = {}) {
       item?.tourism_point_name ||
       '',
     province_code: item?.province_code || null,
-    cover_image_url:
-      item?.cover_image_url || item?.coverImageUrl || item?.featured_image || null,
+    cover_image_url: item?.cover_image_url || item?.coverImageUrl || item?.featured_image || null,
     website: item?.website || null,
     is_recurring: Boolean(item?.is_recurring),
     is_published: item?.is_published ?? true,
+    spot_slug: item?.spot_slug || item?.tourism_point_slug || null,
     spot_id: item?.spot_id || item?.tourism_point_id || null,
-    coordinates: lng != null && lat != null ? [lng, lat] : null,
+    coordinates,
     raw: item,
   };
 }

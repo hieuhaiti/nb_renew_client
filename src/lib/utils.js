@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { env } from '@/config/env';
+import { Star, StarHalf } from 'lucide-react';
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -40,4 +41,13 @@ export function hexToRgba(hex, alpha = 0.12) {
 export function hasHtmlMarkup(value) {
   if (typeof value !== 'string') return false;
   return /<\/?[a-z][\s\S]*>/i.test(value);
+}
+
+export function formatStopDuration(minutes) {
+  if (!minutes) return null;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h > 0 && m > 0) return `${h}g ${m}p`;
+  if (h > 0) return `${h} giờ`;
+  return `${m} phút`;
 }

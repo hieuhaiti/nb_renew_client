@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "app_name": "Travel Ninh Binh",
     "home": "Home",
@@ -19,6 +19,7 @@
     "open_menu": "Open menu",
     "news": "News",
     "vlog": "Vlog",
+    "vr360": "360° Virtual Reality",
     "ocop_festival": "OCOP Festival",
     "see_all": "See all",
     "search_placeholder": "Search places / routes...",
@@ -151,7 +152,14 @@
       "no_content": "No detail content available.",
       "sidebar_title": "Explore on map",
       "sidebar_desc": "After reading the update, open the map to quickly check related locations and refine your itinerary.",
-      "cta_map": "Open map now"
+      "cta_map": "Open map now",
+      "share": "Share",
+      "views": "views",
+      "min_read": "min read",
+      "link_copied": "Link copied!",
+      "tags_title": "Topics",
+      "related_title": "Related articles",
+      "no_related": "No related articles found."
     }
   },
   "auth": {
@@ -316,6 +324,10 @@
       "copied": "Copied",
       "shared": "Shared"
     },
+    "actions": {
+      "save": "Save",
+      "share": "Share"
+    },
     "review": {
       "missing_rating": "Please provide ratings."
     }
@@ -341,13 +353,14 @@
     "reviews": "reviews",
     "view_detail": "View Details",
     "free": "Free",
-    "no_results": "No results found"
+    "no_results": "No results found",
+    "errorLoading": "Unable to load data.",
+    "tryDifferentKeyword": "Try searching with a different keyword."
   },
   "tourPage": {
     "title": "Tour Routes",
     "description": "Explore available tour routes from live system data",
     "detailDescriptionTitle": "Tour Description",
-    "total": "Total routes",
     "refresh": "Refresh",
     "searchPlaceholder": "Search tour routes...",
     "gridView": "Grid view",
@@ -365,6 +378,8 @@
     "copied": "Copied",
     "shared": "Shared",
     "review": "Review",
+    "save": "Save",
+    "share": "Share",
     "by": "by",
     "guest": "Guest",
     "createdAt": "Created at",
@@ -402,7 +417,7 @@
     "outdoorDesc": "Topographic and nature-oriented map style.",
     "streetDesc": "Urban-focused map with roads and labels.",
     "satelliteDesc": "High-resolution satellite imagery.",
-    "satelliteStreetDesc": "Satellite imagery with road and place labels."
+    "satelliteStreetDesc": "Satellite imagery with road ."
   },
   "headerAside": {
     "layerData": "Data layers",
@@ -487,8 +502,13 @@
     "toolbar": {
       "searchPlaceholder": "Search destination, service, food, event...",
       "searchButton": "Search",
+      "category": "Category",
       "filter": "Filter",
+      "baseMap": "Base Map",
+      "radius": "Radius",
+      "radiusAll": "No radius limit",
       "searchNoResult": "No matching destination found for current filters.",
+      "locationError": "Could not get your location. Please enable location access.",
       "styleUnavailable": "Selected map style is not configured.",
       "geoUnsupported": "Geolocation is not supported by this browser.",
       "mapNotReady": "Map is still loading, please try again in a moment.",
@@ -498,9 +518,11 @@
     },
     "destination": {
       "title": "Destination",
+      "unknownName": "Unknown destination",
       "empty": "Select a point on the map to view details.",
       "inactiveSubcategory": "This point belongs to a disabled data layer. Re-enable the layer or select another point.",
       "noImage": "No image available",
+      "noAddress": "No address",
       "noDescription": "No description available for this point.",
       "category": "Category",
       "subcategory": "Subcategory",
@@ -523,16 +545,41 @@
       "visits": "Visits",
       "openRoute": "Directions"
     },
+    "tourPanel": {
+      "title": "Tours",
+      "syncing": "Syncing...",
+      "count": "{{count}} tours",
+      "reset": "Reset",
+      "searchPlaceholder": "Search tours...",
+      "featuredOnly": "Featured",
+      "nonFeatured": "Not featured",
+      "error": "Unable to load tour list.",
+      "empty": "No tours match your filters.",
+      "openRoute": "View on map",
+      "loadingRoute": "Opening...",
+      "hideOtherPoints": "Hide other points",
+      "showOtherPoints": "Show other points",
+      "clearRoute": "Clear route",
+      "routeReady": "Tour route is now displayed on the map.",
+      "routeFailed": "Cannot display this tour route right now.",
+      "routeCleared": "Tour route was removed from the map.",
+      "routeInsufficientStops": "A tour needs at least 2 stops to draw a route."
+    },
     "direction": {
       "driving": "Driving",
       "walking": "Walking",
       "cycling": "Cycling",
+      "transportType": "Transport",
       "startPlaceholder": "Enter start location",
       "endPlaceholder": "Enter destination",
       "searching": "Searching...",
       "swap": "Swap",
       "calculate": "Calculate route",
+      "calculateReadyHint": "Click to calculate directions.",
+      "calculateDisabledHint": "Enter both start point and destination to calculate directions.",
       "clear": "Clear",
+      "clearReadyHint": "Clear the current route from the map.",
+      "clearDisabledHint": "No route available to clear yet.",
       "totalDistance": "Total distance",
       "totalDuration": "Total duration",
       "stepsTitle": "Turn-by-turn steps",
