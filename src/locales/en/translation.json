@@ -612,6 +612,8 @@
       "description": "Ask about tours, weather, OCOP and get personalised itinerary suggestions.",
       "cta": "Chat with the assistant",
       "placeholder": "Enter a question about destinations, tours, or weather...",
+      "youLabel": "You",
+      "botLabel": "AI Assistant",
       "quickPrompts": {
         "dayTour": "Suggest a 1-day tour",
         "lessCrowded": "Which places are less crowded?",
@@ -625,3 +627,4 @@
     }
   }
 }
+

@@ -612,6 +612,8 @@
       "description": "Hỏi nhanh về tour, thời tiết, OCOP và nhận gợi ý lịch trình cá nhân hoá.",
       "cta": "Trò chuyện cùng chatbot",
       "placeholder": "Nhập câu hỏi về điểm đến, tour hoặc thời tiết...",
+      "youLabel": "Bạn",
+      "botLabel": "Trợ lý AI",
       "quickPrompts": {
         "dayTour": "Gợi ý tour 1 ngày",
         "lessCrowded": "Điểm nào ít đông?",
@@ -625,3 +627,4 @@
     }
   }
 }
+

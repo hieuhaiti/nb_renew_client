@@ -199,13 +199,7 @@ export default function Header() {
                     <p className="text-muted-foreground truncate text-sm">{user?.email}</p>
                   </div>
                   <div className="flex items-center justify-between px-3 py-1.5">
-                    <span className="text-muted-foreground text-sm">
-                      {t('common.toggle_theme')}
-                    </span>
                     <ThemeSwitch />
-                  </div>
-                  <div className="flex items-center justify-between px-3 py-1.5">
-                    <span className="text-muted-foreground text-sm">{t('common.toggle_lang')}</span>
                     <LanguageSwitch />
                   </div>
                   <div className="border-border my-1 border-t" />

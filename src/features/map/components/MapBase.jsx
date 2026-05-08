@@ -6,6 +6,7 @@ import { useMapStore } from '../store/useMapStore';
 import { defaultLatLong, defaultZoom, mapDelta, pitchDefault } from '../constant/mapConstant';
 import { useMapStyleStore } from '../store/useMapStyleStore';
 import ResetControl from './control/ToolResetControl';
+import ToolBaseMap from './control/ToolBaseMap';
 import ToolLocateControl from './control/ToolLocateControl';
 import ToolViewModeControl from './control/ToolViewModeControl';
 import { useLanguageStore } from '@/stores/useLanguageStore';
@@ -27,13 +28,7 @@ import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
 
 mapboxgl.accessToken = env.mapboxToken;
 
-const SUBCATEGORY_LAYER_SUFFIXES = [
-  'fill',
-  'line',
-  'point',
-  'cluster',
-  'cluster-count',
-];
+const SUBCATEGORY_LAYER_SUFFIXES = ['fill', 'line', 'point', 'cluster', 'cluster-count'];
 
 const HIGHLIGHT_ROUTE_SOURCE_ID = 'highlight-route';
 const HIGHLIGHT_ROUTE_POINTS_SOURCE_ID = 'highlight-route-points';
@@ -225,6 +220,7 @@ export default function MapBaseArea() {
       map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
       map.addControl(new ToolLocateControl(), 'bottom-right');
       map.addControl(new ResetControl(), 'bottom-right');
+      map.addControl(new ToolBaseMap(), 'bottom-right');
       map.addControl(new ToolViewModeControl(), 'bottom-right');
 
       setMapsReady((prev) => ({ ...prev, single: true }));

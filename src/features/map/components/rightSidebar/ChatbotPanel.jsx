@@ -36,22 +36,22 @@ export default function ChatbotPanel() {
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="bg-card rounded-2xl border p-4 shadow-sm">
+    <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
+      <div className="bg-card shrink-0 rounded-2xl border p-3 shadow-sm">
         <div className="flex items-start gap-3">
-          <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-2xl">
+          <div className="bg-primary/10 text-primary ring-primary/20 flex h-11 w-11 items-center justify-center rounded-2xl ring-1">
             <Bot className="size-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
+            <p className="typo-overline text-muted-foreground">
               {t('mapPage.chatbot.title', { defaultValue: 'Trợ lý bản đồ' })}
             </p>
-            <h3 className="text-foreground mt-1 text-base font-semibold">
+            <h3 className="typo-section-title text-foreground mt-1">
               {t('mapPage.chatbot.heading', {
                 defaultValue: t('home.chatbot_title', { defaultValue: 'Chatbot đồng hành' }),
               })}
             </h3>
-            <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+            <p className="typo-body text-muted-foreground mt-1">
               {t('mapPage.chatbot.description', {
                 defaultValue: t('home.chatbot_desc', {
                   defaultValue:
@@ -62,12 +62,12 @@ export default function ChatbotPanel() {
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           {quickPrompts.map((prompt, index) => (
             <Badge
               key={`${prompt}-${index}`}
               variant="secondary"
-              className="rounded-full px-3 py-1 text-sm"
+              className="typo-badge border-border/70 bg-muted/40 text-foreground rounded-full border px-2.5 py-1"
             >
               {prompt}
             </Badge>
@@ -75,28 +75,41 @@ export default function ChatbotPanel() {
         </div>
       </div>
 
-      <div className="bg-card rounded-2xl border p-4 shadow-sm">
-        <div className="space-y-3">
+      <div className="bg-card flex min-h-0 flex-1 flex-col rounded-2xl border p-3 shadow-sm">
+        <div className="bg-muted/20 min-h-0 flex-1 space-y-2 overflow-y-auto rounded-xl border p-2 pr-1">
           {mockMessages.map((message, index) => (
             <div
               key={`${message.role}-${index}`}
               className={message.role === 'user' ? 'flex justify-end' : 'flex justify-start'}
             >
-              <div
-                className={
-                  message.role === 'user'
-                    ? 'bg-primary text-primary-foreground max-w-[88%] rounded-2xl px-3 py-2 text-sm'
-                    : 'bg-muted/40 text-foreground max-w-[88%] rounded-2xl border px-3 py-2 text-sm'
-                }
-              >
-                {message.text}
+              <div className="max-w-[88%] space-y-1">
+                <div
+                  className={
+                    message.role === 'user'
+                      ? 'typo-caption text-right text-primary'
+                      : 'typo-caption text-muted-foreground'
+                  }
+                >
+                  {message.role === 'user'
+                    ? t('mapPage.chatbot.youLabel', { defaultValue: 'Bạn' })
+                    : t('mapPage.chatbot.botLabel', { defaultValue: 'Trợ lý AI' })}
+                </div>
+                <div
+                  className={
+                    message.role === 'user'
+                      ? 'typo-body bg-primary text-primary-foreground rounded-2xl px-3 py-2'
+                      : 'typo-body bg-card text-foreground rounded-2xl border px-3 py-2'
+                  }
+                >
+                  {message.text}
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="bg-muted/20 mt-4 rounded-2xl border p-3">
-          <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium tracking-wide uppercase">
+        <div className="bg-muted/20 mt-2 shrink-0 rounded-2xl border p-3">
+          <div className="typo-overline text-muted-foreground flex items-center gap-2">
             <Sparkles className="size-3.5" />
             {t('mapPage.chatbot.cta', {
               defaultValue: t('home.chatbot_cta', { defaultValue: 'Trò chuyện cùng chatbot' }),
@@ -108,11 +121,11 @@ export default function ChatbotPanel() {
               placeholder={t('mapPage.chatbot.placeholder', {
                 defaultValue: 'Nhập câu hỏi về điểm đến, tour hoặc thời tiết...',
               })}
-              className="rounded-full"
+              className="typo-search bg-card rounded-full"
             />
             <Button
               type="button"
-              className="rounded-full"
+              className="bg-primary hover:bg-primary/90 rounded-full px-3"
               onClick={() => {
                 // TODO: nối API chatbot / streaming response khi backend sẵn sàng.
               }}

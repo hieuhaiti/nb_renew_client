@@ -35,6 +35,8 @@
   --secondary: #006b55;
   --secondary-foreground: #ffffff;
   --secondary-hover: #0a7c63;
+  --secondary-soft: #ddf3ed;
+  --secondary-soft-foreground: #0d4b3d;
 
   /* Tertiary — Sunset Sand */
   --tertiary: #c97520;

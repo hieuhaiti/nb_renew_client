@@ -4,7 +4,6 @@ import { ArrowUpRight, Bike, Car, MapPin, PersonStanding, Search, Trash2, X } fr
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import LoadingInline from '@/components/common/LoadingInline';
-import MapBaseMapChips from '@/features/map/components/toolbar/MapBaseMapChips';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -401,7 +400,7 @@ export default function MapToolbarCard({
 
   return (
     <Card className="border-border rounded-3xl shadow-sm">
-      <CardContent className="space-y-3">
+      <CardContent>
         <div className="flex flex-col gap-2 xl:flex-row xl:items-stretch xl:gap-3">
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex flex-wrap gap-2 xl:flex-nowrap xl:items-start">
@@ -713,7 +712,6 @@ export default function MapToolbarCard({
         </div>
 
         <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-          <MapBaseMapChips />
           {weatherSlot ? <div className="w-full min-w-0 xl:hidden">{weatherSlot}</div> : null}
         </div>
       </CardContent>

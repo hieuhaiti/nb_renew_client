@@ -272,20 +272,20 @@ export default function HomePage() {
                     </p>
 
                     <div className="mt-6 flex flex-wrap gap-3">
-                      <Button onClick={() => navigate('/map')} className="rounded-xl">
+                      <Button onClick={() => navigate('/map')} className="rounded-xl shadow-sm">
                         Khám phá bản đồ GIS
                       </Button>
                       <Button
-                        variant="secondary"
+                        variant="quinary"
                         onClick={() => navigate('/vr360')}
-                        className="rounded-xl"
+                        className="rounded-xl shadow-sm"
                       >
                         Trải nghiệm VR360
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="gold"
                         onClick={() => navigate('/tourism-point')}
-                        className="dark text-foreground rounded-xl border-white/50 bg-white/20 hover:bg-white/30"
+                        className="rounded-xl shadow-sm"
                       >
                         Xem điểm nổi bật
                       </Button>
@@ -381,24 +381,29 @@ export default function HomePage() {
                       {HERO_STATS.map((stat, i) => {
                         const statColors = [
                           {
-                            bg: 'bg-primary border-primary/60',
+                            bg: 'bg-primary/80 border-primary/60',
                             label: 'text-primary-foreground/75',
                             value: 'text-primary-foreground',
                           },
                           {
-                            bg: 'bg-secondary border-secondary/60',
+                            bg: 'bg-secondary/80 border-secondary/60',
                             label: 'text-secondary-foreground/75',
                             value: 'text-secondary-foreground',
                           },
                           {
-                            bg: 'bg-tertiary border-tertiary/60',
+                            bg: 'bg-tertiary/80 border-tertiary/60',
                             label: 'text-tertiary-foreground/75',
                             value: 'text-tertiary-foreground',
                           },
                           {
-                            bg: 'bg-gold border-gold/60',
-                            label: 'text-gold-foreground/75',
-                            value: 'text-gold-foreground',
+                            bg: 'bg-quaternary/80 border-quaternary/60',
+                            label: 'text-quaternary-foreground/75',
+                            value: 'text-quaternary-foreground',
+                          },
+                          {
+                            bg: 'bg-quinary/80 border-quinary/60',
+                            label: 'text-quinary-foreground/75',
+                            value: 'text-quinary-foreground',
                           },
                         ];
                         const c = statColors[i % statColors.length];
