@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { env } from '@/config/env';
 import { getWeatherAlertFromMetrics } from '@/features/weather/helpers/weatherLevelHelpers';
-import { fetchOpenWeatherOverview } from '@/features/weather/services/openWeatherService';
+import { fetchOpenWeatherOverview } from '@/services/api/weather/openWeatherService';
 
 /**
  * useWeatherOverview — fetches weather + AQI and derives alert state.

@@ -1,27 +1,40 @@
 import { memo } from 'react';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-// size small: w-4 h-4 (center mode: w-8 h-8)
-// size large: w-8 h-8 (center mode: w-12 h-12)
-// position: 'inline' | 'center'
-function LoadingInline({ position = 'inline', size = 'small', color = 'primary' }) {
-  // inline mode (mặc định)
+const colorClassMap = {
+  primary: 'text-primary',
+  muted: 'text-muted-foreground',
+  secondary: 'text-secondary',
+  success: 'text-success',
+  warning: 'text-warning',
+  danger: 'text-destructive',
+};
+
+function LoadingInline({ position = 'inline', size = 'small', color = 'primary', className }) {
+  const iconClass = cn(
+    position === 'center'
+      ? size === 'small'
+        ? 'h-8 w-8'
+        : 'h-12 w-12'
+      : size === 'small'
+        ? 'h-4 w-4'
+        : 'h-8 w-8',
+    colorClassMap[color] ?? colorClassMap.primary,
+    'animate-spin'
+  );
+
   if (position !== 'center') {
     return (
-      <span className="inline-flex items-center gap-2">
-        <Loader2
-          className={`${size === 'small' ? 'h-4 w-4' : 'h-8 w-8'} animate-spin text-${color}`}
-        />
+      <span className={cn('inline-flex items-center gap-2', className)} role="status">
+        <Loader2 className={iconClass} aria-hidden="true" />
       </span>
     );
   }
 
-  // center mode (chiếm full width + height của container cha, không fixed)
   return (
-    <div className="flex h-full w-full items-center justify-center py-10">
-      <Loader2
-        className={`${size === 'small' ? 'h-8 w-8' : 'h-12 w-12'} animate-spin text-${color}`}
-      />
+    <div className={cn('flex h-full w-full items-center justify-center py-10', className)} role="status">
+      <Loader2 className={iconClass} aria-hidden="true" />
     </div>
   );
 }

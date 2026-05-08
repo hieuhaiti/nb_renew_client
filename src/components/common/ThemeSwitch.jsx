@@ -22,16 +22,16 @@ export default function ThemeSwitch() {
             size="sm"
             id="theme-switch-btn"
             aria-label={t('theme.toggle')}
-            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-[var(--surface-hover)]"
+            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-(--surface-hover)"
             onClick={toggleDark}
             type="button"
           >
             {isDark ? (
-              <Moon className="h-4 w-4 text-indigo-400" />
+              <Moon className="text-primary h-4 w-4" />
             ) : (
-              <Sun className="h-4 w-4 text-amber-400" />
+              <Sun className="text-warning h-4 w-4" />
             )}
-            <span className="text-foreground hidden text-xs font-medium sm:inline">
+            <span className="text-foreground hidden text-sm font-medium sm:inline">
               {isDark ? t('theme.dark') : t('theme.light')}
             </span>
           </Button>
@@ -39,7 +39,7 @@ export default function ThemeSwitch() {
         <Tooltip.Portal>
           <Tooltip.Content
             sideOffset={4}
-            className="bg-popover text-popover-foreground border-border z-50 rounded-md border px-2 py-1 text-xs shadow-md"
+            className="bg-popover text-popover-foreground border-border z-50 rounded-md border px-2 py-1 text-sm shadow-md"
           >
             {isDark ? t('theme.switch_to_light') : t('theme.switch_to_dark')}
             <Tooltip.Arrow className="fill-popover" />

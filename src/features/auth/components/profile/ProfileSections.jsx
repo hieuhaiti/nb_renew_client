@@ -30,7 +30,7 @@ export function ProfileSidebar({ avatarPreview, isEditing, onAvatarChange, form,
         {isEditing && (
           <label className="text-primary absolute inset-0 flex cursor-pointer flex-col items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
             <Camera className="text-primary mb-1 h-8 w-8" />
-            <span className="text-primary text-xs">
+            <span className="text-primary text-sm">
               {t('profile.avatar.change', 'Change photo')}
             </span>
             <input type="file" className="hidden" accept="image/*" onChange={onAvatarChange} />
@@ -104,19 +104,19 @@ export function ProfileEditForm({
         <Field label={t('profile.username', 'Username')} icon={User}>
           <Input name="username" value={form.username} onChange={onChange} />
           {fieldErrors.username && (
-            <p className="text-destructive text-xs">{fieldErrors.username}</p>
+            <p className="text-destructive text-sm">{fieldErrors.username}</p>
           )}
         </Field>
         <Field label={t('profile.fullName', 'Full name')}>
           <Input name="name" value={form.name} onChange={onChange} />
-          {fieldErrors.name && <p className="text-destructive text-xs">{fieldErrors.name}</p>}
+          {fieldErrors.name && <p className="text-destructive text-sm">{fieldErrors.name}</p>}
         </Field>
         <Field label={t('profile.email', 'Email')} icon={Mail}>
           <Input name="email" value={form.email} onChange={onChange} disabled />
         </Field>
         <Field label={t('profile.phone', 'Phone number')} icon={Phone}>
           <Input name="phone" value={form.phone} onChange={onChange} />
-          {fieldErrors.phone && <p className="text-destructive text-xs">{fieldErrors.phone}</p>}
+          {fieldErrors.phone && <p className="text-destructive text-sm">{fieldErrors.phone}</p>}
         </Field>
       </div>
 
@@ -159,7 +159,7 @@ export function ProfilePasswordForm({
             value={pwd.current}
             onChange={(e) => setPwd((s) => ({ ...s, current: e.target.value }))}
           />
-          {fieldErrors.current && <p className="text-destructive text-xs">{fieldErrors.current}</p>}
+          {fieldErrors.current && <p className="text-destructive text-sm">{fieldErrors.current}</p>}
         </Field>
         <Field label={t('profile.newPassword', 'New password')} icon={Lock}>
           <Input
@@ -168,7 +168,7 @@ export function ProfilePasswordForm({
             onChange={(e) => setPwd((s) => ({ ...s, newPassword: e.target.value }))}
           />
           {fieldErrors.newPassword && (
-            <p className="text-destructive text-xs">{fieldErrors.newPassword}</p>
+            <p className="text-destructive text-sm">{fieldErrors.newPassword}</p>
           )}
         </Field>
         <Field label={t('profile.confirmNewPassword', 'Confirm new password')}>
@@ -177,7 +177,7 @@ export function ProfilePasswordForm({
             value={pwd.confirm}
             onChange={(e) => setPwd((s) => ({ ...s, confirm: e.target.value }))}
           />
-          {fieldErrors.confirm && <p className="text-destructive text-xs">{fieldErrors.confirm}</p>}
+          {fieldErrors.confirm && <p className="text-destructive text-sm">{fieldErrors.confirm}</p>}
         </Field>
       </div>
       <div className="flex flex-col-reverse justify-end gap-3 pt-4 sm:flex-row">

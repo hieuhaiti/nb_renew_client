@@ -8,18 +8,50 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(91 103 115 / 32%) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgb(91 103 115 / 26%);
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(91 103 115 / 38%);
+  }
+
+  .dark * {
+    scrollbar-color: rgb(186 199 210 / 30%) transparent;
+  }
+
+  .dark *::-webkit-scrollbar-thumb {
+    background-color: rgb(186 199 210 / 24%);
+  }
+
+  .dark *::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(186 199 210 / 36%);
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    /* Khai báo trực tiếp — không dựa vào @theme token resolution của Tailwind v4 */
     font-family:
-      'Roboto Slab',
-      'Noto Sans',
+      'Be Vietnam Pro',
       system-ui,
       -apple-system,
       sans-serif;
-    line-height: 1.6;
+    line-height: 1.65;
     font-weight: 400;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -31,8 +63,312 @@
   }
 }
 
+/* ===== Semantic Typography System =====
+ * Dùng các class này thay cho arbitrary text-[...] / font-[...] / leading-[...]
+ * Không hardcode font-family trong component — kế thừa từ body.
+ * Không thêm font mới ngoài Be Vietnam Pro.
+ *
+ * Tier map:
+ *   typo-hero        28–40px / 700 / lh 1.15  — page/hero headings
+ *   typo-kpi         34px    / 800 / lh 1.1   — KPI / stat numbers
+ *   typo-card-title  24px    / 700 / lh 1.25  — card, dialog titles
+ *   typo-brand-title 20px    / 800 / lh 1.25  — brand, nav brand name
+ *   typo-search      17px    / 400            — search / primary input
+ *   typo-section-title 16px  / 700 / lh 1.4  — section / popup titles
+ *   typo-body        14px    / 400 / lh 1.6   — default body / UI text
+ *   typo-meta        13px    / 400 / lh 1.5   — supporting / helper text
+ *   typo-badge       12px    / 600 / lh 1     — badges / chips / micro labels
+ * ========================================= */
+@layer components {
+  .typo-hero {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .typo-kpi {
+    font-size: 2.125rem;
+    font-weight: 800;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .typo-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .typo-brand-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .typo-search {
+    font-size: 1.0625rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .typo-body {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.65;
+  }
+
+  .typo-meta {
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .typo-display {
+    font-size: 1.875rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+
+  .typo-price {
+    color: var(--price-color);
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .typo-price--large {
+    color: var(--price-color);
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .typo-price--original {
+    color: var(--price-original);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1;
+    text-decoration: line-through;
+  }
+
+  .typo-caption {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-overline {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .typo-rating {
+    color: var(--rating-color);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  .text-tertiary {
+    color: var(--tertiary);
+  }
+
+  .text-tertiary-foreground {
+    color: var(--tertiary-foreground);
+  }
+
+  .text-quaternary {
+    color: var(--quaternary);
+  }
+
+  .text-quaternary-foreground {
+    color: var(--quaternary-foreground);
+  }
+
+  .text-quinary {
+    color: var(--quinary);
+  }
+
+  .text-quinary-foreground {
+    color: var(--quinary-foreground);
+  }
+
+  .text-gold {
+    color: var(--gold);
+  }
+
+  .text-gold-foreground {
+    color: var(--gold-foreground);
+  }
+
+  .text-price {
+    color: var(--price-color);
+  }
+
+  .text-price-original {
+    color: var(--price-original);
+  }
+
+  .text-rating {
+    color: var(--rating-color);
+  }
+
+  .text-deal {
+    color: var(--deal-color);
+  }
+
+  .text-luxury {
+    color: var(--luxury-color);
+  }
+
+  .bg-tertiary {
+    background-color: var(--tertiary);
+    color: var(--tertiary-foreground);
+  }
+
+  .bg-tertiary-soft {
+    background-color: var(--tertiary-soft);
+    color: var(--tertiary-soft-foreground);
+  }
+
+  .bg-quaternary {
+    background-color: var(--quaternary);
+    color: var(--quaternary-foreground);
+  }
+
+  .bg-quaternary-soft {
+    background-color: var(--quaternary-soft);
+    color: var(--quaternary-soft-foreground);
+  }
+
+  .bg-quinary {
+    background-color: var(--quinary);
+    color: var(--quinary-foreground);
+  }
+
+  .bg-quinary-soft {
+    background-color: var(--quinary-soft);
+    color: var(--quinary-soft-foreground);
+  }
+
+  .bg-gold {
+    background-color: var(--gold);
+    color: var(--gold-foreground);
+  }
+
+  .bg-gold-soft {
+    background-color: var(--gold-soft);
+    color: var(--gold-soft-foreground);
+  }
+
+  .bg-surface-beach {
+    background-color: var(--surface-beach);
+  }
+
+  .bg-surface-nature {
+    background-color: var(--surface-nature);
+  }
+
+  .bg-surface-city {
+    background-color: var(--surface-city);
+  }
+
+  .bg-surface-luxury {
+    background-color: var(--surface-luxury);
+  }
+
+  .bg-surface-deal {
+    background-color: var(--surface-deal);
+  }
+
+  .border-tertiary {
+    border-color: var(--tertiary);
+  }
+
+  .border-quaternary {
+    border-color: var(--quaternary);
+  }
+
+  .border-quinary {
+    border-color: var(--quinary);
+  }
+
+  .border-gold {
+    border-color: var(--gold);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.1875rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .badge--hot {
+    background: var(--quaternary-soft);
+    color: var(--quaternary-soft-foreground);
+  }
+
+  .badge--new {
+    background: var(--primary-soft);
+    color: var(--primary-soft-foreground);
+  }
+
+  .badge--sale {
+    background: var(--tertiary-soft);
+    color: var(--tertiary-soft-foreground);
+  }
+
+  .badge--vip {
+    background: var(--quinary-soft);
+    color: var(--quinary-soft-foreground);
+  }
+
+  .badge--eco {
+    background: #d4f5ec;
+    color: #004e3d;
+  }
+
+  .badge--top {
+    background: var(--gold-soft);
+    color: var(--gold-soft-foreground);
+  }
+}
+
 @theme inline {
-  --font-sans: 'Roboto Slab', 'Noto Sans', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
   --font-mono: 'Fira Code', 'Consolas', monospace;
 
   --radius-sm: calc(var(--radius) * 0.6);
@@ -58,6 +394,18 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
 
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-foreground: var(--tertiary-foreground);
+
+  --color-quaternary: var(--quaternary);
+  --color-quaternary-foreground: var(--quaternary-foreground);
+
+  --color-quinary: var(--quinary);
+  --color-quinary-foreground: var(--quinary-foreground);
+
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
@@ -66,6 +414,10 @@
 
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft);
 
   --color-border: var(--border);
   --color-input: var(--input);

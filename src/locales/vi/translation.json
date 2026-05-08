@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "app_name": "Travel Ninh Bình",
     "home": "Trang chủ",
@@ -13,11 +13,15 @@
     "toggle_lang": "Chuyển ngôn ngữ",
     "prev": "Trước",
     "next": "Tiếp",
+    "all": "Tất cả",
     "yes": "Có",
     "no": "Không",
     "open_menu": "Mở menu",
     "news": "Tin tức",
-    "ocop_festival": "Lễ hội OCOP",
+    "vlog": "Vlog",
+    "vr360": "360° Thực tế ảo",
+    "ocop": "Sản phẩm OCOP",
+    "festival": "Lễ hội",
     "see_all": "Xem tất cả",
     "search_placeholder": "Tìm kiếm điểm / tuyến...",
     "search_results": "Kết quả tìm kiếm",
@@ -38,7 +42,17 @@
       "subtitle": "Bản đồ du lịch thông minh, điểm đến hấp dẫn và trải nghiệm không quên",
       "cta_map": "Khám phá bản đồ",
       "cta_discover": "Điểm du lịch nổi bật",
-      "scroll_hint": "Cuộn để khám phá"
+      "scroll_hint": "Cuộn để khám phá",
+      "intro": "Khám phá Ninh Bình qua WebGIS",
+      "map_title": "Bản đồ du lịch thông minh",
+      "map_desc": "Tìm kiếm điểm đến, tuyến tham quan, thời tiết và dịch vụ trên bản đồ tương tác.",
+      "map_cta": "Xem bản đồ du lịch",
+      "vlog_title": "Vlog & Trải nghiệm",
+      "vlog_desc": "Cảm hứng từ video thực tế, đánh giá du khách và nội dung 360° từ cộng đồng.",
+      "vlog_cta": "Truy cập trang vlog",
+      "chatbot_title": "Chatbot đồng hành",
+      "chatbot_desc": "Hỏi nhanh về tour, thời tiết, OCOP và nhận gợi ý lịch trình cá nhân hoá.",
+      "chatbot_cta": "Trò chuyện cùng chatbot"
     },
     "ad_carousel": {
       "subtitle": "Dịch vụ & Sự kiện",
@@ -71,6 +85,82 @@
       "desc": "Khám phá các điểm đến du lịch nổi bật của chúng tôi để nhận những ưu đãi hấp dẫn, mã voucher giảm giá và trải nghiệm dịch vụ tuyệt vời từ các đơn vị hợp tác uy tín!",
       "cta": "Đến điểm du lịch để nhận voucher",
       "partners": "Các doanh nghiệp hợp tác"
+    }
+  },
+  "newsPage": {
+    "hero": {
+      "badge": "Trung tâm tin tức du lịch, sự kiện và cảnh báo hành trình",
+      "title": "Cập nhật tin mới về điểm đến Ninh Bình theo thời gian thực.",
+      "description": "Theo dõi thông báo mới nhất về sự kiện, vận hành điểm du lịch và thông tin phục vụ hành trình ngay trên hệ sinh thái bản đồ số.",
+      "cta_latest": "Xem tin mới",
+      "cta_map": "Mở bản đồ du lịch"
+    },
+    "stats": {
+      "total": "Tổng số tin hiện có",
+      "featured": "Tin nổi bật trang hiện tại",
+      "page": "Trang hiện tại"
+    },
+    "highlights": {
+      "title": "Điểm nhấn",
+      "fast": {
+        "title": "Cập nhật nhanh",
+        "desc": "Tin quan trọng được tổng hợp để du khách nắm nhanh trước khi đi."
+      },
+      "time": {
+        "title": "Theo mốc thời gian",
+        "desc": "Dễ theo dõi ngày phát hành, ưu tiên thông báo mới nhất."
+      },
+      "map": {
+        "title": "Kết nối bản đồ",
+        "desc": "Kết hợp với bản đồ để kiểm tra vị trí và lên kế hoạch linh hoạt."
+      }
+    },
+    "filters": {
+      "title": "Bộ lọc tin tức",
+      "description": "Tìm theo từ khóa và trạng thái nổi bật",
+      "keyword": "Từ khóa",
+      "placeholder": "Ví dụ: lễ hội, giao thông, cảnh báo thời tiết...",
+      "featured": "Trạng thái",
+      "options": {
+        "all": "Tất cả",
+        "featured": "Tin nổi bật",
+        "normal": "Tin thường"
+      }
+    },
+    "actions": {
+      "refresh": "Làm mới dữ liệu",
+      "loading": "Đang tải...",
+      "reset": "Đặt lại",
+      "read_more": "Đọc chi tiết"
+    },
+    "list": {
+      "title": "Danh sách tin tức",
+      "description": "Đang hiển thị {{count}} tin phù hợp",
+      "featured": "Nổi bật",
+      "unknown_author": "Ban biên tập",
+      "no_summary": "Chưa có tóm tắt."
+    },
+    "pagination": {
+      "page": "Trang {{page}} / {{totalPages}}"
+    },
+    "states": {
+      "error": "Không thể tải danh sách tin tức lúc này.",
+      "empty": "Chưa có tin tức phù hợp."
+    },
+    "detail": {
+      "back": "Quay lại tin tức",
+      "not_found": "Không tìm thấy nội dung tin tức",
+      "no_content": "Chưa có nội dung chi tiết.",
+      "sidebar_title": "Khám phá trên bản đồ",
+      "sidebar_desc": "Sau khi đọc tin, bạn có thể mở bản đồ để xem nhanh vị trí liên quan và xây dựng lịch trình phù hợp.",
+      "cta_map": "Mở bản đồ ngay",
+      "share": "Chia sẻ",
+      "views": "lượt xem",
+      "min_read": "phút đọc",
+      "link_copied": "Đã sao chép liên kết!",
+      "tags_title": "Chủ đề",
+      "related_title": "Tin cùng chủ đề",
+      "no_related": "Chưa có tin liên quan."
     }
   },
   "auth": {
@@ -169,8 +259,6 @@
     }
   },
   "error": {
-    "login": "Đăng nhập",
-    "back_home": "Về trang chủ",
     "400": {
       "title": "Yêu cầu không hợp lệ",
       "message": "Yêu cầu bạn gửi lên không hợp lệ hoặc thiếu thông tin. Vui lòng kiểm tra lại và thử lại."
@@ -194,7 +282,9 @@
     "503": {
       "title": "Dịch vụ tạm thời gián đoạn",
       "message": "Máy chủ đang bảo trì hoặc quá tải. Vui lòng quay lại sau."
-    }
+    },
+    "login": "Đăng nhập",
+    "back_home": "Về trang chủ"
   },
   "tourism": {
     "detail_title": "Điểm du lịch",
@@ -235,6 +325,10 @@
       "copied": "Đã sao chép",
       "shared": "Đã chia sẻ"
     },
+    "actions": {
+      "save": "Lưu",
+      "share": "Chia sẻ"
+    },
     "review": {
       "missing_rating": "Vui lòng đánh giá đầy đủ các tiêu chí."
     }
@@ -250,6 +344,8 @@
     "all": "Tất cả",
     "showing": "Hiển thị",
     "of": "/",
+    "gridView": "Lưới",
+    "listView": "Danh sách",
     "results": "kết quả",
     "sort_by": "Sắp xếp",
     "featured": "Nổi bật",
@@ -258,29 +354,33 @@
     "reviews": "đánh giá",
     "view_detail": "Xem chi tiết",
     "free": "Miễn phí",
-    "no_results": "Không tìm thấy kết quả"
+    "no_results": "Không tìm thấy kết quả",
+    "errorLoading": "Không thể tải dữ liệu.",
+    "tryDifferentKeyword": "Thử tìm kiếm với từ khóa khác."
   },
   "tourPage": {
     "title": "Tuyến du lịch",
     "description": "Khám phá các tuyến du lịch từ dữ liệu thực tế",
     "detailDescriptionTitle": "Mô tả tuyến du lịch",
-    "total": "Tổng số tuyến",
     "refresh": "Làm mới",
     "searchPlaceholder": "Tìm kiếm tuyến du lịch...",
-    "gridView": "Dạng lưới",
-    "listView": "Dạng danh sách",
+    "gridView": "Lưới",
+    "listView": "Danh sách",
     "showing": "Hiển thị",
     "errorLoading": "Không thể tải danh sách tuyến du lịch",
     "noTours": "Không có tuyến du lịch phù hợp",
     "unknown": "Không xác định",
     "noDescription": "Chưa có mô tả",
     "loading": "Đang tải...",
+    "locationPending": "Đang cập nhật vị trí",
     "back": "Quay lại",
     "notFound": "Không tìm thấy thông tin tuyến du lịch.",
     "shareTitle": "Chi tiết tuyến du lịch",
     "copied": "Đã sao chép",
     "shared": "Đã chia sẻ",
     "review": "Đánh giá",
+    "save": "Lưu",
+    "share": "Chia sẻ",
     "by": "bởi",
     "guest": "Khách",
     "createdAt": "Ngày tạo",
@@ -318,14 +418,44 @@
     "outdoorDesc": "Bản đồ địa hình phù hợp khám phá thiên nhiên.",
     "streetDesc": "Bản đồ đường phố với nhãn và giao thông chi tiết.",
     "satelliteDesc": "Ảnh vệ tinh độ phân giải cao.",
-    "satelliteStreetDesc": "Nền vệ tinh kèm nhãn đường và địa điểm."
+    "satelliteStreetDesc": "Nền vệ tinh kèm nhãn đường."
   },
   "headerAside": {
     "layerData": "Lớp dữ liệu",
     "direction": "Chỉ đường",
+    "destination": "Điểm đến",
     "satellite": "Ảnh vệ tinh",
     "event": "Sự kiện",
-    "tour": "Tour du lịch"
+    "tour": "Tour du lịch",
+    "chatbot": "Trợ lý ảo",
+    "capacity": "Công suất"
+  },
+  "vr360": {
+    "title": "Tham quan ảo 360°",
+    "subtitle": "Trải nghiệm không gian VR360 tại các điểm du lịch Ninh Bình",
+    "scene_badge": "360°",
+    "main_badge": "Chính",
+    "back_to_map": "Về bản đồ",
+    "pick_spot": "Chọn điểm du lịch",
+    "pick_spot_placeholder": "Chọn điểm để xem cảnh VR...",
+    "scene_list_title": "Danh sách cảnh VR",
+    "no_scenes": "Điểm này chưa có cảnh VR.",
+    "no_scenes_select": "Chọn điểm du lịch để xem các cảnh VR.",
+    "error_scenes": "Không thể tải danh sách cảnh VR.",
+    "viewer_placeholder": "Chọn một cảnh VR từ danh sách để bắt đầu tham quan",
+    "hotspots": "hotspot",
+    "current_scene": "Điểm đang xem",
+    "play_narration": "Bật thuyết minh mẫu",
+    "minimap_title": "Vị trí trên bản đồ",
+    "minimap_placeholder": "Minimap sẽ hiển thị tại đây",
+    "features": {
+      "interactive": "Hotspot tương tác",
+      "interactive_desc": "Nhấn vào hotspot trong ảnh để chuyển cảnh hoặc mở thông tin mở rộng.",
+      "multilang": "Hỗ trợ đa ngôn ngữ",
+      "multilang_desc": "Bố cục đã chứa vùng cho chọn ngôn ngữ thuyết minh và text mô tả.",
+      "webgis": "Liên kết WebGIS",
+      "webgis_desc": "Mỗi cảnh có thể gắn về đúng điểm trên bản đồ, phục vụ trải nghiệm liền mạch."
+    }
   },
   "mapPage": {
     "layout": {
@@ -347,7 +477,7 @@
       "tool2dDesc": "Chuyển sang chế độ 2D (tắt địa hình và tòa nhà 3D)",
       "tool3dDesc": "Chuyển sang chế độ 3D (bật địa hình và tòa nhà 3D)",
       "floatWeather": "Thời tiết",
-      "weatherFeelsLike": "Nhiệt độ cảm nhận",
+      "weatherTemperature": "Nhiệt độ hiện tại",
       "weatherHumidity": "Độ ẩm hiện tại",
       "weatherWind": "Tốc độ gió",
       "weatherAqi": "Chất lượng không khí (AQI)",
@@ -368,7 +498,133 @@
       "aqiVeryPoor": "Rất kém",
       "aqiUnknown": "Không xác định",
       "unsupportedTitle": "Bản đồ chưa hỗ trợ trên thiết bị này",
-      "unsupportedMessage": "Vui lòng dùng màn hình từ laptop/desktop (>= 1024px) để trải nghiệm đầy đủ tính năng bản đồ."
+      "unsupportedMessage": "Vui lòng dùng màn hình từ laptop/desktop (>= 1024px) để trải nghiệm đầy đủ tính năng bản đồ.",
+      "toolResetDesc": "Reset map to the default center and viewing angle"
+    },
+    "toolbar": {
+      "searchPlaceholder": "Tìm kiếm điểm đến, dịch vụ, ẩm thực, sự kiện...",
+      "searchButton": "Tìm kiếm",
+      "category": "Danh mục",
+      "filter": "Bộ lọc",
+      "baseMap": "Bản đồ nền",
+      "radius": "Bán kính",
+      "radiusAll": "Không giới hạn bán kính",
+      "searchNoResult": "Không tìm thấy điểm phù hợp với bộ lọc hiện tại.",
+      "locationError": "Không thể lấy vị trí của bạn. Vui lòng bật quyền truy cập vị trí.",
+      "styleUnavailable": "Kiểu bản đồ được chọn chưa được cấu hình.",
+      "geoUnsupported": "Trình duyệt này không hỗ trợ định vị.",
+      "mapNotReady": "Bản đồ đang tải, vui lòng thử lại sau ít giây.",
+      "geoFailed": "Không thể lấy vị trí hiện tại.",
+      "routePrototype": "Tích hợp chỉ đường đang ở chế độ nguyên mẫu.",
+      "vrPrototype": "Tích hợp xem trước VR360 đang ở chế độ nguyên mẫu."
+    },
+    "destination": {
+      "title": "Điểm đến",
+      "unknownName": "Điểm đến không xác định",
+      "empty": "Chọn một điểm trên bản đồ để xem thông tin chi tiết.",
+      "inactiveSubcategory": "Điểm bạn đang xem thuộc lớp dữ liệu đã tắt. Hãy bật lại lớp hoặc chọn điểm khác.",
+      "noImage": "Không có ảnh đại diện",
+      "noAddress": "Chưa có địa chỉ",
+      "noDescription": "Chưa có mô tả cho điểm này.",
+      "category": "Danh mục",
+      "subcategory": "Phân mục",
+      "flyTo": "Đến điểm",
+      "clear": "Đóng",
+      "address": "Địa chỉ",
+      "phone": "Điện thoại",
+      "email": "Email",
+      "website": "Website",
+      "viewWebsite": "Xem website",
+      "openingHours": "Giờ mở cửa",
+      "entranceFee": "Giá vé",
+      "free": "Miễn phí",
+      "elevation": "Độ cao",
+      "facilities": "Tiện ích",
+      "featured": "Nổi bật",
+      "photos": "ảnh",
+      "rating": "Điểm đánh giá",
+      "reviews": "Đánh giá",
+      "visits": "Lượt ghé thăm",
+      "openRoute": "Chỉ đường"
+    },
+    "tourPanel": {
+      "title": "Tour du lịch",
+      "syncing": "Đang đồng bộ...",
+      "count": "{{count}} tour",
+      "reset": "Đặt lại",
+      "searchPlaceholder": "Tìm tour...",
+      "featuredOnly": "Nổi bật",
+      "nonFeatured": "Không nổi bật",
+      "error": "Không thể tải danh sách tour.",
+      "empty": "Không có tour phù hợp với bộ lọc.",
+      "openRoute": "Mở chỉ đường",
+      "loadingRoute": "Đang mở...",
+      "hideOtherPoints": "Ẩn điểm khác",
+      "showOtherPoints": "Hiện điểm khác",
+      "clearRoute": "Xóa tuyến",
+      "routeReady": "Đã hiển thị tuyến tour trên bản đồ.",
+      "routeFailed": "Không thể hiển thị tuyến tour lúc này.",
+      "routeCleared": "Đã xóa tuyến tour khỏi bản đồ.",
+      "routeInsufficientStops": "Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường."
+    },
+    "capacityPanel": {
+      "title": "Sức chứa điểm du lịch",
+      "syncing": "Đang cập nhật...",
+      "count": "{{count}} điểm đang theo dõi",
+      "refresh": "Làm mới",
+      "all": "Tất cả",
+      "defaultName": "Điểm du lịch",
+      "status": {
+        "overloaded": "Quá tải",
+        "near_full": "Gần đầy",
+        "busy": "Đông khách",
+        "normal": "Bình thường"
+      },
+      "error": "Không thể tải dữ liệu sức chứa.",
+      "empty": "Không có điểm nào phù hợp.",
+      "peopleWithCapacity": "{{current}} / {{max}} người",
+      "peopleOnly": "{{count}} người",
+      "viewOnMap": "Xem trên bản đồ"
+    },
+    "direction": {
+      "driving": "Ô tô",
+      "walking": "Đi bộ",
+      "cycling": "Xe đạp",
+      "transportType": "Phương tiện",
+      "startPlaceholder": "Nhập điểm đi",
+      "endPlaceholder": "Nhập điểm đến",
+      "searching": "Đang tìm...",
+      "swap": "Đổi chiều",
+      "calculate": "Tính chỉ đường",
+      "calculateReadyHint": "Nhấn để tính chỉ đường.",
+      "calculateDisabledHint": "Vui lòng nhập đủ điểm đi và điểm đến để tính chỉ đường.",
+      "clear": "Xóa",
+      "clearReadyHint": "Xóa tuyến đang hiển thị trên bản đồ.",
+      "clearDisabledHint": "Chưa có tuyến để xóa.",
+      "totalDistance": "Tổng quãng đường",
+      "totalDuration": "Tổng thời gian",
+      "stepsTitle": "Hướng dẫn từng bước",
+      "noInstruction": "Không có chỉ dẫn"
+    },
+    "chatbot": {
+      "title": "Trợ lý bản đồ",
+      "heading": "Chatbot đồng hành",
+      "description": "Hỏi nhanh về tour, thời tiết, OCOP và nhận gợi ý lịch trình cá nhân hoá.",
+      "cta": "Trò chuyện cùng chatbot",
+      "placeholder": "Nhập câu hỏi về điểm đến, tour hoặc thời tiết...",
+      "youLabel": "Bạn",
+      "botLabel": "Trợ lý AI",
+      "quickPrompts": {
+        "dayTour": "Gợi ý tour 1 ngày",
+        "lessCrowded": "Điểm nào ít đông?",
+        "weatherToday": "Tư vấn thời tiết hôm nay"
+      },
+      "sampleMessages": {
+        "welcome": "Xin chào, tôi có thể gợi ý điểm đến, thời tiết, tour và lịch trình phù hợp với bạn.",
+        "userPreference": "Tôi muốn đi 1 ngày, tránh nơi quá đông và ưu tiên thiên nhiên.",
+        "botSuggestion": "Bạn có thể cân nhắc Tràng An buổi sáng, sau đó sang Bích Động hoặc Hang Múa để di chuyển nhẹ nhàng hơn."
+      }
     }
   }
 }
+

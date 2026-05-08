@@ -30,31 +30,23 @@ export const ReviewTextarea = memo(({ onCommentChange, t }) => {
         )}
         value={displayValue}
         onChange={handleChange}
-        className={`min-h-[100px] resize-none
-                    focus:!outline-none focus:!ring-0
-                    ${
-                      newComment.length > 0 && newComment.length < 10
-                        ? 'border-red-300 focus:border-red-500'
-                        : newComment.length >= 10
-                        ? 'border-green-300 focus:border-green-500'
-                        : 'border-[var(--border-primary)]'
-                    } bg-[var(--bg-primary)] text-[var(--text-primary)]`}
+        className={`min-h-25 resize-none focus:ring-0! focus:outline-none! ${
+          newComment.length > 0 && newComment.length < 10
+            ? 'border-destructive/40 focus:border-destructive'
+            : newComment.length >= 10
+              ? 'border-primary/40 focus:border-primary'
+              : 'border-border'
+        }`}
         maxLength={500}
       />
-      <div className="flex mt-1 justify-between text-xs">
-        <span
-          className={`${
-            newComment.length < 10 ? 'text-red-500' : 'text-green-600'
-          }`}
-        >
+      <div className="mt-1 flex justify-between text-sm">
+        <span className={`${newComment.length < 10 ? 'text-destructive' : 'text-primary'}`}>
           {t('tourism.min_characters', 'Tối thiểu 10 ký tự')}{' '}
           {newComment.length >= 10
             ? '✓'
-            : `(${t('tourism.characters_left', 'còn')} ${
-                10 - newComment.length
-              })`}
+            : `(${t('tourism.characters_left', 'còn')} ${10 - newComment.length})`}
         </span>
-        <span className="text-[var(--text-tertiary)]">{newComment.length}/500</span>
+        <span className="text-muted-foreground">{newComment.length}/500</span>
       </div>
     </div>
   );

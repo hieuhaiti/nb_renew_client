@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
 import { tokenManager } from '@/lib/tokenManager';
-import { useRegisterMutation } from '@/features/auth/api/authApi';
+import { useRegisterMutation } from '@/services/api/auth/authApi';
 import useAuthStore from '@/stores/useAuthStore';
 import RootLayout from '@/components/layout/RootLayout';
 
@@ -140,7 +140,7 @@ export default function Signup() {
                   }
                 />
                 {errors.username && (
-                  <p className="text-destructive text-xs" role="alert">
+                  <p className="text-destructive text-sm" role="alert">
                     {errors.username.message}
                   </p>
                 )}
@@ -161,7 +161,7 @@ export default function Signup() {
                   }
                 />
                 {errors.email && (
-                  <p className="text-destructive text-xs" role="alert">
+                  <p className="text-destructive text-sm" role="alert">
                     {errors.email.message}
                   </p>
                 )}
@@ -196,7 +196,7 @@ export default function Signup() {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-destructive text-xs" role="alert">
+                  <p className="text-destructive text-sm" role="alert">
                     {errors.password.message}
                   </p>
                 )}
@@ -253,7 +253,7 @@ export default function Signup() {
                   </Button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-destructive text-xs" role="alert">
+                  <p className="text-destructive text-sm" role="alert">
                     {errors.confirmPassword.message}
                   </p>
                 )}

@@ -1,44 +1,45 @@
-import { Calendar, Layers, MapPin, Navigation, Satellite } from 'lucide-react';
+import { Bot, Calendar, MapPin, Satellite, Users } from 'lucide-react';
+import EventPanel from '@/features/map/components/rightSidebar/EventPanel';
+import ChatbotPanel from '@/features/map/components/rightSidebar/ChatbotPanel';
+import TourPanel from '@/features/map/components/rightSidebar/TourPanel';
+import CapacityPanel from '@/features/map/components/rightSidebar/CapacityPanel';
 
-export const componentMapSideBar = {
-  layerData: 'DataLayer Placeholder',
-  direction: 'DirectionMap Placeholder',
-  satellite: 'SatelliteImage Placeholder',
-  event: 'EventPanel Placeholder',
-  tour: 'TourPanel Placeholder',
-};
 export const headerSidebar = [
-  {
-    icon: Layers,
-    label: 'headerAside.layerData',
-    value: 'layerData',
-    authen: false,
-  },
-
-  {
-    icon: Navigation,
-    label: 'headerAside.direction',
-    value: 'direction',
-    authen: false,
-  },
-  {
-    icon: Satellite,
-    label: 'headerAside.satellite',
-    value: 'satellite',
-    authen: true,
-  },
   {
     icon: Calendar,
     label: 'headerAside.event',
     value: 'event',
+    component: EventPanel,
     authen: false,
   },
   {
     icon: MapPin,
     label: 'headerAside.tour',
     value: 'tour',
+    component: TourPanel,
     authen: false,
+  },
+  {
+    icon: Users,
+    label: 'headerAside.capacity',
+    value: 'capacity',
+    component: CapacityPanel,
+    authen: false,
+  },
+  {
+    icon: Satellite,
+    label: 'headerAside.satellite',
+    value: 'satellite',
+    component: 'SatelliteImage Placeholder',
+    authen: true,
+  },
+  {
+    icon: Bot,
+    label: 'headerAside.chatbot',
+    value: 'chatbot',
+    component: ChatbotPanel,
+    authen: true,
   },
 ];
 
-export const currentHeaderSidebar = 'layerData';
+export const currentHeaderSidebar = 'event';

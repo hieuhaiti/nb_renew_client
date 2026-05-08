@@ -6,11 +6,9 @@ export function TourismDetailQuickStats({ stats }) {
       {stats.map((stat) => (
         <article
           key={stat.key}
-          className="rounded-[9px] border-[0.5px] border-[#ced4ce] bg-white px-2.75 py-2.5"
+          className="border-border bg-card rounded-[9px] border-[0.5px] px-2.75 py-2.5"
         >
-          <div className="mb-1 text-[9px] tracking-[0.04em] text-[#a8ada8] uppercase">
-            {stat.label}
-          </div>
+          <div className="text-muted-foreground mb-1 text-sm uppercase">{stat.label}</div>
           <div>{stat.value}</div>
         </article>
       ))}

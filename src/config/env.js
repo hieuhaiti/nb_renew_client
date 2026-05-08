@@ -20,4 +20,6 @@ export const env = {
   mapboxStyle_Street: viteEnv.VITE_MAPBOX_STYLE_Street ?? '',
   mapboxStyle_Satellite: viteEnv.VITE_MAPBOX_STYLE_Satellite ?? '',
   mapboxStyle_Satellite_Street: viteEnv.VITE_MAPBOX_STYLE_Satellite_Street ?? '',
+
+  mapboxGeocodingBaseUrl: viteEnv.VITE_MAPBOX_GEOCODING_BASE_URL ?? '',
 };

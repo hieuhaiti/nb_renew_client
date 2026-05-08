@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "app_name": "Travel Ninh Binh",
     "home": "Home",
@@ -13,11 +13,15 @@
     "toggle_lang": "Switch language",
     "prev": "Previous",
     "next": "Next",
+    "all": "All",
     "yes": "Yes",
     "no": "No",
     "open_menu": "Open menu",
     "news": "News",
-    "ocop_festival": "OCOP Festival",
+    "vlog": "Vlog",
+    "vr360": "360° Virtual Reality",
+    "ocop": "OCOP products",
+    "festival": "Festival",
     "see_all": "See all",
     "search_placeholder": "Search places / routes...",
     "search_results": "Search Results",
@@ -38,7 +42,17 @@
       "subtitle": "Smart tourism map, fascinating destinations, and unforgettable experiences",
       "cta_map": "Explore Map",
       "cta_discover": "Top Destinations",
-      "scroll_hint": "Scroll to explore"
+      "scroll_hint": "Scroll to explore",
+      "intro": "Explore Ninh Binh via WebGIS",
+      "map_title": "Smart Tourism Map",
+      "map_desc": "Find destinations, routes, weather and services on an interactive map.",
+      "map_cta": "Open tourism map",
+      "vlog_title": "Vlog & Experiences",
+      "vlog_desc": "Get inspired by real videos, traveller reviews and community 360° content.",
+      "vlog_cta": "Visit vlog page",
+      "chatbot_title": "AI Travel Companion",
+      "chatbot_desc": "Ask about tours, weather, OCOP and get personalised itinerary suggestions.",
+      "chatbot_cta": "Chat with the assistant"
     },
     "ad_carousel": {
       "subtitle": "Services & Events",
@@ -71,6 +85,82 @@
       "desc": "Explore our featured tourist destinations to get attractive offers, discount vouchers, and excellent services from our trusted partners!",
       "cta": "Go to destinations for vouchers",
       "partners": "Our Partners"
+    }
+  },
+  "newsPage": {
+    "hero": {
+      "badge": "Tourism news, events, and travel alerts center",
+      "title": "Stay updated with the latest Ninh Binh destination news.",
+      "description": "Follow official updates on events, attraction operations, and travel support information across the digital tourism map ecosystem.",
+      "cta_latest": "View latest news",
+      "cta_map": "Open tourism map"
+    },
+    "stats": {
+      "total": "Total available articles",
+      "featured": "Featured on current page",
+      "page": "Current page"
+    },
+    "highlights": {
+      "title": "Highlights",
+      "fast": {
+        "title": "Fast updates",
+        "desc": "Important updates are summarized so travelers can quickly prepare."
+      },
+      "time": {
+        "title": "Time-based feed",
+        "desc": "Easy to track publish dates with priority on the latest updates."
+      },
+      "map": {
+        "title": "Map-connected",
+        "desc": "Pair updates with the map to validate locations and adjust your plan."
+      }
+    },
+    "filters": {
+      "title": "News filters",
+      "description": "Search by keyword and featured status",
+      "keyword": "Keyword",
+      "placeholder": "Example: festival, traffic, weather alert...",
+      "featured": "Status",
+      "options": {
+        "all": "All",
+        "featured": "Featured",
+        "normal": "Regular"
+      }
+    },
+    "actions": {
+      "refresh": "Refresh data",
+      "loading": "Loading...",
+      "reset": "Reset",
+      "read_more": "Read details"
+    },
+    "list": {
+      "title": "News list",
+      "description": "Showing {{count}} matching articles",
+      "featured": "Featured",
+      "unknown_author": "Editorial team",
+      "no_summary": "No summary available."
+    },
+    "pagination": {
+      "page": "Page {{page}} / {{totalPages}}"
+    },
+    "states": {
+      "error": "Unable to load news at the moment.",
+      "empty": "No matching news found."
+    },
+    "detail": {
+      "back": "Back to news",
+      "not_found": "News content not found",
+      "no_content": "No detail content available.",
+      "sidebar_title": "Explore on map",
+      "sidebar_desc": "After reading the update, open the map to quickly check related locations and refine your itinerary.",
+      "cta_map": "Open map now",
+      "share": "Share",
+      "views": "views",
+      "min_read": "min read",
+      "link_copied": "Link copied!",
+      "tags_title": "Topics",
+      "related_title": "Related articles",
+      "no_related": "No related articles found."
     }
   },
   "auth": {
@@ -169,8 +259,6 @@
     }
   },
   "error": {
-    "login": "Login",
-    "back_home": "Back to home",
     "400": {
       "title": "Bad request",
       "message": "The request is invalid or missing required information. Please review and try again."
@@ -194,7 +282,9 @@
     "503": {
       "title": "Service unavailable",
       "message": "The service is temporarily unavailable due to maintenance or high load. Please come back later."
-    }
+    },
+    "login": "Login",
+    "back_home": "Back to home"
   },
   "tourism": {
     "detail_title": "Tourism point",
@@ -235,6 +325,10 @@
       "copied": "Copied",
       "shared": "Shared"
     },
+    "actions": {
+      "save": "Save",
+      "share": "Share"
+    },
     "review": {
       "missing_rating": "Please provide ratings."
     }
@@ -250,6 +344,8 @@
     "all": "All",
     "showing": "Showing",
     "of": "/",
+    "gridView": "Grid View",
+    "listView": "List View",
     "results": "results",
     "sort_by": "Sort by",
     "featured": "Featured",
@@ -258,13 +354,14 @@
     "reviews": "reviews",
     "view_detail": "View Details",
     "free": "Free",
-    "no_results": "No results found"
+    "no_results": "No results found",
+    "errorLoading": "Unable to load data.",
+    "tryDifferentKeyword": "Try searching with a different keyword."
   },
   "tourPage": {
     "title": "Tour Routes",
     "description": "Explore available tour routes from live system data",
     "detailDescriptionTitle": "Tour Description",
-    "total": "Total routes",
     "refresh": "Refresh",
     "searchPlaceholder": "Search tour routes...",
     "gridView": "Grid view",
@@ -275,12 +372,15 @@
     "unknown": "Unknown",
     "noDescription": "No description",
     "loading": "Loading...",
+    "locationPending": "Location updating",
     "back": "Back",
     "notFound": "Tour information not found.",
     "shareTitle": "Tour details",
     "copied": "Copied",
     "shared": "Shared",
     "review": "Review",
+    "save": "Save",
+    "share": "Share",
     "by": "by",
     "guest": "Guest",
     "createdAt": "Created at",
@@ -318,14 +418,44 @@
     "outdoorDesc": "Topographic and nature-oriented map style.",
     "streetDesc": "Urban-focused map with roads and labels.",
     "satelliteDesc": "High-resolution satellite imagery.",
-    "satelliteStreetDesc": "Satellite imagery with road and place labels."
+    "satelliteStreetDesc": "Satellite imagery with road ."
   },
   "headerAside": {
     "layerData": "Data layers",
     "direction": "Directions",
+    "destination": "Destination",
     "satellite": "Satellite",
     "event": "Events",
-    "tour": "Tours"
+    "tour": "Tours",
+    "chatbot": "Chatbot",
+    "capacity": "Capacity"
+  },
+  "vr360": {
+    "title": "Virtual 360° Tour",
+    "subtitle": "Experience immersive VR360 scenes at Ninh Binh tourist destinations",
+    "scene_badge": "360°",
+    "main_badge": "Main",
+    "back_to_map": "Back to map",
+    "pick_spot": "Select a destination",
+    "pick_spot_placeholder": "Choose a destination to view VR scenes...",
+    "scene_list_title": "VR Scene List",
+    "no_scenes": "No VR scenes available for this destination.",
+    "no_scenes_select": "Select a destination to view its VR scenes.",
+    "error_scenes": "Unable to load VR scenes.",
+    "viewer_placeholder": "Select a VR scene from the list to start exploring",
+    "hotspots": "hotspots",
+    "current_scene": "Currently viewing",
+    "play_narration": "Play sample narration",
+    "minimap_title": "Map location",
+    "minimap_placeholder": "Minimap will appear here",
+    "features": {
+      "interactive": "Interactive hotspots",
+      "interactive_desc": "Tap hotspots in the scene to switch views or open extended information.",
+      "multilang": "Multilingual support",
+      "multilang_desc": "Layout includes a language selection area for narration and description text.",
+      "webgis": "WebGIS integration",
+      "webgis_desc": "Each scene can be pinned to the exact point on the map for a seamless experience."
+    }
   },
   "mapPage": {
     "layout": {
@@ -347,7 +477,7 @@
       "tool2dDesc": "Switch to 2D mode (disable terrain and 3D buildings)",
       "tool3dDesc": "Switch to 3D mode (enable terrain and 3D buildings)",
       "floatWeather": "Weather",
-      "weatherFeelsLike": "Feels like",
+      "weatherTemperature": "Current temperature",
       "weatherHumidity": "Current humidity",
       "weatherWind": "Wind speed",
       "weatherAqi": "Air quality index (AQI)",
@@ -368,7 +498,133 @@
       "aqiVeryPoor": "Very poor",
       "aqiUnknown": "Unknown",
       "unsupportedTitle": "Map is not supported on this device",
-      "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience."
+      "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience.",
+      "toolResetDesc": "Reset map to the default center and viewing angle"
+    },
+    "toolbar": {
+      "searchPlaceholder": "Search destination, service, food, event...",
+      "searchButton": "Search",
+      "category": "Category",
+      "filter": "Filter",
+      "baseMap": "Base Map",
+      "radius": "Radius",
+      "radiusAll": "No radius limit",
+      "searchNoResult": "No matching destination found for current filters.",
+      "locationError": "Could not get your location. Please enable location access.",
+      "styleUnavailable": "Selected map style is not configured.",
+      "geoUnsupported": "Geolocation is not supported by this browser.",
+      "mapNotReady": "Map is still loading, please try again in a moment.",
+      "geoFailed": "Could not retrieve current location.",
+      "routePrototype": "Directions integration is in prototype mode.",
+      "vrPrototype": "VR360 preview integration is in prototype mode."
+    },
+    "destination": {
+      "title": "Destination",
+      "unknownName": "Unknown destination",
+      "empty": "Select a point on the map to view details.",
+      "inactiveSubcategory": "This point belongs to a disabled data layer. Re-enable the layer or select another point.",
+      "noImage": "No image available",
+      "noAddress": "No address",
+      "noDescription": "No description available for this point.",
+      "category": "Category",
+      "subcategory": "Subcategory",
+      "flyTo": "Fly to",
+      "clear": "Close",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "viewWebsite": "View website",
+      "openingHours": "Opening hours",
+      "entranceFee": "Entrance fee",
+      "free": "Free",
+      "elevation": "Elevation",
+      "facilities": "Facilities",
+      "featured": "Featured",
+      "photos": "photos",
+      "rating": "Rating",
+      "reviews": "Reviews",
+      "visits": "Visits",
+      "openRoute": "Directions"
+    },
+    "tourPanel": {
+      "title": "Tours",
+      "syncing": "Syncing...",
+      "count": "{{count}} tours",
+      "reset": "Reset",
+      "searchPlaceholder": "Search tours...",
+      "featuredOnly": "Featured",
+      "nonFeatured": "Not featured",
+      "error": "Unable to load tour list.",
+      "empty": "No tours match your filters.",
+      "openRoute": "View on map",
+      "loadingRoute": "Opening...",
+      "hideOtherPoints": "Hide other points",
+      "showOtherPoints": "Show other points",
+      "clearRoute": "Clear route",
+      "routeReady": "Tour route is now displayed on the map.",
+      "routeFailed": "Cannot display this tour route right now.",
+      "routeCleared": "Tour route was removed from the map.",
+      "routeInsufficientStops": "A tour needs at least 2 stops to draw a route."
+    },
+    "capacityPanel": {
+      "title": "Tourist capacity",
+      "syncing": "Updating...",
+      "count": "{{count}} tracked spots",
+      "refresh": "Refresh",
+      "all": "All",
+      "defaultName": "Tourism spot",
+      "status": {
+        "overloaded": "Overloaded",
+        "near_full": "Near full",
+        "busy": "Busy",
+        "normal": "Normal"
+      },
+      "error": "Unable to load capacity data.",
+      "empty": "No matching spots found.",
+      "peopleWithCapacity": "{{current}} / {{max}} people",
+      "peopleOnly": "{{count}} people",
+      "viewOnMap": "View on map"
+    },
+    "direction": {
+      "driving": "Driving",
+      "walking": "Walking",
+      "cycling": "Cycling",
+      "transportType": "Transport",
+      "startPlaceholder": "Enter start location",
+      "endPlaceholder": "Enter destination",
+      "searching": "Searching...",
+      "swap": "Swap",
+      "calculate": "Calculate route",
+      "calculateReadyHint": "Click to calculate directions.",
+      "calculateDisabledHint": "Enter both start point and destination to calculate directions.",
+      "clear": "Clear",
+      "clearReadyHint": "Clear the current route from the map.",
+      "clearDisabledHint": "No route available to clear yet.",
+      "totalDistance": "Total distance",
+      "totalDuration": "Total duration",
+      "stepsTitle": "Turn-by-turn steps",
+      "noInstruction": "No instruction"
+    },
+    "chatbot": {
+      "title": "Map assistant",
+      "heading": "AI Travel Companion",
+      "description": "Ask about tours, weather, OCOP and get personalised itinerary suggestions.",
+      "cta": "Chat with the assistant",
+      "placeholder": "Enter a question about destinations, tours, or weather...",
+      "youLabel": "You",
+      "botLabel": "AI Assistant",
+      "quickPrompts": {
+        "dayTour": "Suggest a 1-day tour",
+        "lessCrowded": "Which places are less crowded?",
+        "weatherToday": "Weather advice for today"
+      },
+      "sampleMessages": {
+        "welcome": "Hello, I can suggest destinations, weather updates, tours, and itineraries that fit your preferences.",
+        "userPreference": "I want a one-day trip, avoid crowded places, and prioritize nature.",
+        "botSuggestion": "You can consider Trang An in the morning, then move to Bich Dong or Hang Mua for a gentler route."
+      }
     }
   }
 }
+

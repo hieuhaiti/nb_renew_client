@@ -1,4 +1,4 @@
-import { useLoadingStore } from '@/stores/useLoadingStore';
+import { useLoadingStore } from '@/stores/useLoadingStore.js';
 import LoadingOverlay from '@/components/common/LoadingOverlay';
 
 export function LoadingProvider({ children }) {

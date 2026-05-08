@@ -1,32 +1,47 @@
 import React from 'react';
 
-export function TourDetailIntroSection({ description, tags, t }) {
+export function TourDetailIntroSection({ description, includes, excludes, t }) {
   return (
-    <section className="bg-card mb-3 rounded-[10px] border-[0.5px] border-[#ced4ce] px-4 py-3.5">
-      <h2 className="text-foreground mb-2 text-[14px] font-medium">
+    <section className="bg-card border-border mb-3 rounded-[10px] border-[0.5px] px-4 py-3.5">
+      <h2 className="text-foreground mb-2 text-sm font-medium">
         {t('tourPage.detailDescriptionTitle', 'Giới thiệu')}
       </h2>
-      <p className="text-[12px] leading-[1.6] text-[#51625a]">
+      <p className="text-muted-foreground text-sm leading-relaxed">
         {description || t('tourPage.noDescription', 'Chưa có mô tả.')}
       </p>
 
-      {tags.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {tags.map((tag, index) => {
-            const isActive = index < 2;
-            return (
-              <span
-                key={`${tag}-${index}`}
-                className={`rounded-[12px] border-[0.5px] px-2.25 py-0.75 text-[11px] ${
-                  isActive
-                    ? 'border-[#6aec8e] bg-[#cffcd8] text-[#1c4a29]'
-                    : 'border-[#ced4ce] bg-[#eff1ef] text-[#606360]'
-                }`}
-              >
-                {tag}
-              </span>
-            );
-          })}
+      {(includes?.length > 0 || excludes?.length > 0) && (
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {includes?.length > 0 && (
+            <div>
+              <h3 className="text-primary mb-1.5 text-sm font-semibold">
+                {t('tourPage.includes', 'Bao gồm')}
+              </h3>
+              <ul className="space-y-1">
+                {includes.map((item, i) => (
+                  <li key={i} className="text-muted-foreground flex items-start gap-1.5 text-sm">
+                    <span className="bg-primary mt-1 h-1.5 w-1.5 shrink-0 rounded-full" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {excludes?.length > 0 && (
+            <div>
+              <h3 className="mb-1.5 text-sm font-semibold text-red-400">
+                {t('tourPage.excludes', 'Không bao gồm')}
+              </h3>
+              <ul className="space-y-1">
+                {excludes.map((item, i) => (
+                  <li key={i} className="text-muted-foreground flex items-start gap-1.5 text-sm">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </section>

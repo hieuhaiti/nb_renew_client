@@ -1,0 +1,182 @@
+:root {
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 2rem;
+
+  /* Shadows */
+  --shadow-color: 14 92 71;
+
+  /* App shell */
+  --background: #f4faf6;
+  --foreground: #14201a;
+
+  /* Elevated surfaces */
+  --card: #ffffff;
+  --card-foreground: #14201a;
+
+  /* Floating overlays */
+  --popover: #ffffff;
+  --popover-foreground: #14201a;
+
+  /* High-emphasis brand/action */
+  --primary: #0e5c47;
+  --primary-foreground: #ffffff;
+  --primary-hover: #137a5e;
+  --primary-soft: #d6efe5;
+  --primary-soft-foreground: #0a3a2d;
+
+  /* Lower-emphasis filled surfaces */
+  --secondary: #8a4a1f;
+  --secondary-foreground: #ffffff;
+  --secondary-hover: #a05a2a;
+
+  /* Subtle UI and helper content */
+  --muted: #e8f1ec;
+  --muted-foreground: #56685f;
+  --muted-hover: #dbe8df;
+
+  /* Hover / selected / nuanced POI support */
+  --accent: #f7d9b5;
+  --accent-foreground: #6b3410;
+  --accent-hover: #f2cba0;
+
+  /* Neutral interactive surface */
+  --surface-hover: #ecf4ee;
+  --surface-active: #e0ede4;
+
+  /* Errors */
+  --destructive: #c0392b;
+  --destructive-foreground: #ffffff;
+  --destructive-hover: #a72e22;
+
+  /* Warning feedback */
+  --warning: #b86908;
+  --warning-foreground: #ffffff;
+  --warning-soft: #fff1e0;
+
+  /* Inputs and separators */
+  --border: #d2e2d8;
+  --input: #dbeae0;
+  --input-hover: #cbdcd2;
+  --ring: #137a5e;
+
+  /* Data viz */
+  --chart-1: #0e5c47;
+  --chart-2: #8a4a1f;
+  --chart-3: #d4a64a;
+  --chart-4: #137a5e;
+  --chart-5: #6dd4a8;
+
+  /* Sidebar */
+  --sidebar: #ecf5ef;
+  --sidebar-foreground: #14201a;
+  --sidebar-primary: #0e5c47;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e2eedd;
+  --sidebar-accent-foreground: #2a4a1f;
+  --sidebar-accent-hover: #d2e6cb;
+  --sidebar-border: #cfdfd5;
+  --sidebar-ring: #137a5e;
+
+  /* Glass / atmospheric tokens */
+  --glass-bg: rgba(255, 255, 255, 0.68);
+  --glass-bg-strong: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(120, 150, 135, 0.16);
+  --glass-border-strong: rgba(120, 150, 135, 0.24);
+  --panel-blur: 24px;
+  --panel-saturate: 180%;
+  --ambient-shadow: 0 10px 40px rgba(14, 92, 71, 0.1);
+  --ambient-shadow-strong: 0 16px 56px rgba(14, 92, 71, 0.14);
+
+  /* Error Page Accent Colors */
+  --error-400: #f87171;
+  --error-401: #e67e22;
+  --error-403: #d97706;
+  --error-404: #8bae66;
+  --error-500: #628141;
+  --error-503: #0e5c47;
+}
+
+.dark {
+  --radius: 1rem;
+  --radius-panel-md: 1.5rem;
+  --radius-panel-lg: 2rem;
+
+  --shadow-color: 109 212 168;
+
+  --background: #0e1714;
+  --foreground: #ecf5ef;
+
+  --card: #16221d;
+  --card-foreground: #ecf5ef;
+
+  --popover: #16221d;
+  --popover-foreground: #ecf5ef;
+
+  --primary: #6dd4a8;
+  --primary-foreground: #042818;
+  --primary-hover: #87dfb8;
+  --primary-soft: #133328;
+  --primary-soft-foreground: #d6efe5;
+
+  --secondary: #e0a878;
+  --secondary-foreground: #2a1505;
+  --secondary-hover: #ebbb8d;
+
+  --muted: #22302a;
+  --muted-foreground: #b5c5bb;
+  --muted-hover: #2b3b34;
+
+  --accent: #4a2e15;
+  --accent-foreground: #f7d9b5;
+  --accent-hover: #5a391c;
+
+  --surface-hover: #1b2823;
+  --surface-active: #25342d;
+
+  --destructive: #ff8e86;
+  --destructive-foreground: #32110e;
+  --destructive-hover: #ffaaa3;
+
+  --warning: #f5b973;
+  --warning-foreground: #2e1700;
+  --warning-soft: #3e2d1d;
+
+  --border: #2a3a32;
+  --input: #1f2d27;
+  --input-hover: #27362f;
+  --ring: #6dd4a8;
+
+  --chart-1: #6dd4a8;
+  --chart-2: #e0a878;
+  --chart-3: #f5d68a;
+  --chart-4: #4eb88a;
+  --chart-5: #a5e8c9;
+
+  --sidebar: #11201a;
+  --sidebar-foreground: #ecf5ef;
+  --sidebar-primary: #6dd4a8;
+  --sidebar-primary-foreground: #042818;
+  --sidebar-accent: #163026;
+  --sidebar-accent-foreground: #d6efe5;
+  --sidebar-accent-hover: #1c3b30;
+  --sidebar-border: #264036;
+  --sidebar-ring: #6dd4a8;
+
+  --glass-bg: rgba(18, 31, 26, 0.62);
+  --glass-bg-strong: rgba(20, 34, 28, 0.82);
+  --glass-border: rgba(160, 200, 180, 0.16);
+  --glass-border-strong: rgba(160, 200, 180, 0.24);
+  --panel-blur: 24px;
+  --panel-saturate: 180%;
+  --ambient-shadow: 0 10px 40px rgba(14, 92, 71, 0.18);
+  --ambient-shadow-strong: 0 16px 56px rgba(14, 92, 71, 0.24);
+
+  --error-400: #fca5a5;
+  --error-401: #fbbf24;
+  --error-403: #f59e0b;
+  --error-404: #a3e635;
+  --error-500: #86efac;
+  --error-503: #6dd4a8;
+}

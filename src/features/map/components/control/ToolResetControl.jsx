@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import { defaultLatLong, defaultZoom, pitchDefault } from '../../constant/mapConstant';
 import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
 
@@ -5,13 +6,13 @@ export default class ResetControl {
   onAdd(map) {
     this._map = map;
 
-    // Create button
     this._btn = document.createElement('button');
     this._btn.className = 'mapboxgl-ctrl-icon';
-    this._btn.title = 'Reset về vị trí mặc định';
+    this._btn.title = i18n.t('mapPage.layout.toolResetDesc');
+    this._btn.setAttribute('aria-label', i18n.t('mapPage.layout.toolResetDesc'));
     Object.assign(this._btn.style, {
-      width: '29px',
-      height: '29px',
+      width: '1.8125rem',
+      height: '1.8125rem',
       background: 'white',
       border: 'none',
       cursor: 'pointer',
@@ -38,7 +39,6 @@ export default class ResetControl {
       });
     };
 
-    // Create container control
     this._container = document.createElement('div');
     this._container.className = 'mapboxgl-ctrl-group mapboxgl-ctrl';
     this._container.appendChild(this._btn);

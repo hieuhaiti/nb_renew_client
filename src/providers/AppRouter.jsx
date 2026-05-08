@@ -1,22 +1,28 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoadingOverlay from '@/components/common/LoadingOverlay';
-import { categoriesService } from '@/features/categories/api/categoriesService';
+import PageSkeleton from '@/components/common/PageSkeleton';
 
-// Pages
-const HomePage = lazy(() => import('@/pages/HomePage'));
+// Features
+const HomePage = lazy(() => import('@/features/home/pages/HomePage'));
 
 // Auth
 const Login = lazy(() => import('@/features/auth/components/Login'));
 const Signup = lazy(() => import('@/features/auth/components/Signup'));
 const ProfilePage = lazy(() => import('@/features/auth/pages/ProfilePage'));
 
-// Features
 const TourismPointPage = lazy(() => import('@/features/tourism-points/pages/TourismPointPage'));
 const TourismDetailPage = lazy(() => import('@/features/tourism-points/pages/TourismDetailPage'));
 const TourPage = lazy(() => import('@/features/tours/pages/TourPage'));
 const TourDetailPage = lazy(() => import('@/features/tours/pages/TourDetailPage'));
 const MapPage = lazy(() => import('@/features/map/pages/MapPage'));
+const FestivalPage = lazy(() => import('@/features/festival/pages/FestivalPage'));
+const FestivalDetailPage = lazy(() => import('@/features/festival/pages/FestivalDetailPage'));
+const OcopPage = lazy(() => import('@/features/ocop/pages/OcopPage'));
+const OcopDetailPage = lazy(() => import('@/features/ocop/pages/OcopDetailPage'));
+const NewsPage = lazy(() => import('@/features/news/pages/NewsPage'));
+const NewsDetailPage = lazy(() => import('@/features/news/pages/NewsDetailPage'));
+const VlogPage = lazy(() => import('@/features/vlog/pages/VlogPage'));
+const Vr360Page = lazy(() => import('@/features/vr360/pages/Vr360Page'));
 
 // Error pages
 const NotFoundPage = lazy(() => import('@/pages/Errors/404NotFoundPage'));
@@ -27,11 +33,9 @@ const InternalServerErrorPage = lazy(() => import('@/pages/Errors/500InternalSer
 const ServiceUnavailablePage = lazy(() => import('@/pages/Errors/503ServiceUnavailablePage'));
 
 export function AppRouter() {
-  // useEffect(() => {}, []);
-
   return (
     <BrowserRouter>
-      <Suspense fallback={<LoadingOverlay />}>
+      <Suspense fallback={<PageSkeleton />}>
         <Routes>
           {/* Home */}
           <Route path="/" element={<HomePage />} />
@@ -46,9 +50,16 @@ export function AppRouter() {
           <Route path="/tourism-point" element={<TourismPointPage />} />
           <Route path="/tourism-point/point/:id" element={<TourismDetailPage />} />
           <Route path="/tour" element={<TourPage />} />
-          <Route path="/tour/:id" element={<TourDetailPage />} />
+          <Route path="/tour/:slug" element={<TourDetailPage />} />
           <Route path="/map" element={<MapPage />} />
-          <Route path="/:categorySlug" element={<MapPage />} />
+          <Route path="/festival" element={<FestivalPage />} />
+          <Route path="/festival/:id" element={<FestivalDetailPage />} />
+          <Route path="/ocop" element={<OcopPage />} />
+          <Route path="/ocop/:id" element={<OcopDetailPage />} />
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/news/:slug" element={<NewsDetailPage />} />
+          <Route path="/vlog" element={<VlogPage />} />
+          <Route path="/vr360" element={<Vr360Page />} />
 
           {/* Error pages */}
           <Route path="/400" element={<BadRequestPage />} />

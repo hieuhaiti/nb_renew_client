@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { fetcher } from '@/services/fetcher';
 import { mutater } from '@/services/mutater';
 import { tokenManager } from '@/lib/tokenManager';
@@ -33,7 +33,12 @@ const toastSuccess = (content) =>
  */
 export function useApiQuery(key, endPoint, options = {}, loading = true, notification = false) {
   const navigate = useNavigate();
-  const setLoading = useLoadingStore((state) => state.setLoading);
+  const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
+  const loadingKeyRef = useRef(
+    `query:${Array.isArray(key) ? key.join('.') : key}:${endPoint}:${Math.random()
+      .toString(36)
+      .slice(2)}`
+  );
 
   const query = useQuery({
     queryKey: Array.isArray(key) ? key : [key],
@@ -43,8 +48,15 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
 
   // Sync global loading overlay
   useEffect(() => {
-    setLoading(loading ? (query.isLoading || query.isFetching) : false);
-  }, [query.isLoading, query.isFetching, setLoading, loading]);
+    const loadingKey = loadingKeyRef.current;
+    if (!loading) {
+      setLoadingByKey(loadingKey, false);
+      return undefined;
+    }
+
+    setLoadingByKey(loadingKey, query.isLoading || query.isFetching);
+    return () => setLoadingByKey(loadingKey, false);
+  }, [query.isLoading, query.isFetching, setLoadingByKey, loading]);
 
   // Success toast (opt-in)
   useEffect(() => {
@@ -81,6 +93,80 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
   return query;
 }
 
+/**
+ * useApiQueries — wraps TanStack useQueries with:
+ * - queryFn defaulted to fetcher(endpoint) per query item
+ * - global loading overlay (opt-out with `loading: false`)
+ * - shared auth/validation error handling with useApiQuery
+ *
+ * @param {{queries: Array<{
+ *   queryKey: string|string[],
+ *   endPoint?: string,
+ *   queryFn?: () => Promise<unknown>,
+ *   [key: string]: unknown
+ * }>}} config
+ * @param {boolean} [loading=true] - sync to global loading overlay
+ */
+export function useApiQueries(config = {}, loading = true) {
+  const navigate = useNavigate();
+  const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
+  const rawQueries = Array.isArray(config?.queries) ? config.queries : [];
+  const loadingKeyRef = useRef(`queries:${Math.random().toString(36).slice(2)}`);
+
+  const queries = useQueries({
+    queries: rawQueries.map((queryConfig) => {
+      const {
+        queryKey,
+        endPoint,
+        queryFn,
+        ...rest
+      } = queryConfig || {};
+
+      return {
+        queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
+        queryFn: queryFn || (() => fetcher(endPoint)),
+        ...rest,
+      };
+    }),
+  });
+
+  const isAnyLoading = queries.some((query) => query.isLoading || query.isFetching);
+
+  useEffect(() => {
+    const loadingKey = loadingKeyRef.current;
+    if (!loading) {
+      setLoadingByKey(loadingKey, false);
+      return undefined;
+    }
+
+    setLoadingByKey(loadingKey, isAnyLoading);
+    return () => setLoadingByKey(loadingKey, false);
+  }, [isAnyLoading, loading, setLoadingByKey]);
+
+  const errorSignature = queries.map((query) => query.errorUpdatedAt || 0).join('|');
+
+  useEffect(() => {
+    const firstError = queries.find((query) => query.error && !query.error?.meta?.suppressGlobalError)
+      ?.error;
+    if (!firstError) return;
+
+    const { status, isAuthRequest, errors, message } = firstError;
+
+    if (status === 401 && !isAuthRequest) {
+      tokenManager.clearTokens();
+      toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+      navigate('/login');
+      return;
+    }
+
+    if (status === 400 && Array.isArray(errors) && errors.length) {
+      toastError(renderValidationErrors(errors), 8000);
+    }
+  }, [errorSignature, navigate, queries]);
+
+  return queries;
+}
+
 // ─── useApiMutation ───────────────────────────────────────────────────────────
 
 /**
@@ -97,8 +183,13 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
  */
 export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
   const navigate = useNavigate();
-  const setLoading = useLoadingStore((state) => state.setLoading);
+  const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
   const queryClient = useQueryClient();
+  const loadingKeyRef = useRef(
+    `mutation:${Array.isArray(key) ? key.join('.') : key || 'unknown'}:${endPoint}:${Math.random()
+      .toString(36)
+      .slice(2)}`
+  );
 
   const { onSuccess: optionsOnSuccess, onError: optionsOnError, ...restOptions } = options;
 
@@ -141,8 +232,10 @@ export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
 
   // Sync global loading overlay
   useEffect(() => {
-    setLoading(mutation.isPending);
-  }, [mutation.isPending, setLoading]);
+    const loadingKey = loadingKeyRef.current;
+    setLoadingByKey(loadingKey, mutation.isPending);
+    return () => setLoadingByKey(loadingKey, false);
+  }, [mutation.isPending, setLoadingByKey]);
 
   return mutation;
 }

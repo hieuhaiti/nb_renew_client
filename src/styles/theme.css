@@ -1,8 +1,13 @@
 :root {
-  --radius: 0.75rem; /* 12px */
-  --radius-sm: 0.5rem; /* 8px */
-  --radius-lg: 1rem; /* 16px */
-  --radius-xl: 2rem;
+  --radius: 0.625rem;
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
 
   /* Shadows */
   --shadow-color: 0 83 161;
@@ -30,6 +35,54 @@
   --secondary: #006b55;
   --secondary-foreground: #ffffff;
   --secondary-hover: #0a7c63;
+  --secondary-soft: #ddf3ed;
+  --secondary-soft-foreground: #0d4b3d;
+
+  /* Tertiary — Sunset Sand */
+  --tertiary: #c97520;
+  --tertiary-foreground: #ffffff;
+  --tertiary-hover: #b5671a;
+  --tertiary-soft: #fae8d2;
+  --tertiary-soft-foreground: #8f5110;
+  --tertiary-soft-hover: #f6dbc0;
+
+  /* Quaternary — Coral Reef */
+  --quaternary: #c43a25;
+  --quaternary-foreground: #ffffff;
+  --quaternary-hover: #ad311e;
+  --quaternary-soft: #f6ddd8;
+  --quaternary-soft-foreground: #8f2618;
+  --quaternary-soft-hover: #f2cfc8;
+
+  /* Quinary — Misty Lavender */
+  --quinary: #5e4ec7;
+  --quinary-foreground: #ffffff;
+  --quinary-hover: #5244b3;
+  --quinary-soft: #e5e0fb;
+  --quinary-soft-foreground: #3d2b8c;
+  --quinary-soft-hover: #d7cff8;
+
+  /* Gold — Golden Hour */
+  --gold: #eab308;
+  --gold-foreground: #422006;
+  --gold-hover: #d4a008;
+  --gold-soft: #fff3c4;
+  --gold-soft-foreground: #713f12;
+  --gold-soft-hover: #ffe89a;
+
+  /* Semantic emphasis */
+  --price-color: #b86908;
+  --price-original: #5b6773;
+  --deal-color: #006b55;
+  --luxury-color: #5e4ec7;
+  --rating-color: #eab308;
+
+  /* Surface tints */
+  --surface-beach: #fff6ea;
+  --surface-nature: #eef8f1;
+  --surface-city: #eef4fb;
+  --surface-luxury: #f5f1ff;
+  --surface-deal: #fff1e4;
 
   /* Subtle UI and helper content */
   --muted: #e9f0f6;
@@ -56,7 +109,7 @@
   --warning-soft: #fff1e3;
 
   /* Inputs and separators */
-  --border: #d4dee8;
+  --border: #7b87a7;
   --input: #dce6ef;
   --input-hover: #cfdae6;
   --ring: #0b6bcb;
@@ -99,9 +152,15 @@
 }
 
 .dark {
-  --radius: 1rem;
-  --radius-panel-md: 1.5rem;
-  --radius-panel-lg: 2rem;
+  --radius: 0.625rem;
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
 
   /* Shadows */
   --shadow-color: 138 196 255;
@@ -129,6 +188,52 @@
   --secondary: #39caa2;
   --secondary-foreground: #04261e;
   --secondary-hover: #52ddb6;
+
+  /* Tertiary — Sunset Sand */
+  --tertiary: #f5a652;
+  --tertiary-foreground: #3a1e00;
+  --tertiary-hover: #f7b56e;
+  --tertiary-soft: #4a3114;
+  --tertiary-soft-foreground: #f7c58f;
+  --tertiary-soft-hover: #5a3d1b;
+
+  /* Quaternary — Coral Reef */
+  --quaternary: #f26d58;
+  --quaternary-foreground: #2a0c07;
+  --quaternary-hover: #f58472;
+  --quaternary-soft: #4a1f18;
+  --quaternary-soft-foreground: #ffb5ab;
+  --quaternary-soft-hover: #5a2820;
+
+  /* Quinary — Misty Lavender */
+  --quinary: #8b7be8;
+  --quinary-foreground: #0f0a2a;
+  --quinary-hover: #a394ee;
+  --quinary-soft: #2b2358;
+  --quinary-soft-foreground: #c9c1ff;
+  --quinary-soft-hover: #362c6a;
+
+  /* Gold — Golden Hour */
+  --gold: #fde047;
+  --gold-foreground: #2a1a00;
+  --gold-hover: #fde96b;
+  --gold-soft: #41300d;
+  --gold-soft-foreground: #f9dfa2;
+  --gold-soft-hover: #4f3a10;
+
+  /* Semantic emphasis */
+  --price-color: #f5b973;
+  --price-original: #bac7d2;
+  --deal-color: #39caa2;
+  --luxury-color: #8b7be8;
+  --rating-color: #fde047;
+
+  /* Surface tints */
+  --surface-beach: #1a2230;
+  --surface-nature: #13251d;
+  --surface-city: #122130;
+  --surface-luxury: #201c3d;
+  --surface-deal: #2a2118;
 
   /* Subtle UI and helper content */
   --muted: #24313d;

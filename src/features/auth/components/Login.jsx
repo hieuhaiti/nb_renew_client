@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'react-toastify';
 import { tokenManager } from '@/lib/tokenManager';
-import { useLoginMutation } from '@/features/auth/api/authApi';
+import { useLoginMutation } from '@/services/api/auth/authApi';
 import useAuthStore from '@/stores/useAuthStore';
 import RootLayout from '@/components/layout/RootLayout';
 
@@ -100,7 +100,7 @@ export default function Login() {
                   }
                 />
                 {errors.login && (
-                  <p className="text-destructive text-xs" role="alert">
+                  <p className="text-destructive text-sm" role="alert">
                     {errors.login.message}
                   </p>
                 )}
@@ -135,7 +135,7 @@ export default function Login() {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-destructive text-xs" role="alert">
+                  <p className="text-destructive text-sm" role="alert">
                     {errors.password.message}
                   </p>
                 )}
@@ -151,7 +151,7 @@ export default function Login() {
                 </div>
                 <Link
                   to="/forgot-password"
-                  className="text-primary text-xs hover:underline"
+                  className="text-primary text-sm hover:underline"
                   tabIndex={0}
                 >
                   {t('auth.login.forgot')}

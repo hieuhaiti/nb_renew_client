@@ -5,7 +5,7 @@ import {
   useGetProfileQuery,
   useUpdateProfileMutation,
   useChangePasswordMutation,
-} from '@/features/auth/api/authApi';
+} from '@/services/api/auth/authApi';
 import useAuthStore from '@/stores/useAuthStore';
 
 export function useProfilePageModel(t) {
