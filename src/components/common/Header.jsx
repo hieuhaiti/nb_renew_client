@@ -6,6 +6,8 @@ import ThemeSwitch from '@/components/common/ThemeSwitch';
 import LanguageSwitch from '@/components/common/LanguageSwitch';
 import useAuthStore from '@/stores/useAuthStore';
 import { tokenManager } from '@/lib/tokenManager';
+import { withBaseUrl } from '@/lib/utils';
+import placeholderImg from '@/assets/images/placeholder.png';
 import { toast } from 'react-toastify';
 import {
   Home,
@@ -135,68 +137,18 @@ export default function Header() {
           className="hidden flex-1 items-center justify-center gap-1 px-4 2xl:flex"
           aria-label="Main navigation"
         >
-          {navItems.map((item) => {
-            if (item.type === 'map-dropdown') {
-              return (
-                <div key={item.key} className="relative" data-header-interactive>
-                  <button
-                    className={[
-                      'relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                      isMapDropdownActive || dropdownOpenIdx === 'map'
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-(--surface-hover)',
-                    ].join(' ')}
-                    onClick={() => setDropdownOpenIdx(dropdownOpenIdx === 'map' ? null : 'map')}
-                    aria-expanded={dropdownOpenIdx === 'map'}
-                    aria-haspopup="menu"
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                    <ChevronDown
-                      size={14}
-                      className={`transition-transform duration-200 ${dropdownOpenIdx === 'map' ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-
-                  {dropdownOpenIdx === 'map' && (
-                    <div className="bg-popover border-border absolute top-full left-1/2 z-50 mt-2 w-56 -translate-x-1/2 overflow-hidden rounded-xl border p-1.5 shadow-xl">
-                      {item.children.map((sub) => (
-                        <button
-                          key={sub.id}
-                          onClick={() => handleCategoryNavigate(sub.raw)}
-                          className={[
-                            'flex w-full items-center rounded-lg px-3 py-2 text-left text-sm transition-colors',
-                            isCategoryActive(sub.id)
-                              ? 'bg-primary text-primary-foreground'
-                              : 'text-foreground hover:bg-(--surface-hover)',
-                          ].join(' ')}
-                        >
-                          {sub.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            }
-
-            return (
-              <button
-                key={item.path}
-                className={[
-                  'relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                  isActive(item.path)
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-(--surface-hover)',
-                ].join(' ')}
-                onClick={() => navigate(item.path)}
-                aria-current={isActive(item.path) ? 'page' : undefined}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+          {visibleNavItems.map((item) => (
+            <Button
+              key={item.path}
+              type="button"
+              variant={isActive(item.path) ? 'default' : 'ghost'}
+              onClick={() => navigate(item.path)}
+              aria-current={isActive(item.path) ? 'page' : undefined}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </Button>
+          ))}
         </nav>
 
         {/* DESKTOP RIGHT: Theme, Lang, User */}
@@ -252,9 +204,12 @@ export default function Header() {
                     <ThemeSwitch />
                     <LanguageSwitch />
                   </div>
-                  <button
+                  <div className="border-border my-1 border-t" />
+                  <Button
                     id="header-profile-btn"
-                    className="text-foreground flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors hover:bg-(--surface-hover)"
+                    type="button"
+                    className="w-full justify-start"
+                    variant="ghost"
                     onClick={() => {
                       navigate('/profile');
                       setDropdownOpenIdx(null);
@@ -266,7 +221,9 @@ export default function Header() {
                   <div className="border-border my-1 border-t" />
                   <Button
                     id="header-logout-btn"
-                    className="text-destructive hover:text-destructive-foreground flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors hover:bg-(--destructive-hover)"
+                    type="button"
+                    variant="destructive"
+                    className="w-full justify-start"
                     onClick={handleLogout}
                   >
                     <LogOut size={14} />
@@ -284,14 +241,18 @@ export default function Header() {
         </div>
 
         {/* HAMBURGER (mobile/tablet) */}
-        <button
-          id="header-hamburger-btn"
-          className="text-foreground rounded-lg p-2 transition-colors hover:bg-(--surface-hover) lg:hidden"
-          onClick={() => setIsMobileMenuOpen(true)}
-          aria-label={t('common.open_menu')}
-        >
-          <Menu size={22} />
-        </button>
+        <div className="2xl:hidden">
+          <Button
+            id="header-hamburger-btn"
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label={t('common.open_menu')}
+          >
+            <Menu size={22} />
+          </Button>
+        </div>
       </header>
 
       {/* MOBILE SIDE MENU OVERLAY */}
@@ -308,14 +269,17 @@ export default function Header() {
           >
             {/* Menu header */}
             <div className="border-border bg-card sticky top-0 z-10 flex items-center justify-between border-b px-5 py-4">
-              <span className="text-primary text-base font-bold">{t('common.app_name')}</span>
-              <button
+              <span className="text-primary truncate text-lg leading-none font-extrabold">
+                {t('common.app_name')}
+              </span>
+              <Button
                 id="mobile-menu-close-btn"
                 type="button"
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-label="Close menu"
+                className="text-foreground rounded-lg p-1.5 transition-colors hover:bg-muted"
               >
                 <X size={20} />
               </Button>
@@ -326,54 +290,22 @@ export default function Header() {
               className="border-border flex flex-col gap-1 border-b px-3 py-4"
               aria-label="Mobile navigation"
             >
-              {navItems.map((item) => {
-                if (item.type === 'map-dropdown') {
-                  return (
-                    <div key={item.key} className="space-y-1">
-                      <div className="text-muted-foreground flex items-center gap-3 px-4 py-2 text-sm font-semibold">
-                        {item.icon}
-                        {item.label}
-                      </div>
-                      <div className="border-border ml-6 border-l pl-2">
-                        {item.children.map((sub) => (
-                          <button
-                            key={sub.id}
-                            onClick={() => handleCategoryNavigate(sub.raw)}
-                            className={[
-                              'mt-1 flex w-full items-center rounded-lg px-3 py-2 text-left text-sm transition-colors',
-                              isCategoryActive(sub.id)
-                                ? 'bg-primary text-primary-foreground'
-                                : 'text-foreground hover:bg-(--surface-hover)',
-                            ].join(' ')}
-                          >
-                            {sub.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                }
-
-                return (
-                  <button
-                    key={item.path}
-                    className={[
-                      'flex items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition-all duration-200',
-                      isActive(item.path)
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-foreground hover:bg-(--surface-hover)',
-                    ].join(' ')}
-                    onClick={() => {
-                      navigate(item.path);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    aria-current={isActive(item.path) ? 'page' : undefined}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </button>
-                );
-              })}
+              {visibleNavItems.map((item) => (
+                <Button
+                  key={item.path}
+                  type="button"
+                  variant={isActive(item.path) ? 'default' : 'ghost'}
+                  className="justify-start"
+                  onClick={() => {
+                    navigate(item.path);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  aria-current={isActive(item.path) ? 'page' : undefined}
+                >
+                  {item.icon}
+                  {item.label}
+                </Button>
+              ))}
             </nav>
 
             {/* User section */}
@@ -405,6 +337,9 @@ export default function Header() {
                   </div>
                   <Button
                     id="mobile-profile-btn"
+                    type="button"
+                    variant="ghost"
+                    className="w-full justify-start"
                     onClick={() => {
                       navigate('/profile');
                       setIsMobileMenuOpen(false);
@@ -415,6 +350,9 @@ export default function Header() {
                   </Button>
                   <Button
                     id="mobile-logout-btn"
+                    type="button"
+                    variant="destructive"
+                    className="w-full justify-start"
                     onClick={handleLogout}
                   >
                     <LogOut size={16} />
