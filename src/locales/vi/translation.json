@@ -19,7 +19,6 @@
     "open_menu": "Mở menu",
     "news": "Tin tức",
     "vlog": "Vlog",
-    "vr360": "360° Thực tế ảo",
     "ocop": "Sản phẩm OCOP",
     "festival": "Lễ hội",
     "see_all": "Xem tất cả",
@@ -318,6 +317,7 @@
     "rating": "Đánh giá",
     "view_on_map": "Xem trên bản đồ",
     "contact": "Liên hệ",
+    "vr_tour": "Tour VR 360°",
     "leave_comment_placeholder": "Chia sẻ trải nghiệm, cảm nhận của bạn về địa điểm này...",
     "min_characters": "Tối thiểu 10 ký tự",
     "characters_left": "còn",
@@ -428,7 +428,8 @@
     "event": "Sự kiện",
     "tour": "Tour du lịch",
     "chatbot": "Trợ lý ảo",
-    "capacity": "Công suất"
+    "capacity": "Công suất",
+    "traffic": "Giao thông"
   },
   "vr360": {
     "title": "Tham quan ảo 360°",
@@ -624,7 +625,27 @@
         "userPreference": "Tôi muốn đi 1 ngày, tránh nơi quá đông và ưu tiên thiên nhiên.",
         "botSuggestion": "Bạn có thể cân nhắc Tràng An buổi sáng, sau đó sang Bích Động hoặc Hang Múa để di chuyển nhẹ nhàng hơn."
       }
+    },
+    "traffic": {
+      "title": "Giao thông",
+      "subtitle": "Flow và sự cố theo thời gian thực",
+      "flow": "Traffic Flow",
+      "incidents": "Sự cố giao thông",
+      "refresh": "Làm mới",
+      "loading": "Đang cập nhật...",
+      "error": "Không thể tải dữ liệu",
+      "incidentCount": "{{count}} sự cố",
+      "flowLegend": "Mức độ lưu thông",
+      "incidentLegend": "Loại sự cố"
+    },
+    "spotModal": {
+      "reviews": "đánh giá",
+      "openingHours": "Giờ mở cửa",
+      "ticketPrice": "Giá vé",
+      "viewImages": "Ảnh",
+      "review": "Đánh giá",
+      "directions": "Chỉ đường",
+      "vrTour": "Tour VR 360°"
     }
   }
 }
-

@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import ThemeSwitch from '@/components/common/ThemeSwitch';
 import LanguageSwitch from '@/components/common/LanguageSwitch';
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore from '@/stores/useAuthStore.js';
 import { tokenManager } from '@/lib/tokenManager';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
@@ -21,7 +21,6 @@ import {
   X,
   Settings,
   ChevronDown,
-  ShoppingBag,
   Video,
   Newspaper,
   RectangleGoggles,
@@ -91,12 +90,6 @@ export default function Header() {
       authen: false,
     },
     { path: '/map', label: t('common.map'), icon: <Map size={17} />, authen: false },
-    {
-      path: '/vr360',
-      label: t('common.vr360'),
-      icon: <RectangleGoggles size={17} />,
-      authen: false,
-    },
     { path: '/vlog', label: t('common.vlog'), icon: <Video size={17} />, authen: false },
   ];
   const visibleNavItems = navItems.filter((item) => !item.authen || isAuthenticated);
@@ -127,7 +120,7 @@ export default function Header() {
           variant="ghost"
           onClick={() => navigate('/')}
           aria-label="Go to home"
-          className="text-primary h-auto px-2 text-lg leading-none font-extrabold sm:text-xl"
+          className="typo-brand-title text-primary h-auto px-2 leading-none"
         >
           {t('common.app_name')}
         </Button>
@@ -200,7 +193,7 @@ export default function Header() {
                     </p>
                     <p className="text-muted-foreground truncate text-sm">{user?.email}</p>
                   </div>
-                  <div className="flex items-center justify-between px-3 py-1.5">
+                  <div className="mx-2 mb-1 flex items-center justify-center gap-6 rounded-xl p-2">
                     <ThemeSwitch />
                     <LanguageSwitch />
                   </div>
@@ -269,7 +262,7 @@ export default function Header() {
           >
             {/* Menu header */}
             <div className="border-border bg-card sticky top-0 z-10 flex items-center justify-between border-b px-5 py-4">
-              <span className="text-primary truncate text-lg leading-none font-extrabold">
+              <span className="typo-brand-title text-primary truncate leading-none">
                 {t('common.app_name')}
               </span>
               <Button
@@ -279,7 +272,7 @@ export default function Header() {
                 size="icon-sm"
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-label="Close menu"
-                className="text-foreground rounded-lg p-1.5 transition-colors hover:bg-muted"
+                className="text-foreground hover:bg-muted rounded-lg p-1.5 transition-colors"
               >
                 <X size={20} />
               </Button>

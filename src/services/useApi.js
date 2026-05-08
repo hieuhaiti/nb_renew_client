@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { fetcher } from '@/services/fetcher';
 import { mutater } from '@/services/mutater';
 import { tokenManager } from '@/lib/tokenManager';
-import { useLoadingStore } from '@/stores/useLoadingStore';
+import { useLoadingStore } from '@/stores/useLoadingStore.js';
 import { toast } from 'react-toastify';
 import { renderValidationErrors } from '@/services/errorUtils';
 
@@ -13,8 +13,7 @@ import { renderValidationErrors } from '@/services/errorUtils';
 const toastError = (content, duration = 5000) =>
   toast.error(content, { autoClose: duration, closeOnClick: true, pauseOnHover: true });
 
-const toastSuccess = (content) =>
-  toast.success(content, { autoClose: 3000, closeOnClick: true });
+const toastSuccess = (content) => toast.success(content, { autoClose: 3000, closeOnClick: true });
 
 // ─── useApiQuery ──────────────────────────────────────────────────────────────
 
@@ -115,12 +114,7 @@ export function useApiQueries(config = {}, loading = true) {
 
   const queries = useQueries({
     queries: rawQueries.map((queryConfig) => {
-      const {
-        queryKey,
-        endPoint,
-        queryFn,
-        ...rest
-      } = queryConfig || {};
+      const { queryKey, endPoint, queryFn, ...rest } = queryConfig || {};
 
       return {
         queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
@@ -146,8 +140,9 @@ export function useApiQueries(config = {}, loading = true) {
   const errorSignature = queries.map((query) => query.errorUpdatedAt || 0).join('|');
 
   useEffect(() => {
-    const firstError = queries.find((query) => query.error && !query.error?.meta?.suppressGlobalError)
-      ?.error;
+    const firstError = queries.find(
+      (query) => query.error && !query.error?.meta?.suppressGlobalError
+    )?.error;
     if (!firstError) return;
 
     const { status, isAuthRequest, errors, message } = firstError;
@@ -250,14 +245,11 @@ export function useQueryCache() {
   const queryClient = useQueryClient();
 
   return {
-    getCachedData: (key) =>
-      queryClient.getQueryData(Array.isArray(key) ? key : [key]),
+    getCachedData: (key) => queryClient.getQueryData(Array.isArray(key) ? key : [key]),
 
-    setCachedData: (key, data) =>
-      queryClient.setQueryData(Array.isArray(key) ? key : [key], data),
+    setCachedData: (key, data) => queryClient.setQueryData(Array.isArray(key) ? key : [key], data),
 
-    removeQuery: (key) =>
-      queryClient.removeQueries({ queryKey: Array.isArray(key) ? key : [key] }),
+    removeQuery: (key) => queryClient.removeQueries({ queryKey: Array.isArray(key) ? key : [key] }),
 
     invalidate: (key) =>
       queryClient.invalidateQueries({ queryKey: Array.isArray(key) ? key : [key] }),

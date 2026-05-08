@@ -192,6 +192,117 @@
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
+
+  /* ===== Traffic Incident Popup ===== */
+  .traffic-incident-popup .mapboxgl-popup-content {
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 16px 32px -4px rgb(0 0 0 / 0.16);
+    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+    overflow: hidden;
+    min-width: 200px;
+    max-width: 280px;
+  }
+
+  .traffic-incident-popup .mapboxgl-popup-tip {
+    border-top-color: var(--popover) !important;
+  }
+
+  /* ── layout ── */
+  .traffic-popup-inner {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* header: left colored border + title row + delay badge */
+  .traffic-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .traffic-popup-title-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .traffic-popup-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .traffic-popup-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--foreground);
+    white-space: nowrap;
+  }
+
+  .traffic-popup-delay-badge {
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    padding: 2px 7px;
+    border-radius: 99px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+  }
+
+  /* body: road badge, route, meta */
+  .traffic-popup-body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px 12px 10px;
+  }
+
+  .traffic-popup-road-badge {
+    display: inline-flex;
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .traffic-popup-route {
+    font-size: 12px;
+    color: var(--muted-foreground);
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .traffic-popup-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  .traffic-popup-chip {
+    font-size: 11px;
+    color: var(--muted-foreground);
+    background: var(--muted);
+    padding: 2px 7px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
 }
 
 @layer utilities {

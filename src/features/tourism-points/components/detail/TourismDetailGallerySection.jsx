@@ -3,7 +3,14 @@ import { Button } from '@/components/ui/button';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 
-export function TourismDetailGallerySection({ images, title, onPickImage, t }) {
+export function TourismDetailGallerySection({
+  images,
+  title,
+  onPickImage,
+  onViewAll,
+  totalImages = images.length,
+  t,
+}) {
   return (
     <section className="border-border bg-card mb-3 rounded-[10px] border-[0.5px] px-4 py-3.5">
       <div className="mb-3 flex items-center justify-between">
@@ -14,9 +21,9 @@ export function TourismDetailGallerySection({ images, title, onPickImage, t }) {
           variant="link"
           size="sm"
           className="text-primary h-auto p-0 text-sm font-medium"
-          onClick={() => onPickImage(0)}
+          onClick={() => (typeof onViewAll === 'function' ? onViewAll() : onPickImage(0))}
         >
-          {t('tourism.view_all_photos', 'Xem tất cả')} ({images.length})
+          {t('tourism.view_all_photos', 'Xem tất cả')} ({totalImages})
         </Button>
       </div>
 

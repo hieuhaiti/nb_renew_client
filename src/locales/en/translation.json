@@ -19,7 +19,6 @@
     "open_menu": "Open menu",
     "news": "News",
     "vlog": "Vlog",
-    "vr360": "360° Virtual Reality",
     "ocop": "OCOP products",
     "festival": "Festival",
     "see_all": "See all",
@@ -318,6 +317,7 @@
     "rating": "Rating",
     "view_on_map": "View on map",
     "contact": "Contact",
+    "vr_tour": "VR Tour 360°",
     "leave_comment_placeholder": "Share your experience and feelings about this place...",
     "min_characters": "Minimum 10 characters",
     "characters_left": "left",
@@ -428,7 +428,8 @@
     "event": "Events",
     "tour": "Tours",
     "chatbot": "Chatbot",
-    "capacity": "Capacity"
+    "capacity": "Capacity",
+    "traffic": "Traffic"
   },
   "vr360": {
     "title": "Virtual 360° Tour",
@@ -624,6 +625,27 @@
         "userPreference": "I want a one-day trip, avoid crowded places, and prioritize nature.",
         "botSuggestion": "You can consider Trang An in the morning, then move to Bich Dong or Hang Mua for a gentler route."
       }
+    },
+    "traffic": {
+      "title": "Traffic",
+      "subtitle": "Real-time flow and incidents",
+      "flow": "Traffic Flow",
+      "incidents": "Traffic Incidents",
+      "refresh": "Refresh",
+      "loading": "Updating...",
+      "error": "Failed to load data",
+      "incidentCount": "{{count}} incidents",
+      "flowLegend": "Congestion level",
+      "incidentLegend": "Incident types"
+    },
+    "spotModal": {
+      "reviews": "reviews",
+      "openingHours": "Opening hours",
+      "ticketPrice": "Ticket",
+      "viewImages": "Photos",
+      "review": "Review",
+      "directions": "Get directions",
+      "vrTour": "VR Tour 360°"
     }
   }
 }

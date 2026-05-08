@@ -9,7 +9,7 @@ import ResetControl from './control/ToolResetControl';
 import ToolBaseMap from './control/ToolBaseMap';
 import ToolLocateControl from './control/ToolLocateControl';
 import ToolViewModeControl from './control/ToolViewModeControl';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import {
   addOrUpdateSubcategoryLayer,
@@ -25,6 +25,15 @@ import { env } from '@/config/env';
 import { withBaseUrl } from '@/lib/utils';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
+import { useTrafficStore } from '@/features/map/store/useTrafficStore';
+import {
+  addTrafficFlowLayer,
+  buildIncidentPopupHTML,
+  INCIDENTS_LAYER as TRAFFIC_INCIDENTS_LAYER,
+  removeTrafficFlowLayer,
+  removeTrafficIncidentLayer,
+  updateTrafficIncidentData,
+} from '@/features/map/utils/trafficLayerUtils';
 
 mapboxgl.accessToken = env.mapboxToken;
 
@@ -89,6 +98,11 @@ export default function MapBaseArea() {
   const directions = useDirectionsStore((state) => state.directions);
   const startLocation = useDirectionsStore((state) => state.startLocation);
   const endLocation = useDirectionsStore((state) => state.endLocation);
+
+  const isTrafficEnabled = useTrafficStore((state) => state.isTrafficEnabled);
+  const showFlow = useTrafficStore((state) => state.showFlow);
+  const showIncidents = useTrafficStore((state) => state.showIncidents);
+  const incidentGeoJSON = useTrafficStore((state) => state.incidentGeoJSON);
 
   const routeMarkersRef = useRef({
     start: null,
@@ -727,6 +741,8 @@ export default function MapBaseArea() {
       });
       prevRenderedSourceIdsRef.current.clear();
       clearHighlightRouteLayers(map);
+      removeTrafficFlowLayer(map);
+      removeTrafficIncidentLayer(map);
 
       if (routeMarkersRef.current.start) {
         routeMarkersRef.current.start.remove();
@@ -871,6 +887,86 @@ export default function MapBaseArea() {
     DIRECTION_ROUTE_LAYER_ID,
     DIRECTION_ROUTE_SOURCE_ID,
   ]);
+
+  // Re-apply traffic layers after basemap style change (stable handler, reads store directly)
+  useEffect(() => {
+    const map = mapRef.current.single;
+    if (!map || !mapsReady.single) return;
+
+    const handleStyleLoad = () => {
+      const s = useTrafficStore.getState();
+      if (!s.isTrafficEnabled) return;
+      if (s.showFlow) addTrafficFlowLayer(map);
+      else removeTrafficFlowLayer(map);
+      if (s.showIncidents) updateTrafficIncidentData(map, s.incidentGeoJSON);
+      else removeTrafficIncidentLayer(map);
+    };
+
+    map.on('style.load', handleStyleLoad);
+    return () => map.off('style.load', handleStyleLoad);
+  }, [mapsReady.single]);
+
+  // Traffic Flow layer
+  useEffect(() => {
+    const map = mapRef.current.single;
+    if (!map || !mapsReady.single) return;
+
+    if (isTrafficEnabled && showFlow) {
+      addTrafficFlowLayer(map);
+    } else {
+      removeTrafficFlowLayer(map);
+    }
+  }, [isTrafficEnabled, showFlow, mapsReady.single]);
+
+  // Traffic Incidents layer — re-runs when data refreshes too
+  useEffect(() => {
+    const map = mapRef.current.single;
+    if (!map || !mapsReady.single) return;
+
+    if (isTrafficEnabled && showIncidents) {
+      updateTrafficIncidentData(map, incidentGeoJSON);
+    } else {
+      removeTrafficIncidentLayer(map);
+    }
+  }, [isTrafficEnabled, showIncidents, incidentGeoJSON, mapsReady.single]);
+
+  // Traffic Incidents hover popup
+  useEffect(() => {
+    const map = mapRef.current.single;
+    if (!map || !mapsReady.single || !isTrafficEnabled || !showIncidents) return;
+
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: 12,
+      maxWidth: '280px',
+      className: 'traffic-incident-popup',
+    });
+
+    const onEnter = (e) => {
+      if (!e.features?.length) return;
+      const feature = e.features[0];
+      const coords = feature.geometry.coordinates.slice();
+      map.getCanvas().style.cursor = 'pointer';
+      const lang = useLanguageStore.getState().lang;
+      popup.setLngLat(coords).setHTML(buildIncidentPopupHTML(feature.properties, lang)).addTo(map);
+    };
+
+    const onLeave = () => {
+      map.getCanvas().style.cursor = '';
+      popup.remove();
+    };
+
+    map.on('mouseenter', TRAFFIC_INCIDENTS_LAYER, onEnter);
+    map.on('mouseleave', TRAFFIC_INCIDENTS_LAYER, onLeave);
+
+    return () => {
+      map.off('mouseenter', TRAFFIC_INCIDENTS_LAYER, onEnter);
+      map.off('mouseleave', TRAFFIC_INCIDENTS_LAYER, onLeave);
+      popup.remove();
+      if (map.getCanvas()) map.getCanvas().style.cursor = '';
+    };
+  }, [isTrafficEnabled, showIncidents, mapsReady.single]);
 
   return (
     <div className="relative size-full">

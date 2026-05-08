@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
 import { tokenManager } from '@/lib/tokenManager';
 import { useRegisterMutation } from '@/services/api/auth/authApi';
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore from '@/stores/useAuthStore.js';
 import RootLayout from '@/components/layout/RootLayout';
 
 // --- Zod schema ---

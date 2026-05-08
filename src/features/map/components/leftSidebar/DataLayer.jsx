@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { categoriesService } from '@/services/api/categories/categoriesService';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import { hexToRgba, withBaseUrl } from '@/lib/utils';
 

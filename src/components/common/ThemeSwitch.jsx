@@ -22,7 +22,7 @@ export default function ThemeSwitch() {
             size="sm"
             id="theme-switch-btn"
             aria-label={t('theme.toggle')}
-            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-(--surface-hover)"
+            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-muted"
             onClick={toggleDark}
             type="button"
           >
@@ -31,7 +31,7 @@ export default function ThemeSwitch() {
             ) : (
               <Sun className="text-warning h-4 w-4" />
             )}
-            <span className="text-foreground hidden text-sm font-medium sm:inline">
+            <span className="typo-meta text-foreground hidden sm:inline">
               {isDark ? t('theme.dark') : t('theme.light')}
             </span>
           </Button>

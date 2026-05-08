@@ -58,8 +58,8 @@ export function TourDetailReviewsSection({
                 key={`summary-star-${idx}`}
                 className={`h-3 w-3 ${
                   idx < Math.round(criteria.averageRating)
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'fill-yellow-400 text-yellow-400 opacity-30'
+                    ? 'fill-gold text-gold'
+                    : 'fill-gold text-gold opacity-30'
                 }`}
               />
             ))}
@@ -122,8 +122,8 @@ export function TourDetailReviewsSection({
                             key={`rv-${r.id}-star-${sIdx}`}
                             className={`h-3 w-3 ${
                               sIdx < Number(r.rating || 0)
-                                ? 'fill-yellow-400 text-yellow-400'
-                                : 'fill-yellow-400 text-yellow-400 opacity-30'
+                                ? 'fill-gold text-gold'
+                                : 'fill-gold text-gold opacity-30'
                             }`}
                           />
                         ))}
@@ -171,8 +171,8 @@ export function TourDetailReviewsSection({
                               key={`${r.id}-${metric.label}-${miniIdx}`}
                               className={`h-2.5 w-2.5 ${
                                 miniIdx < metric.value
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'fill-yellow-400 text-yellow-400 opacity-30'
+                                  ? 'fill-gold text-gold'
+                                  : 'fill-gold text-gold opacity-30'
                               }`}
                             />
                           ))}
@@ -231,9 +231,7 @@ export function TourDetailReviewsSection({
               <Star
                 key={`new-rating-${i}`}
                 className={`h-3.5 w-3.5 ${
-                  i + 1 <= newRating
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'fill-yellow-400 text-yellow-400 opacity-30'
+                  i + 1 <= newRating ? 'fill-gold text-gold' : 'fill-gold text-gold opacity-30'
                 }`}
               />
             ))}
@@ -263,8 +261,8 @@ export function TourDetailReviewsSection({
                     <Star
                       className={`h-3.5 w-3.5 ${
                         idx < criterion.value
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'fill-yellow-400 text-yellow-400 opacity-30'
+                          ? 'fill-gold text-gold'
+                          : 'fill-gold text-gold opacity-30'
                       }`}
                     />
                   </Button>

@@ -7,7 +7,6 @@ import {
   useGetAframeScenes,
   useGetAframeSceneHotspots,
 } from '@/services/api/vr360/aframeSceneService';
-import Vr360SpotSelector from '../components/Vr360SpotSelector';
 import Vr360SceneList from '../components/Vr360SceneList';
 import Vr360SceneViewer from '../components/Vr360SceneViewer';
 import { Button } from '@/components/ui/button';
@@ -147,13 +146,6 @@ export default function Vr360PageContent() {
               </div>
               <p className="text-muted-foreground typo-meta">{t('vr360.subtitle')}</p>
             </div>
-
-            <Vr360SpotSelector
-              spots={spots}
-              selectedSpotId={selectedSpotId}
-              onSpotChange={handleSpotChange}
-              loading={spotsQuery.isLoading}
-            />
 
             <Card>
               <CardHeader className="pb-2">

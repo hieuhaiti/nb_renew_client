@@ -1,7 +1,7 @@
 import { useApiQuery } from '@/services/useApi';
 import { fetcher } from '@/services/fetcher';
 import { queryClient } from '@/providers/AppProviders';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
 import { normalizeCategoryTreePayload } from '@/services/api/categories/categoriesService';
 
@@ -35,15 +35,11 @@ function extractSubcategoriesFromTree(payload, categoryId) {
 }
 
 export function subCategoriesService({ lang = 'vi', category_id } = {}) {
-  return useApiQuery(
-    ['subcategories', lang, category_id],
-    `spot-categories/tree`,
-    {
-      enabled: !!category_id,
-      select: (payload) => extractSubcategoriesFromTree(payload, category_id),
-      staleTime: 5 * 60 * 1000,
-    }
-  );
+  return useApiQuery(['subcategories', lang, category_id], `spot-categories/tree`, {
+    enabled: !!category_id,
+    select: (payload) => extractSubcategoriesFromTree(payload, category_id),
+    staleTime: 5 * 60 * 1000,
+  });
 }
 
 export async function fetchSubCategoriesByCategoryId({ lang = 'vi', category_id }) {

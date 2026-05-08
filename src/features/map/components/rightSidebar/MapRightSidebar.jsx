@@ -4,7 +4,7 @@ import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { currentHeaderSidebar, headerSidebar } from '@/features/map/constant/sidebarConstant';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore from '@/stores/useAuthStore.js';
 
 export default function MapRightSidebar({
   activeSidebar,

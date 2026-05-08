@@ -9,7 +9,7 @@ import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
 import { useMapStore } from '@/features/map/store/useMapStore';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { hasHtmlMarkup, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { useDestinationPointDetailQuery } from '@/services/api/map/mapDataLayerService';

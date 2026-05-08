@@ -1,7 +1,7 @@
 import { useApiQuery } from '@/services/useApi';
 import { fetcher } from '@/services/fetcher';
 import { queryClient } from '@/providers/AppProviders';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
 import { normalizeCategoryTreePayload } from '@/features/categories/api/categoriesService';
 

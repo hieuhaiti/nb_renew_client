@@ -52,7 +52,7 @@ export default function NewsDetailHero({ detail, t, locale, formatDate, onShare 
           {isFeatured && (
             <div className="mb-3">
               <span className="typo-badge bg-primary text-primary-foreground inline-flex items-center gap-1 rounded-full px-2.5 py-1">
-                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                <Star className="fill-gold text-gold h-3 w-3" />
                 {t('newsPage.list.featured')}
               </span>
             </div>

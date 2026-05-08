@@ -51,8 +51,8 @@ export function TourismDetailReviewsSection({
                 key={`summary-star-${idx}`}
                 className={`h-3 w-3 ${
                   idx < Math.round(averageDisplayRating)
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'fill-yellow-400 text-yellow-400 opacity-30'
+                    ? 'fill-gold text-gold'
+                    : 'fill-gold text-gold opacity-30'
                 }`}
               />
             ))}
@@ -115,8 +115,8 @@ export function TourismDetailReviewsSection({
                             key={`rv-${r.id}-star-${sIdx}`}
                             className={`h-3 w-3 ${
                               sIdx < computeDisplayRating(r)
-                                ? 'fill-yellow-400 text-yellow-400'
-                                : 'fill-yellow-400 text-yellow-400 opacity-30'
+                                ? 'fill-gold text-gold'
+                                : 'fill-gold text-gold opacity-30'
                             }`}
                           />
                         ))}
@@ -164,8 +164,8 @@ export function TourismDetailReviewsSection({
                               key={`${r.id}-${metric.label}-${miniIdx}`}
                               className={`h-2.5 w-2.5 ${
                                 miniIdx < metric.value
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'fill-yellow-400 text-yellow-400 opacity-30'
+                                  ? 'fill-gold text-gold'
+                                  : 'fill-gold text-gold opacity-30'
                               }`}
                             />
                           ))}
@@ -308,8 +308,8 @@ export function TourismDetailReviewsSection({
                     <Star
                       className={`h-3.5 w-3.5 ${
                         idx < (criterion.hover || criterion.value)
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'fill-yellow-400 text-yellow-400 opacity-30'
+                          ? 'fill-gold text-gold'
+                          : 'fill-gold text-gold opacity-30'
                       }`}
                     />
                   </Button>

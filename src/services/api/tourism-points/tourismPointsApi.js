@@ -32,28 +32,31 @@ export function useGetAllDataPoints({
 }
 
 export function useGetDataPointById({ point_id } = {}) {
-  return useApiQuery(
-    ['spots', 'detail', point_id],
-    `spots/${point_id}`,
-    {
-      staleTime: 5 * 60 * 1000,
-      enabled: !!point_id,
-    }
-  );
+  return useApiQuery(['spots', 'detail', point_id], `spots/${point_id}`, {
+    staleTime: 5 * 60 * 1000,
+    enabled: !!point_id,
+  });
 }
 
-export function useGetNearbyPoints({
-  lat,
-  lng,
-  radius_km = 1,
-} = {}) {
-  const enabled = typeof lat === 'number' && typeof lng === 'number';
+export function useGetNearbyPoints({ lat, lng, radius_km = 1, limit, options = {} } = {}) {
+  const enabled =
+    typeof lat === 'number' &&
+    typeof lng === 'number' &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    (options.enabled ?? true);
 
-  const endpoint = `spots/nearby?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radius_km=${encodeURIComponent(radius_km)}`;
+  const queryParams = new URLSearchParams();
+  if (lat != null) queryParams.set('lat', lat);
+  if (lng != null) queryParams.set('lng', lng);
+  if (radius_km != null) queryParams.set('radius_km', radius_km);
+  if (limit != null) queryParams.set('limit', limit);
+  const endpoint = `spots/nearby?${queryParams.toString()}`;
 
-  return useApiQuery(['spots', 'nearby', lat, lng, radius_km], endpoint, {
+  return useApiQuery(['spots', 'nearby', lat, lng, radius_km, limit], endpoint, {
     staleTime: 5 * 60 * 1000,
     enabled,
+    ...options,
   });
 }
 

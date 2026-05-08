@@ -88,7 +88,7 @@ function pickFirstArrayCandidate(...candidates) {
 export async function fetchTourStopsByTourId(tourId) {
   if (!tourId) return [];
 
-  const endpoints = [`tour/${tourId}/stops`, `tours/${tourId}/stops`, `tour-stops/tour/${tourId}`];
+  const endpoints = [`tours/${tourId}/stops`];
 
   let lastError = null;
   for (const endpoint of endpoints) {

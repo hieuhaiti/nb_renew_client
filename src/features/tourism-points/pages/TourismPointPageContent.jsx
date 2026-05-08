@@ -28,7 +28,7 @@ import {
 import { categoriesService } from '@/services/api/categories/categoriesService';
 import { subCategoriesService } from '@/services/api/categories/subCategoriesService';
 import { useDebounce } from 'use-debounce';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
 import {
   TourismPointFeaturedCard,

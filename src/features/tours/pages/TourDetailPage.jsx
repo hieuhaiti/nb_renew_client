@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { TourDetailTopBar } from '@/features/tours/components/TourDetailTopBar';
 import { TourDetailHero } from '@/features/tours/components/TourDetailHero';
 import { TourDetailQuickStats } from '@/features/tours/components/TourDetailQuickStats';
-import { TourDetailGallerySection } from '@/features/tours/components/TourDetailGallerySection';
 import { TourDetailIntroSection } from '@/features/tours/components/TourDetailIntroSection';
 import { TourDetailStopsSection } from '@/features/tours/components/TourDetailStopsSection';
 import { TourDetailReviewsSection } from '@/features/tours/components/TourDetailReviewsSection';
@@ -27,11 +26,9 @@ export default function TourDetailPage() {
     shareLink,
     safeImagesMapped,
     currentImageIndex,
-    setCurrentImageIndex,
     subtitle,
     heroTags,
     quickStats,
-    galleryPreviewImages,
     plainDescription,
     reviewId,
     singleReview,
@@ -120,13 +117,6 @@ export default function TourDetailPage() {
               />
 
               <TourDetailQuickStats stats={quickStats} />
-
-              <TourDetailGallerySection
-                images={galleryPreviewImages}
-                title={tourName}
-                onPickImage={(index) => setCurrentImageIndex(index % safeImagesMapped.length)}
-                t={t}
-              />
 
               <TourDetailIntroSection
                 description={plainDescription}

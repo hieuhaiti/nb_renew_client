@@ -6,7 +6,7 @@ import {
   useUpdateProfileMutation,
   useChangePasswordMutation,
 } from '@/services/api/auth/authApi';
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore from '@/stores/useAuthStore.js';
 
 export function useProfilePageModel(t) {
   const setStoreUser = useAuthStore((state) => state.setUser);

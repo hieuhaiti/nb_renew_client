@@ -364,33 +364,33 @@ export default function TourPanel() {
                 <div className="space-y-1">
                   <div className="flex items-start justify-between gap-2">
                     <h4
-                      className="text-foreground truncate text-sm font-semibold"
+                      className="typo-body text-foreground truncate font-semibold"
                       title={tour.name}
                     >
                       {tour.name}
                     </h4>
                     {tour.is_featured && (
                       <Badge variant="secondary" className="shrink-0 gap-1">
-                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        <Star className="fill-gold text-gold h-3 w-3" />
                         {t('tourPage.featured', { defaultValue: 'Featured' })}
                       </Badge>
                     )}
                   </div>
 
-                  <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
+                  <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
                     <Clock3 className="h-3.5 w-3.5 shrink-0" />
                     {formatTourDurationLabel(tour, t)}
                   </p>
 
                   <p
-                    className="text-muted-foreground line-clamp-3 text-sm"
+                    className="typo-body text-muted-foreground line-clamp-3"
                     title={tour.description || ''}
                   >
                     {tour.description ||
                       t('tourPage.noDescription', { defaultValue: 'No description' })}
                   </p>
 
-                  <div className="text-foreground text-sm font-semibold">
+                  <div className="typo-body text-foreground font-semibold">
                     {formatTourPriceLabel(tour, locale)}
                   </div>
                 </div>

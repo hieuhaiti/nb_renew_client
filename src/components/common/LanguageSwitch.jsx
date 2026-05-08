@@ -3,7 +3,7 @@ import i18n from '@/i18n';
 import viFlag from '@/assets/icons/frags/vietnam-flag-round-circle-icon.svg';
 import enFlag from '@/assets/icons/frags/uk-flag-round-circle-icon.svg';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -29,7 +29,7 @@ export default function LanguageSwitch() {
             size="sm"
             id="language-switch-btn"
             aria-label="Toggle language"
-            className="bg-card flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200 hover:bg-(--surface-hover)"
+            className="bg-card hover:bg-muted flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200"
             onClick={handleToggle}
             type="button"
           >
@@ -38,9 +38,7 @@ export default function LanguageSwitch() {
             ) : (
               <img src={enFlag} alt="EN" className="h-5 w-5 rounded-full object-cover" />
             )}
-            <span className="hidden text-sm font-medium sm:inline">
-              {lang === 'vi' ? 'VI' : 'EN'}
-            </span>
+            <span className="typo-meta hidden sm:inline">{lang === 'vi' ? 'VI' : 'EN'}</span>
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Portal>

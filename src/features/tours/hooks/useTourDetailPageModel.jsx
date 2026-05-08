@@ -4,14 +4,10 @@ import { Star, Clock3, Ticket, Users } from 'lucide-react';
 import { toast } from 'react-toastify';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { formatVND, withBaseUrl } from '@/lib/utils';
-import { useGetTourBySlug } from '@/services/api/tours/tourApi';
+import { useGetTourBySlug, useGetTourStops } from '@/services/api/tours/tourApi';
 import { useGetTourReviewByTourId, useCreateTourReview } from '@/services/api/tours/tourReviewApi';
-import {
-  stripHtmlTags,
-  getDurationLabel,
-  getGalleryPreviewImages,
-} from '@/features/tours/utils/tourDetail.utils';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { stripHtmlTags, getDurationLabel } from '@/features/tours/utils/tourDetail.utils';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 
 function getTicketDisplay(tour, t) {
   const price = Number(tour?.price_from_vnd ?? 0);
@@ -26,6 +22,7 @@ export function useTourDetailPageModel(t) {
   const lang = useLanguageStore((state) => state.lang);
 
   const { data: tour, isLoading, isError } = useGetTourBySlug(slug);
+  const { data: tourStopsResp } = useGetTourStops(tour?.id);
 
   const tourName = useMemo(
     () =>
@@ -210,7 +207,6 @@ export function useTourDetailPageModel(t) {
   const totalReviewCount = Number(tour?.rating_count ?? safeReviewItems.length);
 
   const durationLabel = getDurationLabel(tour, t);
-  const galleryPreviewImages = getGalleryPreviewImages(safeImagesMapped);
   const plainDescription = stripHtmlTags(tour?.description_vi || tour?.description_en || '');
   const ticketDisplay = getTicketDisplay(tour, t);
 
@@ -265,7 +261,7 @@ export function useTourDetailPageModel(t) {
         averageDisplayRating > 0 ? (
           <div className="text-primary flex items-center gap-1 text-sm font-medium">
             <span>{averageDisplayRating.toFixed(1)}</span>
-            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+            <Star className="fill-gold text-gold h-3.5 w-3.5" />
           </div>
         ) : (
           <span className="text-foreground text-sm font-medium">-</span>
@@ -300,7 +296,16 @@ export function useTourDetailPageModel(t) {
     },
   ];
 
-  const tourStops = useMemo(() => (Array.isArray(tour?.stops) ? tour.stops : []), [tour]);
+  const tourStops = useMemo(() => {
+    const source =
+      tourStopsResp?.data?.stops ||
+      tourStopsResp?.data?.tour_stops ||
+      tourStopsResp?.stops ||
+      tourStopsResp?.tour_stops ||
+      tour?.stops ||
+      [];
+    return Array.isArray(source) ? source : [];
+  }, [tourStopsResp, tour]);
 
   return {
     navigate,
@@ -319,7 +324,6 @@ export function useTourDetailPageModel(t) {
     subtitle,
     heroTags,
     quickStats,
-    galleryPreviewImages,
     plainDescription,
     reviewId,
     singleReview,

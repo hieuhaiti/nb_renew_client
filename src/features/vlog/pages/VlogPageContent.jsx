@@ -351,7 +351,7 @@ export default function VlogPage() {
                           e.target.src = placeholderImg;
                         }}
                       />
-                      <span className="absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-sm font-semibold">
+                      <span className="typo-badge absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1">
                         {item.type} · {item.place}
                       </span>
                       <div className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90">
@@ -363,17 +363,17 @@ export default function VlogPage() {
                       </div>
                     </div>
                     <CardContent className="space-y-2 px-4 py-4">
-                      <div className="text-muted-foreground flex items-center justify-between text-sm font-semibold">
+                      <div className="typo-meta text-muted-foreground flex items-center justify-between font-semibold">
                         <span>{item.author}</span>
                         <span>{item.dateLabel}</span>
                       </div>
-                      <h3 className="truncate text-base font-bold">{item.title}</h3>
-                      <p className="text-muted-foreground line-clamp-3 text-sm">
+                      <h3 className="typo-section-title truncate">{item.title}</h3>
+                      <p className="typo-body text-muted-foreground line-clamp-3">
                         {item.description}
                       </p>
 
                       <div className="flex items-center justify-between">
-                        <div className="text-muted-foreground flex items-center gap-3 text-sm font-semibold">
+                        <div className="typo-meta text-muted-foreground flex items-center gap-3 font-semibold">
                           <span className="inline-flex items-center gap-1">
                             <Heart className="h-3.5 w-3.5" /> {item.likes}
                           </span>
@@ -410,8 +410,8 @@ export default function VlogPage() {
                         }}
                       />
                       <div className="min-w-0">
-                        <h4 className="truncate font-semibold">{item.title}</h4>
-                        <p className="text-muted-foreground line-clamp-3 text-sm">{item.text}</p>
+                        <h4 className="typo-body truncate font-semibold">{item.title}</h4>
+                        <p className="typo-body text-muted-foreground line-clamp-3">{item.text}</p>
                       </div>
                     </CardContent>
                   </Card>

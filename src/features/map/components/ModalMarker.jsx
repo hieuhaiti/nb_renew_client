@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Camera, Star, Clock, Ticket, Navigation } from 'lucide-react';
+import { MapPin, Camera, Star, Clock, Ticket, Navigation, RectangleGoggles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,8 +10,11 @@ import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { useSpotDetailModalStore, useModalCarouselStore } from '@/features/map/store/useModalStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
-import { useGetDataPointById } from '@/services/api/tourism-points/tourismPointsApi';
-import { useGetSpotMedia } from '@/services/api/tourism-points/tourismPointsApi';
+import {
+  useGetDataPointById,
+  useGetSpotMedia,
+} from '@/services/api/tourism-points/tourismPointsApi';
+import { useGetAframeScenes } from '@/services/api/vr360/aframeSceneService';
 
 function formatPrice(price, currency = 'VND') {
   const num = Number(price);
@@ -49,6 +53,13 @@ export default function ModalMarker() {
   });
   const mediaItems = mediaData?.data?.media ?? mediaData?.data ?? [];
 
+  const { data: scenesData } = useGetAframeScenes({ spotId: isOpen ? spotId : null });
+  const hasVrTour = useMemo(() => {
+    const d = scenesData?.data ?? scenesData;
+    const scenes = Array.isArray(d) ? d : d?.scenes || d?.items || [];
+    return scenes.length > 0;
+  }, [scenesData]);
+
   const handleViewImages = () => {
     const images =
       Array.isArray(mediaItems) && mediaItems.length > 0
@@ -74,6 +85,11 @@ export default function ModalMarker() {
 
   const handleReview = () => {
     navigate(`/tourism-point/point/${spotSlug ?? spotId}`);
+    closeSpotModal();
+  };
+
+  const handleVrTour = () => {
+    navigate('/vr360', { state: { spotId } });
     closeSpotModal();
   };
 
@@ -143,12 +159,11 @@ export default function ModalMarker() {
               {/* Rating */}
               {ratingAvg > 0 && (
                 <div className="flex items-center gap-1.5">
-                  <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                  <Star size={14} className="fill-gold text-gold" />
                   <span className="typo-body font-semibold">{spot.rating_avg}</span>
                   {spot.rating_count > 0 && (
                     <span className="typo-meta text-muted-foreground">
-                      ({spot.rating_count}{' '}
-                      {t('mapPage.spotModal.reviews', { defaultValue: 'reviews' })})
+                      ({spot.rating_count} {t('mapPage.spotModal.reviews')})
                     </span>
                   )}
                 </div>
@@ -170,7 +185,7 @@ export default function ModalMarker() {
                       <Clock size={13} className="text-muted-foreground mt-0.5 shrink-0" />
                       <div>
                         <p className="typo-meta font-medium">
-                          {t('mapPage.spotModal.openingHours', { defaultValue: 'Opening hours' })}
+                          {t('mapPage.spotModal.openingHours')}
                         </p>
                         <p className="typo-meta text-muted-foreground">{openingHours}</p>
                       </div>
@@ -181,7 +196,7 @@ export default function ModalMarker() {
                       <Ticket size={13} className="text-muted-foreground mt-0.5 shrink-0" />
                       <div>
                         <p className="typo-meta font-medium">
-                          {t('mapPage.spotModal.ticketPrice', { defaultValue: 'Ticket' })}
+                          {t('mapPage.spotModal.ticketPrice')}
                         </p>
                         <p className="typo-meta text-muted-foreground">{ticketPrice}</p>
                       </div>
@@ -208,7 +223,7 @@ export default function ModalMarker() {
                 className="gap-1.5"
               >
                 <Camera size={14} />
-                {t('mapPage.spotModal.viewImages', { defaultValue: 'Photos' })}
+                {t('mapPage.spotModal.viewImages')}
               </Button>
               <Button
                 size="sm"
@@ -217,10 +232,21 @@ export default function ModalMarker() {
                 disabled={isLoading}
                 className="gap-1.5"
               >
-                <Star size={14} className="fill-yellow-400 text-yellow-400" />
-                {t('mapPage.spotModal.review', { defaultValue: 'Review' })}
+                <Star size={14} className="fill-gold text-gold" />
+                {t('mapPage.spotModal.review')}
               </Button>
             </div>
+            {hasVrTour && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleVrTour}
+                className="border-primary/40 text-primary hover:bg-primary/5 w-full gap-1.5"
+              >
+                <RectangleGoggles size={14} />
+                {t('mapPage.spotModal.vrTour')}
+              </Button>
+            )}
             <Button
               size="sm"
               disabled={isLoading || !spot}
@@ -228,7 +254,7 @@ export default function ModalMarker() {
               className="w-full gap-1.5"
             >
               <Navigation size={14} />
-              {t('mapPage.spotModal.directions', { defaultValue: 'Get directions' })}
+              {t('mapPage.spotModal.directions')}
             </Button>
           </div>
         </div>

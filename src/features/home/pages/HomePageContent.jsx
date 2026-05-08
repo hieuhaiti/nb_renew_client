@@ -38,7 +38,7 @@ import {
   getAqiLevelMeta,
   useWeatherOverview,
 } from '@/features/weather';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { getHomeData } from '@/features/home/data/homeData';
 import { useGetFeaturedSpots } from '@/services/api/tourism-points/tourismPointsApi';
 import { useGetNewsList } from '@/services/api/news/newsService';
@@ -624,9 +624,9 @@ export default function HomePage() {
                           {item.icon === 'service' && <Sun size={16} />}
                           {item.icon === 'ocop' && <ArrowRight size={16} />}
                         </div>
-                        <h3 className="min-w-0 truncate text-sm font-bold">{item.title}</h3>
+                        <h3 className="typo-section-title min-w-0 truncate">{item.title}</h3>
                       </div>
-                      <p className="text-muted-foreground line-clamp-2 w-full min-w-0 text-sm leading-relaxed wrap-break-word">
+                      <p className="typo-body text-muted-foreground line-clamp-2 w-full min-w-0 wrap-break-word">
                         {item.description}
                       </p>
                     </Button>
@@ -664,20 +664,18 @@ export default function HomePage() {
                       />
                       <div className="absolute inset-0 bg-linear-to-t from-black/45 to-transparent" />
                       <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                        <span className="text-foreground rounded-full bg-(--glass-bg-strong) px-2 py-1 text-sm font-semibold">
+                        <span className="typo-badge text-foreground rounded-full bg-(--glass-bg-strong) px-2 py-1">
                           {item.province}
                         </span>
-                        <span className="text-foreground rounded-full bg-(--glass-bg-strong) px-2 py-1 text-sm font-semibold">
+                        <span className="typo-badge text-foreground rounded-full bg-(--glass-bg-strong) px-2 py-1">
                           ⭐ {item.rating}
                         </span>
                       </div>
                     </div>
                     <div className="p-4">
-                      <p className="text-muted-foreground text-sm">{item.subtitle}</p>
-                      <h3 className="text-foreground mt-1 text-lg font-bold">{item.name}</h3>
-                      <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-                        {item.description}
-                      </p>
+                      <p className="typo-meta text-muted-foreground">{item.subtitle}</p>
+                      <h3 className="typo-section-title text-foreground mt-1">{item.name}</h3>
+                      <p className="typo-body text-muted-foreground mt-2">{item.description}</p>
                       <div className="mt-4 flex gap-2">
                         <Button
                           size="sm"
@@ -727,22 +725,22 @@ export default function HomePage() {
                       )}
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="border-border/70 text-muted-foreground inline-flex rounded-full border px-2 py-0.5 text-sm font-semibold">
+                          <span className="typo-badge border-border/70 text-muted-foreground inline-flex rounded-full border px-2 py-0.5">
                             {formatNewsDate(item.published_at || item.created_at)}
                           </span>
                           {item.author_name && (
-                            <span className="text-muted-foreground text-sm">
+                            <span className="typo-meta text-muted-foreground">
                               {item.author_name}
                             </span>
                           )}
                         </div>
                         <h4
-                          className="text-foreground mt-1 line-clamp-2 text-sm font-bold"
+                          className="typo-body text-foreground mt-1 line-clamp-2 font-semibold"
                           title={item.title}
                         >
                           {item.title}
                         </h4>
-                        <p className="text-muted-foreground mt-1 line-clamp-2 text-sm leading-relaxed">
+                        <p className="typo-body text-muted-foreground mt-1 line-clamp-2">
                           {item.summary}
                         </p>
                       </div>
@@ -770,7 +768,7 @@ export default function HomePage() {
                     </div>
                   )}
                   <h3
-                    className="text-foreground mt-3 line-clamp-2 text-xl font-bold"
+                    className="typo-card-title text-foreground mt-3 line-clamp-2"
                     title={featuredTour?.name}
                   >
                     {featuredTour
@@ -778,11 +776,11 @@ export default function HomePage() {
                       : 'Tuyến di sản Ninh Bình 2 ngày'}
                   </h3>
                   {featuredTour?.business_name && (
-                    <p className="text-muted-foreground mt-1 text-sm">
+                    <p className="typo-meta text-muted-foreground mt-1">
                       {featuredTour.business_name}
                     </p>
                   )}
-                  <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-relaxed">
+                  <p className="typo-body text-muted-foreground mt-2 line-clamp-3">
                     {featuredTour
                       ? featuredTour.description_vi || featuredTour.description_en || ''
                       : 'Tràng An → Hoa Lư → Bái Đính → Tam Cốc → Hang Múa. Gợi ý theo logic điều phối tải trọng và thời tiết.'}
@@ -1000,7 +998,7 @@ export default function HomePage() {
                       >
                         {product.name_vi || product.name_en}
                       </h3>
-                      <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-relaxed">
+                      <p className="typo-body text-muted-foreground mt-2 line-clamp-3">
                         {product.description_vi || product.description_en || ''}
                       </p>
                       <div className="mt-3 flex items-center justify-between">

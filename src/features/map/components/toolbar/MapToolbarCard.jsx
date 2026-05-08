@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { searchDataPointByName } from '@/features/map/api/mapDataLayerService';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 
 function normalizeSuggestionFromPoint(item, index = 0, t) {
   const properties = item?.properties || {};
@@ -403,8 +403,8 @@ export default function MapToolbarCard({
       <CardContent>
         <div className="flex flex-col gap-2 xl:flex-row xl:items-stretch xl:gap-3">
           <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <div className="flex flex-wrap gap-2 xl:flex-nowrap xl:items-start">
-              <div className="relative w-full min-w-0 xl:flex-1">
+            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[5fr_2fr_3fr] xl:items-start">
+              <div className="relative w-full min-w-0 sm:col-span-2 xl:col-span-1">
                 <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
                   size="toolbar"
@@ -490,7 +490,7 @@ export default function MapToolbarCard({
                   </div>
                 ) : null}
               </div>
-              <div className="w-full min-w-0 sm:w-[calc(50%-0.25rem)] xl:w-60 xl:flex-none">
+              <div className="w-full min-w-0">
                 <Select value={activeChip ?? ''} onValueChange={onChipChange}>
                   <SelectTrigger size="toolbar" className="w-full">
                     <SelectValue
@@ -508,7 +508,7 @@ export default function MapToolbarCard({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="w-full min-w-0 sm:w-[calc(50%-0.25rem)] xl:w-60 xl:flex-none">
+              <div className="w-full min-w-0">
                 <Select
                   value={String(radiusKm ?? 0)}
                   onValueChange={handleRadiusChange}
@@ -531,8 +531,8 @@ export default function MapToolbarCard({
                 </Select>
               </div>
             </div>
-            <div className="flex w-full min-w-0 flex-wrap gap-2 xl:flex-nowrap">
-              <div className="relative w-full min-w-0 sm:w-[calc(50%-0.25rem)] xl:flex-1">
+            <div className="grid w-full gap-2 sm:grid-cols-2 xl:grid-cols-[2.5fr_2.5fr_2fr_2fr_1fr]">
+              <div className="relative w-full min-w-0">
                 <Input
                   ref={startInputRef}
                   size="toolbar"
@@ -583,7 +583,7 @@ export default function MapToolbarCard({
                 )}
               </div>
 
-              <div className="relative w-full min-w-0 sm:w-[calc(50%-0.25rem)] xl:flex-1">
+              <div className="relative w-full min-w-0">
                 <Input
                   size="toolbar"
                   value={endLocationInput.placeName}
@@ -633,7 +633,7 @@ export default function MapToolbarCard({
                 )}
               </div>
 
-              <div className="w-full min-w-0 sm:w-[calc(50%-0.25rem)] xl:w-40 xl:flex-none">
+              <div className="w-full min-w-0">
                 <Select value={vehicle} onValueChange={setVehicle}>
                   <SelectTrigger size="toolbar" className="w-full">
                     <SelectValue
@@ -661,7 +661,7 @@ export default function MapToolbarCard({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="w-full min-w-0 sm:w-[calc(50%-0.25rem)] xl:w-auto xl:flex-none">
+                  <span className="w-full min-w-0">
                     <Button
                       type="button"
                       variant={canCalculateRoute ? 'default' : 'outline'}
@@ -683,7 +683,7 @@ export default function MapToolbarCard({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="w-full min-w-0 sm:w-[calc(50%-0.25rem)] xl:w-auto xl:flex-none">
+                  <span className="w-full min-w-0">
                     <Button
                       type="button"
                       variant={hasDirections ? 'destructive' : 'outline'}

@@ -94,6 +94,10 @@
   --accent-foreground: #7f4400;
   --accent-hover: #ffd0ae;
 
+  /* Legacy / normalized aliases */
+  --bg-tertiary: var(--accent);
+  --loading-spinner: var(--primary);
+
   /* Neutral interactive surface */
   --surface-hover: #edf4fa;
   --surface-active: #e3edf6;
@@ -244,6 +248,10 @@
   --accent: #4b2f17;
   --accent-foreground: #ffd9be;
   --accent-hover: #5c3a1d;
+
+  /* Legacy / normalized aliases */
+  --bg-tertiary: var(--accent);
+  --loading-spinner: var(--primary);
 
   /* Neutral interactive surface */
   --surface-hover: #1d2a36;

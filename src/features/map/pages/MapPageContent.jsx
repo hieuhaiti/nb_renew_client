@@ -30,7 +30,7 @@ import {
   normalizeSpotsSearchResults,
   useSearchSpotsQuery,
 } from '@/services/api/map/mapSearchService';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import MapBaseArea from '../components/MapBase';
 import ModalMarker from '@/features/map/components/ModalMarker';
 import ModalCarousel from '@/features/map/components/ModalCarousel';

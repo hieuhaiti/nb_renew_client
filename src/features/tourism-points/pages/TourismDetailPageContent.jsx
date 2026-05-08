@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Star, Clock3, MapPin, Globe, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import RootLayout from '@/components/layout/RootLayout';
-import { useGetDataPointById } from '@/services/api/tourism-points/tourismPointsApi';
+import {
+  useGetDataPointById,
+  useGetSpotMedia,
+} from '@/services/api/tourism-points/tourismPointsApi';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import {
   useGetTourismReviewByTourismPointId,
@@ -23,6 +26,8 @@ import { TourismDetailGallerySection } from '@/features/tourism-points/component
 import { TourismDetailIntroSection } from '@/features/tourism-points/components/detail/TourismDetailIntroSection';
 import { TourismDetailReviewsSection } from '@/features/tourism-points/components/detail/TourismDetailReviewsSection';
 import { TourismDetailSidebar } from '@/features/tourism-points/components/detail/TourismDetailSidebar';
+import ModalCarousel from '@/features/map/components/ModalCarousel';
+import { useModalCarouselStore } from '@/features/map/store/useModalStore';
 
 const getDefaultVisitDate = () =>
   new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
@@ -33,6 +38,14 @@ const stripHtmlTags = (value) => {
     .replace(/<[^>]*>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+};
+
+const pickCoordinate = (...candidates) => {
+  for (const candidate of candidates) {
+    const parsed = Number(candidate);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
 };
 
 const OPENING_DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
@@ -76,6 +89,7 @@ export default function TourismDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [shareStatus, setShareStatus] = useState('idle'); // 'idle' | 'copied' | 'shared'
+  const { openCarouselModal } = useModalCarouselStore();
   // const { resetLayers } = useDataLayerStore();
   // const { setCategoryID } = useCategoriesStore();
 
@@ -112,9 +126,34 @@ export default function TourismDetailPage() {
   const attractionAddress =
     attraction?.address_vi || attraction?.address_en || attraction?.address || '';
 
+  const { data: spotMediaResp } = useGetSpotMedia({
+    spot_id: attraction?.id,
+    options: { enabled: Boolean(attraction?.id) },
+  });
+
+  const mediaImages = useMemo(() => {
+    const source =
+      spotMediaResp?.data?.media ||
+      spotMediaResp?.data?.items ||
+      spotMediaResp?.media ||
+      spotMediaResp?.data ||
+      [];
+    if (!Array.isArray(source)) return [];
+
+    return source
+      .filter((item) => {
+        const mediaType = String(item?.media_type || item?.type || '').toLowerCase();
+        const mimeType = String(item?.mime_type || '').toLowerCase();
+        const isVideo = mediaType.includes('video') || mimeType.startsWith('video/');
+        return !isVideo;
+      })
+      .map((item) => item?.url || item?.file_path || item?.path || item?.image_url || '')
+      .filter(Boolean);
+  }, [spotMediaResp]);
+
   // Compute images safely and keep them memoized so hooks below are stable
-  // TODO: gallery images from API — use GET /spots/:spotId/media (not yet wired)
   const images = useMemo(() => {
+    if (mediaImages.length > 0) return mediaImages;
     if (!attraction) return [];
     return (
       (attraction.primary_image ? [attraction.primary_image] : null) ||
@@ -122,7 +161,7 @@ export default function TourismDetailPage() {
       (attraction.main_image_url ? [attraction.main_image_url] : null) ||
       []
     );
-  }, [attraction]);
+  }, [attraction, mediaImages]);
 
   const placeholderImage = placeholderImg;
   const safeImages = useMemo(
@@ -198,6 +237,11 @@ export default function TourismDetailPage() {
     } catch {
       setShareStatus('idle');
     }
+  };
+
+  const handleViewAllPhotos = () => {
+    if (!safeImagesMapped.length) return;
+    openCarouselModal(safeImagesMapped);
   };
 
   // Reviews hooks/state must be initialized unconditionally (before early returns)
@@ -517,6 +561,19 @@ export default function TourismDetailPage() {
     attraction?.description_vi || attraction?.description_en || attraction?.description
   );
 
+  const attractionLat = pickCoordinate(
+    attraction?.lat,
+    attraction?.latitude,
+    attraction?.location?.lat,
+    attraction?.location?.latitude
+  );
+  const attractionLng = pickCoordinate(
+    attraction?.lng,
+    attraction?.longitude,
+    attraction?.location?.lng,
+    attraction?.location?.longitude
+  );
+
   const nearbyPoints = (() => {
     const source = Array.isArray(attraction?.nearby_points)
       ? attraction.nearby_points
@@ -535,9 +592,8 @@ export default function TourismDetailPage() {
         (typeof item?.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : null) ||
         item?.distance ||
         t('tourism.nearby_distance_unknown', 'Chua rõ kho?ng cách'),
-      image: withBaseUrl(
-        item?.primary_image || item?.cover_image_url || item?.main_image_url || item?.image || ''
-      ),
+      image:
+        item?.primary_image || item?.cover_image_url || item?.main_image_url || item?.image || '',
     }));
   })();
 
@@ -581,7 +637,7 @@ export default function TourismDetailPage() {
         averageDisplayRating > 0 ? (
           <div className="text-primary flex items-center gap-1 text-sm font-medium">
             <span>{averageDisplayRating.toFixed(1)}</span>
-            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+            <Star className="fill-gold text-gold h-3.5 w-3.5" />
           </div>
         ) : (
           <span className="text-foreground text-sm font-medium">-</span>
@@ -646,8 +702,10 @@ export default function TourismDetailPage() {
 
               <TourismDetailGallerySection
                 images={galleryPreviewImages}
+                totalImages={safeImagesMapped.length}
                 title={attractionName}
                 onPickImage={(index) => setCurrentImageIndex(index % safeImagesMapped.length)}
+                onViewAll={handleViewAllPhotos}
                 t={t}
               />
 
@@ -723,11 +781,16 @@ export default function TourismDetailPage() {
               onContact={handleContact}
               rows={sidebarRows}
               nearbyPoints={nearbyPoints}
+              lat={attractionLat}
+              lng={attractionLng}
+              radiusKm={8}
+              currentPointId={attraction?.id}
               t={t}
             />
           </div>
         </div>
       </div>
+      <ModalCarousel />
     </RootLayout>
   );
 }

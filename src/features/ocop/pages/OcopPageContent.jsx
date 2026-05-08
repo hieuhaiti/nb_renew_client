@@ -521,7 +521,7 @@ export default function OcopPageContent() {
                           variant="secondary"
                           className="absolute top-3 right-3 h-9 w-9 rounded-full"
                         >
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          <Star className="fill-gold text-gold h-4 w-4" />
                         </Button>
                       </div>
 

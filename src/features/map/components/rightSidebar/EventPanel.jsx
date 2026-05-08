@@ -30,7 +30,7 @@ import {
 import { useFestivalStore } from '@/features/map/store/useFestivalStore';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { cn, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 
 function FestivalRowSkeleton() {
   return (
@@ -276,7 +276,7 @@ export default function EventPanel() {
 
                 <div className="space-y-1">
                   <div className="flex items-start justify-between gap-2">
-                    <h4 className="text-foreground line-clamp-2 text-sm font-semibold">
+                    <h4 className="typo-body text-foreground line-clamp-2 font-semibold">
                       {festival.name}
                     </h4>
                     {festival.festival_type && (
@@ -286,20 +286,20 @@ export default function EventPanel() {
                     )}
                   </div>
 
-                  <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
+                  <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
                     <CalendarDays className="h-3.5 w-3.5 shrink-0" />
                     {formatFestivalDateRange(festival.start_date, festival.end_date, locale)}
                   </p>
 
                   {festival.location_name && (
-                    <p className="text-muted-foreground line-clamp-1 flex items-center gap-1.5 text-sm">
+                    <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
                       <MapPin className="h-3.5 w-3.5 shrink-0" />
                       {festival.location_name}
                     </p>
                   )}
 
                   {festival.description ? (
-                    <p className="text-muted-foreground line-clamp-2 text-sm">
+                    <p className="typo-body text-muted-foreground line-clamp-2">
                       {festival.description}
                     </p>
                   ) : null}
@@ -309,7 +309,7 @@ export default function EventPanel() {
                   <Button
                     type="button"
                     size="sm"
-                    className="h-8 text-sm"
+                    className="typo-meta h-8"
                     onClick={() => handleOpenFestivalOnMap(festival)}
                     disabled={!festival?.id || openingFestivalId != null}
                   >
@@ -324,7 +324,7 @@ export default function EventPanel() {
                       type="button"
                       size="sm"
                       variant="outline"
-                      className="h-8 text-sm"
+                      className="typo-meta h-8"
                       asChild
                     >
                       <a href={festival.website} target="_blank" rel="noopener noreferrer">

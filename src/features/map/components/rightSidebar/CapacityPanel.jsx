@@ -183,10 +183,10 @@ export default function CapacityPanel() {
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-foreground text-sm font-semibold">
+          <p className="typo-section-title text-foreground">
             {t('mapPage.capacityPanel.title', { defaultValue: 'Sức chứa điểm đến' })}
           </p>
-          <p className="text-muted-foreground truncate text-xs">
+          <p className="typo-meta text-muted-foreground truncate">
             {isFetching ? (
               t('mapPage.capacityPanel.syncing', { defaultValue: 'Đang cập nhật...' })
             ) : latestRecordedAt ? (
@@ -206,7 +206,7 @@ export default function CapacityPanel() {
           type="button"
           size="sm"
           variant="ghost"
-          className="h-7 shrink-0 text-xs"
+          className="typo-meta h-7 shrink-0"
           disabled={isFetching}
           onClick={() => refetch()}
         >
@@ -225,7 +225,7 @@ export default function CapacityPanel() {
             placeholder={t('mapPage.capacityPanel.searchPlaceholder', {
               defaultValue: 'Tìm điểm đến...',
             })}
-            className="h-8 pl-8 text-xs"
+            className="typo-search h-9 pl-8"
           />
         </div>
       )}
@@ -237,7 +237,7 @@ export default function CapacityPanel() {
             type="button"
             onClick={() => setStatusFilter('all')}
             className={cn(
-              'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors',
+              'typo-badge inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
               statusFilter === 'all'
                 ? 'border-primary/40 bg-primary/10 text-primary'
                 : 'border-border text-muted-foreground hover:bg-muted/50'
@@ -256,7 +256,7 @@ export default function CapacityPanel() {
                 type="button"
                 onClick={() => setStatusFilter(status)}
                 className={cn(
-                  'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors',
+                  'typo-badge inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
                   isActive
                     ? meta.badgeClass
                     : 'border-border text-muted-foreground hover:bg-muted/50'
@@ -278,17 +278,17 @@ export default function CapacityPanel() {
           ))}
         </div>
       ) : isError ? (
-        <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-center text-xs">
+        <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
           {t('mapPage.capacityPanel.error', { defaultValue: 'Không thể tải dữ liệu sức chứa.' })}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-center text-xs">
+        <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
           {t('mapPage.capacityPanel.empty', { defaultValue: 'Không có điểm phù hợp.' })}
         </div>
       ) : (
         <div className="max-h-[55vh] space-y-2 overflow-y-auto pr-0.5">
           {/* Result count */}
-          <p className="text-muted-foreground px-0.5 text-xs">
+          <p className="typo-meta text-muted-foreground px-0.5">
             {filtered.length !== items.length
               ? `${filtered.length} / ${items.length} điểm`
               : `${items.length} điểm đang theo dõi`}
@@ -309,28 +309,28 @@ export default function CapacityPanel() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <h4
-                    className="text-foreground line-clamp-2 text-sm leading-snug font-semibold"
+                    className="typo-body text-foreground line-clamp-2 font-semibold"
                     title={item.name}
                   >
                     {item.name}
                   </h4>
                   <Badge
                     variant="outline"
-                    className={cn('shrink-0 text-xs font-medium', meta.badgeClass)}
+                    className={cn('typo-badge shrink-0', meta.badgeClass)}
                   >
                     {getStatusLabel(item.status, isVi)}
                   </Badge>
                 </div>
 
                 <div>
-                  <div className="mb-1.5 flex items-center justify-between gap-1 text-xs">
-                    <span className="text-muted-foreground flex items-center gap-1">
+                  <div className="mb-1.5 flex items-center justify-between gap-1">
+                    <span className="typo-meta text-muted-foreground flex items-center gap-1">
                       <Users className="h-3 w-3 shrink-0" />
                       {capacityText}
                     </span>
                     <span
                       className={cn(
-                        'font-semibold tabular-nums',
+                        'typo-meta font-semibold tabular-nums',
                         meta.badgeClass.split(' ').find((c) => c.startsWith('text-'))
                       )}
                     >
@@ -353,7 +353,7 @@ export default function CapacityPanel() {
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="h-6 w-full text-xs"
+                    className="typo-meta h-7 w-full"
                     onClick={() => handleFlyTo(item)}
                   >
                     <LocateFixed className="h-3 w-3" />

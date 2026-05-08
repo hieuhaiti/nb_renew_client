@@ -24,7 +24,7 @@ import { useGetAllTours } from '@/services/api/tours/tourApi';
 import { useDebounce } from 'use-debounce';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import { uiConfig } from '@/config/ui';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import placeholderImg from '@/assets/images/placeholder.png';
 
 function getTourName(tour, lang) {
@@ -66,7 +66,7 @@ export default function TourPageContent() {
   const lang = useLanguageStore((state) => state.lang);
 
   const [currentSettings, setCurrentSettings] = useState({
-    viewMode: 'grid',
+    viewMode: 'list',
     page: 1,
     limit: 12,
   });
@@ -92,8 +92,8 @@ export default function TourPageContent() {
     return tours.slice(start, start + currentSettings.limit);
   }, [tours, currentSettings.page, currentSettings.limit, paginationFromApi]);
 
-  const featuredTour = currentSettings.viewMode === 'grid' ? visibleTours[0] || null : null;
-  const gridTours = currentSettings.viewMode === 'grid' ? visibleTours.slice(1) : visibleTours;
+  const featuredTour = null;
+  const gridTours = visibleTours;
 
   const handleOpenDetail = (slug) => {
     if (!slug) return;
@@ -250,7 +250,7 @@ export default function TourPageContent() {
                       />
                       {featuredTour.is_featured && (
                         <Badge className="bg-primary text-primary-foreground absolute top-3 left-3">
-                          <Star size={11} className="mr-1 fill-yellow-400 text-yellow-400" />
+                          <Star size={11} className="fill-gold text-gold mr-1" />
                           {t('tourPage.featured', 'Nổi bật')}
                         </Badge>
                       )}
@@ -258,31 +258,31 @@ export default function TourPageContent() {
                     <div className="flex flex-1 flex-col p-6 md:p-8">
                       <div className="mb-1 flex items-start justify-between gap-3">
                         <h2
-                          className="text-foreground line-clamp-1 text-2xl font-bold"
+                          className="typo-card-title text-foreground line-clamp-1"
                           title={getTourName(featuredTour, lang)}
                         >
                           {getTourName(featuredTour, lang) || t('tourPage.unknown', 'Tour')}
                         </h2>
                         {Number(featuredTour.rating_avg) > 0 && (
                           <div className="text-primary flex shrink-0 items-center gap-1 text-sm font-medium">
-                            <Star size={13} className="fill-yellow-400 text-yellow-400" />
+                            <Star size={13} className="fill-gold text-gold" />
                             {Number(featuredTour.rating_avg).toFixed(1)}
                           </div>
                         )}
                       </div>
 
                       {featuredTour.business_name && (
-                        <p className="text-muted-foreground mb-2 text-sm">
+                        <p className="typo-meta text-muted-foreground mb-2">
                           {featuredTour.business_name}
                         </p>
                       )}
 
-                      <p className="text-muted-foreground mb-5 line-clamp-3 text-sm leading-relaxed">
+                      <p className="typo-body text-muted-foreground mb-5 line-clamp-3">
                         {featuredTour.description_vi ||
                           t('tourPage.noDescription', 'Chưa có mô tả')}
                       </p>
 
-                      <div className="text-muted-foreground mt-auto flex flex-wrap items-center gap-3 text-sm">
+                      <div className="typo-meta text-muted-foreground mt-auto flex flex-wrap items-center gap-3">
                         {featuredTour.start_location_vi && (
                           <span className="inline-flex items-center gap-1.5">
                             <MapPin size={14} />
@@ -304,9 +304,7 @@ export default function TourPageContent() {
                       </div>
 
                       {formatPrice(featuredTour) && (
-                        <div className="text-primary mt-3 text-lg font-bold">
-                          {formatPrice(featuredTour)}
-                        </div>
+                        <div className="typo-price mt-3">{formatPrice(featuredTour)}</div>
                       )}
                     </div>
                   </div>
@@ -349,7 +347,7 @@ export default function TourPageContent() {
                           />
                           {tour.is_featured && !isList && (
                             <Badge className="bg-primary text-primary-foreground absolute top-2 left-2 text-sm">
-                              <Star size={10} className="mr-1 fill-yellow-400 text-yellow-400" />
+                              <Star size={10} className="fill-gold text-gold mr-1" />
                               {t('tourPage.featured', 'Nổi bật')}
                             </Badge>
                           )}
@@ -357,12 +355,15 @@ export default function TourPageContent() {
 
                         <div className={isList ? 'min-w-0 flex-1 py-1' : 'p-4'}>
                           <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-foreground line-clamp-1 font-semibold" title={name}>
+                            <h3
+                              className="typo-body text-foreground line-clamp-1 font-semibold"
+                              title={name}
+                            >
                               {name || t('tourPage.unknown', 'Tour')}
                             </h3>
                             {Number(tour.rating_avg) > 0 && (
                               <span className="text-primary inline-flex shrink-0 items-center gap-1 text-sm font-medium">
-                                <Star size={12} className="fill-yellow-400 text-yellow-400" />
+                                <Star size={12} className="fill-gold text-gold" />
                                 {Number(tour.rating_avg).toFixed(1)}
                               </span>
                             )}
@@ -370,18 +371,18 @@ export default function TourPageContent() {
 
                           {tour.business_name && (
                             <p
-                              className="text-muted-foreground mt-0.5 truncate text-sm"
+                              className="typo-meta text-muted-foreground mt-0.5 truncate"
                               title={tour.business_name}
                             >
                               {tour.business_name}
                             </p>
                           )}
 
-                          <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+                          <p className="typo-body text-muted-foreground mt-1 line-clamp-2">
                             {tour.description_vi || t('tourPage.noDescription', 'Chưa có mô tả')}
                           </p>
 
-                          <div className="text-muted-foreground mt-2 flex flex-wrap items-center gap-3 text-sm">
+                          <div className="typo-meta text-muted-foreground mt-2 flex flex-wrap items-center gap-3">
                             {tour.start_location_vi && (
                               <span className="inline-flex items-center gap-1">
                                 <MapPin size={12} />
@@ -397,7 +398,7 @@ export default function TourPageContent() {
                           </div>
 
                           {price && (
-                            <div className="text-primary mt-2 text-sm font-semibold">{price}</div>
+                            <div className="typo-body text-primary mt-2 font-semibold">{price}</div>
                           )}
                         </div>
                       </div>

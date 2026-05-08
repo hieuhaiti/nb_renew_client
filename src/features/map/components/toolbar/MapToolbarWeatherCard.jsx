@@ -141,7 +141,7 @@ export default function MapToolbarWeatherCard({ className, compact = false }) {
   const fullContent = (() => {
     if (!isConfigured) {
       return (
-        <p className="text-muted-foreground line-clamp-3 text-sm font-normal">
+        <p className="typo-body text-muted-foreground line-clamp-3">
           {t('mapPage.layout.weatherNotConfigured')}
         </p>
       );

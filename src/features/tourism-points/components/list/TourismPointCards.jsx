@@ -99,26 +99,26 @@ export function TourismPointFeaturedCard({
           }}
         />
         <div className="absolute top-4 left-4 flex gap-2">
-          <span className="text-primary-foreground bg-primary/60 rounded-full border px-3 py-1 text-sm font-medium backdrop-blur-md">
+          <span className="typo-badge text-primary-foreground bg-primary/60 rounded-full border px-3 py-1 backdrop-blur-md">
             {categoryName}
           </span>
         </div>
       </div>
       <div className="relative flex flex-1 flex-col justify-center p-6 md:p-8">
         <div className="mb-3 flex items-center gap-2">
-          <span className="text-primary-foreground bg-primary rounded border px-2 py-0.5 text-sm font-bold shadow-sm">
+          <span className="typo-badge text-primary-foreground bg-primary rounded border px-2 py-0.5 shadow-sm">
             Mới
           </span>
-          <div className="text-primary flex items-center text-sm font-medium">
-            <Star size={13} className="mr-1 fill-yellow-400 text-yellow-400" />
+          <div className="typo-meta text-primary flex items-center">
+            <Star size={13} className="fill-gold text-gold mr-1" />
             {rating ? Number(rating).toFixed(1) : '—'} - {reviewCount}{' '}
             {t('tourismPointPage.reviews', 'đánh giá')}
           </div>
         </div>
-        <h2 className="group-hover:text-primary text-foreground mb-2 line-clamp-1 text-2xl font-bold transition-colors">
+        <h2 className="typo-card-title group-hover:text-primary text-foreground mb-2 line-clamp-1 transition-colors">
           {name}
         </h2>
-        <div className="text-muted-foreground mb-6 line-clamp-3 text-sm leading-relaxed">
+        <div className="typo-body text-muted-foreground mb-6 line-clamp-3">
           {description?.includes('<') ? (
             <div dangerouslySetInnerHTML={{ __html: description }} />
           ) : (
@@ -126,7 +126,7 @@ export function TourismPointFeaturedCard({
           )}
         </div>
 
-        <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-4 text-sm">
+        <div className="typo-meta mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-4">
           <div className="text-muted-foreground flex items-center font-medium">
             <div className="bg-muted-foreground mr-2 h-1.5 w-1.5 rounded-full" />
             {address.split(',')[0] || ''}
@@ -138,7 +138,7 @@ export function TourismPointFeaturedCard({
             </div>
           )}
           <div className="mt-4 ml-auto flex w-full items-center justify-between gap-4 md:mt-0 md:w-auto md:justify-end">
-            <div className="text-primary dark:text-primary text-base font-bold">
+            <div className="typo-price text-primary dark:text-primary">
               {price && parseInt(price) > 0
                 ? formatVND(price)
                 : t('tourismPointPage.free', 'Miễn phí')}
@@ -199,17 +199,17 @@ export function TourismPointStandardCard({
           />
         </div>
         <div className="flex h-full flex-1 flex-col justify-center py-2">
-          <h3 className="group-hover:text-primary text-foreground mb-1 line-clamp-1 text-lg font-bold transition-colors">
+          <h3 className="typo-section-title group-hover:text-primary text-foreground mb-1 line-clamp-1 transition-colors">
             {name}
           </h3>
-          <div className="text-muted-foreground mb-2 line-clamp-2 text-sm">
+          <div className="typo-body text-muted-foreground mb-2 line-clamp-2">
             {description?.replace(/<[^>]*>?/gm, '') || ''}
           </div>
           <div className="border-border text-primary mt-auto flex items-center justify-between border-t pt-2">
-            <div className="text-muted-foreground flex items-center gap-1.5 text-sm font-medium">
+            <div className="typo-meta text-muted-foreground flex items-center gap-1.5 font-medium">
               <MapPin size={12} /> {address.split(',')[0] || ''}
             </div>
-            <div className="text-foreground text-sm font-semibold">
+            <div className="typo-body text-foreground font-semibold">
               {price && parseInt(price) > 0
                 ? formatVND(price)
                 : t('tourismPointPage.free', 'Miễn phí')}
@@ -239,7 +239,7 @@ export function TourismPointStandardCard({
         <div className="text-primary pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b to-transparent" />
 
         <div className="absolute top-3 left-3">
-          <span className="text-primary-foreground bg-primary/60 rounded-full border px-2.5 py-1 text-sm font-bold backdrop-blur-md">
+          <span className="typo-badge text-primary-foreground bg-primary/60 rounded-full border px-2.5 py-1 backdrop-blur-md">
             {categoryName}
           </span>
         </div>
@@ -256,28 +256,26 @@ export function TourismPointStandardCard({
       </div>
 
       <div className="relative flex flex-1 flex-col p-4">
-        <h3 className="shadow-sm-text group-hover:text-primary text-foreground typo-search mb-1 line-clamp-1 font-bold transition-colors">
+        <h3 className="typo-section-title group-hover:text-primary text-foreground mb-1 line-clamp-1 transition-colors">
           {name}
         </h3>
 
         <div className="mb-2 flex items-center gap-2">
           {point?.is_featured && (
-            <span className="text-primary rounded border px-1.5 py-px text-sm font-bold">
-              Nổi bật
-            </span>
+            <span className="typo-badge text-primary rounded border px-1.5 py-px">Nổi bật</span>
           )}
-          <div className="text-foreground flex items-center text-sm font-semibold">
-            <Star size={11} className="mr-1 fill-yellow-400 text-yellow-400" />
+          <div className="typo-meta text-foreground flex items-center font-semibold">
+            <Star size={11} className="fill-gold text-gold mr-1" />
             {rating ? Number(rating).toFixed(1) : '—'}
           </div>
         </div>
 
-        <div className="text-muted-foreground mb-4 line-clamp-2 text-sm leading-relaxed">
+        <div className="typo-body text-muted-foreground mb-4 line-clamp-2">
           {description?.replace(/<[^>]*>?/gm, '') || ''}
         </div>
 
         <div className="mt-auto flex items-end justify-between">
-          <div className="text-muted-foreground flex flex-col gap-1 text-sm font-medium">
+          <div className="typo-meta text-muted-foreground flex flex-col gap-1 font-medium">
             <span className="flex items-center gap-1.5">
               <div className="bg-muted-foreground h-1 w-1 rounded-full" />
               {address.split(',')[0] || ''}
