@@ -51,7 +51,7 @@
       system-ui,
       -apple-system,
       sans-serif;
-    line-height: 1.6;
+    line-height: 1.65;
     font-weight: 400;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -84,41 +84,46 @@
     font-size: clamp(1.75rem, 4vw, 2.5rem);
     font-weight: 700;
     line-height: 1.15;
+    letter-spacing: -0.01em;
   }
 
   .typo-kpi {
     font-size: 2.125rem;
     font-weight: 800;
     line-height: 1.1;
+    font-variant-numeric: tabular-nums;
   }
 
   .typo-card-title {
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1.25;
+    letter-spacing: -0.01em;
   }
 
   .typo-brand-title {
     font-size: 1.25rem;
     font-weight: 800;
     line-height: 1.25;
+    letter-spacing: -0.01em;
   }
 
   .typo-search {
     font-size: 1.0625rem;
     font-weight: 400;
+    line-height: 1.5;
   }
 
   .typo-section-title {
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-weight: 700;
     line-height: 1.4;
   }
 
   .typo-body {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 400;
-    line-height: 1.6;
+    line-height: 1.65;
   }
 
   .typo-meta {
@@ -129,8 +134,236 @@
 
   .typo-badge {
     font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .typo-display {
+    font-size: 1.875rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+
+  .typo-price {
+    color: var(--price-color);
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .typo-price--large {
+    color: var(--price-color);
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .typo-price--original {
+    color: var(--price-original);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1;
+    text-decoration: line-through;
+  }
+
+  .typo-caption {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-overline {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .typo-rating {
+    color: var(--rating-color);
+    font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  .text-tertiary {
+    color: var(--tertiary);
+  }
+
+  .text-tertiary-foreground {
+    color: var(--tertiary-foreground);
+  }
+
+  .text-quaternary {
+    color: var(--quaternary);
+  }
+
+  .text-quaternary-foreground {
+    color: var(--quaternary-foreground);
+  }
+
+  .text-quinary {
+    color: var(--quinary);
+  }
+
+  .text-quinary-foreground {
+    color: var(--quinary-foreground);
+  }
+
+  .text-gold {
+    color: var(--gold);
+  }
+
+  .text-gold-foreground {
+    color: var(--gold-foreground);
+  }
+
+  .text-price {
+    color: var(--price-color);
+  }
+
+  .text-price-original {
+    color: var(--price-original);
+  }
+
+  .text-rating {
+    color: var(--rating-color);
+  }
+
+  .text-deal {
+    color: var(--deal-color);
+  }
+
+  .text-luxury {
+    color: var(--luxury-color);
+  }
+
+  .bg-tertiary {
+    background-color: var(--tertiary);
+    color: var(--tertiary-foreground);
+  }
+
+  .bg-tertiary-soft {
+    background-color: var(--tertiary-soft);
+    color: var(--tertiary-soft-foreground);
+  }
+
+  .bg-quaternary {
+    background-color: var(--quaternary);
+    color: var(--quaternary-foreground);
+  }
+
+  .bg-quaternary-soft {
+    background-color: var(--quaternary-soft);
+    color: var(--quaternary-soft-foreground);
+  }
+
+  .bg-quinary {
+    background-color: var(--quinary);
+    color: var(--quinary-foreground);
+  }
+
+  .bg-quinary-soft {
+    background-color: var(--quinary-soft);
+    color: var(--quinary-soft-foreground);
+  }
+
+  .bg-gold {
+    background-color: var(--gold);
+    color: var(--gold-foreground);
+  }
+
+  .bg-gold-soft {
+    background-color: var(--gold-soft);
+    color: var(--gold-soft-foreground);
+  }
+
+  .bg-surface-beach {
+    background-color: var(--surface-beach);
+  }
+
+  .bg-surface-nature {
+    background-color: var(--surface-nature);
+  }
+
+  .bg-surface-city {
+    background-color: var(--surface-city);
+  }
+
+  .bg-surface-luxury {
+    background-color: var(--surface-luxury);
+  }
+
+  .bg-surface-deal {
+    background-color: var(--surface-deal);
+  }
+
+  .border-tertiary {
+    border-color: var(--tertiary);
+  }
+
+  .border-quaternary {
+    border-color: var(--quaternary);
+  }
+
+  .border-quinary {
+    border-color: var(--quinary);
+  }
+
+  .border-gold {
+    border-color: var(--gold);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.1875rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .badge--hot {
+    background: var(--quaternary-soft);
+    color: var(--quaternary-soft-foreground);
+  }
+
+  .badge--new {
+    background: var(--primary-soft);
+    color: var(--primary-soft-foreground);
+  }
+
+  .badge--sale {
+    background: var(--tertiary-soft);
+    color: var(--tertiary-soft-foreground);
+  }
+
+  .badge--vip {
+    background: var(--quinary-soft);
+    color: var(--quinary-soft-foreground);
+  }
+
+  .badge--eco {
+    background: #d4f5ec;
+    color: #004e3d;
+  }
+
+  .badge--top {
+    background: var(--gold-soft);
+    color: var(--gold-soft-foreground);
   }
 }
 

@@ -124,7 +124,7 @@ export default function ModalMarker() {
                 {spot.category_name && (
                   <Badge
                     variant="secondary"
-                    className="w-fit text-xs"
+                    className="w-fit text-sm"
                     style={
                       spot.category_color
                         ? {

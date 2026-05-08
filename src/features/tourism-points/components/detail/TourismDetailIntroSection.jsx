@@ -6,7 +6,7 @@ export function TourismDetailIntroSection({ description, tags, t }) {
       <h2 className="text-foreground mb-2 text-sm font-medium">
         {t('tourism.introduction', 'Giới thiệu')}
       </h2>
-      <p className="text-muted-foreground text-xs leading-relaxed">
+      <p className="text-muted-foreground text-sm leading-relaxed">
         {description || t('tourism.no_description', 'Chưa có thông tin giới thiệu.')}
       </p>
 
@@ -17,7 +17,7 @@ export function TourismDetailIntroSection({ description, tags, t }) {
             return (
               <span
                 key={`${tag}-${index}`}
-                className={`rounded-[12px] border-[0.5px] px-2.25 py-0.75 text-xs ${
+                className={`rounded-[12px] border-[0.5px] px-2.25 py-0.75 text-sm ${
                   isActive
                     ? 'border-primary bg-primary text-primary-foreground'
                     : 'border-primary/20 bg-primary-soft text-primary-soft-foreground'

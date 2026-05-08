@@ -20,7 +20,8 @@
     "news": "News",
     "vlog": "Vlog",
     "vr360": "360° Virtual Reality",
-    "ocop_festival": "OCOP Festival",
+    "ocop": "OCOP products",
+    "festival": "Festival",
     "see_all": "See all",
     "search_placeholder": "Search places / routes...",
     "search_results": "Search Results",
@@ -426,7 +427,8 @@
     "satellite": "Satellite",
     "event": "Events",
     "tour": "Tours",
-    "chatbot": "Chatbot"
+    "chatbot": "Chatbot",
+    "capacity": "Capacity"
   },
   "vr360": {
     "title": "Virtual 360° Tour",
@@ -565,6 +567,25 @@
       "routeCleared": "Tour route was removed from the map.",
       "routeInsufficientStops": "A tour needs at least 2 stops to draw a route."
     },
+    "capacityPanel": {
+      "title": "Tourist capacity",
+      "syncing": "Updating...",
+      "count": "{{count}} tracked spots",
+      "refresh": "Refresh",
+      "all": "All",
+      "defaultName": "Tourism spot",
+      "status": {
+        "overloaded": "Overloaded",
+        "near_full": "Near full",
+        "busy": "Busy",
+        "normal": "Normal"
+      },
+      "error": "Unable to load capacity data.",
+      "empty": "No matching spots found.",
+      "peopleWithCapacity": "{{current}} / {{max}} people",
+      "peopleOnly": "{{count}} people",
+      "viewOnMap": "View on map"
+    },
     "direction": {
       "driving": "Driving",
       "walking": "Walking",
@@ -584,6 +605,23 @@
       "totalDuration": "Total duration",
       "stepsTitle": "Turn-by-turn steps",
       "noInstruction": "No instruction"
+    },
+    "chatbot": {
+      "title": "Map assistant",
+      "heading": "AI Travel Companion",
+      "description": "Ask about tours, weather, OCOP and get personalised itinerary suggestions.",
+      "cta": "Chat with the assistant",
+      "placeholder": "Enter a question about destinations, tours, or weather...",
+      "quickPrompts": {
+        "dayTour": "Suggest a 1-day tour",
+        "lessCrowded": "Which places are less crowded?",
+        "weatherToday": "Weather advice for today"
+      },
+      "sampleMessages": {
+        "welcome": "Hello, I can suggest destinations, weather updates, tours, and itineraries that fit your preferences.",
+        "userPreference": "I want a one-day trip, avoid crowded places, and prioritize nature.",
+        "botSuggestion": "You can consider Trang An in the morning, then move to Bich Dong or Hang Mua for a gentler route."
+      }
     }
   }
 }

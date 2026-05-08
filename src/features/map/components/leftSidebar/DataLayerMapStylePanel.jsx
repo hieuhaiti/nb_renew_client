@@ -87,7 +87,7 @@ export default function DataLayerMapStylePanel({
       </div>
 
       {options.length === 0 ? (
-        <p className="text-muted-foreground text-xs">
+        <p className="text-muted-foreground text-sm">
           {t('mapStyle.unavailable', { defaultValue: 'No basemap style is configured.' })}
         </p>
       ) : (
@@ -114,7 +114,7 @@ export default function DataLayerMapStylePanel({
                     backgroundColor: item.preview ? 'transparent' : '#e5e7eb',
                   }}
                 />
-                <span className="truncate text-xs font-semibold">{item.title}</span>
+                <span className="truncate text-sm font-semibold">{item.title}</span>
               </Button>
             );
           })}

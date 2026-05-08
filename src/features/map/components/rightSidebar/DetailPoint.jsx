@@ -359,12 +359,12 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
         {/* badge-row */}
         <div className="mb-2.5 flex flex-wrap gap-2">
           {categoryName && (
-            <Badge className="bg-primary/10 text-primary hover:bg-primary/10 rounded-full px-2.5 py-1 text-xs font-bold">
+            <Badge className="bg-primary/10 text-primary hover:bg-primary/10 rounded-full px-2.5 py-1 text-sm font-bold">
               {categoryName}
             </Badge>
           )}
           {destination.average_rating != null && (
-            <Badge variant="secondary" className="rounded-full px-2.5 py-1 text-xs font-bold">
+            <Badge variant="secondary" className="rounded-full px-2.5 py-1 text-sm font-bold">
               {parseFloat(destination.average_rating).toFixed(1)} ★
             </Badge>
           )}
@@ -424,14 +424,14 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
               })}
             </p>
             {isFeaturedLoading ? (
-              <span className="text-muted-foreground text-xs">
+              <span className="text-muted-foreground text-sm">
                 {t('common.loading', { defaultValue: 'Đang tải...' })}
               </span>
             ) : null}
           </div>
 
           {featuredSuggestions.length === 0 ? (
-            <div className="text-muted-foreground rounded-lg border border-dashed p-2.5 text-xs">
+            <div className="text-muted-foreground rounded-lg border border-dashed p-2.5 text-sm">
               {t('mapPage.destination.noFeaturedSuggestions', {
                 defaultValue: 'Chưa có dữ liệu gợi ý.',
               })}
@@ -447,10 +447,10 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
                   onClick={() => handleSelectFeaturedSuggestion(item)}
                 >
                   <span className="min-w-0 space-y-1">
-                    <span className="text-foreground block truncate text-xs font-semibold">
+                    <span className="text-foreground block truncate text-sm font-semibold">
                       {item.displayName || item.name}
                     </span>
-                    <span className="text-muted-foreground flex items-center gap-1.5 text-xs font-normal">
+                    <span className="text-muted-foreground flex items-center gap-1.5 text-sm font-normal">
                       <span className="max-w-[70%] truncate">
                         {item.displayCategory ||
                           t('mapPage.destination.unknownCategory', {

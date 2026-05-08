@@ -20,7 +20,8 @@
     "news": "Tin tức",
     "vlog": "Vlog",
     "vr360": "360° Thực tế ảo",
-    "ocop_festival": "Lễ hội OCOP",
+    "ocop": "Sản phẩm OCOP",
+    "festival": "Lễ hội",
     "see_all": "Xem tất cả",
     "search_placeholder": "Tìm kiếm điểm / tuyến...",
     "search_results": "Kết quả tìm kiếm",
@@ -426,7 +427,8 @@
     "satellite": "Ảnh vệ tinh",
     "event": "Sự kiện",
     "tour": "Tour du lịch",
-    "chatbot": "Trợ lý ảo"
+    "chatbot": "Trợ lý ảo",
+    "capacity": "Công suất"
   },
   "vr360": {
     "title": "Tham quan ảo 360°",
@@ -565,6 +567,25 @@
       "routeCleared": "Đã xóa tuyến tour khỏi bản đồ.",
       "routeInsufficientStops": "Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường."
     },
+    "capacityPanel": {
+      "title": "Sức chứa điểm du lịch",
+      "syncing": "Đang cập nhật...",
+      "count": "{{count}} điểm đang theo dõi",
+      "refresh": "Làm mới",
+      "all": "Tất cả",
+      "defaultName": "Điểm du lịch",
+      "status": {
+        "overloaded": "Quá tải",
+        "near_full": "Gần đầy",
+        "busy": "Đông khách",
+        "normal": "Bình thường"
+      },
+      "error": "Không thể tải dữ liệu sức chứa.",
+      "empty": "Không có điểm nào phù hợp.",
+      "peopleWithCapacity": "{{current}} / {{max}} người",
+      "peopleOnly": "{{count}} người",
+      "viewOnMap": "Xem trên bản đồ"
+    },
     "direction": {
       "driving": "Ô tô",
       "walking": "Đi bộ",
@@ -584,6 +605,23 @@
       "totalDuration": "Tổng thời gian",
       "stepsTitle": "Hướng dẫn từng bước",
       "noInstruction": "Không có chỉ dẫn"
+    },
+    "chatbot": {
+      "title": "Trợ lý bản đồ",
+      "heading": "Chatbot đồng hành",
+      "description": "Hỏi nhanh về tour, thời tiết, OCOP và nhận gợi ý lịch trình cá nhân hoá.",
+      "cta": "Trò chuyện cùng chatbot",
+      "placeholder": "Nhập câu hỏi về điểm đến, tour hoặc thời tiết...",
+      "quickPrompts": {
+        "dayTour": "Gợi ý tour 1 ngày",
+        "lessCrowded": "Điểm nào ít đông?",
+        "weatherToday": "Tư vấn thời tiết hôm nay"
+      },
+      "sampleMessages": {
+        "welcome": "Xin chào, tôi có thể gợi ý điểm đến, thời tiết, tour và lịch trình phù hợp với bạn.",
+        "userPreference": "Tôi muốn đi 1 ngày, tránh nơi quá đông và ưu tiên thiên nhiên.",
+        "botSuggestion": "Bạn có thể cân nhắc Tràng An buổi sáng, sau đó sang Bích Động hoặc Hang Múa để di chuyển nhẹ nhàng hơn."
+      }
     }
   }
 }

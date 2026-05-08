@@ -150,7 +150,7 @@ export default function TourPageContent() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-xs font-medium">
+                  <span className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-sm font-medium">
                     <SlidersHorizontal size={13} />
                     {t('tourPage.view', 'Hiển thị')}
                   </span>
@@ -264,7 +264,7 @@ export default function TourPageContent() {
                           {getTourName(featuredTour, lang) || t('tourPage.unknown', 'Tour')}
                         </h2>
                         {Number(featuredTour.rating_avg) > 0 && (
-                          <div className="text-primary flex shrink-0 items-center gap-1 text-xs font-medium">
+                          <div className="text-primary flex shrink-0 items-center gap-1 text-sm font-medium">
                             <Star size={13} className="fill-yellow-400 text-yellow-400" />
                             {Number(featuredTour.rating_avg).toFixed(1)}
                           </div>
@@ -272,7 +272,7 @@ export default function TourPageContent() {
                       </div>
 
                       {featuredTour.business_name && (
-                        <p className="text-muted-foreground mb-2 text-xs">
+                        <p className="text-muted-foreground mb-2 text-sm">
                           {featuredTour.business_name}
                         </p>
                       )}
@@ -348,7 +348,7 @@ export default function TourPageContent() {
                             }}
                           />
                           {tour.is_featured && !isList && (
-                            <Badge className="bg-primary text-primary-foreground absolute top-2 left-2 text-xs">
+                            <Badge className="bg-primary text-primary-foreground absolute top-2 left-2 text-sm">
                               <Star size={10} className="mr-1 fill-yellow-400 text-yellow-400" />
                               {t('tourPage.featured', 'Nổi bật')}
                             </Badge>
@@ -361,7 +361,7 @@ export default function TourPageContent() {
                               {name || t('tourPage.unknown', 'Tour')}
                             </h3>
                             {Number(tour.rating_avg) > 0 && (
-                              <span className="text-primary inline-flex shrink-0 items-center gap-1 text-xs font-medium">
+                              <span className="text-primary inline-flex shrink-0 items-center gap-1 text-sm font-medium">
                                 <Star size={12} className="fill-yellow-400 text-yellow-400" />
                                 {Number(tour.rating_avg).toFixed(1)}
                               </span>
@@ -370,7 +370,7 @@ export default function TourPageContent() {
 
                           {tour.business_name && (
                             <p
-                              className="text-muted-foreground mt-0.5 truncate text-xs"
+                              className="text-muted-foreground mt-0.5 truncate text-sm"
                               title={tour.business_name}
                             >
                               {tour.business_name}
@@ -381,7 +381,7 @@ export default function TourPageContent() {
                             {tour.description_vi || t('tourPage.noDescription', 'Chưa có mô tả')}
                           </p>
 
-                          <div className="text-muted-foreground mt-2 flex flex-wrap items-center gap-3 text-xs">
+                          <div className="text-muted-foreground mt-2 flex flex-wrap items-center gap-3 text-sm">
                             {tour.start_location_vi && (
                               <span className="inline-flex items-center gap-1">
                                 <MapPin size={12} />

@@ -148,7 +148,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
           <h2 className="text-foreground text-sm font-semibold">
             {t('mapPage.layerData.title', { defaultValue: 'Lớp dữ liệu' })}
           </h2>
-          <span className="text-muted-foreground bg-muted rounded-full px-2 py-0.5 text-xs font-medium">
+          <span className="text-muted-foreground bg-muted rounded-full px-2 py-0.5 text-sm font-medium">
             {selectedSubcategoryIds.length}/{subcategories.length}
           </span>
         </div>
@@ -159,7 +159,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
             type="button"
             size="sm"
             variant={allSelected ? 'default' : 'outline'}
-            className="h-7 text-xs"
+            className="h-7 text-sm"
             onClick={selectAllSubcategories}
           >
             {t('mapPage.layerData.selectAll', { defaultValue: 'Chọn tất cả' })}
@@ -168,7 +168,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
             type="button"
             size="sm"
             variant="ghost"
-            className="h-7 text-xs"
+            className="h-7 text-sm"
             onClick={clearSelectedSubcategories}
             disabled={selectedSubcategoryIds.length === 0}
           >
@@ -201,11 +201,6 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                     <label
                       htmlFor={checkboxId}
                       className="group hover:bg-muted/50 relative flex cursor-pointer items-center gap-3 rounded-lg border p-2 transition-colors"
-                      style={
-                        checked
-                          ? { borderColor: colorCode, backgroundColor: hexToRgba(colorCode, 0.08) }
-                          : {}
-                      }
                     >
                       {/* Color accent bar */}
 
@@ -253,7 +248,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                       )}
                     </label>
                   </TooltipTrigger>
-                  <TooltipContent side="right" className="max-w-45 text-xs">
+                  <TooltipContent side="right" className="max-w-45 text-sm">
                     {itemName}
                   </TooltipContent>
                 </Tooltip>

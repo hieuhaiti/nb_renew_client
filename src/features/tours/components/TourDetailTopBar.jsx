@@ -30,7 +30,7 @@ export function TourDetailTopBar({ onBack, isLiked, onToggleFavorite, onShare, t
       </div>
 
       {shareStatus !== 'idle' && (
-        <div className="border-primary/20 bg-card text-muted-foreground mb-3 rounded-[8px] border-[0.5px] px-3 py-1.5 text-xs">
+        <div className="border-primary/20 bg-card text-muted-foreground mb-3 rounded-[8px] border-[0.5px] px-3 py-1.5 text-sm">
           {shareStatus === 'copied'
             ? t('tourPage.copied', 'Đã sao chép liên kết')
             : t('tourPage.shared', 'Đã chia sẻ')}

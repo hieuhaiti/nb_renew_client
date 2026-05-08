@@ -19,18 +19,18 @@ export function TourismDetailSidebar({
       <section className="bg-primary rounded-[10px] px-4 py-3.5">
         <div className="text-primary-foreground text-xl font-semibold">{ticketDisplay}</div>
         {childTicketDisplay && (
-          <div className="text-primary-foreground/70 mt-0.5 text-xs">
+          <div className="text-primary-foreground/70 mt-0.5 text-sm">
             {t('tourism.ticket_child', 'Trẻ em')}: {childTicketDisplay}
           </div>
         )}
-        <p className="text-primary-foreground/70 mt-1 text-xs">
+        <p className="text-primary-foreground/70 mt-1 text-sm">
           {t('tourism.price_subtitle', 'Thông tin giá vé từ điểm tham quan')}
         </p>
 
         <div className="mt-3 space-y-2">
           <Button
             onClick={onOpenMap}
-            className="text-primary hover:text-primary bg-card hover:bg-muted h-8.5 w-full rounded-[7px] text-xs font-medium"
+            className="text-primary hover:text-primary bg-card hover:bg-muted h-8.5 w-full rounded-[7px] text-sm font-medium"
           >
             <Map className="h-3.5 w-3.5" />
             {t('tourism.view_on_map', 'Xem trên bản đồ')}
@@ -38,7 +38,7 @@ export function TourismDetailSidebar({
           <Button
             onClick={onContact}
             variant="ghost"
-            className="border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground h-8.5 w-full rounded-[7px] border text-xs"
+            className="border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground h-8.5 w-full rounded-[7px] border text-sm"
           >
             <Phone className="h-3.5 w-3.5" />
             {t('tourism.contact', 'Liên hệ điểm tham quan')}
@@ -59,8 +59,8 @@ export function TourismDetailSidebar({
               <span className={`h-1.75 w-1.75 rounded-full ${row.dotClass}`} />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-muted-foreground text-xs uppercase">{row.label}</div>
-              <div className="mt-0.5 truncate text-xs font-medium" title={row.value}>
+              <div className="text-muted-foreground text-sm uppercase">{row.label}</div>
+              <div className="mt-0.5 truncate text-sm font-medium" title={row.value}>
                 {row.href ? (
                   <a
                     href={row.href}
@@ -82,7 +82,7 @@ export function TourismDetailSidebar({
 
       {/* Mini map */}
       <section className="border-border bg-card rounded-[10px] border px-4 py-3.5">
-        <h3 className="text-foreground mb-2 text-xs font-medium">
+        <h3 className="text-foreground mb-2 text-sm font-medium">
           {t('tourism.mini_map', 'Bản đồ mini')}
         </h3>
         <div className="bg-primary-soft relative h-25 overflow-hidden rounded-[9px]">
@@ -93,7 +93,7 @@ export function TourismDetailSidebar({
         <Button
           onClick={onOpenMap}
           variant="outline"
-          className="mt-2 h-8 w-full rounded-[7px] px-3 text-xs"
+          className="mt-2 h-8 w-full rounded-[7px] px-3 text-sm"
         >
           {t('tourism.open_full_map', 'Mở bản đồ đầy đủ')}
         </Button>
@@ -101,7 +101,7 @@ export function TourismDetailSidebar({
 
       {/* Nearby points */}
       <section className="border-border bg-card rounded-[10px] border px-4 py-3.5">
-        <h3 className="text-foreground mb-2 text-xs font-medium">
+        <h3 className="text-foreground mb-2 text-sm font-medium">
           {t('tourism.nearby_points', '?i?m l?n c?n')}
         </h3>
 
@@ -122,11 +122,11 @@ export function TourismDetailSidebar({
                   }}
                 />
                 <div className="px-2 py-1.5">
-                  <div className="text-foreground truncate text-xs font-medium" title={point.name}>
+                  <div className="text-foreground truncate text-sm font-medium" title={point.name}>
                     {point.name}
                   </div>
                   <div
-                    className="text-muted-foreground mt-0.5 truncate text-xs"
+                    className="text-muted-foreground mt-0.5 truncate text-sm"
                     title={point.distance}
                   >
                     {point.distance}
@@ -136,7 +136,7 @@ export function TourismDetailSidebar({
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             {t('tourism.no_nearby_points', 'Chưa có dữ liệu điểm lân cận.')}
           </p>
         )}

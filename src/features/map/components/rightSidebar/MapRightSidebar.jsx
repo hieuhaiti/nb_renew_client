@@ -92,7 +92,7 @@ export default function MapRightSidebar({
   }
 
   return (
-    <Card className="border-border flex h-full min-h-0 flex-col rounded-2xl shadow-sm">
+    <Card className="border-border flex h-full min-h-0 flex-col gap-2 rounded-2xl shadow-sm">
       <CardHeader className="px-3 pb-0">
         <CardTitle className="text-sm font-bold">
           <TabsList
@@ -110,7 +110,7 @@ export default function MapRightSidebar({
                   activeTab={activeSidebarTab}
                   setActiveTab={onTabChange}
                   className={cn(
-                    'h-8 gap-1 rounded-none border-b-2 bg-transparent px-2 text-xs whitespace-nowrap shadow-none',
+                    'h-8 gap-1 rounded-none border-b-2 bg-transparent px-2 text-sm whitespace-nowrap shadow-none',
                     isActive
                       ? 'border-primary text-foreground'
                       : 'text-muted-foreground border-transparent'

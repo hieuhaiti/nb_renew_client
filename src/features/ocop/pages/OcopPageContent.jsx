@@ -232,8 +232,8 @@ export default function OcopPageContent() {
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen py-4 lg:py-6">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:w-[88%] lg:px-0">
+      <div className="bg-background min-h-screen py-4 sm:py-5 lg:py-6">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:w-[80%] lg:px-0 xl:w-[70%] 2xl:w-[60%]">
           <section className="grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
             <Card className="border-border/70 relative gap-0 overflow-hidden rounded-3xl py-0 shadow-sm">
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center" />
@@ -298,7 +298,10 @@ export default function OcopPageContent() {
 
             <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
               <CardContent className="px-5 py-5">
-                <SectionHeading title="Điểm nhấn hôm nay" />
+                <SectionHeading
+                  title="Điểm nổi bật"
+                  description="Gợi ý nhanh để du khách chọn đúng sản phẩm phù hợp hành trình"
+                />
 
                 <div className="mt-4 grid gap-3">
                   <div className="border-border/70 bg-primary/5 flex gap-3 rounded-2xl border p-4">

@@ -5,7 +5,7 @@ import placeholderImg from '@/assets/images/placeholder.png';
 
 export function TourDetailGallerySection({ images, title, onPickImage, t }) {
   return (
-    <section className="bg-card mb-3 rounded-[10px] border-[0.5px] border-border px-4 py-3.5">
+    <section className="bg-card border-border mb-3 rounded-[10px] border-[0.5px] px-4 py-3.5">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-foreground text-sm font-medium">
           {t('tourPage.gallery', 'Thư viện ảnh')}
@@ -13,7 +13,7 @@ export function TourDetailGallerySection({ images, title, onPickImage, t }) {
         <Button
           variant="link"
           size="sm"
-          className="h-auto p-0 text-xs font-medium text-primary"
+          className="text-primary h-auto p-0 text-sm font-medium"
           onClick={() => onPickImage(0)}
         >
           {t('tourPage.viewAllPhotos', 'Xem tất cả')} ({images.length})

@@ -29,6 +29,11 @@ const MARKER_PROGRESS_GAP = 1;
 const MARKER_PROGRESS_CORNER_RADIUS = 2;
 const MARKER_PROGRESS_TRACK_COLOR = '#22c55e';
 const MARKER_PROGRESS_FILL_COLOR = '#ef4444';
+const MARKER_PROGRESS_BUCKET_STEP = 10;
+const MARKER_PROGRESS_MIN_PERCENT = 0;
+const MARKER_PROGRESS_MAX_PERCENT = 100;
+const CAPACITY_PROGRESS_BUCKET_PROPERTY = 'capacity_progress_bucket';
+const CAPACITY_PROGRESS_PERCENT_PROPERTY = 'capacity_progress_pct';
 
 const FILL_OPACITY = 0.18;
 const LINE_WIDTH = 2;
@@ -58,6 +63,43 @@ function isObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function toFiniteNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getDefaultProgressRatio() {
+  return MARKER_PROGRESS_CURRENT / MARKER_PROGRESS_TOTAL;
+}
+
+function getProgressPercentForFeature(raw) {
+  const current = toFiniteNumber(raw?.current_visitor_count);
+  const max = toFiniteNumber(raw?.max_capacity);
+
+  if (current == null || max == null || max <= 0) {
+    return getDefaultProgressRatio() * 100;
+  }
+
+  return clamp((current / max) * 100, MARKER_PROGRESS_MIN_PERCENT, MARKER_PROGRESS_MAX_PERCENT);
+}
+
+function getProgressBucketFromPercent(percent) {
+  const bucket = Math.round(percent / MARKER_PROGRESS_BUCKET_STEP) * MARKER_PROGRESS_BUCKET_STEP;
+  return clamp(bucket, MARKER_PROGRESS_MIN_PERCENT, MARKER_PROGRESS_MAX_PERCENT);
+}
+
+function withCapacityProgressProperties(properties) {
+  const nextProperties = { ...properties };
+  const progressPercent = getProgressPercentForFeature(nextProperties);
+  nextProperties[CAPACITY_PROGRESS_PERCENT_PROPERTY] = progressPercent;
+  nextProperties[CAPACITY_PROGRESS_BUCKET_PROPERTY] = getProgressBucketFromPercent(progressPercent);
+  return nextProperties;
+}
+
 function buildPointGeometryFromCoordinates(input) {
   const lng = Number(input?.longitude ?? input?.lng);
   const lat = Number(input?.latitude ?? input?.lat);
@@ -73,7 +115,9 @@ function toFeature(input, fallbackId) {
   if (!isObject(input)) return null;
 
   if (input.type === 'Feature' && isObject(input.geometry)) {
-    const properties = isObject(input.properties) ? input.properties : {};
+    const properties = withCapacityProgressProperties(
+      isObject(input.properties) ? input.properties : {}
+    );
     return {
       type: 'Feature',
       id: input.id ?? fallbackId,
@@ -112,19 +156,25 @@ function toFeature(input, fallbackId) {
     category_id: input.category_id,
     subcategory_id: input.subcategory_id,
   };
+  const normalizedProperties = withCapacityProgressProperties(mergedProperties);
 
   return {
     type: 'Feature',
     id: input.id ?? fallbackId,
     geometry,
-    properties: mergedProperties,
+    properties: normalizedProperties,
   };
 }
 
 export function normalizePointsToFeatureCollection(payload) {
   const directGeojson = payload?.data?.geojson || payload?.geojson;
   if (directGeojson?.type === 'FeatureCollection' && Array.isArray(directGeojson.features)) {
-    return directGeojson;
+    return {
+      ...directGeojson,
+      features: directGeojson.features.map((feature, index) =>
+        toFeature(feature, `${feature?.id ?? index}`)
+      ).filter(Boolean),
+    };
   }
 
   const candidateArrays = [
@@ -184,11 +234,9 @@ function normalizeSvgIcon(iconSvg) {
   return { viewBox, content };
 }
 
-function createCategorySvg(iconSvg, color) {
+function createCategorySvg(iconSvg, color, progressPercent = getDefaultProgressRatio() * 100) {
   const markerColor = color || DEFAULT_MARKER_COLOR;
-  const progressCurrent = MARKER_PROGRESS_CURRENT;
-  const progressTotal = MARKER_PROGRESS_TOTAL;
-  const progressRatio = Math.max(0, Math.min(1, progressCurrent / progressTotal));
+  const progressRatio = clamp(progressPercent / 100, 0, 1);
   const progressBarWidth = MARKER_PROGRESS_BAR_WIDTH;
   const progressBarHeight = MARKER_PROGRESS_BAR_HEIGHT;
   const progressGap = MARKER_PROGRESS_GAP;
@@ -253,11 +301,9 @@ function createCategorySvg(iconSvg, color) {
   `;
 }
 
-function createDefaultCategorySvg(color) {
+function createDefaultCategorySvg(color, progressPercent = getDefaultProgressRatio() * 100) {
   const markerColor = color || DEFAULT_MARKER_COLOR;
-  const progressCurrent = MARKER_PROGRESS_CURRENT;
-  const progressTotal = MARKER_PROGRESS_TOTAL;
-  const progressRatio = Math.max(0, Math.min(1, progressCurrent / progressTotal));
+  const progressRatio = clamp(progressPercent / 100, 0, 1);
   const progressBarWidth = MARKER_PROGRESS_BAR_WIDTH;
   const progressBarHeight = MARKER_PROGRESS_BAR_HEIGHT;
   const progressGap = MARKER_PROGRESS_GAP;
@@ -310,6 +356,47 @@ function createDefaultCategorySvg(color) {
   `;
 }
 
+function getProgressIconImageId(baseImageId, bucket) {
+  return `${baseImageId}-${bucket}`;
+}
+
+function getFeatureProgressBuckets(featureCollection) {
+  const bucketSet = new Set();
+  const defaultBucket = getProgressBucketFromPercent(getDefaultProgressRatio() * 100);
+
+  featureCollection?.features?.forEach((feature) => {
+    const properties = isObject(feature?.properties) ? feature.properties : {};
+    const rawBucket = toFiniteNumber(properties[CAPACITY_PROGRESS_BUCKET_PROPERTY]);
+    const bucket =
+      rawBucket == null
+        ? getProgressBucketFromPercent(getProgressPercentForFeature(properties))
+        : getProgressBucketFromPercent(rawBucket);
+    bucketSet.add(bucket);
+  });
+
+  if (bucketSet.size === 0) {
+    bucketSet.add(defaultBucket);
+  }
+
+  return [...bucketSet].sort((a, b) => a - b);
+}
+
+function buildProgressIconExpression(baseImageId, buckets) {
+  const expression = ['match', ['get', CAPACITY_PROGRESS_BUCKET_PROPERTY]];
+
+  buckets.forEach((bucket) => {
+    expression.push(bucket, getProgressIconImageId(baseImageId, bucket));
+  });
+
+  expression.push(
+    getProgressIconImageId(
+      baseImageId,
+      getProgressBucketFromPercent(getDefaultProgressRatio() * 100)
+    )
+  );
+  return expression;
+}
+
 function isSvgIconUrl(iconUrl) {
   const rawUrl = String(iconUrl || '').trim();
   if (!rawUrl) return false;
@@ -343,33 +430,51 @@ function loadSvgStringAsImage(svgString, callback) {
   image.src = objectUrl;
 }
 
-function loadMapIconImage(map, iconUrl, color, callback) {
-  if (!iconUrl) {
-    callback(null, new Error('Icon URL is empty'));
+function loadProgressMarkerImages(map, markerImageBaseId, buckets, markerSvgByBucket, callback) {
+  const targetBuckets = buckets.filter(
+    (bucket) => !map.hasImage(getProgressIconImageId(markerImageBaseId, bucket))
+  );
+
+  if (targetBuckets.length === 0) {
+    callback(null);
     return;
   }
 
-  const loadBitmapFallback = (originError) => {
-    if (isSvgIconUrl(iconUrl)) {
-      callback(
-        null,
-        originError || new Error(`Cannot render SVG marker image from URL: ${iconUrl}`)
-      );
-      return;
-    }
+  let pending = targetBuckets.length;
+  let firstError = null;
 
-    map.loadImage(iconUrl, (bitmapError, image) => {
-      if (bitmapError || !image) {
-        callback(
-          null,
-          bitmapError || originError || new Error(`Cannot load map icon from URL: ${iconUrl}`)
-        );
-        return;
+  targetBuckets.forEach((bucket) => {
+    const markerSvg = markerSvgByBucket(bucket);
+    loadSvgStringAsImage(markerSvg, (image, renderError) => {
+      if (!firstError && (renderError || !image)) {
+        firstError = renderError || new Error(`Cannot render marker image for bucket ${bucket}`);
       }
 
-      callback(image, null);
+      if (!firstError && image) {
+        const imageId = getProgressIconImageId(markerImageBaseId, bucket);
+        if (!map.hasImage(imageId)) {
+          map.addImage(imageId, image);
+        }
+      }
+
+      pending -= 1;
+      if (pending === 0) {
+        callback(firstError);
+      }
     });
-  };
+  });
+}
+
+function loadMapIconProgressImages(map, iconUrl, color, markerImageBaseId, buckets, callback) {
+  if (!iconUrl) {
+    callback(new Error('Icon URL is empty'));
+    return;
+  }
+
+  if (!isSvgIconUrl(iconUrl)) {
+    callback(new Error(`Cannot render progress marker from non-SVG icon URL: ${iconUrl}`));
+    return;
+  }
 
   fetch(iconUrl, { mode: 'cors', credentials: 'omit' })
     .then((response) => {
@@ -384,27 +489,29 @@ function loadMapIconImage(map, iconUrl, color, callback) {
         throw new Error('Icon content is not SVG');
       }
 
-      const markerSvg = createCategorySvg(iconSvg, color);
-      loadSvgStringAsImage(markerSvg, (image, renderError) => {
-        if (renderError || !image) {
-          loadBitmapFallback(renderError);
-          return;
-        }
-
-        callback(image, null);
-      });
+      loadProgressMarkerImages(
+        map,
+        markerImageBaseId,
+        buckets,
+        (bucket) => createCategorySvg(iconSvg, color, bucket),
+        callback
+      );
     })
-    .catch((svgError) => loadBitmapFallback(svgError));
+    .catch((error) => callback(error));
 }
 
-function loadDefaultMarkerImage(color, callback) {
-  const markerSvg = createDefaultCategorySvg(color);
-  loadSvgStringAsImage(markerSvg, callback);
+function loadDefaultProgressMarkerImages(map, color, markerImageBaseId, buckets, callback) {
+  loadProgressMarkerImages(
+    map,
+    markerImageBaseId,
+    buckets,
+    (bucket) => createDefaultCategorySvg(color, bucket),
+    callback
+  );
 }
 
 function toNumber(value) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
+  return toFiniteNumber(value);
 }
 
 function toDisplayText(value) {
@@ -487,12 +594,15 @@ export function addOrUpdateSubcategoryLayer(
   const pointLayerId = `${sourceId}-point`;
   const clusterLayerId = `${sourceId}-cluster`;
   const clusterCountLayerId = `${sourceId}-cluster-count`;
-  const fallbackMarkerImageId = `${sourceId}-marker`;
+  const fallbackMarkerImageBaseId = `${sourceId}-marker`;
   const pointFilter = [
     'all',
     ['in', ['geometry-type'], ['literal', GEOMETRY_TYPES.POINT]],
     ['!', ['has', 'point_count']],
   ];
+  const progressBuckets = getFeatureProgressBuckets(featureCollection);
+  const hasAllProgressIcons = (markerImageBaseId) =>
+    progressBuckets.every((bucket) => map.hasImage(getProgressIconImageId(markerImageBaseId, bucket)));
 
   // Clean up legacy split point layers so only one symbol layer remains.
   [`${sourceId}-circle`, `${sourceId}-icon`, `${sourceId}-label`].forEach((legacyLayerId) => {
@@ -566,14 +676,16 @@ export function addOrUpdateSubcategoryLayer(
     map.setPaintProperty(clusterLayerId, 'circle-color', color);
   }
 
-  const ensurePointLayer = (markerImageId) => {
+  const ensurePointLayer = (markerImageBaseId) => {
+    const iconImageExpression = buildProgressIconExpression(markerImageBaseId, progressBuckets);
+
     ensureLayer(map, {
       id: pointLayerId,
       type: 'symbol',
       source: sourceId,
       filter: pointFilter,
       layout: {
-        'icon-image': markerImageId,
+        'icon-image': iconImageExpression,
         // Icon bitmap is normalized from constants in the marker SVG generator.
         'icon-size': POINT_ICON_SIZE_BY_ZOOM,
         'icon-allow-overlap': true,
@@ -596,7 +708,7 @@ export function addOrUpdateSubcategoryLayer(
     });
 
     if (map.getLayer(pointLayerId)) {
-      map.setLayoutProperty(pointLayerId, 'icon-image', markerImageId);
+      map.setLayoutProperty(pointLayerId, 'icon-image', iconImageExpression);
       map.setPaintProperty(pointLayerId, 'icon-opacity', POINT_ICON_OPACITY);
       map.setPaintProperty(pointLayerId, 'text-opacity', POINT_TEXT_OPACITY);
       map.moveLayer(pointLayerId);
@@ -604,38 +716,41 @@ export function addOrUpdateSubcategoryLayer(
   };
 
   const ensureFallbackPointLayer = () => {
-    if (map.hasImage(fallbackMarkerImageId)) {
-      ensurePointLayer(fallbackMarkerImageId);
+    if (hasAllProgressIcons(fallbackMarkerImageBaseId)) {
+      ensurePointLayer(fallbackMarkerImageBaseId);
       return;
     }
 
-    loadDefaultMarkerImage(color, (loadedImage, loadError) => {
-      if (!map.getSource(sourceId)) return;
+    loadDefaultProgressMarkerImages(
+      map,
+      color,
+      fallbackMarkerImageBaseId,
+      progressBuckets,
+      (loadError) => {
+        if (!map.getSource(sourceId)) return;
 
-      if (loadError || !loadedImage) {
-        console.warn('[MapHelper] Failed to render fallback marker image', {
-          sourceId,
-          markerImageId: fallbackMarkerImageId,
-          error: loadError,
-        });
-        return;
-      }
+        if (loadError) {
+          console.warn('[MapHelper] Failed to render fallback marker image', {
+            sourceId,
+            markerImageBaseId: fallbackMarkerImageBaseId,
+            error: loadError,
+          });
+          return;
+        }
 
-      if (!map.hasImage(fallbackMarkerImageId)) {
-        map.addImage(fallbackMarkerImageId, loadedImage);
+        ensurePointLayer(fallbackMarkerImageBaseId);
       }
-      ensurePointLayer(fallbackMarkerImageId);
-    });
+    );
   };
 
   if (iconUrl && iconImageId) {
-    if (map.hasImage(iconImageId)) {
+    if (hasAllProgressIcons(iconImageId)) {
       ensurePointLayer(iconImageId);
     } else {
-      loadMapIconImage(map, iconUrl, color, (loadedImage, loadError) => {
+      loadMapIconProgressImages(map, iconUrl, color, iconImageId, progressBuckets, (loadError) => {
         if (!map.getSource(sourceId)) return;
 
-        if (loadError || !loadedImage) {
+        if (loadError) {
           console.warn('[MapHelper] Failed to load subcategory icon image', {
             sourceId,
             iconUrl,
@@ -646,9 +761,6 @@ export function addOrUpdateSubcategoryLayer(
           return;
         }
 
-        if (!map.hasImage(iconImageId)) {
-          map.addImage(iconImageId, loadedImage);
-        }
         ensurePointLayer(iconImageId);
       });
     }

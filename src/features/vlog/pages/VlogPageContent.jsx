@@ -115,7 +115,7 @@ export default function VlogPage() {
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center" />
               <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/85 to-white/75" />
               <CardContent className="relative px-6 py-8 sm:px-8 sm:py-9">
-                <span className="inline-flex rounded-full bg-pink-100 px-3 py-1 text-xs font-semibold text-pink-700">
+                <span className="inline-flex rounded-full bg-pink-100 px-3 py-1 text-sm font-semibold text-pink-700">
                   Không gian cộng đồng cho trải nghiệm du lịch, ảnh đẹp và chia sẻ hành trình
                 </span>
                 <h1 className="text-foreground mt-4 max-w-4xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
@@ -150,15 +150,15 @@ export default function VlogPage() {
                 <div className="mt-6 grid gap-2 sm:grid-cols-3">
                   <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
                     <p className="text-2xl font-bold">1.240</p>
-                    <p className="text-muted-foreground text-xs font-medium">Bài viết đã chia sẻ</p>
+                    <p className="text-muted-foreground text-sm font-medium">Bài viết đã chia sẻ</p>
                   </div>
                   <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
                     <p className="text-2xl font-bold">286</p>
-                    <p className="text-muted-foreground text-xs font-medium">Video ngắn du lịch</p>
+                    <p className="text-muted-foreground text-sm font-medium">Video ngắn du lịch</p>
                   </div>
                   <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
                     <p className="text-2xl font-bold">18,5K</p>
-                    <p className="text-muted-foreground text-xs font-medium">
+                    <p className="text-muted-foreground text-sm font-medium">
                       Lượt tương tác tuần này
                     </p>
                   </div>
@@ -179,7 +179,7 @@ export default function VlogPage() {
               <CardContent className="space-y-3 px-5 py-5">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-xs font-semibold">Tiêu đề</label>
+                    <label className="text-muted-foreground text-sm font-semibold">Tiêu đề</label>
                     <Input
                       value={newTitle}
                       onChange={(event) => setNewTitle(event.target.value)}
@@ -188,7 +188,7 @@ export default function VlogPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-xs font-semibold">
+                    <label className="text-muted-foreground text-sm font-semibold">
                       Gắn thẻ địa điểm
                     </label>
                     <Select value={newPlace} onValueChange={setNewPlace}>
@@ -207,7 +207,7 @@ export default function VlogPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-muted-foreground text-xs font-semibold">
+                  <label className="text-muted-foreground text-sm font-semibold">
                     Nội dung ngắn
                   </label>
                   <Textarea
@@ -222,7 +222,7 @@ export default function VlogPage() {
                   {['📷 Ảnh', '🎥 Video', '📍 Địa điểm', '🏷 Hashtag'].map((chip) => (
                     <span
                       key={chip}
-                      className="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700"
+                      className="rounded-full bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-700"
                     >
                       {chip}
                     </span>
@@ -246,7 +246,7 @@ export default function VlogPage() {
 
                 <div className="grid gap-3 lg:grid-cols-[2fr_1fr_1fr_auto]">
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-xs font-semibold">Từ khóa</label>
+                    <label className="text-muted-foreground text-sm font-semibold">Từ khóa</label>
                     <div className="relative">
                       <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                       <Input
@@ -259,7 +259,7 @@ export default function VlogPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-xs font-semibold">
+                    <label className="text-muted-foreground text-sm font-semibold">
                       Loại nội dung
                     </label>
                     <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -277,7 +277,7 @@ export default function VlogPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-xs font-semibold">Địa điểm</label>
+                    <label className="text-muted-foreground text-sm font-semibold">Địa điểm</label>
                     <Select value={placeFilter} onValueChange={setPlaceFilter}>
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue />
@@ -351,7 +351,7 @@ export default function VlogPage() {
                           e.target.src = placeholderImg;
                         }}
                       />
-                      <span className="absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold">
+                      <span className="absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-sm font-semibold">
                         {item.type} · {item.place}
                       </span>
                       <div className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90">
@@ -363,7 +363,7 @@ export default function VlogPage() {
                       </div>
                     </div>
                     <CardContent className="space-y-2 px-4 py-4">
-                      <div className="text-muted-foreground flex items-center justify-between text-xs font-semibold">
+                      <div className="text-muted-foreground flex items-center justify-between text-sm font-semibold">
                         <span>{item.author}</span>
                         <span>{item.dateLabel}</span>
                       </div>
@@ -373,7 +373,7 @@ export default function VlogPage() {
                       </p>
 
                       <div className="flex items-center justify-between">
-                        <div className="text-muted-foreground flex items-center gap-3 text-xs font-semibold">
+                        <div className="text-muted-foreground flex items-center gap-3 text-sm font-semibold">
                           <span className="inline-flex items-center gap-1">
                             <Heart className="h-3.5 w-3.5" /> {item.likes}
                           </span>

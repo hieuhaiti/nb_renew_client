@@ -34,12 +34,12 @@ export function TourDetailHero({ imageSrc, title, subtitle, tags, totalImages, t
           {title}
         </h1>
 
-        <p className="text-primary-foreground/75 mt-1 truncate text-xs" title={subtitle}>
+        <p className="text-primary-foreground/75 mt-1 truncate text-sm" title={subtitle}>
           {subtitle || t('tourPage.locationPending', 'Đang cập nhật vị trí')}
         </p>
       </div>
 
-      <div className="bg-primary/70 text-primary-foreground absolute right-3 bottom-3 flex items-center gap-1 rounded-[12px] px-2 py-1 text-xs">
+      <div className="bg-primary/70 text-primary-foreground absolute right-3 bottom-3 flex items-center gap-1 rounded-[12px] px-2 py-1 text-sm">
         <Camera className="h-3 w-3" />
         {totalImages}
       </div>

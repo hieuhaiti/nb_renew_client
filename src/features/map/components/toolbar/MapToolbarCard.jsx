@@ -474,7 +474,7 @@ export default function MapToolbarCard({
                                 {item.name}
                               </p>
                               <p
-                                className="text-muted-foreground truncate text-xs"
+                                className="text-muted-foreground truncate text-sm"
                                 title={item.address}
                               >
                                 {item.address ||
@@ -571,9 +571,9 @@ export default function MapToolbarCard({
                           onClick={() => handleStartSuggestionClick(suggestion)}
                           title={suggestion.placeName}
                         >
-                          <p className="truncate text-xs font-semibold">{suggestion.placeName}</p>
+                          <p className="truncate text-sm font-semibold">{suggestion.placeName}</p>
                           {suggestion.address ? (
-                            <p className="text-muted-foreground truncate text-xs">
+                            <p className="text-muted-foreground truncate text-sm">
                               {suggestion.address}
                             </p>
                           ) : null}
@@ -621,9 +621,9 @@ export default function MapToolbarCard({
                           onClick={() => handleEndSuggestionClick(suggestion)}
                           title={suggestion.placeName}
                         >
-                          <p className="truncate text-xs font-semibold">{suggestion.placeName}</p>
+                          <p className="truncate text-sm font-semibold">{suggestion.placeName}</p>
                           {suggestion.address ? (
-                            <p className="text-muted-foreground truncate text-xs">
+                            <p className="text-muted-foreground truncate text-sm">
                               {suggestion.address}
                             </p>
                           ) : null}
@@ -667,7 +667,7 @@ export default function MapToolbarCard({
                       type="button"
                       variant={canCalculateRoute ? 'default' : 'outline'}
                       disabled={!canCalculateRoute}
-                      className="h-10 w-full min-w-0 gap-1.5 rounded-xl px-2.5 text-xs font-semibold"
+                      className="h-10 w-full min-w-0 gap-1.5 rounded-xl px-2.5 text-sm font-semibold"
                       onClick={handleCalculateRoute}
                     >
                       <Search className="h-3.5 w-3.5" />
@@ -677,7 +677,7 @@ export default function MapToolbarCard({
                     </Button>
                   </span>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-64 text-xs">
+                <TooltipContent side="top" className="max-w-64 text-sm">
                   {calculateRouteTooltip}
                 </TooltipContent>
               </Tooltip>
@@ -689,7 +689,7 @@ export default function MapToolbarCard({
                       type="button"
                       variant={hasDirections ? 'destructive' : 'outline'}
                       disabled={!hasDirections}
-                      className="h-10 w-full min-w-0 gap-1.5 rounded-xl px-2.5 text-xs font-semibold"
+                      className="h-10 w-full min-w-0 gap-1.5 rounded-xl px-2.5 text-sm font-semibold"
                       onClick={handleClearRoute}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -699,7 +699,7 @@ export default function MapToolbarCard({
                     </Button>
                   </span>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-64 text-xs">
+                <TooltipContent side="top" className="max-w-64 text-sm">
                   {clearRouteTooltip}
                 </TooltipContent>
               </Tooltip>

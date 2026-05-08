@@ -22,7 +22,7 @@ export function TourismDetailHero({ imageSrc, title, subtitle, tags, totalImages
           {tags.map((tag) => (
             <span
               key={tag}
-              className="border-primary-foreground/30 bg-primary/70 text-primary-foreground rounded-[12px] border px-2.5 py-0.5 text-xs font-medium"
+              className="border-primary-foreground/30 bg-primary/70 text-primary-foreground rounded-[12px] border px-2.5 py-0.5 text-sm font-medium"
               title={tag}
             >
               {tag}
@@ -34,12 +34,12 @@ export function TourismDetailHero({ imageSrc, title, subtitle, tags, totalImages
           {title}
         </h1>
 
-        <p className="text-primary-foreground/75 mt-1 truncate text-xs" title={subtitle}>
+        <p className="text-primary-foreground/75 mt-1 truncate text-sm" title={subtitle}>
           {subtitle || t('tourism.location_pending', 'Äang cập nhật vị trí')}
         </p>
       </div>
 
-      <div className="bg-primary/70 text-primary-foreground absolute right-3 bottom-3 flex items-center gap-1 rounded-[12px] px-2 py-1 text-xs">
+      <div className="bg-primary/70 text-primary-foreground absolute right-3 bottom-3 flex items-center gap-1 rounded-[12px] px-2 py-1 text-sm">
         <Camera className="h-3 w-3" />
         {totalImages}
       </div>

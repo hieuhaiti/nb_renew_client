@@ -223,7 +223,7 @@ export default function TourPanel() {
           <p className="text-foreground text-sm font-semibold">
             {t('mapPage.tourPanel.title', { defaultValue: 'Tour du lịch' })}
           </p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             {isFetching
               ? t('mapPage.tourPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
               : t('mapPage.tourPanel.count', {
@@ -236,7 +236,7 @@ export default function TourPanel() {
           type="button"
           size="sm"
           variant="ghost"
-          className="h-7 text-xs"
+          className="h-7 text-sm"
           onClick={resetTourPanelFilters}
         >
           {t('mapPage.tourPanel.reset', { defaultValue: 'Đặt lại' })}
@@ -249,7 +249,7 @@ export default function TourPanel() {
             type="button"
             size="sm"
             variant="outline"
-            className="h-8 text-xs"
+            className="h-8 text-sm"
             onClick={() => setShowOnlyHighlightedRoute(!showOnlyHighlightedRoute)}
           >
             <Eye className="h-3.5 w-3.5" />
@@ -265,7 +265,7 @@ export default function TourPanel() {
             type="button"
             size="sm"
             variant="outline"
-            className="h-8 text-xs"
+            className="h-8 text-sm"
             onClick={() => {
               clearHighlightedRoute();
               toast.info(
@@ -377,20 +377,20 @@ export default function TourPanel() {
                     )}
                   </div>
 
-                  <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
+                  <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
                     <Clock3 className="h-3.5 w-3.5 shrink-0" />
                     {formatTourDurationLabel(tour, t)}
                   </p>
 
                   <p
-                    className="text-muted-foreground line-clamp-3 text-xs"
+                    className="text-muted-foreground line-clamp-3 text-sm"
                     title={tour.description || ''}
                   >
                     {tour.description ||
                       t('tourPage.noDescription', { defaultValue: 'No description' })}
                   </p>
 
-                  <div className="text-foreground text-xs font-semibold">
+                  <div className="text-foreground text-sm font-semibold">
                     {formatTourPriceLabel(tour, locale)}
                   </div>
                 </div>
@@ -399,7 +399,7 @@ export default function TourPanel() {
                   <Button
                     type="button"
                     size="sm"
-                    className="h-8 text-xs"
+                    className="h-8 text-sm"
                     disabled={isRouteLoading}
                     onClick={() => handleOpenTourRoute(tour)}
                   >
@@ -412,7 +412,7 @@ export default function TourPanel() {
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="h-8 text-xs"
+                    className="h-8 text-sm"
                     onClick={() => navigate(`/tour/${tour.slug}`)}
                   >
                     {t('tourismPointPage.view_detail', { defaultValue: 'Xem chi tiết' })}

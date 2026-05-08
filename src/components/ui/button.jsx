@@ -12,6 +12,10 @@ const buttonVariants = cva(
         default: 'bg-primary text-primary-foreground hover:bg-(--primary-hover)',
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-(--destructive-hover) focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40',
+        tertiary: 'bg-tertiary text-tertiary-foreground hover:bg-(--tertiary-hover)',
+        quaternary: 'bg-quaternary text-quaternary-foreground hover:bg-(--quaternary-hover)',
+        quinary: 'bg-quinary text-quinary-foreground hover:bg-(--quinary-hover)',
+        gold: 'bg-gold text-gold-foreground hover:bg-(--gold-hover)',
         outline:
           'border bg-background text-foreground shadow-xs hover:bg-(--surface-hover) hover:text-primary dark:border-input dark:bg-input/30 dark:hover:bg-(--surface-hover)',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-(--secondary-hover)',
@@ -20,7 +24,7 @@ const buttonVariants = cva(
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
-        xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
+        xs: "h-6 gap-1 rounded-md px-2 text-sm has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm: 'h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5',
         lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
         icon: 'size-9',

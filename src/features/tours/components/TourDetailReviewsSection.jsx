@@ -32,15 +32,15 @@ export function TourDetailReviewsSection({
 
       {reviewId && (
         <div className="border-border bg-muted mb-3 rounded-[8px] border-[0.5px] px-3 py-2">
-          <h3 className="text-foreground text-xs font-medium">
+          <h3 className="text-foreground text-sm font-medium">
             {t('tourPage.review', 'Đánh giá')} #{singleReview?.id || reviewId}
           </h3>
           {singleReview ? (
-            <div className="text-muted-foreground mt-1 text-xs">
+            <div className="text-muted-foreground mt-1 text-sm">
               {singleReview.comment || t('tourPage.noComment', 'Không có nội dung')}
             </div>
           ) : (
-            <div className="text-muted-foreground mt-1 text-xs">
+            <div className="text-muted-foreground mt-1 text-sm">
               {t('tourPage.reviewNotFound', 'Không tìm thấy đánh giá')}
             </div>
           )}
@@ -64,7 +64,7 @@ export function TourDetailReviewsSection({
               />
             ))}
           </div>
-          <div className="text-muted-foreground mt-1 text-xs">
+          <div className="text-muted-foreground mt-1 text-sm">
             {totalReviews} {t('tourPage.reviewsCount', 'lượt đánh giá')}
           </div>
         </div>
@@ -76,7 +76,7 @@ export function TourDetailReviewsSection({
             return (
               <div
                 key={`bar-${score}`}
-                className="text-muted-foreground flex items-center gap-2 text-xs"
+                className="text-muted-foreground flex items-center gap-2 text-sm"
               >
                 <span className="w-4 text-right">{score}</span>
                 <div className="bg-muted h-1.25 flex-1 overflow-hidden rounded-[3px]">
@@ -101,7 +101,7 @@ export function TourDetailReviewsSection({
           reviews.map((r) => (
             <article key={r.id} className="bg-card border-border rounded-[8px] border-[0.5px] p-3">
               <div className="flex items-start gap-2.5">
-                <div className="bg-primary-foreground text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-medium">
+                <div className="bg-primary-foreground text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-medium">
                   {((r.user_name || r.user?.name || r.author || 'K') + '').charAt(0).toUpperCase()}
                 </div>
 
@@ -109,7 +109,7 @@ export function TourDetailReviewsSection({
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex min-w-0 items-center gap-2">
                       <span
-                        className="text-foreground truncate text-xs font-medium"
+                        className="text-foreground truncate text-sm font-medium"
                         title={
                           r.user_name || r.user?.name || r.author || t('tourPage.guest', 'Khách')
                         }
@@ -129,12 +129,12 @@ export function TourDetailReviewsSection({
                         ))}
                       </div>
                     </div>
-                    <span className="text-muted-foreground text-xs">
+                    <span className="text-muted-foreground text-sm">
                       {new Date(r.created_at || r.createdAt || r.date).toLocaleDateString()}
                     </span>
                   </div>
 
-                  <p className="text-muted-foreground mt-1 text-xs">
+                  <p className="text-muted-foreground mt-1 text-sm">
                     {r.comment ||
                       r.body ||
                       r.content ||
@@ -164,7 +164,7 @@ export function TourDetailReviewsSection({
                         key={`${r.id}-${metric.label}`}
                         className="bg-muted flex items-center justify-between rounded-[6px] px-2 py-1"
                       >
-                        <span className="text-muted-foreground text-xs">{metric.label}</span>
+                        <span className="text-muted-foreground text-sm">{metric.label}</span>
                         <div className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, miniIdx) => (
                             <Star
@@ -185,14 +185,14 @@ export function TourDetailReviewsSection({
             </article>
           ))
         ) : (
-          <div className="text-muted-foreground border-border bg-muted rounded-[8px] border-[0.5px] px-3 py-4 text-xs">
+          <div className="text-muted-foreground border-border bg-muted rounded-[8px] border-[0.5px] px-3 py-4 text-sm">
             {t('tourPage.noReviews', 'Chưa có đánh giá nào.')}
           </div>
         )}
       </div>
 
       <div className="mb-1 flex items-center justify-between">
-        <span className="text-muted-foreground text-xs">
+        <span className="text-muted-foreground text-sm">
           {t('tourPage.page', 'Trang')} {pageDisplay} / {pagesDisplay}
         </span>
         <div className="flex items-center gap-1.5">
@@ -201,7 +201,7 @@ export function TourDetailReviewsSection({
             size="sm"
             disabled={reviewPage <= 1}
             onClick={onPrevPage}
-            className="bg-card border-border hover:bg-muted h-7 border-[0.5px] px-2.5 text-xs"
+            className="bg-card border-border hover:bg-muted h-7 border-[0.5px] px-2.5 text-sm"
           >
             {t('common.prev', 'Trước')}
           </Button>
@@ -210,7 +210,7 @@ export function TourDetailReviewsSection({
             size="sm"
             disabled={reviewPage >= pagesDisplay}
             onClick={onNextPage}
-            className="bg-card border-border hover:bg-muted h-7 border-[0.5px] px-2.5 text-xs"
+            className="bg-card border-border hover:bg-muted h-7 border-[0.5px] px-2.5 text-sm"
           >
             {t('common.next', 'Sau')}
           </Button>
@@ -218,12 +218,12 @@ export function TourDetailReviewsSection({
       </div>
 
       <div className="border-muted mt-4 border-t-[0.5px] pt-4">
-        <h3 className="text-foreground mb-3 text-xs font-medium">
+        <h3 className="text-foreground mb-3 text-sm font-medium">
           {t('tourPage.leaveReview', 'Viết đánh giá của bạn')}
         </h3>
 
         <div className="mb-3">
-          <div className="text-muted-foreground mb-1 block text-xs">
+          <div className="text-muted-foreground mb-1 block text-sm">
             {t('tourPage.starCount', 'Điểm sao tổng (tự tính)')}
           </div>
           <div className="flex items-center gap-2">
@@ -237,7 +237,7 @@ export function TourDetailReviewsSection({
                 }`}
               />
             ))}
-            <span className="text-muted-foreground text-xs">
+            <span className="text-muted-foreground text-sm">
               {newRating ? `${newRating}/5` : t('tourPage.noRating', 'Chưa có đánh giá')}
             </span>
           </div>
@@ -249,7 +249,7 @@ export function TourDetailReviewsSection({
               key={criterion.key}
               className="bg-muted flex items-center justify-between rounded-[6px] px-2 py-1.5"
             >
-              <span className="text-muted-foreground text-xs">{criterion.label}</span>
+              <span className="text-muted-foreground text-sm">{criterion.label}</span>
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, idx) => (
                   <Button
@@ -275,7 +275,7 @@ export function TourDetailReviewsSection({
         </div>
 
         <div className="mt-3">
-          <label htmlFor="tour-review-comment" className="text-muted-foreground mb-1 block text-xs">
+          <label htmlFor="tour-review-comment" className="text-muted-foreground mb-1 block text-sm">
             {t('tourPage.comment', 'Nội dung đánh giá')}
           </label>
           <Textarea
@@ -287,7 +287,7 @@ export function TourDetailReviewsSection({
               'tourPage.leave_comment_placeholder',
               'Chia sẻ trải nghiệm, cảm nhận của bạn về tour này...'
             )}
-            className="border-border bg-muted h-16 min-h-16 resize-none border-[0.5px] text-xs"
+            className="border-border bg-muted h-16 min-h-16 resize-none border-[0.5px] text-sm"
           />
         </div>
 
@@ -295,7 +295,7 @@ export function TourDetailReviewsSection({
           <Button
             variant="outline"
             onClick={onResetForm}
-            className="h-8 rounded-[7px] px-3 text-xs"
+            className="h-8 rounded-[7px] px-3 text-sm"
           >
             {t('tourPage.cancel', 'Huỷ')}
           </Button>
@@ -303,7 +303,7 @@ export function TourDetailReviewsSection({
             variant="default"
             onClick={onCreateReview}
             disabled={isSubmitting}
-            className="h-8 rounded-[7px] px-3 text-xs disabled:opacity-70"
+            className="h-8 rounded-[7px] px-3 text-sm disabled:opacity-70"
           >
             {isSubmitting ? t('tourPage.sending', 'Đang gửi...') : t('tourPage.sendReview', 'Gửi')}
           </Button>

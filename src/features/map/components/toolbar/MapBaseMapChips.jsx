@@ -67,7 +67,7 @@ export default function MapBaseMapChips({ className }) {
 
   return (
     <div className={`flex min-w-0 flex-wrap items-center gap-3 xl:flex-1 ${className ?? ''}`}>
-      <span className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-xs font-medium">
+      <span className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-sm font-medium">
         <Layers size={13} />
         {t('mapPage.toolbar.baseMap', { defaultValue: 'Base map' })}
       </span>
@@ -92,7 +92,7 @@ export default function MapBaseMapChips({ className }) {
                     {t(item.nameKey)}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="text-xs">
+                <TooltipContent side="bottom" className="text-sm">
                   {t(item.descKey)}
                 </TooltipContent>
               </Tooltip>

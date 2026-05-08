@@ -11,6 +11,7 @@ import {
   MapPin,
   MapPinned,
   Search,
+  Sparkles,
   Sun,
   Wind,
   X,
@@ -63,7 +64,7 @@ function SectionHeader({ eyebrow, title, description }) {
   return (
     <div className="mb-5">
       <div>
-        <p className="text-primary mb-1 text-xs font-semibold tracking-widest uppercase">
+        <p className="text-primary mb-1 text-sm font-semibold tracking-widest uppercase">
           {eyebrow}
         </p>
         <h2 className="text-foreground text-2xl font-bold sm:text-3xl">{title}</h2>
@@ -168,9 +169,10 @@ export default function HomePage() {
       name: s.name,
       subtitle: s.category_name || '',
       description: s.description || '',
-      image: (s.primary_image || s.primary_image_url)
-        ? withBaseUrl(s.primary_image || s.primary_image_url)
-        : '',
+      image:
+        s.primary_image || s.primary_image_url
+          ? withBaseUrl(s.primary_image || s.primary_image_url)
+          : '',
       province: s.province_name || s.address || '',
       rating: s.rating_avg ? parseFloat(s.rating_avg).toFixed(1) : null,
     }));
@@ -239,7 +241,7 @@ export default function HomePage() {
 
   return (
     <RootLayout>
-      <div className="bg-background space-y-7 px-0 py-4 lg:py-6">
+      <div className="bg-background space-y-7 py-4 lg:px-30 lg:py-6">
         <section className="w-full">
           <div className={sectionContainerClass}>
             <div className="grid gap-4 lg:grid-cols-5">
@@ -253,18 +255,18 @@ export default function HomePage() {
                   aria-hidden="true"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-linear-to-r from-slate-950/55 via-slate-900/35 to-slate-900/15" />
+                <div className="absolute inset-0 bg-linear-to-r from-black/55 via-black/35 to-black/15" />
 
                 <div className="relative z-10 flex h-full flex-col justify-between p-6 sm:p-8">
                   <div>
-                    <span className="bg-primary/20 text-primary-foreground inline-flex rounded-full px-3 py-1 text-xs font-semibold">
+                    <span className="bg-primary/20 text-primary-foreground inline-flex rounded-full px-3 py-1 text-sm font-semibold">
                       Cổng thông tin du lịch tích hợp bản đồ GIS, thời tiết, VR360 và gợi ý hành
                       trình
                     </span>
-                    <h1 className="mt-4 max-w-3xl text-3xl leading-tight font-extrabold text-white sm:text-4xl lg:text-5xl">
+                    <h1 className="dark text-foreground mt-4 max-w-3xl text-3xl leading-tight font-extrabold sm:text-4xl lg:text-5xl">
                       Khám phá điểm đến đẹp hơn, trực quan hơn và dễ chọn hành trình hơn.
                     </h1>
-                    <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/85 sm:text-base">
+                    <p className="dark text-foreground/85 mt-3 max-w-3xl text-sm leading-relaxed sm:text-base">
                       Trang chủ được tinh gọn theo hướng sáng, rõ và giàu thông tin thực tế: điểm
                       đến, sự kiện, tour, ẩm thực và nội dung cộng đồng.
                     </p>
@@ -283,7 +285,7 @@ export default function HomePage() {
                       <Button
                         variant="outline"
                         onClick={() => navigate('/tourism-point')}
-                        className="rounded-xl border-white/50 bg-white/20 text-white hover:bg-white/30"
+                        className="dark text-foreground rounded-xl border-white/50 bg-white/20 hover:bg-white/30"
                       >
                         Xem điểm nổi bật
                       </Button>
@@ -291,8 +293,8 @@ export default function HomePage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="relative rounded-xl border border-white/40 bg-white/90 p-2.5">
-                      <label className="text-muted-foreground block text-xs font-semibold">
+                    <div className="relative rounded-xl border border-(--glass-border-strong) bg-(--glass-bg-strong) p-2.5">
+                      <label className="text-muted-foreground block text-sm font-semibold">
                         Tìm kiếm điểm đến, dịch vụ, sự kiện...
                       </label>
                       <Search className="text-muted-foreground pointer-events-none absolute top-[30px] left-2.5 h-3.5 w-3.5" />
@@ -306,7 +308,7 @@ export default function HomePage() {
                           }, 120);
                         }}
                         placeholder="Ví dụ: Tràng An, Hoa Lư, Bái Đính..."
-                        className="mt-1 h-auto w-full border-0 bg-transparent py-0 pr-7 pl-6 text-sm text-slate-800 shadow-none focus-visible:ring-0"
+                        className="text-foreground mt-1 h-auto w-full border-0 bg-transparent py-0 pr-7 pl-6 text-sm shadow-none focus-visible:ring-0"
                       />
                       {keyword ? (
                         <Button
@@ -357,7 +359,7 @@ export default function HomePage() {
                                       {item.name}
                                     </p>
                                     <p
-                                      className="text-muted-foreground truncate text-xs"
+                                      className="text-muted-foreground truncate text-sm"
                                       title={item.address}
                                     >
                                       {item.address ||
@@ -376,15 +378,40 @@ export default function HomePage() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                      {HERO_STATS.map((stat) => (
-                        <div
-                          key={stat.label}
-                          className="rounded-2xl border border-white/30 bg-white/85 p-3"
-                        >
-                          <p className="text-xs text-slate-500">{stat.label}</p>
-                          <p className="mt-1 text-lg font-bold text-slate-900">{stat.value}</p>
-                        </div>
-                      ))}
+                      {HERO_STATS.map((stat, i) => {
+                        const statColors = [
+                          {
+                            bg: 'bg-primary border-primary/60',
+                            label: 'text-primary-foreground/75',
+                            value: 'text-primary-foreground',
+                          },
+                          {
+                            bg: 'bg-secondary border-secondary/60',
+                            label: 'text-secondary-foreground/75',
+                            value: 'text-secondary-foreground',
+                          },
+                          {
+                            bg: 'bg-tertiary border-tertiary/60',
+                            label: 'text-tertiary-foreground/75',
+                            value: 'text-tertiary-foreground',
+                          },
+                          {
+                            bg: 'bg-gold border-gold/60',
+                            label: 'text-gold-foreground/75',
+                            value: 'text-gold-foreground',
+                          },
+                        ];
+                        const c = statColors[i % statColors.length];
+                        return (
+                          <div
+                            key={stat.label}
+                            className={`rounded-2xl border ${c.bg} p-3 backdrop-blur-sm`}
+                          >
+                            <p className={`text-sm ${c.label}`}>{stat.label}</p>
+                            <p className={`mt-1 text-lg font-bold ${c.value}`}>{stat.value}</p>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -392,7 +419,7 @@ export default function HomePage() {
 
               <div className="grid gap-4 lg:col-span-2">
                 <div className={`${cardClass} p-5`}>
-                  <p className="text-primary text-xs font-semibold tracking-widest uppercase">
+                  <p className="text-primary text-sm font-semibold tracking-widest uppercase">
                     Thời tiết nhanh
                   </p>
                   <div className="mt-3 flex items-start justify-between">
@@ -409,80 +436,105 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="mt-4 grid gap-2">
-                    <div className="bg-muted/40 flex items-center justify-between rounded-xl px-3 py-2">
-                      <span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
+                    <div className="bg-primary/10 flex items-center justify-between rounded-xl px-3 py-2">
+                      <span className="text-primary/80 inline-flex items-center gap-2 text-sm">
                         <Wind size={14} /> Gió
                       </span>
-                      <strong className="text-sm">
+                      <strong className="text-primary text-sm">
                         {weather ? formatWindSpeedKph(weather?.wind?.speed) : '--'}
                       </strong>
                     </div>
-                    <div className="bg-muted/40 flex items-center justify-between rounded-xl px-3 py-2">
-                      <span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
+                    <div className="bg-gold/10 flex items-center justify-between rounded-xl px-3 py-2">
+                      <span className="text-gold inline-flex items-center gap-2 text-sm opacity-80">
                         <Sun size={14} /> AQI
                       </span>
-                      <strong className="text-sm">
+                      <strong className="text-gold text-sm">
                         {weatherOverview?.aqiValue ?? '--'} · {t(aqiMeta.labelKey)}
                       </strong>
                     </div>
-                    <div className="bg-muted/40 flex items-center justify-between rounded-xl px-3 py-2">
-                      <span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
+                    <div className="bg-secondary/10 flex items-center justify-between rounded-xl px-3 py-2">
+                      <span className="text-secondary inline-flex items-center gap-2 text-sm opacity-80">
                         <CloudRain size={14} /> Độ ẩm
                       </span>
-                      <strong className="text-sm">
+                      <strong className="text-secondary text-sm">
                         {weather ? formatHumidity(weather?.main?.humidity) : '--'}
                       </strong>
                     </div>
                   </div>
                 </div>
 
-                <div className={`${cardClass} p-5`}>
-                  <p className="text-primary text-xs font-semibold tracking-widest uppercase">
-                    Lễ hội theo mùa
-                  </p>
-                  <h3 className="text-foreground mt-2 text-2xl font-bold">
-                    Sự kiện và lễ hội sắp diễn ra
-                  </h3>
-                  <div className="mt-4 grid gap-2">
-                    {heroEvents.map((event) => (
-                      <div
-                        key={`${event.title}-${event.time}`}
-                        className="bg-muted/40 flex items-center justify-between rounded-xl px-3 py-2"
-                      >
-                        <span className="text-sm">{event.title}</span>
-                        <strong className="text-sm">{event.time}</strong>
-                      </div>
-                    ))}
+                <div className={`${cardClass} relative overflow-hidden p-5`}>
+                  <div className="bg-tertiary/20 pointer-events-none absolute -top-8 -right-8 h-28 w-28 animate-pulse rounded-full blur-2xl" />
+                  <div className="bg-gold/20 pointer-events-none absolute -bottom-6 -left-6 h-20 w-20 animate-pulse rounded-full blur-xl" />
+                  <div className="relative">
+                    <div className="flex items-center gap-2">
+                      <Sparkles size={13} className="text-tertiary animate-pulse" />
+                      <p className="text-tertiary text-sm font-semibold tracking-widest uppercase">
+                        Lễ hội theo mùa
+                      </p>
+                      <span className="relative flex h-2 w-2">
+                        <span className="bg-tertiary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+                        <span className="bg-tertiary relative inline-flex h-2 w-2 rounded-full" />
+                      </span>
+                    </div>
+                    <h3 className="text-foreground mt-2 text-2xl font-bold">
+                      Sự kiện và lễ hội sắp diễn ra
+                    </h3>
+                    <div className="mt-4 grid gap-2">
+                      {heroEvents.map((event, i) => {
+                        const eventColors = [
+                          'border-l-4 border-primary/70 bg-primary/10',
+                          'border-l-4 border-secondary/70 bg-secondary/10',
+                          'border-l-4 border-tertiary/70 bg-tertiary/10',
+                        ];
+                        return (
+                          <div
+                            key={`${event.title}-${event.time}`}
+                            className={`${eventColors[i % eventColors.length]} flex flex-col items-start gap-1 rounded-xl px-3 py-2`}
+                          >
+                            <span className="text-sm font-medium">{event.title}</span>
+                            <strong className="text-muted-foreground text-sm">{event.time}</strong>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="border-tertiary/40 text-tertiary hover:bg-tertiary/10 mt-4 w-full rounded-xl"
+                      onClick={() => navigate('/tourism-point')}
+                    >
+                      Xem điểm liên quan
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="mt-4 w-full rounded-xl"
-                    onClick={() => navigate('/tourism-point')}
-                  >
-                    Xem điểm liên quan
-                  </Button>
                 </div>
 
                 <div className={`${cardClass} p-5`}>
-                  <p className="text-primary text-xs font-semibold tracking-widest uppercase">
+                  <p className="text-primary text-sm font-semibold tracking-widest uppercase">
                     Gợi ý nhanh
                   </p>
                   <h3 className="text-foreground mt-2 text-2xl font-bold">
                     Điểm nên xem trước khi đi
                   </h3>
                   <div className="mt-4 grid gap-2">
-                    {featuredSpots.slice(0, 3).map((item) => (
-                      <Button
-                        key={item.id}
-                        type="button"
-                        variant="ghost"
-                        className="bg-muted/40 hover:bg-muted flex h-auto w-full items-center justify-between rounded-xl px-3 py-2 text-left transition-colors"
-                        onClick={() => navigate('/tourism-point')}
-                      >
-                        <span className="text-sm font-medium">{item.name}</span>
-                        <span className="text-primary text-sm font-semibold">Chi tiết</span>
-                      </Button>
-                    ))}
+                    {featuredSpots.slice(0, 3).map((item, i) => {
+                      const detailColors = ['text-primary', 'text-secondary', 'text-tertiary'];
+                      return (
+                        <Button
+                          key={item.id}
+                          type="button"
+                          variant="ghost"
+                          className="bg-muted/40 hover:bg-muted flex h-auto w-full items-center justify-between rounded-xl px-3 py-2 text-left transition-colors"
+                          onClick={() => navigate('/tourism-point')}
+                        >
+                          <span className="text-sm font-medium">{item.name}</span>
+                          <span
+                            className={`${detailColors[i % detailColors.length]} text-sm font-semibold`}
+                          >
+                            Chi tiết
+                          </span>
+                        </Button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -492,14 +544,14 @@ export default function HomePage() {
 
         <section className="w-full">
           <div className={sectionContainerClass}>
-            <div className="border-primary/20 rounded-3xl border bg-linear-to-r from-sky-50 via-amber-50 to-emerald-50 p-5">
+            <div className="border-primary/20 rounded-3xl border bg-linear-to-r from-(--surface-beach) via-(--surface-city) to-(--surface-nature) p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/85 text-white">
+                  <div className="bg-tertiary text-tertiary-foreground flex h-11 w-11 items-center justify-center rounded-xl">
                     <CalendarDays size={20} />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">{PROMO_BANNER.title}</p>
+                    <p className="text-foreground font-bold">{PROMO_BANNER.title}</p>
                     <p className="text-muted-foreground text-sm">{PROMO_BANNER.description}</p>
                   </div>
                 </div>
@@ -520,29 +572,61 @@ export default function HomePage() {
                 description="Thiết kế lại để người dùng vào trang chủ là thấy ngay bản đồ, VR360, lịch trình, dịch vụ và OCOP."
               />
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
-                {QUICK_LINKS.map((item) => (
-                  <Button
-                    key={item.id}
-                    type="button"
-                    variant="ghost"
-                    onClick={() => navigate(item.path)}
-                    className="group bg-card hover:border-primary/40 border-border/70 h-auto flex-col items-start overflow-visible rounded-2xl border p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-                  >
-                    <div className="bg-primary/10 text-primary mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl">
-                      {item.icon === 'map' && <MapPinned size={18} />}
-                      {item.icon === 'vr' && <Compass size={18} />}
-                      {item.icon === 'plan' && <CalendarDays size={18} />}
-                      {item.icon === 'service' && <Sun size={18} />}
-                      {item.icon === 'ocop' && <ArrowRight size={18} />}
-                    </div>
-                    <div className="w-full min-w-0">
-                      <h3 className="text-sm font-bold">{item.title}</h3>
-                      <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed wrap-break-word">
+                {QUICK_LINKS.map((item, i) => {
+                  const qlColors = [
+                    {
+                      iconBg: 'bg-primary/10',
+                      iconText: 'text-primary',
+                      hoverBorder: 'hover:border-primary/40',
+                    },
+                    {
+                      iconBg: 'bg-secondary/10',
+                      iconText: 'text-secondary',
+                      hoverBorder: 'hover:border-secondary/40',
+                    },
+                    {
+                      iconBg: 'bg-tertiary/10',
+                      iconText: 'text-tertiary',
+                      hoverBorder: 'hover:border-tertiary/40',
+                    },
+                    {
+                      iconBg: 'bg-quaternary/10',
+                      iconText: 'text-quaternary',
+                      hoverBorder: 'hover:border-quaternary/40',
+                    },
+                    {
+                      iconBg: 'bg-quinary/10',
+                      iconText: 'text-quinary',
+                      hoverBorder: 'hover:border-quinary/40',
+                    },
+                  ];
+                  const c = qlColors[i % qlColors.length];
+                  return (
+                    <Button
+                      key={item.id}
+                      type="button"
+                      variant="ghost"
+                      onClick={() => navigate(item.path)}
+                      className={`group bg-card ${c.hoverBorder} border-border/70 h-auto flex-col items-start overflow-hidden rounded-2xl border p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md`}
+                    >
+                      <div className="mb-2 flex w-full items-center gap-2.5">
+                        <div
+                          className={`${c.iconBg} ${c.iconText} inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg`}
+                        >
+                          {item.icon === 'map' && <MapPinned size={16} />}
+                          {item.icon === 'vr' && <Compass size={16} />}
+                          {item.icon === 'plan' && <CalendarDays size={16} />}
+                          {item.icon === 'service' && <Sun size={16} />}
+                          {item.icon === 'ocop' && <ArrowRight size={16} />}
+                        </div>
+                        <h3 className="min-w-0 truncate text-sm font-bold">{item.title}</h3>
+                      </div>
+                      <p className="text-muted-foreground line-clamp-2 w-full min-w-0 text-sm leading-relaxed wrap-break-word">
                         {item.description}
                       </p>
-                    </div>
-                  </Button>
-                ))}
+                    </Button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -573,19 +657,19 @@ export default function HomePage() {
                           e.target.src = placeholderImg;
                         }}
                       />
-                      <div className="absolute inset-0 bg-linear-to-t from-slate-900/45 to-transparent" />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/45 to-transparent" />
                       <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                        <span className="rounded-full bg-white/85 px-2 py-1 text-xs font-semibold text-slate-700">
+                        <span className="text-foreground rounded-full bg-(--glass-bg-strong) px-2 py-1 text-sm font-semibold">
                           {item.province}
                         </span>
-                        <span className="rounded-full bg-white/85 px-2 py-1 text-xs font-semibold text-slate-700">
+                        <span className="text-foreground rounded-full bg-(--glass-bg-strong) px-2 py-1 text-sm font-semibold">
                           ⭐ {item.rating}
                         </span>
                       </div>
                     </div>
                     <div className="p-4">
-                      <p className="text-muted-foreground text-xs">{item.subtitle}</p>
-                      <h3 className="mt-1 text-lg font-bold text-slate-900">{item.name}</h3>
+                      <p className="text-muted-foreground text-sm">{item.subtitle}</p>
+                      <h3 className="text-foreground mt-1 text-lg font-bold">{item.name}</h3>
                       <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
                         {item.description}
                       </p>
@@ -630,20 +714,30 @@ export default function HomePage() {
                           src={withBaseUrl(item.thumbnail_url)}
                           alt={item.title}
                           className="h-16 w-16 shrink-0 rounded-lg object-cover"
-                          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = placeholderImg;
+                          }}
                         />
                       )}
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="border-border/70 text-muted-foreground inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold">
+                          <span className="border-border/70 text-muted-foreground inline-flex rounded-full border px-2 py-0.5 text-sm font-semibold">
                             {formatNewsDate(item.published_at || item.created_at)}
                           </span>
                           {item.author_name && (
-                            <span className="text-muted-foreground text-xs">{item.author_name}</span>
+                            <span className="text-muted-foreground text-sm">
+                              {item.author_name}
+                            </span>
                           )}
                         </div>
-                        <h4 className="mt-1 line-clamp-2 text-sm font-bold text-foreground" title={item.title}>{item.title}</h4>
-                        <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed">
+                        <h4
+                          className="text-foreground mt-1 line-clamp-2 text-sm font-bold"
+                          title={item.title}
+                        >
+                          {item.title}
+                        </h4>
+                        <p className="text-muted-foreground mt-1 line-clamp-2 text-sm leading-relaxed">
                           {item.summary}
                         </p>
                       </div>
@@ -654,7 +748,7 @@ export default function HomePage() {
 
               <div className="grid gap-4">
                 <div className={cardClass + ' p-5 sm:p-6'}>
-                  <span className="text-primary text-xs font-semibold tracking-widest uppercase">
+                  <span className="text-primary text-sm font-semibold tracking-widest uppercase">
                     Tour gợi ý
                   </span>
                   {featuredTour?.cover_image_url && (
@@ -663,27 +757,37 @@ export default function HomePage() {
                         src={withBaseUrl(featuredTour.cover_image_url)}
                         alt={featuredTour.name || ''}
                         className="h-full w-full object-cover"
-                        onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                     </div>
                   )}
-                  <h3 className="mt-3 line-clamp-2 text-xl font-bold text-foreground" title={featuredTour?.name}>
+                  <h3
+                    className="text-foreground mt-3 line-clamp-2 text-xl font-bold"
+                    title={featuredTour?.name}
+                  >
                     {featuredTour
-                      ? (featuredTour.name || featuredTour.name_vi || 'Tour gợi ý')
+                      ? featuredTour.name || featuredTour.name_vi || 'Tour gợi ý'
                       : 'Tuyến di sản Ninh Bình 2 ngày'}
                   </h3>
                   {featuredTour?.business_name && (
-                    <p className="text-muted-foreground mt-1 text-xs">{featuredTour.business_name}</p>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      {featuredTour.business_name}
+                    </p>
                   )}
                   <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-relaxed">
                     {featuredTour
-                      ? (featuredTour.description_vi || featuredTour.description_en || '')
+                      ? featuredTour.description_vi || featuredTour.description_en || ''
                       : 'Tràng An → Hoa Lư → Bái Đính → Tam Cốc → Hang Múa. Gợi ý theo logic điều phối tải trọng và thời tiết.'}
                   </p>
                   <div className="mt-4 grid grid-cols-3 gap-2">
                     <div className="border-border/70 bg-muted/40 rounded-xl border p-3">
                       <p className="typo-meta font-bold">
-                        {featuredTour?.duration_days ? `${featuredTour.duration_days} ngày` : '2 ngày'}
+                        {featuredTour?.duration_days
+                          ? `${featuredTour.duration_days} ngày`
+                          : '2 ngày'}
                       </p>
                       <p className="typo-meta text-muted-foreground">lịch trình</p>
                     </div>
@@ -702,7 +806,9 @@ export default function HomePage() {
                           : 'VR360'}
                       </p>
                       <p className="typo-meta text-muted-foreground">
-                        {featuredTour?.rating_count ? `${featuredTour.rating_count} đánh giá` : 'xem trước'}
+                        {featuredTour?.rating_count
+                          ? `${featuredTour.rating_count} đánh giá`
+                          : 'xem trước'}
                       </p>
                     </div>
                   </div>
@@ -712,10 +818,10 @@ export default function HomePage() {
                 </div>
 
                 <div className={cardClass + ' p-5 sm:p-6'}>
-                  <span className="text-primary text-xs font-semibold tracking-widest uppercase">
+                  <span className="text-primary text-sm font-semibold tracking-widest uppercase">
                     Lịch trình cá nhân
                   </span>
-                  <h3 className="mt-2 text-2xl font-bold text-slate-900">
+                  <h3 className="text-foreground mt-2 text-2xl font-bold">
                     Lên kế hoạch chuyến đi trong 30 giây
                   </h3>
                   <div className="mt-4 grid gap-2">
@@ -756,7 +862,7 @@ export default function HomePage() {
                     {FOOD_TAGS.map((tag) => (
                       <span
                         key={tag}
-                        className="border-border/70 text-muted-foreground rounded-full border px-3 py-1 text-xs font-semibold"
+                        className="border-border/70 text-muted-foreground rounded-full border px-3 py-1 text-sm font-semibold"
                       >
                         {tag}
                       </span>
@@ -796,8 +902,13 @@ export default function HomePage() {
                     >
                       <div className="from-primary/15 to-primary/5 flex items-center justify-between gap-3 bg-linear-to-r px-4 py-3">
                         <div className="min-w-0 flex-1">
-                          <p className="typo-badge text-muted-foreground truncate">{voucher.business_name}</p>
-                          <p className="typo-section-title font-bold text-foreground line-clamp-1" title={voucher.title_vi}>
+                          <p className="typo-badge text-muted-foreground truncate">
+                            {voucher.business_name}
+                          </p>
+                          <p
+                            className="typo-section-title text-foreground line-clamp-1 font-bold"
+                            title={voucher.title_vi}
+                          >
                             {voucher.title_vi}
                           </p>
                         </div>
@@ -821,7 +932,9 @@ export default function HomePage() {
                           {voucher.valid_until && (
                             <div className="flex items-center justify-between">
                               <span className="typo-meta text-muted-foreground">Hạn sử dụng</span>
-                              <span className="typo-meta font-semibold">{formatNewsDate(voucher.valid_until)}</span>
+                              <span className="typo-meta font-semibold">
+                                {formatNewsDate(voucher.valid_until)}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -870,13 +983,16 @@ export default function HomePage() {
                       }}
                     />
                     <div className="p-4">
-                      <div className="text-muted-foreground mb-2 flex flex-wrap items-center gap-2 text-xs">
+                      <div className="text-muted-foreground mb-2 flex flex-wrap items-center gap-2 text-sm">
                         <span>{product.province_name || product.province_code || '--'}</span>
                         {product.star_rating && (
                           <span>{'⭐'.repeat(Number(product.star_rating))}</span>
                         )}
                       </div>
-                      <h3 className="text-base font-bold text-foreground" title={product.name_vi || product.name_en}>
+                      <h3
+                        className="text-foreground text-base font-bold"
+                        title={product.name_vi || product.name_en}
+                      >
                         {product.name_vi || product.name_en}
                       </h3>
                       <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-relaxed">
@@ -887,7 +1003,7 @@ export default function HomePage() {
                           {product.price_vnd ? formatVND(Number(product.price_vnd)) : '--'}
                         </span>
                         {product.unit && (
-                          <span className="text-muted-foreground text-xs">/ {product.unit}</span>
+                          <span className="text-muted-foreground text-sm">/ {product.unit}</span>
                         )}
                       </div>
                       <div className="mt-3 flex gap-2">
@@ -936,10 +1052,10 @@ export default function HomePage() {
                       }}
                     />
                     <div className="p-4">
-                      <div className="text-muted-foreground mb-2 text-xs">
+                      <div className="text-muted-foreground mb-2 text-sm">
                         Tác giả: {story.author}
                       </div>
-                      <h3 className="text-base font-bold text-slate-900">{story.title}</h3>
+                      <h3 className="text-foreground text-base font-bold">{story.title}</h3>
                       <p className="text-muted-foreground mt-2 text-sm">{story.description}</p>
                     </div>
                   </article>

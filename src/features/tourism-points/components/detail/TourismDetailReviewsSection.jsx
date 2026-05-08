@@ -57,7 +57,7 @@ export function TourismDetailReviewsSection({
               />
             ))}
           </div>
-          <div className="text-muted-foreground mt-1 text-xs">
+          <div className="text-muted-foreground mt-1 text-sm">
             {totalReviewCount} {t('tourism.reviews_count', 'lượt đánh giá')}
           </div>
         </div>
@@ -69,7 +69,7 @@ export function TourismDetailReviewsSection({
             return (
               <div
                 key={`bar-${score}`}
-                className="text-muted-foreground flex items-center gap-2 text-xs"
+                className="text-muted-foreground flex items-center gap-2 text-sm"
               >
                 <span className="w-4 text-right">{score}</span>
                 <div className="bg-muted h-1.25 flex-1 overflow-hidden rounded-[3px]">
@@ -94,7 +94,7 @@ export function TourismDetailReviewsSection({
           reviews.map((r) => (
             <article key={r.id} className="border-border bg-card rounded-[8px] border-[0.5px] p-3">
               <div className="flex items-start gap-2.5">
-                <div className="bg-primary-foreground text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-medium">
+                <div className="bg-primary-foreground text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-medium">
                   {((r.user_name || r.user?.name || r.author || 'K') + '').charAt(0).toUpperCase()}
                 </div>
 
@@ -102,7 +102,7 @@ export function TourismDetailReviewsSection({
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex min-w-0 items-center gap-2">
                       <span
-                        className="text-foreground truncate text-xs font-medium"
+                        className="text-foreground truncate text-sm font-medium"
                         title={
                           r.user_name || r.user?.name || r.author || t('tourism.anonymous', 'Khách')
                         }
@@ -122,12 +122,12 @@ export function TourismDetailReviewsSection({
                         ))}
                       </div>
                     </div>
-                    <span className="text-muted-foreground text-xs">
+                    <span className="text-muted-foreground text-sm">
                       {new Date(r.created_at || r.createdAt || r.date).toLocaleDateString()}
                     </span>
                   </div>
 
-                  <p className="text-muted-foreground mt-1 text-xs">
+                  <p className="text-muted-foreground mt-1 text-sm">
                     {r.comment ||
                       r.body ||
                       r.content ||
@@ -157,7 +157,7 @@ export function TourismDetailReviewsSection({
                         key={`${r.id}-${metric.label}`}
                         className="bg-muted flex items-center justify-between rounded-[6px] px-2 py-1"
                       >
-                        <span className="text-muted-foreground text-xs">{metric.label}</span>
+                        <span className="text-muted-foreground text-sm">{metric.label}</span>
                         <div className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, miniIdx) => (
                             <Star
@@ -197,7 +197,7 @@ export function TourismDetailReviewsSection({
                         variant="outline"
                         size="xs"
                         onClick={() => onDeleteReview(r.id)}
-                        className="h-6 px-2 text-xs"
+                        className="h-6 px-2 text-sm"
                       >
                         {t('tourism.delete', 'Xoá')}
                       </Button>
@@ -208,14 +208,14 @@ export function TourismDetailReviewsSection({
             </article>
           ))
         ) : (
-          <div className="text-muted-foreground border-border bg-muted rounded-[8px] border-[0.5px] px-3 py-4 text-xs">
+          <div className="text-muted-foreground border-border bg-muted rounded-[8px] border-[0.5px] px-3 py-4 text-sm">
             {t('tourism.no_reviews', 'Chưa có đánh giá nào.')}
           </div>
         )}
       </div>
 
       <div className="mb-1 flex items-center justify-between">
-        <span className="text-muted-foreground text-xs">
+        <span className="text-muted-foreground text-sm">
           {t('tourism.page', 'Trang')} {pageDisplay} / {pagesDisplay}
         </span>
         <div className="flex items-center gap-1.5">
@@ -224,7 +224,7 @@ export function TourismDetailReviewsSection({
             size="sm"
             disabled={reviewPage <= 1}
             onClick={onPrevPage}
-            className="h-7 px-2.5 text-xs"
+            className="h-7 px-2.5 text-sm"
           >
             {t('common.prev', 'Trước')}
           </Button>
@@ -233,7 +233,7 @@ export function TourismDetailReviewsSection({
             size="sm"
             disabled={reviewPage >= pagesDisplay}
             onClick={onNextPage}
-            className="h-7 px-2.5 text-xs"
+            className="h-7 px-2.5 text-sm"
           >
             {t('common.next', 'Sau')}
           </Button>
@@ -241,13 +241,13 @@ export function TourismDetailReviewsSection({
       </div>
 
       <div className="border-muted mt-4 border-t-[0.5px] pt-4">
-        <h3 className="text-foreground mb-3 text-xs font-medium">
+        <h3 className="text-foreground mb-3 text-sm font-medium">
           {t('tourism.write_your_review', 'Viết đánh giá của bạn')}
         </h3>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <label htmlFor="visit-date" className="text-muted-foreground mb-1 block text-xs">
+            <label htmlFor="visit-date" className="text-muted-foreground mb-1 block text-sm">
               {t('tourism.visit_date', 'Ngày tham quan')}
             </label>
             <Input
@@ -255,12 +255,12 @@ export function TourismDetailReviewsSection({
               type="date"
               value={newVisitDate}
               onChange={(e) => onVisitDateChange(e.target.value)}
-              className="border-border bg-muted h-9 border-[0.5px] text-xs"
+              className="border-border bg-muted h-9 border-[0.5px] text-sm"
             />
           </div>
 
           <div>
-            <label className="text-muted-foreground mb-1 block text-xs">
+            <label className="text-muted-foreground mb-1 block text-sm">
               {t('tourism.recommend', 'B?n c? ?? xu?t ??a ?i?m n?y?')}
             </label>
             <div className="border-border bg-card inline-flex rounded-[8px] border-[0.5px] p-1">
@@ -269,7 +269,7 @@ export function TourismDetailReviewsSection({
                 variant={newRecommend ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => onRecommendChange(true)}
-                className="h-7 rounded-[6px] px-3 text-xs"
+                className="h-7 rounded-[6px] px-3 text-sm"
               >
                 <Check className="h-3 w-3" /> {t('common.yes', 'Có')}
               </Button>
@@ -278,7 +278,7 @@ export function TourismDetailReviewsSection({
                 variant={!newRecommend ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => onRecommendChange(false)}
-                className="ml-1 h-7 rounded-[6px] px-3 text-xs"
+                className="ml-1 h-7 rounded-[6px] px-3 text-sm"
               >
                 <X className="h-3 w-3" /> {t('common.no', 'Không')}
               </Button>
@@ -292,7 +292,7 @@ export function TourismDetailReviewsSection({
               key={criterion.key}
               className="bg-muted flex items-center justify-between rounded-[6px] px-2 py-1.5"
             >
-              <span className="text-muted-foreground text-xs">{criterion.label}</span>
+              <span className="text-muted-foreground text-sm">{criterion.label}</span>
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, idx) => (
                   <Button
@@ -320,7 +320,7 @@ export function TourismDetailReviewsSection({
         </div>
 
         <div className="mt-3">
-          <label htmlFor="review-comment" className="text-muted-foreground mb-1 block text-xs">
+          <label htmlFor="review-comment" className="text-muted-foreground mb-1 block text-sm">
             {t('tourism.your_comment', 'Cảm nhận của bạn')}
           </label>
           <Textarea
@@ -332,17 +332,17 @@ export function TourismDetailReviewsSection({
               'tourism.leave_comment_placeholder',
               'Chia sẻ trải nghiệm, cảm nhận của bạn về địa điểm này...'
             )}
-            className="border-border bg-muted h-16 min-h-16 resize-none border-[0.5px] text-xs"
+            className="border-border bg-muted h-16 min-h-16 resize-none border-[0.5px] text-sm"
           />
         </div>
 
         <div className="mt-3">
-          <label htmlFor="review-file-input" className="text-muted-foreground mb-1 block text-xs">
+          <label htmlFor="review-file-input" className="text-muted-foreground mb-1 block text-sm">
             {t('tourism.upload_photos', 'Tải ảnh (tối đa 5 ảnh)')}
           </label>
 
           <div
-            className="text-muted-foreground border-border hover:bg-muted flex h-13 cursor-pointer items-center justify-center gap-2 rounded-[8px] border-[0.5px] border-dashed text-xs transition"
+            className="text-muted-foreground border-border hover:bg-muted flex h-13 cursor-pointer items-center justify-center gap-2 rounded-[8px] border-[0.5px] border-dashed text-sm transition"
             onClick={() => document.getElementById('review-file-input')?.click()}
             role="button"
             tabIndex={0}
@@ -375,7 +375,7 @@ export function TourismDetailReviewsSection({
                     size="icon-xs"
                     variant="ghost"
                     onClick={() => onRemoveFile(i)}
-                    className="bg-card/90 absolute top-1 right-1 h-5 w-5 rounded-full p-0 text-xs opacity-0 group-hover:opacity-100"
+                    className="bg-card/90 absolute top-1 right-1 h-5 w-5 rounded-full p-0 text-sm opacity-0 group-hover:opacity-100"
                   >
                     x
                   </Button>
@@ -386,14 +386,14 @@ export function TourismDetailReviewsSection({
         </div>
 
         <div className="mt-3 flex items-center justify-end gap-2">
-          <Button variant="outline" onClick={onReset} className="h-8 rounded-[7px] px-3 text-xs">
+          <Button variant="outline" onClick={onReset} className="h-8 rounded-[7px] px-3 text-sm">
             {t('tourism.cancel', 'Huỷ')}
           </Button>
           <Button
             variant="default"
             onClick={onSubmit}
             disabled={isSubmitting}
-            className="h-8 rounded-[7px] px-3 text-xs disabled:opacity-70"
+            className="h-8 rounded-[7px] px-3 text-sm disabled:opacity-70"
           >
             {isSubmitting ? t('tourism.sending', 'Äang gửi...') : t('tourism.submit_review', 'Gửi')}
           </Button>

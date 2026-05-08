@@ -15,6 +15,8 @@ const TourismDetailPage = lazy(() => import('@/features/tourism-points/pages/Tou
 const TourPage = lazy(() => import('@/features/tours/pages/TourPage'));
 const TourDetailPage = lazy(() => import('@/features/tours/pages/TourDetailPage'));
 const MapPage = lazy(() => import('@/features/map/pages/MapPage'));
+const FestivalPage = lazy(() => import('@/features/festival/pages/FestivalPage'));
+const FestivalDetailPage = lazy(() => import('@/features/festival/pages/FestivalDetailPage'));
 const OcopPage = lazy(() => import('@/features/ocop/pages/OcopPage'));
 const OcopDetailPage = lazy(() => import('@/features/ocop/pages/OcopDetailPage'));
 const NewsPage = lazy(() => import('@/features/news/pages/NewsPage'));
@@ -50,6 +52,8 @@ export function AppRouter() {
           <Route path="/tour" element={<TourPage />} />
           <Route path="/tour/:slug" element={<TourDetailPage />} />
           <Route path="/map" element={<MapPage />} />
+          <Route path="/festival" element={<FestivalPage />} />
+          <Route path="/festival/:id" element={<FestivalDetailPage />} />
           <Route path="/ocop" element={<OcopPage />} />
           <Route path="/ocop/:id" element={<OcopDetailPage />} />
           <Route path="/news" element={<NewsPage />} />

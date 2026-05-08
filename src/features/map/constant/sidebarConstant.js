@@ -1,7 +1,8 @@
-import { Bot, Calendar, MapPin, Satellite } from 'lucide-react';
+import { Bot, Calendar, MapPin, Satellite, Users } from 'lucide-react';
 import EventPanel from '@/features/map/components/rightSidebar/EventPanel';
 import ChatbotPanel from '@/features/map/components/rightSidebar/ChatbotPanel';
 import TourPanel from '@/features/map/components/rightSidebar/TourPanel';
+import CapacityPanel from '@/features/map/components/rightSidebar/CapacityPanel';
 
 export const headerSidebar = [
   {
@@ -16,6 +17,13 @@ export const headerSidebar = [
     label: 'headerAside.tour',
     value: 'tour',
     component: TourPanel,
+    authen: false,
+  },
+  {
+    icon: Users,
+    label: 'headerAside.capacity',
+    value: 'capacity',
+    component: CapacityPanel,
     authen: false,
   },
   {

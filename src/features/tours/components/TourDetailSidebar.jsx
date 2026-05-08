@@ -7,13 +7,13 @@ export function TourDetailSidebar({ ticketDisplay, subtitle, onOpenMap, onContac
     <aside className="space-y-3 lg:sticky lg:top-4 lg:self-start">
       <section className="bg-primary rounded-[10px] px-4 py-3.5">
         <div className="text-primary-foreground text-xl font-semibold">{ticketDisplay}</div>
-        <p className="text-primary-foreground/70 mt-1 text-xs">{subtitle}</p>
+        <p className="text-primary-foreground/70 mt-1 text-sm">{subtitle}</p>
 
         <div className="mt-3 space-y-2">
           <Button
             onClick={onOpenMap}
             variant="default"
-            className="h-8.5 w-full rounded-[7px] text-xs font-medium"
+            className="h-8.5 w-full rounded-[7px] text-sm font-medium"
           >
             <Map className="h-3.5 w-3.5" />
             {t('tourPage.openMap', 'Xem trên bản đồ')}
@@ -21,7 +21,7 @@ export function TourDetailSidebar({ ticketDisplay, subtitle, onOpenMap, onContac
           <Button
             onClick={onContact}
             variant="outline"
-            className="h-8.5 w-full rounded-[7px] text-xs"
+            className="h-8.5 w-full rounded-[7px] text-sm"
           >
             <Phone className="h-3.5 w-3.5" />
             {t('tourPage.contact', 'Liên hệ tour')}
@@ -41,9 +41,9 @@ export function TourDetailSidebar({ ticketDisplay, subtitle, onOpenMap, onContac
               <span className={`h-1.75 w-1.75 rounded-full ${row.dotClass}`} />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-muted-foreground text-xs uppercase">{row.label}</div>
+              <div className="text-muted-foreground text-sm uppercase">{row.label}</div>
               <div
-                className="text-foreground mt-0.5 truncate text-xs font-medium"
+                className="text-foreground mt-0.5 truncate text-sm font-medium"
                 title={typeof row.value === 'string' ? row.value : undefined}
               >
                 {row.value}

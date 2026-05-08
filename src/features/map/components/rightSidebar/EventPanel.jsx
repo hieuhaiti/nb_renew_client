@@ -164,7 +164,7 @@ export default function EventPanel() {
           <p className="text-foreground text-sm font-semibold">
             {t('mapPage.eventPanel.title', { defaultValue: 'Lễ hội & Sự kiện' })}
           </p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             {isFetching
               ? t('mapPage.eventPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
               : t('mapPage.eventPanel.count', {
@@ -177,7 +177,7 @@ export default function EventPanel() {
           type="button"
           size="sm"
           variant="ghost"
-          className="h-7 text-xs"
+          className="h-7 text-sm"
           onClick={resetFestivalFilters}
         >
           {t('mapPage.eventPanel.reset', { defaultValue: 'Đặt lại' })}
@@ -286,20 +286,20 @@ export default function EventPanel() {
                     )}
                   </div>
 
-                  <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
+                  <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
                     <CalendarDays className="h-3.5 w-3.5 shrink-0" />
                     {formatFestivalDateRange(festival.start_date, festival.end_date, locale)}
                   </p>
 
                   {festival.location_name && (
-                    <p className="text-muted-foreground line-clamp-1 flex items-center gap-1.5 text-xs">
+                    <p className="text-muted-foreground line-clamp-1 flex items-center gap-1.5 text-sm">
                       <MapPin className="h-3.5 w-3.5 shrink-0" />
                       {festival.location_name}
                     </p>
                   )}
 
                   {festival.description ? (
-                    <p className="text-muted-foreground line-clamp-2 text-xs">
+                    <p className="text-muted-foreground line-clamp-2 text-sm">
                       {festival.description}
                     </p>
                   ) : null}
@@ -309,7 +309,7 @@ export default function EventPanel() {
                   <Button
                     type="button"
                     size="sm"
-                    className="h-8 text-xs"
+                    className="h-8 text-sm"
                     onClick={() => handleOpenFestivalOnMap(festival)}
                     disabled={!festival?.id || openingFestivalId != null}
                   >
@@ -324,7 +324,7 @@ export default function EventPanel() {
                       type="button"
                       size="sm"
                       variant="outline"
-                      className="h-8 text-xs"
+                      className="h-8 text-sm"
                       asChild
                     >
                       <a href={festival.website} target="_blank" rel="noopener noreferrer">

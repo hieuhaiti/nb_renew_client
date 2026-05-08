@@ -39,7 +39,7 @@ export const ReviewTextarea = memo(({ onCommentChange, t }) => {
         }`}
         maxLength={500}
       />
-      <div className="mt-1 flex justify-between text-xs">
+      <div className="mt-1 flex justify-between text-sm">
         <span className={`${newComment.length < 10 ? 'text-destructive' : 'text-primary'}`}>
           {t('tourism.min_characters', 'Tối thiểu 10 ký tự')}{' '}
           {newComment.length >= 10

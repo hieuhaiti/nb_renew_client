@@ -37,7 +37,7 @@ export function TourismDetailTopBar({
       </div>
 
       {shareStatus !== 'idle' && (
-        <div className="border-primary/20 text-muted-foreground bg-card mb-3 rounded-[8px] border-[0.5px] px-3 py-1.5 text-xs">
+        <div className="border-primary/20 text-muted-foreground bg-card mb-3 rounded-[8px] border-[0.5px] px-3 py-1.5 text-sm">
           {shareStatus === 'copied'
             ? t('tourism.share.copied', 'Đã sao chép liên kết')
             : t('tourism.share.shared', 'Đã chia sẻ')}

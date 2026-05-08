@@ -99,17 +99,17 @@ export function TourismPointFeaturedCard({
           }}
         />
         <div className="absolute top-4 left-4 flex gap-2">
-          <span className="text-primary-foreground bg-primary/60 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-md">
+          <span className="text-primary-foreground bg-primary/60 rounded-full border px-3 py-1 text-sm font-medium backdrop-blur-md">
             {categoryName}
           </span>
         </div>
       </div>
       <div className="relative flex flex-1 flex-col justify-center p-6 md:p-8">
         <div className="mb-3 flex items-center gap-2">
-          <span className="text-primary-foreground bg-primary rounded border px-2 py-0.5 text-xs font-bold shadow-sm">
+          <span className="text-primary-foreground bg-primary rounded border px-2 py-0.5 text-sm font-bold shadow-sm">
             Mới
           </span>
-          <div className="text-primary flex items-center text-xs font-medium">
+          <div className="text-primary flex items-center text-sm font-medium">
             <Star size={13} className="mr-1 fill-yellow-400 text-yellow-400" />
             {rating ? Number(rating).toFixed(1) : '—'} - {reviewCount}{' '}
             {t('tourismPointPage.reviews', 'đánh giá')}
@@ -206,7 +206,7 @@ export function TourismPointStandardCard({
             {description?.replace(/<[^>]*>?/gm, '') || ''}
           </div>
           <div className="border-border text-primary mt-auto flex items-center justify-between border-t pt-2">
-            <div className="text-muted-foreground flex items-center gap-1.5 text-xs font-medium">
+            <div className="text-muted-foreground flex items-center gap-1.5 text-sm font-medium">
               <MapPin size={12} /> {address.split(',')[0] || ''}
             </div>
             <div className="text-foreground text-sm font-semibold">
@@ -239,7 +239,7 @@ export function TourismPointStandardCard({
         <div className="text-primary pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b to-transparent" />
 
         <div className="absolute top-3 left-3">
-          <span className="text-primary-foreground bg-primary/60 rounded-full border px-2.5 py-1 text-xs font-bold backdrop-blur-md">
+          <span className="text-primary-foreground bg-primary/60 rounded-full border px-2.5 py-1 text-sm font-bold backdrop-blur-md">
             {categoryName}
           </span>
         </div>
@@ -262,11 +262,11 @@ export function TourismPointStandardCard({
 
         <div className="mb-2 flex items-center gap-2">
           {point?.is_featured && (
-            <span className="text-primary rounded border px-1.5 py-px text-xs font-bold">
+            <span className="text-primary rounded border px-1.5 py-px text-sm font-bold">
               Nổi bật
             </span>
           )}
-          <div className="text-foreground flex items-center text-xs font-semibold">
+          <div className="text-foreground flex items-center text-sm font-semibold">
             <Star size={11} className="mr-1 fill-yellow-400 text-yellow-400" />
             {rating ? Number(rating).toFixed(1) : '—'}
           </div>
@@ -277,7 +277,7 @@ export function TourismPointStandardCard({
         </div>
 
         <div className="mt-auto flex items-end justify-between">
-          <div className="text-muted-foreground flex flex-col gap-1 text-xs font-medium">
+          <div className="text-muted-foreground flex flex-col gap-1 text-sm font-medium">
             <span className="flex items-center gap-1.5">
               <div className="bg-muted-foreground h-1 w-1 rounded-full" />
               {address.split(',')[0] || ''}

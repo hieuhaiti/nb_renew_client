@@ -84,9 +84,17 @@ export default function TourismPointPage() {
     return map;
   }, [subcategories, subcategoryCountQueries]);
 
-  const selectedCategoryTotal = selectedCategoryId
-    ? getPaginationTotal(selectedCategoryCountData)
-    : 0;
+  const selectedCategoryTotal = useMemo(() => {
+    if (!selectedCategoryId) return 0;
+    if (subcategories.length > 0) {
+      const sum = subcategories.reduce(
+        (acc, sub) => acc + (subcategoryCountById.get(String(sub.id)) ?? 0),
+        0
+      );
+      if (sum > 0) return sum;
+    }
+    return getPaginationTotal(selectedCategoryCountData);
+  }, [selectedCategoryId, subcategories, subcategoryCountById, selectedCategoryCountData]);
 
   const points = useMemo(() => {
     if (!data) return [];
@@ -148,12 +156,37 @@ export default function TourismPointPage() {
     navigate(`/tourism-point/point/${encodeURIComponent(String(pointIdentifier))}`);
   };
 
-  const catChipClass = (active) =>
-    `shrink-0 rounded-full border text-xs font-medium transition-colors ${
-      active
-        ? 'border-primary/20 bg-primary text-primary-foreground shadow-sm '
-        : 'border-primary/20 bg-card text-foreground hover:bg-primary-soft'
-    }`;
+  const chipPalette = [
+    {
+      active: 'border-primary/30 bg-primary text-primary-foreground shadow-sm',
+      idle: 'border-primary/20 bg-card text-foreground hover:bg-primary-soft',
+    },
+    {
+      active: 'border-secondary/30 bg-secondary text-secondary-foreground shadow-sm',
+      idle: 'border-secondary/20 bg-card text-foreground hover:bg-secondary/10',
+    },
+    {
+      active: 'border-tertiary/30 bg-tertiary text-tertiary-foreground shadow-sm',
+      idle: 'border-tertiary/20 bg-card text-foreground hover:bg-tertiary-soft',
+    },
+    {
+      active: 'border-quaternary/30 bg-quaternary text-quaternary-foreground shadow-sm',
+      idle: 'border-quaternary/20 bg-card text-foreground hover:bg-quaternary-soft',
+    },
+    {
+      active: 'border-quinary/30 bg-quinary text-quinary-foreground shadow-sm',
+      idle: 'border-quinary/20 bg-card text-foreground hover:bg-quinary-soft',
+    },
+    {
+      active: 'border-gold/30 bg-gold text-gold-foreground shadow-sm',
+      idle: 'border-gold/20 bg-card text-foreground hover:bg-gold-soft',
+    },
+  ];
+
+  const catChipClass = (active, index = 0) => {
+    const p = chipPalette[index % chipPalette.length];
+    return `shrink-0 rounded-full border text-sm font-medium transition-colors ${active ? p.active : p.idle}`;
+  };
 
   return (
     <RootLayout>
@@ -265,13 +298,14 @@ export default function TourismPointPage() {
                 >
                   {t('tourismPointPage.all', 'Tất cả')}
                 </Button>
-                {categories.map((cat) => (
+                {categories.map((cat, i) => (
                   <Button
                     key={cat.id}
                     size="sm"
                     variant="outline"
                     className={catChipClass(
-                      Number(currentSettings.selectedCategory) === Number(cat.id)
+                      Number(currentSettings.selectedCategory) === Number(cat.id),
+                      i + 1
                     )}
                     onClick={() =>
                       setCurrentSettings({

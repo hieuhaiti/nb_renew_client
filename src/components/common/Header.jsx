@@ -23,9 +23,9 @@ import {
   Video,
   Newspaper,
   RectangleGoggles,
+  CalendarDays,
+  Gift,
 } from 'lucide-react';
-import { withBaseUrl } from '@/lib/utils';
-import placeholderImg from '@/assets/images/placeholder.png';
 
 /**
  * Header — sticky top navigation bar.
@@ -71,9 +71,15 @@ export default function Header() {
     },
     { path: '/tour', label: t('common.tourist_route'), icon: <Route size={17} />, authen: false },
     {
+      path: '/festival',
+      label: t('common.festival'),
+      icon: <CalendarDays size={17} />,
+      authen: false,
+    },
+    {
       path: '/ocop',
-      label: t('common.ocop_festival'),
-      icon: <ShoppingBag size={17} />,
+      label: t('common.ocop'),
+      icon: <Gift size={17} />,
       authen: false,
     },
     {
@@ -126,7 +132,7 @@ export default function Header() {
 
         {/* DESKTOP NAV */}
         <nav
-          className="hidden flex-1 items-center justify-center gap-1 px-4 lg:flex"
+          className="hidden flex-1 items-center justify-center gap-1 px-4 2xl:flex"
           aria-label="Main navigation"
         >
           {visibleNavItems.map((item) => (
@@ -144,9 +150,13 @@ export default function Header() {
         </nav>
 
         {/* DESKTOP RIGHT: Theme, Lang, User */}
-        <div className="hidden items-center gap-2 lg:flex">
-          <ThemeSwitch />
-          <LanguageSwitch />
+        <div className="hidden items-center gap-2 2xl:flex">
+          {!isAuthenticated && (
+            <>
+              <ThemeSwitch />
+              <LanguageSwitch />
+            </>
+          )}
 
           {isAuthenticated ? (
             <div className="relative" data-header-interactive>
@@ -181,13 +191,24 @@ export default function Header() {
               </Button>
 
               {dropdownOpenIdx === 'user' && (
-                <div className="bg-popover border-border absolute top-full right-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border py-1.5 shadow-xl">
+                <div className="bg-popover border-border absolute top-full right-0 z-50 mt-2 min-w-56 overflow-hidden rounded-xl border py-1.5 shadow-xl">
                   <div className="border-border mb-1 border-b px-4 py-2">
-                    <p className="text-foreground truncate text-xs font-semibold">
+                    <p className="text-foreground truncate text-sm font-semibold">
                       {user?.full_name || user?.username}
                     </p>
-                    <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
+                    <p className="text-muted-foreground truncate text-sm">{user?.email}</p>
                   </div>
+                  <div className="flex items-center justify-between px-3 py-1.5">
+                    <span className="text-muted-foreground text-sm">
+                      {t('common.toggle_theme')}
+                    </span>
+                    <ThemeSwitch />
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-1.5">
+                    <span className="text-muted-foreground text-sm">{t('common.toggle_lang')}</span>
+                    <LanguageSwitch />
+                  </div>
+                  <div className="border-border my-1 border-t" />
                   <Button
                     id="header-profile-btn"
                     type="button"
@@ -224,7 +245,7 @@ export default function Header() {
         </div>
 
         {/* HAMBURGER (mobile/tablet) */}
-        <div className="lg:hidden">
+        <div className="2xl:hidden">
           <Button
             id="header-hamburger-btn"
             type="button"
@@ -314,7 +335,7 @@ export default function Header() {
                       <p className="text-foreground truncate text-sm font-semibold">
                         {user?.full_name || user?.name || user?.username}
                       </p>
-                      <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
+                      <p className="text-muted-foreground truncate text-sm">{user?.email}</p>
                     </div>
                   </div>
                   <Button

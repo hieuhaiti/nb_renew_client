@@ -69,8 +69,8 @@ export default function NewsPageContent() {
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen py-4 lg:py-6">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:w-[88%] lg:px-0">
+      <div className="bg-background min-h-screen py-4 sm:py-5 lg:py-6">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:w-[80%] lg:px-0 xl:w-[70%] 2xl:w-[60%]">
           <NewsHeroHighlights
             t={t}
             total={total}

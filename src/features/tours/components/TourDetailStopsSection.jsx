@@ -29,7 +29,7 @@ export function TourDetailStopsSection({ stops, t }) {
           <div key={day}>
             {byDay.length > 1 && (
               <div className="mb-2 flex items-center gap-2">
-                <span className="bg-primary text-primary-foreground rounded-[6px] px-2 py-0.5 text-xs font-semibold">
+                <span className="bg-primary text-primary-foreground rounded-[6px] px-2 py-0.5 text-sm font-semibold">
                   {t('tourPage.day', 'Ngày')} {day}
                 </span>
                 <div className="bg-muted h-px flex-1" />
@@ -45,7 +45,7 @@ export function TourDetailStopsSection({ stops, t }) {
                   <div key={stop.id} className="flex gap-3">
                     {/* Timeline line + circle */}
                     <div className="flex flex-col items-center">
-                      <div className="border-primary bg-muted text-primary flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] text-xs font-semibold">
+                      <div className="border-primary bg-muted text-primary flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] text-sm font-semibold">
                         {stop.stop_order}
                       </div>
                       {!isLast && <div className="bg-muted my-0.5 w-px flex-1" />}
@@ -54,25 +54,25 @@ export function TourDetailStopsSection({ stops, t }) {
                     {/* Content */}
                     <div className={`min-w-0 flex-1 pb-3 ${isLast ? '' : ''}`}>
                       <p
-                        className="text-foreground text-xs font-medium"
+                        className="text-foreground text-sm font-medium"
                         title={stop.title_vi || ''}
                       >
                         {stop.title_vi || t('tourPage.unknown', '?i?m d?ng')}
                       </p>
                       {stop.description_vi && (
-                        <p className="text-muted-foreground mt-0.5 text-xs">
+                        <p className="text-muted-foreground mt-0.5 text-sm">
                           {stop.description_vi}
                         </p>
                       )}
                       <div className="mt-1 flex flex-wrap items-center gap-2">
                         {duration && (
-                          <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+                          <span className="text-muted-foreground inline-flex items-center gap-1 text-sm">
                             <Clock3 className="h-3 w-3" />
                             {duration}
                           </span>
                         )}
                         {stop.geom?.coordinates && (
-                          <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+                          <span className="text-muted-foreground inline-flex items-center gap-1 text-sm">
                             <MapPin className="h-3 w-3" />
                             {stop.geom.coordinates[1].toFixed(4)},{' '}
                             {stop.geom.coordinates[0].toFixed(4)}
