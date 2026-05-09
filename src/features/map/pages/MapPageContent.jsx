@@ -5,7 +5,8 @@ import { useDebounce } from 'use-debounce';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import MapLayout from '@/features/map/layout/MapLayout';
-import MapDirectionPanel from '@/features/map/components/MapDirectionPanel';
+import MapDirectionPanel from '@/features/map/components/MapPanel/MapDirectionPanel';
+import MapTourPanel from '@/features/map/components/MapPanel/MapTourPanel';
 import { categoriesService } from '@/services/api/categories/categoriesService';
 import { env } from '@/config/env';
 import {
@@ -26,6 +27,7 @@ import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import { useCategoriesStore } from '@/features/categories/store/useCategoriesStore';
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
+import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import {
   normalizeSpotsSearchResults,
   useSearchSpotsQuery,
@@ -35,6 +37,7 @@ import MapBaseArea from '../components/MapBase';
 import ModalMarker from '@/features/map/components/ModalMarker';
 import ModalCarousel from '@/features/map/components/ModalCarousel';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
+import { clearHighlightedRouteLayers } from '@/features/map/utils/MapHelper';
 
 export default function MapPage() {
   const { t } = useTranslation();
@@ -49,7 +52,10 @@ export default function MapPage() {
   const [activeBasemap, setActiveBasemap] = useState('outdoor');
   const [pendingFlyCoordinates, setPendingFlyCoordinates] = useState(null);
   const [pendingSearchSelection, setPendingSearchSelection] = useState(null);
-  const [isDirectionPanelOpen, setIsDirectionPanelOpen] = useState(true);
+  const activePanel = useMapPanelStore((s) => s.activePanel);
+  const isPanelOpen = useMapPanelStore((s) => s.isPanelOpen);
+  const openDirectionPanel = useMapPanelStore((s) => s.openDirectionPanel);
+  const setPanelOpen = useMapPanelStore((s) => s.setPanelOpen);
   const [layerState, setLayerState] = useState({
     destinations: true,
     services: true,
@@ -69,6 +75,7 @@ export default function MapPage() {
   const mapRef = useMapStore((state) => state.mapRef);
   const mapRefObj = useMapStore((state) => state.mapRefObj);
   const setHighlightedPoint = useMapStore((state) => state.setHighlightedPoint);
+  const clearHighlightedRoute = useMapStore((state) => state.clearHighlightedRoute);
   const setMapStyle = useMapStyleStore((state) => state.setMapStyle);
   const directions = useDirectionsStore((state) => state.directions);
   const setEndLocation = useDirectionsStore((state) => state.setEndLocation);
@@ -194,8 +201,13 @@ export default function MapPage() {
   const hasDirectionDetails = Boolean(directions?.legs?.[0]?.steps?.length || directions);
 
   useEffect(() => {
-    if (!directions) return;
-    setIsDirectionPanelOpen(true);
+    const { activePanel: panel, clearPanel: clear, openDirectionPanel: open } =
+      useMapPanelStore.getState();
+    if (!directions) {
+      if (panel === 'direction') clear();
+      return;
+    }
+    open();
   }, [directions]);
 
   useEffect(() => {
@@ -203,11 +215,6 @@ export default function MapPage() {
     setActiveSidebar('event');
     setActiveTab('event');
   }, [activeTab, hasDirectionDetails]);
-
-  useEffect(() => {
-    if (hasDirectionDetails) return;
-    setIsDirectionPanelOpen(false);
-  }, [hasDirectionDetails]);
 
   const flyToPlace = (place) => {
     if (!place || !mapRef) return;
@@ -430,8 +437,17 @@ export default function MapPage() {
     const lng = Number(coordinates?.[0]);
     const lat = Number(coordinates?.[1]);
 
+    // Clear any active tour route from the map canvas before switching to direction panel.
+    const resolvedMap = mapRef || mapRefObj?.current?.single || null;
+    if (resolvedMap) {
+      try {
+        clearHighlightedRouteLayers(resolvedMap);
+      } catch (_err) {}
+    }
+    clearHighlightedRoute();
+
     clearDirections();
-    setIsDirectionPanelOpen(true);
+    openDirectionPanel();
 
     if (!Number.isNaN(lng) && !Number.isNaN(lat)) {
       setEndLocation({
@@ -490,11 +506,18 @@ export default function MapPage() {
               </Card>
             </div>
             <div className="border-border relative h-full min-h-0 overflow-hidden rounded-3xl p-0 shadow-sm">
-              {hasDirectionDetails && (
+              {activePanel === 'direction' && (
                 <MapDirectionPanel
-                  isOpen={isDirectionPanelOpen}
-                  onOpen={() => setIsDirectionPanelOpen(true)}
-                  onClose={() => setIsDirectionPanelOpen(false)}
+                  isOpen={isPanelOpen}
+                  onOpen={() => setPanelOpen(true)}
+                  onClose={() => setPanelOpen(false)}
+                />
+              )}
+              {activePanel === 'tour' && (
+                <MapTourPanel
+                  isOpen={isPanelOpen}
+                  onOpen={() => setPanelOpen(true)}
+                  onClose={() => setPanelOpen(false)}
                 />
               )}
               <MapBaseArea />

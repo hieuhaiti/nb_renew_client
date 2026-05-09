@@ -60,10 +60,12 @@ export function normalizeTourRoutePoint(rawPoint, index = 0, lang = 'vi') {
     toNumber(rawPoint?.order_index) ??
     toNumber(rawPoint?.index) ??
     index + 1;
+  const dayNumber = toNumber(rawPoint?.day_number) ?? 1;
 
   return {
     id: rawPoint?.id ?? rawPoint?.point_id ?? `tour-point-${index + 1}`,
     stopOrder,
+    dayNumber,
     point_id: rawPoint?.point_id ?? rawPoint?.id ?? null,
     data: {
       ...rawPoint,
@@ -90,7 +92,7 @@ export const createRouteFromPoints = async (points, vehicle = 'driving', languag
   const normalizedPoints = points
     .map((point, index) => normalizeTourRoutePoint(point?.data || point, index, language))
     .filter(Boolean)
-    .sort((a, b) => a.stopOrder - b.stopOrder);
+    .sort((a, b) => a.dayNumber - b.dayNumber || a.stopOrder - b.stopOrder);
 
   if (normalizedPoints.length < 2) {
     throw new Error('Khong du diem hop le de tao route');
@@ -148,7 +150,7 @@ export function buildHighlightRoutePointsFeatureCollection(points) {
   const normalizedPoints = (Array.isArray(points) ? points : [])
     .map((point, index) => normalizeTourRoutePoint(point?.data || point, index))
     .filter(Boolean)
-    .sort((a, b) => a.stopOrder - b.stopOrder);
+    .sort((a, b) => a.dayNumber - b.dayNumber || a.stopOrder - b.stopOrder);
 
   const totalPoints = normalizedPoints.length;
 

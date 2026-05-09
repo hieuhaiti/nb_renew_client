@@ -12,37 +12,43 @@ import { cn } from '@/lib/utils';
 const STATUS_META = {
   overloaded: {
     badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
-    barClass: 'bg-destructive',
+    // red-400 → red-700
+    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
     labelVi: 'Quá tải',
     labelEn: 'Overloaded',
   },
   near_full: {
     badgeClass: 'border-orange-500/30 bg-orange-500/10 text-orange-600',
-    barClass: 'bg-orange-500',
+    // tertiary-1 (amber) → quaternary (coral-red)
+    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
     labelVi: 'Gần đầy',
     labelEn: 'Near full',
   },
   busy: {
     badgeClass: 'border-warning/40 bg-warning/10 text-warning',
-    barClass: 'bg-warning',
+    // gold → tertiary-2 (warm amber-orange)
+    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
     labelVi: 'Đông',
     labelEn: 'Busy',
   },
   moderate: {
     badgeClass: 'border-sky-500/30 bg-sky-500/10 text-sky-600',
-    barClass: 'bg-sky-500',
+    // primary-1 (sky) → primary-2 (deep blue)
+    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
     labelVi: 'Vừa phải',
     labelEn: 'Moderate',
   },
   normal: {
     badgeClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600',
-    barClass: 'bg-emerald-500',
+    // secondary-1 (teal) → secondary-2 (forest green)
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
     labelVi: 'Bình thường',
     labelEn: 'Normal',
   },
   low: {
     badgeClass: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-500',
-    barClass: 'bg-emerald-400',
+    // lighter teal → secondary-1
+    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
     labelVi: 'Thưa thớt',
     labelEn: 'Low',
   },
@@ -339,11 +345,8 @@ export default function CapacityPanel() {
                   </div>
                   <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
                     <div
-                      className={cn(
-                        'h-full rounded-full transition-all duration-500',
-                        meta.barClass
-                      )}
-                      style={{ width: `${item.pct}%` }}
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${item.pct}%`, ...meta.barStyle }}
                     />
                   </div>
                 </div>

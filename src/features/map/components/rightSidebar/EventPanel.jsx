@@ -161,10 +161,10 @@ export default function EventPanel() {
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <p className="text-foreground text-sm font-semibold">
+          <p className="typo-section-title text-foreground">
             {t('mapPage.eventPanel.title', { defaultValue: 'Lễ hội & Sự kiện' })}
           </p>
-          <p className="text-muted-foreground text-sm">
+          <p className="typo-meta text-muted-foreground">
             {isFetching
               ? t('mapPage.eventPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
               : t('mapPage.eventPanel.count', {
@@ -177,7 +177,7 @@ export default function EventPanel() {
           type="button"
           size="sm"
           variant="ghost"
-          className="h-7 text-sm"
+          className="typo-meta h-7"
           onClick={resetFestivalFilters}
         >
           {t('mapPage.eventPanel.reset', { defaultValue: 'Đặt lại' })}
@@ -234,13 +234,13 @@ export default function EventPanel() {
           ))}
         </div>
       ) : isError ? (
-        <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-sm">
+        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
           {t('mapPage.eventPanel.error', {
             defaultValue: 'Không thể tải danh sách sự kiện từ hệ thống.',
           })}
         </div>
       ) : festivals.length === 0 ? (
-        <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-sm">
+        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
           {t('mapPage.eventPanel.empty', {
             defaultValue: 'Không có sự kiện phù hợp với bộ lọc hiện tại.',
           })}
@@ -258,15 +258,17 @@ export default function EventPanel() {
               <article
                 key={festival.id}
                 className={cn(
-                  'space-y-2 rounded-lg border p-3 transition-colors',
-                  isActive ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                  'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
+                  isActive
+                    ? 'border-primary/60 bg-primary/5'
+                    : 'bg-linear-to-b from-card to-muted/10 hover:bg-muted/40'
                 )}
               >
                 {cover ? (
                   <img
                     src={cover}
                     alt={festival.name}
-                    className="h-28 w-full rounded-md object-cover"
+                    className="h-28 w-full rounded-lg object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = placeholderImg;
@@ -313,7 +315,7 @@ export default function EventPanel() {
                     onClick={() => handleOpenFestivalOnMap(festival)}
                     disabled={!festival?.id || openingFestivalId != null}
                   >
-                    <LocateFixed className="h-3.5 w-3.5" />
+                    <LocateFixed className="h-3.5 w-3.5 shrink-0" />
                     {isOpening
                       ? t('mapPage.eventPanel.openingMap', { defaultValue: 'Đang mở...' })
                       : t('mapPage.eventPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}

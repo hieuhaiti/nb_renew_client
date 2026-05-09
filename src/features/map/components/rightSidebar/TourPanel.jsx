@@ -39,6 +39,7 @@ import {
 } from '@/features/map/utils/MapHelper';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
+import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import { cn, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 
@@ -58,6 +59,10 @@ function sortStops(stops) {
   return list
     .map((stop, index) => ({ stop, index }))
     .sort((a, b) => {
+      const dayA = Number(a.stop?.day_number ?? 1);
+      const dayB = Number(b.stop?.day_number ?? 1);
+      if (dayA !== dayB) return dayA - dayB;
+
       const orderA = Number(
         a?.stop?.stop_order ?? a?.stop?.order_index ?? a?.stop?.index ?? a?.index + 1
       );
@@ -154,6 +159,7 @@ export default function TourPanel() {
   const setTourPanelFilters = useTourPanelStore((state) => state.setTourPanelFilters);
   const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
   const resetTourPanelFilters = useTourPanelStore((state) => state.resetTourPanelFilters);
+  const openTourPanel = useMapPanelStore((s) => s.openTourPanel);
   const mapRef = useMapStore((state) => state.mapRef);
   const mapRefObj = useMapStore((state) => state.mapRefObj);
 
@@ -181,7 +187,7 @@ export default function TourPanel() {
   });
 
   const tours = useMemo(() => normalizeTourListPayload(toursData, { lang }), [toursData, lang]);
-  const activeRouteTourId = highlightedRoute?.tourId ? String(highlightedRoute.tourId) : null;
+  const activeRouteTourId = highlightedRoute?.tourId ? String(highlightedRoute.tourId) : null;
   const handleOpenTourRoute = async (tour) => {
     if (!tour?.id) return;
 
@@ -248,6 +254,7 @@ export default function TourPanel() {
         );
       }
 
+      openTourPanel({ tourId: tour.id, tourName: tour.name, stops: sortedStops });
       clearDirections();
       setHighlightedRoute({
         type: 'tour',
@@ -335,10 +342,10 @@ export default function TourPanel() {
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <p className="text-foreground text-sm font-semibold">
+          <p className="typo-section-title text-foreground">
             {t('mapPage.tourPanel.title', { defaultValue: 'Tour du lịch' })}
           </p>
-          <p className="text-muted-foreground text-sm">
+          <p className="typo-meta text-muted-foreground">
             {isFetching
               ? t('mapPage.tourPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
               : t('mapPage.tourPanel.count', {
@@ -351,7 +358,7 @@ export default function TourPanel() {
           type="button"
           size="sm"
           variant="ghost"
-          className="h-7 text-sm"
+          className="typo-meta h-7"
           onClick={resetTourPanelFilters}
         >
           {t('mapPage.tourPanel.reset', { defaultValue: 'Đặt lại' })}
@@ -364,7 +371,7 @@ export default function TourPanel() {
             type="button"
             size="sm"
             variant="outline"
-            className="h-8 text-sm"
+            className="typo-meta h-8"
             onClick={() => setShowOnlyHighlightedRoute(!showOnlyHighlightedRoute)}
           >
             <Eye className="h-3.5 w-3.5" />
@@ -380,13 +387,14 @@ export default function TourPanel() {
             type="button"
             size="sm"
             variant="outline"
-            className="h-8 text-sm"
+            className="typo-meta h-8"
             onClick={() => {
               const resolvedMap = mapRef || mapRefObj?.current?.single || null;
               if (resolvedMap) {
                 clearHighlightedRouteLayers(resolvedMap);
               }
               clearHighlightedRoute();
+              useMapPanelStore.getState().clearPanel();
               toast.info(
                 t('mapPage.tourPanel.routeCleared', {
                   defaultValue: 'Đã xóa tuyến tour khỏi bản đồ.',
@@ -439,11 +447,11 @@ export default function TourPanel() {
           ))}
         </div>
       ) : isError ? (
-        <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-sm">
+        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
           {t('mapPage.tourPanel.error', { defaultValue: 'Không thể tải danh sách tour.' })}
         </div>
       ) : tours.length === 0 ? (
-        <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-sm">
+        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
           {t('mapPage.tourPanel.empty', { defaultValue: 'Không có tour phù hợp với bộ lọc.' })}
         </div>
       ) : (
@@ -460,19 +468,19 @@ export default function TourPanel() {
               <article
                 key={tour.id}
                 className={cn(
-                  'space-y-2 rounded-lg border p-3 transition-colors',
+                  'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
                   isRouteActive
-                    ? 'border-primary bg-primary/5'
+                    ? 'border-primary/60 bg-primary/5'
                     : isSelected
                       ? 'border-border bg-muted/20'
-                      : 'hover:bg-muted/50'
+                      : 'bg-linear-to-b from-card to-muted/10 hover:bg-muted/40'
                 )}
               >
                 {imageUrl ? (
                   <img
                     src={imageUrl}
                     alt={tour.name}
-                    className="h-28 w-full rounded-md object-cover"
+                    className="h-28 w-full rounded-lg object-cover"
                     onError={(event) => {
                       event.target.onerror = null;
                       event.target.src = placeholderImg;
@@ -518,7 +526,7 @@ export default function TourPanel() {
                   <Button
                     type="button"
                     size="sm"
-                    className="h-8 text-sm"
+                    className="typo-meta h-8"
                     disabled={isRouteLoading}
                     onClick={() => handleOpenTourRoute(tour)}
                   >
@@ -531,7 +539,7 @@ export default function TourPanel() {
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="h-8 text-sm"
+                    className="typo-meta h-8"
                     onClick={() => navigate(`/tour/${tour.slug}`)}
                   >
                     {t('tourismPointPage.view_detail', { defaultValue: 'Xem chi tiết' })}
