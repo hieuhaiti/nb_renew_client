@@ -11,6 +11,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from '@/components/ui/carousel';
+import { Button } from '@/components/ui/button';
 import { cn, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { ImageOff, Video } from 'lucide-react';
@@ -65,26 +66,40 @@ function SceneCard({ scene, isSelected, onSelect, t }) {
   const imageUrl = rawImageUrl ? withBaseUrl(rawImageUrl) || rawImageUrl : '';
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={() => onSelect(scene.id)}
       className={cn(
-        'flex w-full flex-col rounded-lg border p-1.5 text-left transition-colors',
+        'group h-auto w-full flex-col items-start justify-start rounded-xl border p-2 text-left whitespace-normal transition-all duration-200',
         isSelected
-          ? 'border-primary bg-secondary ring-primary ring-1'
-          : 'border-border hover:bg-accent'
+          ? 'border-primary/70 bg-primary/10 ring-primary/40 hover:bg-primary/15 shadow-sm ring-1'
+          : 'border-border bg-card hover:border-primary/35 hover:bg-accent/60 hover:shadow-sm'
       )}
     >
       <ScenePreviewImage sceneName={scene?.name} imageUrl={imageUrl} />
-      <div className="mt-1 flex flex-col gap-0.5">
-        <p className="typo-caption line-clamp-2">{scene.name}</p>
+      <div className="mt-1.5 flex w-full items-start gap-1">
+        <p
+          className={cn(
+            'line-clamp-2 flex-1 text-sm leading-5 font-medium',
+            isSelected ? 'text-primary' : 'text-foreground'
+          )}
+        >
+          {scene.name}
+        </p>
         {scene.is_main && (
-          <Badge variant="secondary" className="typo-badge w-fit">
+          <Badge
+            variant="outline"
+            className={cn(
+              'typo-badge w-fit flex-shrink-0',
+              isSelected ? 'border-primary/50 text-primary' : 'text-muted-foreground'
+            )}
+          >
             {t('vr360.main_badge')}
           </Badge>
         )}
       </div>
-    </button>
+    </Button>
   );
 }
 
@@ -129,7 +144,7 @@ export default function Vr360SceneList({
           <Carousel opts={{ align: 'start' }} className="w-full px-8">
             <CarouselContent className="-ml-3">
               {scenes.map((scene) => (
-                <CarouselItem key={scene.id} className="basis-1/3 pl-3">
+                <CarouselItem key={scene.id} className="basis-1/4 pl-3">
                   <SceneCard
                     scene={scene}
                     isSelected={String(selectedSceneId) === String(scene.id)}

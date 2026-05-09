@@ -112,6 +112,11 @@
   --warning-foreground: #ffffff;
   --warning-soft: #fff1e3;
 
+  /* Weather */
+  --weather-temp: #f97316;
+  --weather-humidity: #3b82f6;
+  --weather-wind: #06b6d4;
+
   /* Inputs and separators */
   --border: #7b87a7;
   --input: #dce6ef;
@@ -266,6 +271,11 @@
   --warning: #f5b973;
   --warning-foreground: #2e1700;
   --warning-soft: #3e2d1d;
+
+  /* Weather */
+  --weather-temp: #fb923c;
+  --weather-humidity: #60a5fa;
+  --weather-wind: #67e8f9;
 
   /* Inputs and separators */
   --border: #2b3b48;

@@ -18,7 +18,7 @@ import {
 import DataLayer from '@/features/map/components/leftSidebar/DataLayer';
 import { currentHeaderSidebar } from '@/features/map/constant/sidebarConstant';
 import MapToolbarCard from '@/features/map/components/toolbar/MapToolbarCard';
-import MapToolbarWeatherCard from '@/features/map/components/toolbar/MapToolbarWeatherCard';
+import MapWeatherCard from '@/features/map/components/MapWeatherCard';
 import MapRightSidebar from '@/features/map/components/rightSidebar/MapRightSidebar';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
@@ -475,7 +475,6 @@ export default function MapPage() {
             activeChip={activeChip}
             onChipChange={handleChipChange}
             onSearch={handleSearch}
-            weatherSlot={<MapToolbarWeatherCard compact className="size-full" />}
           />
 
           <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[300px_minmax(0,1fr)_340px] 2xl:grid-cols-[320px_minmax(0,1fr)_380px]">
@@ -499,6 +498,9 @@ export default function MapPage() {
                 />
               )}
               <MapBaseArea />
+              <div className="w-22vw pointer-events-none absolute top-3 right-3 z-40">
+                <MapWeatherCard compact className="pointer-events-auto h-auto" />
+              </div>
             </div>
 
             <div className="h-full min-h-0">

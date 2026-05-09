@@ -1,25 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  Inbox,
-  LayoutGrid,
-  List,
-  X,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import RootLayout from '@/components/layout/RootLayout';
+import { Search, ChevronLeft, ChevronRight, ChevronDown, Inbox, LayoutGrid, List, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import RootLayout from '@/components/layout/RootLayout';
 import {
   useGetAllDataPoints,
   useGetSpotCountByCategory,
@@ -37,6 +26,9 @@ import {
 } from '@/features/tourism-points/components/list/TourismPointCards';
 
 const PAGE_SIZE_OPTIONS = [6, 12, 24, 48];
+
+const HERO_BG = `linear-gradient(90deg, rgba(3,79,141,.96), rgba(7,119,190,.9)), url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80") center/cover`;
+const BTN_GRADIENT = { background: 'linear-gradient(135deg, #075fac, #034f8d)' };
 
 export default function TourismPointPage() {
   const { t } = useTranslation();
@@ -76,6 +68,7 @@ export default function TourismPointPage() {
     subcategoryIds: subcategories.map((sub) => sub.id),
     enabled: !!selectedCategoryId,
   });
+
   const subcategoryCountById = useMemo(() => {
     const map = new Map();
     subcategories.forEach((sub, idx) => {
@@ -156,346 +149,291 @@ export default function TourismPointPage() {
     navigate(`/tourism-point/point/${encodeURIComponent(String(pointIdentifier))}`);
   };
 
-  const chipPalette = [
-    {
-      active: 'border-primary/30 bg-primary text-primary-foreground shadow-sm',
-      idle: 'border-primary/20 bg-card text-foreground hover:bg-primary-soft',
-    },
-    {
-      active: 'border-secondary/30 bg-secondary text-secondary-foreground shadow-sm',
-      idle: 'border-secondary/20 bg-card text-foreground hover:bg-secondary/10',
-    },
-    {
-      active: 'border-tertiary/30 bg-tertiary text-tertiary-foreground shadow-sm',
-      idle: 'border-tertiary/20 bg-card text-foreground hover:bg-tertiary-soft',
-    },
-    {
-      active: 'border-quaternary/30 bg-quaternary text-quaternary-foreground shadow-sm',
-      idle: 'border-quaternary/20 bg-card text-foreground hover:bg-quaternary-soft',
-    },
-    {
-      active: 'border-quinary/30 bg-quinary text-quinary-foreground shadow-sm',
-      idle: 'border-quinary/20 bg-card text-foreground hover:bg-quinary-soft',
-    },
-    {
-      active: 'border-gold/30 bg-gold text-gold-foreground shadow-sm',
-      idle: 'border-gold/20 bg-card text-foreground hover:bg-gold-soft',
-    },
-  ];
-
-  const catChipClass = (active, index = 0) => {
-    const p = chipPalette[index % chipPalette.length];
-    return `shrink-0 rounded-full border text-sm font-medium transition-colors ${active ? p.active : p.idle}`;
-  };
+  const tabCls = (active) =>
+    `h-9.5 px-4.5 rounded-full border text-sm font-bold transition-colors cursor-pointer ${
+      active
+        ? 'text-white border-transparent'
+        : 'bg-white border-[#d9b4a4] text-foreground hover:bg-primary-soft'
+    }`;
 
   return (
     <RootLayout>
-      <div className="min-h-screen">
-        {/* ── Banner ── */}
-        <div className="bg-primary text-primary-foreground relative overflow-hidden pt-8 pb-6">
-          {/* Decorators */}
-          <div className="bg-primary/10 pointer-events-none absolute top-0 right-0 h-80 w-80 translate-x-1/3 -translate-y-1/3 rounded-full blur-3xl" />
-          <div className="bg-primary/5 pointer-events-none absolute right-1/3 bottom-0 h-56 w-56 translate-y-1/3 rounded-full blur-2xl" />
+      <div className="min-h-screen" style={{ background: 'linear-gradient(180deg,#eef7fc 0%,#f8fbfd 100%)' }}>
 
-          <div className="relative z-10 mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,7fr)] lg:items-end lg:px-8">
-            <div className="space-y-2 lg:max-w-xl">
-              <h1 className="text-primary-foreground text-3xl font-bold">
-                {t('tourismPointPage.title', 'Điểm du lịch Ninh Bình')}
+        {/* ── Hero ── */}
+        <section className="px-6 py-9 text-white" style={{ background: HERO_BG }}>
+          <div className="mx-auto grid max-w-290 items-center gap-7.5 grid-cols-1 lg:grid-cols-[1fr_1.35fr]">
+            <div>
+              <h1 className="text-4xl font-black leading-tight tracking-tight">
+                {t('tourismPointPage.title', 'Điểm du lịch')}
               </h1>
-              <p className="text-primary-foreground/80 text-sm leading-relaxed">
-                {t(
-                  'tourismPointPage.subtitle',
-                  'Khám phá các điểm tham quan nổi bật tại Ninh Bình'
-                )}
+              <p className="mt-2 font-medium text-white/90">
+                {t('tourismPointPage.subtitle', 'Khám phá các điểm tham quan nổi bật tại Ninh Bình')}
               </p>
             </div>
 
-            <div className="border-border bg-card/90 rounded-3xl border p-4 shadow-sm backdrop-blur md:p-5">
-              <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto_auto] xl:items-center">
-                <div className="relative min-w-0 flex-1">
-                  <Search
-                    size={16}
-                    className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
-                  />
-                  <Input
-                    type="text"
-                    placeholder={t(
-                      'tourismPointPage.search_placeholder',
-                      'Tìm kiếm điểm tham quan...'
-                    )}
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="border-border bg-background/90 focus-visible:ring-primary pr-9 pl-9 shadow-none"
-                  />
-                  {query && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
-                      onClick={() => setQuery('')}
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </div>
-
-                <div className="text-muted-foreground flex shrink-0 items-center gap-2 text-sm">
-                  {t('tourismPointPage.show', 'Hiển thị')}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-border bg-card text-foreground hover:bg-muted w-18 justify-between gap-1 rounded-lg"
-                      >
-                        {currentSettings.limit}
-                        <ChevronDown size={13} />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="center" className="min-w-20">
-                      {PAGE_SIZE_OPTIONS.map((n) => (
-                        <DropdownMenuItem
-                          key={n}
-                          className={`justify-center ${
-                            currentSettings.limit === n ? 'text-primary font-semibold' : ''
-                          }`}
-                          onClick={() => setCurrentSettings({ limit: n, page: 1 })}
-                        >
-                          {n}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <span>/ {t('tourismPointPage.per_page', 'trang')}</span>
-                </div>
-
-                <Button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
-                  onClick={() => setCurrentSettings({ page: 1 })}
-                >
-                  <Search size={14} />
-                  {t('tourismPointPage.search_btn', 'Tìm kiếm')}
-                </Button>
+            <div
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 rounded-3xl p-4"
+              style={{
+                background: 'rgba(255,255,255,0.94)',
+                border: '1px solid rgba(255,255,255,0.75)',
+                boxShadow: '0 12px 28px rgba(0,0,0,.14)',
+              }}
+            >
+              <div className="relative flex-1 min-w-0">
+                <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
+                <input
+                  type="text"
+                  className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-9 text-sm text-foreground outline-none focus:border-primary"
+                  placeholder={t('tourismPointPage.search_placeholder', 'Tìm kiếm điểm tham quan...')}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+                {query && (
+                  <button
+                    type="button"
+                    className="absolute top-1/2 right-2 -translate-y-1/2 text-[#52647a] hover:text-foreground"
+                    onClick={() => setQuery('')}
+                  >
+                    <X size={14} />
+                  </button>
+                )}
               </div>
+
+              <span className="hidden shrink-0 whitespace-nowrap text-sm text-[#52647a] sm:inline">
+                {t('tourismPointPage.show', 'Hiển thị')}
+              </span>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-[#a8bed4] bg-white px-4 text-sm text-foreground">
+                    {currentSettings.limit}
+                    <ChevronDown size={13} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="min-w-20">
+                  {PAGE_SIZE_OPTIONS.map((n) => (
+                    <DropdownMenuItem
+                      key={n}
+                      className={`justify-center ${currentSettings.limit === n ? 'text-primary font-semibold' : ''}`}
+                      onClick={() => setCurrentSettings({ limit: n, page: 1 })}
+                    >
+                      {n}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <span className="hidden shrink-0 whitespace-nowrap text-sm text-[#52647a] sm:inline">
+                / {t('tourismPointPage.per_page', 'trang')}
+              </span>
+
+              <button
+                className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold text-white"
+                style={BTN_GRADIENT}
+                onClick={() => setCurrentSettings({ page: 1 })}
+              >
+                <Search size={14} />
+                {t('tourismPointPage.search_btn', 'Tìm kiếm')}
+              </button>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* ── Dark filter bar ── */}
-        <div className="bg-card/90 text-foreground border-border/70 sticky top-0 z-40 border-b backdrop-blur-sm">
-          <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-2">
-              {/* Category chips */}
-              <div className="flex flex-1 flex-wrap items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className={catChipClass(!selectedCategoryId)}
-                  onClick={() =>
-                    setCurrentSettings({ selectedCategory: 0, selectedSubcategory: 0, page: 1 })
-                  }
-                >
-                  {t('tourismPointPage.all', 'Tất cả')}
-                </Button>
-                {categories.map((cat, i) => (
-                  <Button
+        {/* ── Filter bar ── */}
+        <section
+          className="sticky top-0 z-40 border-b border-[#c7d9eb] px-6 py-3.5"
+          style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)' }}
+        >
+          <div className="mx-auto max-w-290 flex flex-wrap items-center justify-between gap-4">
+            {/* Category tabs */}
+            <div className="flex flex-wrap gap-2.5">
+              <button
+                className={tabCls(!selectedCategoryId)}
+                style={!selectedCategoryId ? BTN_GRADIENT : undefined}
+                onClick={() => setCurrentSettings({ selectedCategory: 0, selectedSubcategory: 0, page: 1 })}
+              >
+                {t('tourismPointPage.all', 'Tất cả')}
+              </button>
+              {categories.map((cat) => {
+                const isActive = Number(currentSettings.selectedCategory) === Number(cat.id);
+                return (
+                  <button
                     key={cat.id}
-                    size="sm"
-                    variant="outline"
-                    className={catChipClass(
-                      Number(currentSettings.selectedCategory) === Number(cat.id),
-                      i + 1
-                    )}
+                    className={tabCls(isActive)}
+                    style={isActive ? BTN_GRADIENT : undefined}
                     onClick={() =>
-                      setCurrentSettings({
-                        selectedCategory: cat.id,
-                        selectedSubcategory: 0,
-                        page: 1,
-                      })
+                      setCurrentSettings({ selectedCategory: cat.id, selectedSubcategory: 0, page: 1 })
                     }
                   >
                     {lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en}
-                  </Button>
-                ))}
-              </div>
-
-              {/* View mode toggle */}
-              <div className="border-border bg-card flex shrink-0 items-center gap-0.5 rounded-lg border p-0.5">
-                <Button
-                  size="icon-sm"
-                  className={`rounded-md ${
-                    currentSettings.viewMode === 'grid'
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                  onClick={() => setCurrentSettings({ viewMode: 'grid' })}
-                >
-                  <LayoutGrid size={15} />
-                </Button>
-                <Button
-                  size="icon-sm"
-                  className={`rounded-md ${
-                    currentSettings.viewMode === 'list'
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                  onClick={() => setCurrentSettings({ viewMode: 'list' })}
-                >
-                  <List size={15} />
-                </Button>
-              </div>
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Subcategory chips (conditional) */}
-            {selectedCategoryId > 0 && (
-              <div className="border-border/70 mt-2 flex flex-wrap items-center gap-2 border-t pt-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className={catChipClass(!selectedSubcategoryId)}
-                  onClick={() => setCurrentSettings({ selectedSubcategory: 0, page: 1 })}
-                >
-                  {t('tourismPointPage.all_subcategories', 'Tất cả loại hình')} (
-                  {selectedCategoryTotal})
-                </Button>
-                {subcategories.map((sub) => (
-                  <Button
+            {/* View toggle */}
+            <div className="flex shrink-0 gap-1.5 rounded-[14px] border border-[#9db8d2] bg-white p-1">
+              <button
+                className={`flex h-8.5 w-8.5 items-center justify-center rounded-[10px] transition-colors ${
+                  currentSettings.viewMode === 'grid' ? 'bg-primary text-white' : 'bg-transparent text-[#52647a]'
+                }`}
+                onClick={() => setCurrentSettings({ viewMode: 'grid' })}
+              >
+                <LayoutGrid size={15} />
+              </button>
+              <button
+                className={`flex h-8.5 w-8.5 items-center justify-center rounded-[10px] transition-colors ${
+                  currentSettings.viewMode === 'list' ? 'bg-primary text-white' : 'bg-transparent text-[#52647a]'
+                }`}
+                onClick={() => setCurrentSettings({ viewMode: 'list' })}
+              >
+                <List size={15} />
+              </button>
+            </div>
+          </div>
+
+          {/* Subcategory chips */}
+          {selectedCategoryId > 0 && (
+            <div className="mx-auto mt-2 max-w-290 flex flex-wrap items-center gap-2 border-t border-[#c7d9eb] pt-2">
+              {(() => {
+                const active = !selectedSubcategoryId;
+                return (
+                  <button
+                    className={tabCls(active)}
+                    style={active ? BTN_GRADIENT : undefined}
+                    onClick={() => setCurrentSettings({ selectedSubcategory: 0, page: 1 })}
+                  >
+                    {t('tourismPointPage.all_subcategories', 'Tất cả loại hình')} ({selectedCategoryTotal})
+                  </button>
+                );
+              })()}
+              {subcategories.map((sub) => {
+                const isActive = Number(selectedSubcategoryId) === Number(sub.id);
+                return (
+                  <button
                     key={sub.id}
-                    size="sm"
-                    variant="outline"
-                    className={catChipClass(Number(selectedSubcategoryId) === Number(sub.id))}
+                    className={tabCls(isActive)}
+                    style={isActive ? BTN_GRADIENT : undefined}
                     onClick={() => setCurrentSettings({ selectedSubcategory: sub.id, page: 1 })}
                   >
                     {lang === 'en' ? sub.name_en || sub.name_vi : sub.name_vi || sub.name_en} (
                     {subcategoryCountById.get(String(sub.id)) ?? 0})
-                  </Button>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* ── Content ── */}
+        <main className="mx-auto max-w-290 px-6 pt-6 pb-11">
+          {/* Result / sort line */}
+          <div className="mb-4.5 flex items-center justify-between text-sm font-semibold text-[#607086]">
+            <div>
+              {t('tourismPointPage.showing', 'Hiển thị')}{' '}
+              <strong className="text-foreground">
+                {points.length} / {total}
+              </strong>{' '}
+              {t('tourismPointPage.results', 'kết quả')}
+            </div>
+            <div className="flex cursor-pointer items-center gap-1">
+              {t('tourismPointPage.sort_by', 'Sắp xếp')}:{' '}
+              <strong className="flex items-center text-foreground">
+                {t('tourismPointPage.featured', 'Nổi bật')}
+                <ChevronDown size={13} className="ml-0.5" />
+              </strong>
+            </div>
+          </div>
+
+          {/* Cards */}
+          {isLoading ? (
+            <div className="flex flex-col gap-5">
+              {currentSettings.viewMode === 'grid' && <TourismPointSkeletonCard isFeatured />}
+              <div
+                className={
+                  currentSettings.viewMode === 'grid'
+                    ? 'grid grid-cols-1 gap-4.5 sm:grid-cols-2 lg:grid-cols-4'
+                    : 'flex flex-col gap-3'
+                }
+              >
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <TourismPointSkeletonCard key={i} />
                 ))}
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* ── Content Area ── */}
-        <div className="bg-background w-full flex-1">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <div className="text-muted-foreground mb-6 flex items-center justify-between text-sm">
-              <div>
-                {t('tourismPointPage.showing', 'Hiển thị')}{' '}
-                <b className="text-foreground">
-                  {points.length} {t('tourismPointPage.of', '/')} {total}
-                </b>{' '}
-                {t('tourismPointPage.results', 'kết quả')}
-              </div>
-              <div className="flex cursor-pointer items-center gap-1.5">
-                {t('tourismPointPage.sort_by', 'Sắp xếp')}:{' '}
-                <b className="text-foreground flex items-center font-semibold">
-                  {t('tourismPointPage.featured', 'Nổi bật')}{' '}
-                  <ChevronRight size={14} className="ml-0.5 rotate-90" />
-                </b>
-              </div>
             </div>
-
-            <div className="flex w-full flex-col gap-6 pb-10">
-              {isLoading ? (
-                <>
-                  {currentSettings.viewMode === 'grid' && (
-                    <TourismPointSkeletonCard isFeatured={true} />
-                  )}
-                  <div
-                    className={`grid gap-6 ${
-                      currentSettings.viewMode === 'grid'
-                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-                        : 'flex flex-col'
-                    }`}
-                  >
-                    {Array.from({ length: 8 }).map((_, i) => (
-                      <TourismPointSkeletonCard key={i} />
-                    ))}
-                  </div>
-                </>
-              ) : isError ? (
-                <div className="text-destructive py-20 text-center">
-                  {t('tourismPointPage.errorLoading', 'Không thể tải dữ liệu.')}
-                </div>
-              ) : points.length === 0 ? (
-                <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
-                  <Inbox size={48} className="mb-4 opacity-30" />
-                  <h3 className="text-foreground text-lg font-semibold">
-                    {t('tourismPointPage.no_results', 'Không tìm thấy kết quả')}
-                  </h3>
-                  <p>
-                    {t('tourismPointPage.tryDifferentKeyword', 'Thử tìm kiếm với từ khóa khác.')}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {currentSettings.viewMode === 'grid' && points.length > 0 && (
-                    <TourismPointFeaturedCard
-                      point={points[0]}
-                      onClick={() => handleOpenDetail(points[0])}
-                      t={t}
-                      categoryName={getCategoryName(points[0])}
-                      isLiked={favorites.has(String(points[0].id))}
-                      onToggleLike={(e) => toggleFavorite(points[0].id, e)}
-                    />
-                  )}
-                  <div
-                    className={`grid gap-5 ${
-                      currentSettings.viewMode === 'grid'
-                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-                        : 'flex flex-col'
-                    }`}
-                  >
-                    {(currentSettings.viewMode === 'grid' ? points.slice(1) : points).map((p) => (
-                      <TourismPointStandardCard
-                        key={p.id}
-                        point={p}
-                        onClick={() => handleOpenDetail(p)}
-                        viewMode={currentSettings.viewMode}
-                        t={t}
-                        categoryName={getCategoryName(p)}
-                        isLiked={favorites.has(String(p.id))}
-                        onToggleLike={(e) => toggleFavorite(p.id, e)}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {/* Pagination */}
-              {pages > 1 && (
-                <div className="border-border mt-8 flex items-center justify-between border-t pt-6 font-medium">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setCurrentSettings({ page: Math.max(1, currentSettings.page - 1) })
-                    }
-                    disabled={currentSettings.page <= 1}
-                    className="rounded-full shadow-sm"
-                  >
-                    <ChevronLeft size={16} className="mr-1" /> {t('common.prev', 'Trước')}
-                  </Button>
-                  <div className="border-border text-primary rounded-full border px-4 py-1.5 text-sm shadow-sm">
-                    {currentSettings.page} / {pages}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setCurrentSettings({ page: Math.min(pages, currentSettings.page + 1) })
-                    }
-                    disabled={currentSettings.page >= pages}
-                    className="rounded-full shadow-sm"
-                  >
-                    {t('common.next', 'Sau')} <ChevronRight size={16} className="ml-1" />
-                  </Button>
-                </div>
-              )}
+          ) : isError ? (
+            <div className="py-20 text-center text-destructive">
+              {t('tourismPointPage.errorLoading', 'Không thể tải dữ liệu.')}
             </div>
-          </div>
-        </div>
+          ) : points.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+              <Inbox size={48} className="mb-4 opacity-30" />
+              <h3 className="text-lg font-semibold text-foreground">
+                {t('tourismPointPage.no_results', 'Không tìm thấy kết quả')}
+              </h3>
+              <p>{t('tourismPointPage.tryDifferentKeyword', 'Thử tìm kiếm với từ khóa khác.')}</p>
+            </div>
+          ) : (
+            <>
+              {currentSettings.viewMode === 'grid' && points.length > 0 && (
+                <TourismPointFeaturedCard
+                  point={points[0]}
+                  onClick={() => handleOpenDetail(points[0])}
+                  t={t}
+                  categoryName={getCategoryName(points[0])}
+                  isLiked={favorites.has(String(points[0].id))}
+                  onToggleLike={(e) => toggleFavorite(points[0].id, e)}
+                />
+              )}
+              <div
+                className={
+                  currentSettings.viewMode === 'grid'
+                    ? 'grid grid-cols-1 gap-4.5 sm:grid-cols-2 lg:grid-cols-4'
+                    : 'flex flex-col gap-3'
+                }
+              >
+                {(currentSettings.viewMode === 'grid' ? points.slice(1) : points).map((p) => (
+                  <TourismPointStandardCard
+                    key={p.id}
+                    point={p}
+                    onClick={() => handleOpenDetail(p)}
+                    viewMode={currentSettings.viewMode}
+                    t={t}
+                    categoryName={getCategoryName(p)}
+                    isLiked={favorites.has(String(p.id))}
+                    onToggleLike={(e) => toggleFavorite(p.id, e)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Pagination */}
+          {pages > 1 && (
+            <div className="mt-9 flex items-center justify-between border-t border-[#9db8d2] pt-5.5">
+              <button
+                disabled={currentSettings.page <= 1}
+                onClick={() => setCurrentSettings({ page: Math.max(1, currentSettings.page - 1) })}
+                className="flex h-9.5 min-w-20 cursor-pointer items-center justify-center gap-1 rounded-full border border-[#9db8d2] bg-white px-3.75 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ChevronLeft size={15} />
+                {t('common.prev', 'Trước')}
+              </button>
+              <div className="flex h-9.5 min-w-20 items-center justify-center rounded-full border border-[#9db8d2] bg-white px-3.75 text-sm font-bold text-primary">
+                {currentSettings.page} / {pages}
+              </div>
+              <button
+                disabled={currentSettings.page >= pages}
+                onClick={() => setCurrentSettings({ page: Math.min(pages, currentSettings.page + 1) })}
+                className="flex h-9.5 min-w-20 cursor-pointer items-center justify-center gap-1 rounded-full border border-[#9db8d2] bg-white px-3.75 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {t('common.next', 'Sau')}
+                <ChevronRight size={15} />
+              </button>
+            </div>
+          )}
+        </main>
       </div>
     </RootLayout>
   );

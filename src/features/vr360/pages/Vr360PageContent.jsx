@@ -9,6 +9,7 @@ import {
 } from '@/services/api/vr360/aframeSceneService';
 import Vr360SceneList from '../components/Vr360SceneList';
 import Vr360SceneViewer from '../components/Vr360SceneViewer';
+import Vr360MiniMap from '../components/Vr360MiniMap';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -129,7 +130,7 @@ export default function Vr360PageContent() {
     <RootLayout>
       <div className="h-full w-full px-4 py-4 xl:h-[calc(100vh-4.5rem)] xl:px-6 xl:py-4">
         <div className="grid h-full grid-cols-1 gap-4 xl:min-h-0 xl:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="space-y-4 xl:min-h-0 xl:overflow-y-auto xl:pr-1">
+          <aside className="flex flex-col gap-4 xl:min-h-0 xl:overflow-hidden xl:pr-1">
             <div className="space-y-2">
               <Button
                 variant="ghost"
@@ -170,16 +171,19 @@ export default function Vr360PageContent() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="xl:flex-1 xl:flex xl:flex-col xl:min-h-0">
               <CardHeader className="pb-2">
                 <CardTitle className="typo-section-title flex items-center gap-2">
                   <Map className="text-primary h-4 w-4" />
                   {t('vr360.minimap_title')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                {spotCoordinates ? (
-                  <>
+              <CardContent className="xl:flex xl:flex-col xl:flex-1 xl:min-h-0 space-y-2">
+                <div className="h-36 xl:h-auto xl:flex-1 xl:min-h-0 overflow-hidden rounded-lg">
+                  <Vr360MiniMap coordinates={spotCoordinates} />
+                </div>
+                {spotCoordinates && (
+                  <div className="flex items-center justify-between gap-2">
                     <p className="text-foreground typo-body">
                       {spotCoordinates[1].toFixed(5)}, {spotCoordinates[0].toFixed(5)}
                     </p>
@@ -198,12 +202,6 @@ export default function Vr360PageContent() {
                       <Map className="h-4 w-4" />
                       {t('vr360.back_to_map')}
                     </Button>
-                  </>
-                ) : (
-                  <div className="bg-muted border-muted-foreground/20 flex h-20 items-center justify-center rounded-lg border-2 border-dashed p-2">
-                    <p className="text-muted-foreground typo-meta text-center">
-                      {t('vr360.minimap_placeholder')}
-                    </p>
                   </div>
                 )}
               </CardContent>

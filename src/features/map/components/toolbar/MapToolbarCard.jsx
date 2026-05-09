@@ -402,8 +402,8 @@ export default function MapToolbarCard({
     <Card className="border-border rounded-3xl shadow-sm">
       <CardContent>
         <div className="flex flex-col gap-2 xl:flex-row xl:items-stretch xl:gap-3">
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[5fr_2fr_3fr] xl:items-start">
+          <div className="min-w-0 flex-1">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-[3fr_1.8fr_1.8fr_1.5fr_1.5fr_1.5fr_1.5fr_1fr]">
               <div className="relative w-full min-w-0 sm:col-span-2 xl:col-span-1">
                 <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
@@ -490,6 +490,7 @@ export default function MapToolbarCard({
                   </div>
                 ) : null}
               </div>
+
               <div className="w-full min-w-0">
                 <Select value={activeChip ?? ''} onValueChange={onChipChange}>
                   <SelectTrigger size="toolbar" className="w-full">
@@ -508,6 +509,7 @@ export default function MapToolbarCard({
                   </SelectContent>
                 </Select>
               </div>
+
               <div className="w-full min-w-0">
                 <Select
                   value={String(radiusKm ?? 0)}
@@ -530,8 +532,7 @@ export default function MapToolbarCard({
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-            <div className="grid w-full gap-2 sm:grid-cols-2 xl:grid-cols-[2.5fr_2.5fr_2fr_2fr_1fr]">
+
               <div className="relative w-full min-w-0">
                 <Input
                   ref={startInputRef}

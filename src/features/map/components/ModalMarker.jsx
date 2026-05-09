@@ -217,7 +217,7 @@ export default function ModalMarker() {
             <div className="grid grid-cols-2 gap-2">
               <Button
                 size="sm"
-                variant="outline"
+                variant="secondary"
                 disabled={isLoading || (!hasMedia && !spot?.primary_image)}
                 onClick={handleViewImages}
                 className="gap-1.5"
@@ -227,21 +227,21 @@ export default function ModalMarker() {
               </Button>
               <Button
                 size="sm"
-                variant="outline"
+                variant="gold"
                 onClick={handleReview}
                 disabled={isLoading}
                 className="gap-1.5"
               >
-                <Star size={14} className="fill-gold text-gold" />
+                <Star size={14} className="fill-current" />
                 {t('mapPage.spotModal.review')}
               </Button>
             </div>
             {hasVrTour && (
               <Button
                 size="sm"
-                variant="outline"
+                variant="tertiary"
                 onClick={handleVrTour}
-                className="border-primary/40 text-primary hover:bg-primary/5 w-full gap-1.5"
+                className="w-full gap-1.5"
               >
                 <RectangleGoggles size={14} />
                 {t('mapPage.spotModal.vrTour')}
@@ -249,6 +249,7 @@ export default function ModalMarker() {
             )}
             <Button
               size="sm"
+              variant="default"
               disabled={isLoading || !spot}
               onClick={handleGetDirections}
               className="w-full gap-1.5"

@@ -120,9 +120,14 @@ export default function Header() {
           variant="ghost"
           onClick={() => navigate('/')}
           aria-label="Go to home"
-          className="typo-brand-title text-primary h-auto px-2 leading-none"
+          className="group h-auto rounded-xl px-2 py-1.5 leading-none"
         >
-          {t('common.app_name')}
+          <span className="relative inline-flex items-center gap-2">
+            <span className="typo-brand-title from-primary via-secondary to-tertiary bg-gradient-to-r bg-clip-text tracking-tight text-transparent">
+              {t('common.app_name')}
+            </span>
+            <span className="from-primary via-secondary to-tertiary absolute -bottom-1 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r transition-all duration-300 group-hover:w-full" />
+          </span>
         </Button>
 
         {/* DESKTOP NAV */}
@@ -262,8 +267,13 @@ export default function Header() {
           >
             {/* Menu header */}
             <div className="border-border bg-card sticky top-0 z-10 flex items-center justify-between border-b px-5 py-4">
-              <span className="typo-brand-title text-primary truncate leading-none">
-                {t('common.app_name')}
+              <span className="inline-flex max-w-[82%] items-center gap-2 truncate leading-none">
+                <span className="bg-primary/12 text-primary border-primary/25 rounded-md border px-1.5 py-0.5 text-sm font-black tracking-wider">
+                  NB
+                </span>
+                <span className="typo-brand-title text-foreground truncate tracking-tight">
+                  {t('common.app_name')}
+                </span>
               </span>
               <Button
                 id="mobile-menu-close-btn"

@@ -1,14 +1,17 @@
 import React from 'react';
-import { Bookmark, MapPin, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Bookmark, MapPin, Clock, Star } from 'lucide-react';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 
+const BTN_GRADIENT = { background: 'linear-gradient(135deg, #075fac, #034f8d)' };
+
 export function TourismPointSkeletonCard({ isFeatured }) {
   if (isFeatured) {
-    return <div className="text-primary mb-6 h-72 w-full animate-pulse rounded-2xl md:h-80" />;
+    return (
+      <div className="mb-5 h-72 w-full animate-pulse rounded-3xl bg-muted md:h-80" />
+    );
   }
-  return <div className="text-primary h-80 w-full animate-pulse rounded-2xl" />;
+  return <div className="h-72 w-full animate-pulse rounded-[22px] bg-muted" />;
 }
 
 function getPointName(point) {
@@ -66,14 +69,7 @@ function getOpeningHours(point) {
   return null;
 }
 
-export function TourismPointFeaturedCard({
-  point,
-  onClick,
-  t,
-  categoryName,
-  isLiked,
-  onToggleLike,
-}) {
+export function TourismPointFeaturedCard({ point, onClick, t, categoryName, isLiked, onToggleLike }) {
   const safeImg = getPointImage(point);
   const rating = getPointRating(point);
   const reviewCount = getPointReviewCount(point);
@@ -85,77 +81,95 @@ export function TourismPointFeaturedCard({
 
   return (
     <div
-      className="group text-primary bg-card flex min-h-75 w-full cursor-pointer flex-col overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md md:flex-row"
+      className="group mb-5 grid cursor-pointer overflow-hidden rounded-3xl border border-[#a8bed4] bg-white shadow-[0_14px_34px_rgba(5,79,141,0.13)] grid-cols-1 md:grid-cols-[1.1fr_1fr]"
       onClick={onClick}
     >
-      <div className="text-primary relative w-full shrink-0 overflow-hidden md:w-[60%]">
+      {/* Image */}
+      <div className="relative min-h-52 overflow-hidden md:min-h-77.5">
         <img
           src={safeImg}
           alt={name}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = placeholderImg;
           }}
         />
-        <div className="absolute top-4 left-4 flex gap-2">
-          <span className="typo-badge text-primary-foreground bg-primary/60 rounded-full border px-3 py-1 backdrop-blur-md">
-            {categoryName}
-          </span>
-        </div>
+        <span className="absolute top-3.5 left-3.5 rounded-full border border-white/30 bg-primary/80 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
+          {categoryName}
+        </span>
+        <button
+          type="button"
+          onClick={onToggleLike}
+          className="absolute top-3.5 right-3.5 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-white/75 bg-white/90 text-primary"
+        >
+          <Bookmark size={14} className={isLiked ? 'fill-destructive text-destructive' : ''} />
+        </button>
       </div>
-      <div className="relative flex flex-1 flex-col justify-center p-6 md:p-8">
-        <div className="mb-3 flex items-center gap-2">
-          <span className="typo-badge text-primary-foreground bg-primary rounded border px-2 py-0.5 shadow-sm">
-            Mới
-          </span>
-          <div className="typo-meta text-primary flex items-center">
-            <Star size={13} className="fill-gold text-gold mr-1" />
-            {rating ? Number(rating).toFixed(1) : '—'} - {reviewCount}{' '}
+
+      {/* Body */}
+      <div className="flex flex-col justify-center p-6 md:p-8">
+        {/* Top meta */}
+        <div className="mb-2.5 flex flex-wrap items-center gap-2.5 text-sm font-bold text-primary">
+          {point?.is_featured && (
+            <span className="rounded-[7px] bg-primary px-2 py-0.5 text-xs font-bold text-white">
+              Mới
+            </span>
+          )}
+          <span className="flex items-center gap-1">
+            <Star size={13} className="fill-[#d99200] text-[#d99200]" />
+            {rating ? Number(rating).toFixed(1) : '—'} &mdash; {reviewCount}{' '}
             {t('tourismPointPage.reviews', 'đánh giá')}
-          </div>
+          </span>
         </div>
-        <h2 className="typo-card-title group-hover:text-primary text-foreground mb-2 line-clamp-1 transition-colors">
+
+        {/* Title */}
+        <h2 className="mb-2.5 text-3xl font-black leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary line-clamp-2">
           {name}
         </h2>
-        <div className="typo-body text-muted-foreground mb-6 line-clamp-3">
-          {description?.includes('<') ? (
-            <div dangerouslySetInnerHTML={{ __html: description }} />
-          ) : (
-            <p>{description}</p>
+
+        {/* Description */}
+        <p className="line-clamp-3 leading-relaxed text-muted-foreground">
+          {description?.replace(/<[^>]*>?/gm, '') || ''}
+        </p>
+
+        {/* Meta row */}
+        <div className="my-5 flex flex-wrap gap-4 text-sm font-bold text-[#53677e]">
+          {address && (
+            <span className="flex items-center gap-1.5">
+              <MapPin size={13} />
+              {address.split(',')[0]}
+            </span>
+          )}
+          {openingHours && (
+            <span className="flex items-center gap-1.5">
+              <Clock size={13} />
+              {openingHours}
+            </span>
           )}
         </div>
 
-        <div className="typo-meta mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-4">
-          <div className="text-muted-foreground flex items-center font-medium">
-            <div className="bg-muted-foreground mr-2 h-1.5 w-1.5 rounded-full" />
-            {address.split(',')[0] || ''}
+        {/* Actions */}
+        <div className="flex items-center justify-between gap-3.5">
+          <div className="text-2xl font-black text-primary">
+            {price && parseInt(price) > 0
+              ? formatVND(price)
+              : t('tourismPointPage.free', 'Miễn phí')}
           </div>
-          {openingHours && (
-            <div className="text-muted-foreground flex items-center font-medium">
-              <div className="bg-muted-foreground mr-2 h-1.5 w-1.5 rounded-full" />
-              {openingHours}
-            </div>
-          )}
-          <div className="mt-4 ml-auto flex w-full items-center justify-between gap-4 md:mt-0 md:w-auto md:justify-end">
-            <div className="typo-price text-primary dark:text-primary">
-              {price && parseInt(price) > 0
-                ? formatVND(price)
-                : t('tourismPointPage.free', 'Miễn phí')}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button className="rounded-full font-medium shadow-sm">
-                {t('tourismPointPage.view_detail', 'Xem chi tiết')}
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className={`rounded-full shadow-sm ${isLiked ? 'text-primary' : ''}`}
-                onClick={onToggleLike}
-              >
-                <Bookmark size={16} className={isLiked ? 'fill-destructive' : ''} />
-              </Button>
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              className="h-10.5 rounded-full px-4.5 text-sm font-bold text-white"
+              style={BTN_GRADIENT}
+            >
+              {t('tourismPointPage.view_detail', 'Xem chi tiết')}
+            </button>
+            <button
+              type="button"
+              onClick={onToggleLike}
+              className="flex h-10.5 w-10.5 items-center justify-center rounded-full border border-[#9db8d2] bg-white text-[#52647a]"
+            >
+              <Bookmark size={16} className={isLiked ? 'fill-destructive text-destructive' : ''} />
+            </button>
           </div>
         </div>
       </div>
@@ -163,15 +177,7 @@ export function TourismPointFeaturedCard({
   );
 }
 
-export function TourismPointStandardCard({
-  point,
-  onClick,
-  viewMode,
-  t,
-  categoryName,
-  isLiked,
-  onToggleLike,
-}) {
+export function TourismPointStandardCard({ point, onClick, viewMode, t, categoryName, isLiked, onToggleLike }) {
   const isList = viewMode === 'list';
   const safeImg = getPointImage(point);
   const rating = getPointRating(point);
@@ -185,9 +191,9 @@ export function TourismPointStandardCard({
     return (
       <div
         onClick={onClick}
-        className="group text-primary bg-card flex cursor-pointer items-center gap-4 overflow-hidden rounded-xl border p-3 shadow-sm transition-shadow hover:shadow-md"
+        className="group flex cursor-pointer items-center gap-4 overflow-hidden rounded-xl border border-[#a8bed4] bg-white p-3 shadow-sm transition-shadow hover:shadow-md"
       >
-        <div className="text-primary relative h-32 w-32 shrink-0 overflow-hidden rounded-lg">
+        <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-lg">
           <img
             src={safeImg}
             alt={name}
@@ -199,21 +205,21 @@ export function TourismPointStandardCard({
           />
         </div>
         <div className="flex h-full flex-1 flex-col justify-center py-2">
-          <h3 className="typo-section-title group-hover:text-primary text-foreground mb-1 line-clamp-1 transition-colors">
+          <h3 className="mb-1 line-clamp-1 text-base font-black text-foreground transition-colors group-hover:text-primary">
             {name}
           </h3>
-          <div className="typo-body text-muted-foreground mb-2 line-clamp-2">
+          <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
             {description?.replace(/<[^>]*>?/gm, '') || ''}
-          </div>
-          <div className="border-border text-primary mt-auto flex items-center justify-between border-t pt-2">
-            <div className="typo-meta text-muted-foreground flex items-center gap-1.5 font-medium">
+          </p>
+          <div className="mt-auto flex items-center justify-between border-t border-border pt-2 text-sm">
+            <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
               <MapPin size={12} /> {address.split(',')[0] || ''}
-            </div>
-            <div className="typo-body text-foreground font-semibold">
+            </span>
+            <span className="font-bold text-foreground">
               {price && parseInt(price) > 0
                 ? formatVND(price)
                 : t('tourismPointPage.free', 'Miễn phí')}
-            </div>
+            </span>
           </div>
         </div>
       </div>
@@ -223,78 +229,61 @@ export function TourismPointStandardCard({
   return (
     <div
       onClick={onClick}
-      className="group text-primary bg-card relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:shadow-lg"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[22px] border border-[#a8bed4] bg-white shadow-[0_8px_22px_rgba(5,79,141,0.08)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(5,79,141,0.16)]"
     >
-      <div className="text-primary relative h-44 w-full overflow-hidden">
+      {/* Thumbnail */}
+      <div className="relative h-43.75 overflow-hidden">
         <img
           src={safeImg}
           alt={name}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = placeholderImg;
           }}
         />
-
-        <div className="text-primary pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b to-transparent" />
-
-        <div className="absolute top-3 left-3">
-          <span className="typo-badge text-primary-foreground bg-primary/60 rounded-full border px-2.5 py-1 backdrop-blur-md">
-            {categoryName}
-          </span>
-        </div>
-        <div className="absolute top-3 right-3">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onToggleLike}
-            className={`text-primary hover:text-primary h-7 w-7 rounded-full p-0 shadow-sm backdrop-blur-md transition-colors ${isLiked ? 'text-primary' : ''}`}
-          >
-            <Bookmark size={13} className={isLiked ? 'fill-destructive' : ''} />
-          </Button>
-        </div>
+        <span className="absolute top-3 left-3 rounded-full bg-primary/80 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
+          {categoryName}
+        </span>
+        <button
+          type="button"
+          onClick={onToggleLike}
+          className="absolute top-3 right-3 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-white/75 bg-white/90 text-primary"
+        >
+          <Bookmark size={13} className={isLiked ? 'fill-destructive text-destructive' : ''} />
+        </button>
       </div>
 
-      <div className="relative flex flex-1 flex-col p-4">
-        <h3 className="typo-section-title group-hover:text-primary text-foreground mb-1 line-clamp-1 transition-colors">
+      {/* Card body */}
+      <div className="flex flex-1 flex-col p-4.25">
+        <h3 className="mb-1.5 line-clamp-1 text-lg font-black leading-snug text-foreground transition-colors group-hover:text-primary">
           {name}
         </h3>
 
-        <div className="mb-2 flex items-center gap-2">
-          {point?.is_featured && (
-            <span className="typo-badge text-primary rounded border px-1.5 py-px">Nổi bật</span>
-          )}
-          <div className="typo-meta text-foreground flex items-center font-semibold">
-            <Star size={11} className="fill-gold text-gold mr-1" />
-            {rating ? Number(rating).toFixed(1) : '—'}
-          </div>
+        <div className="mb-2 flex items-center gap-1 font-bold text-[#d99200]">
+          <Star size={13} className="fill-[#d99200]" />
+          {rating ? Number(rating).toFixed(1) : '—'}
         </div>
 
-        <div className="typo-body text-muted-foreground mb-4 line-clamp-2">
+        <p className="line-clamp-2 min-h-11.75 text-sm leading-relaxed text-muted-foreground">
           {description?.replace(/<[^>]*>?/gm, '') || ''}
-        </div>
+        </p>
 
-        <div className="mt-auto flex items-end justify-between">
-          <div className="typo-meta text-muted-foreground flex flex-col gap-1 font-medium">
+        {/* Footer */}
+        <div className="mt-3.5 grid gap-1.5 text-sm font-bold text-[#52647a]">
+          {address && (
             <span className="flex items-center gap-1.5">
-              <div className="bg-muted-foreground h-1 w-1 rounded-full" />
-              {address.split(',')[0] || ''}
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#52647a]" />
+              {address.split(',')[0]}
             </span>
-            {openingHours && (
-              <span className="flex items-center gap-1.5">
-                <div className="bg-primary h-2.5 w-0.75 rounded-sm" />
-                <div className="bg-primary mr-0.5 h-2.5 w-0.75 rounded-sm" />
-                {openingHours}
-              </span>
-            )}
-          </div>
-
-          <div className="text-primary dark:text-primary text-sm font-bold">
-            {price && parseInt(price) > 0 ? (
-              <span className="text-primary dark:text-primary">{formatVND(price)}</span>
-            ) : (
-              t('tourismPointPage.free', 'Miễn phí')
-            )}
+          )}
+          <div className="flex items-center justify-between font-black text-primary">
+            <span className="font-semibold text-[#52647a]">{openingHours || ''}</span>
+            <span>
+              {price && parseInt(price) > 0
+                ? formatVND(price)
+                : t('tourismPointPage.free', 'Miễn phí')}
+            </span>
           </div>
         </div>
       </div>
