@@ -26,7 +26,7 @@ export function useTourDetailPageModel(t) {
 
   const tourName = useMemo(
     () =>
-      lang === 'en' ? tour?.name_en || tour?.name_vi || '' : tour?.name_vi || tour?.name_en || '',
+      tour?.name || (lang === 'en' ? tour?.name_en || tour?.name_vi || '' : tour?.name_vi || tour?.name_en || ''),
     [tour, lang]
   );
 

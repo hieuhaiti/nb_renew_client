@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import mapboxgl from 'mapbox-gl';
 import { useDebounce } from 'use-debounce';
 import { Clock3, Eye, Route, Search, Star, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -27,7 +28,15 @@ import {
   formatTourPriceLabel,
   normalizeTourListPayload,
 } from '@/features/map/utils/tourPanelUtils';
-import { normalizeTourRoutePoint } from '@/features/map/utils/highlightRouteUtils';
+import {
+  buildHighlightRoutePointsFeatureCollection,
+  createRouteFromPoints,
+  normalizeTourRoutePoint,
+} from '@/features/map/utils/highlightRouteUtils';
+import {
+  addOrUpdateHighlightedRouteLayers,
+  clearHighlightedRouteLayers,
+} from '@/features/map/utils/MapHelper';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { cn, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
@@ -45,14 +54,51 @@ function TourRowSkeleton() {
 }
 
 function sortStops(stops) {
-  return [...stops].sort((a, b) => {
-    const orderA = Number(a?.stop_order ?? a?.order_index ?? a?.index ?? 0);
-    const orderB = Number(b?.stop_order ?? b?.order_index ?? b?.index ?? 0);
-    if (!Number.isNaN(orderA) && !Number.isNaN(orderB) && orderA !== orderB) {
-      return orderA - orderB;
-    }
-    return String(a?.id || '').localeCompare(String(b?.id || ''));
-  });
+  const list = Array.isArray(stops) ? stops : [];
+  return list
+    .map((stop, index) => ({ stop, index }))
+    .sort((a, b) => {
+      const orderA = Number(
+        a?.stop?.stop_order ?? a?.stop?.order_index ?? a?.stop?.index ?? a?.index + 1
+      );
+      const orderB = Number(
+        b?.stop?.stop_order ?? b?.stop?.order_index ?? b?.stop?.index ?? b?.index + 1
+      );
+      if (!Number.isNaN(orderA) && !Number.isNaN(orderB) && orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.index - b.index;
+    })
+    .map((item) => item.stop);
+}
+
+function normalizeStopInput(stop, index) {
+  if (stop && typeof stop === 'object') return stop;
+
+  const pointId = stop == null ? null : String(stop);
+  return {
+    id: pointId || `tour-stop-${index + 1}`,
+    point_id: pointId,
+    stop_order: index + 1,
+  };
+}
+
+function extractPointIdFromStop(stop) {
+  if (stop == null) return null;
+  if (typeof stop === 'string' || typeof stop === 'number') return String(stop);
+
+  return (
+    stop?.point_id ||
+    stop?.spot_id ||
+    stop?.spotId ||
+    stop?.tourism_point_id ||
+    stop?.destination_id ||
+    stop?.location_id ||
+    stop?.poi_id ||
+    stop?.id ||
+    stop?.spot?.id ||
+    null
+  );
 }
 
 function parseGeometryValue(value) {
@@ -72,6 +118,7 @@ function buildStopRouteCandidate(stop, pointDetail) {
   const fallbackNameEn = stop?.title_en || stop?.spot_name_en || stop?.spot_name || '';
   const geometryFromStop =
     parseGeometryValue(stop?.geom_json) || parseGeometryValue(stop?.geom) || stop?.geometry || null;
+  const resolvedPointId = extractPointIdFromStop(stop);
 
   return {
     ...(pointDetail || {}),
@@ -79,8 +126,10 @@ function buildStopRouteCandidate(stop, pointDetail) {
     point_id:
       stop?.point_id ||
       stop?.spot_id ||
+      stop?.spot?.id ||
       stop?.destination_id ||
       stop?.location_id ||
+      resolvedPointId ||
       pointDetail?.id ||
       null,
     name_vi: pointDetail?.name_vi || fallbackNameVi,
@@ -105,6 +154,8 @@ export default function TourPanel() {
   const setTourPanelFilters = useTourPanelStore((state) => state.setTourPanelFilters);
   const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
   const resetTourPanelFilters = useTourPanelStore((state) => state.resetTourPanelFilters);
+  const mapRef = useMapStore((state) => state.mapRef);
+  const mapRefObj = useMapStore((state) => state.mapRefObj);
 
   const highlightedRoute = useMapStore((state) => state.highlightedRoute);
   const setHighlightedRoute = useMapStore((state) => state.setHighlightedRoute);
@@ -130,8 +181,7 @@ export default function TourPanel() {
   });
 
   const tours = useMemo(() => normalizeTourListPayload(toursData, { lang }), [toursData, lang]);
-  const activeRouteTourId = highlightedRoute?.tourId ? String(highlightedRoute.tourId) : null;
-
+  const activeRouteTourId = highlightedRoute?.tourId ? String(highlightedRoute.tourId) : null;
   const handleOpenTourRoute = async (tour) => {
     if (!tour?.id) return;
 
@@ -152,12 +202,18 @@ export default function TourPanel() {
 
       const routePoints = (
         await Promise.all(
-          sortedStops.map(async (stop, index) => {
-            const pointId =
-              stop?.point_id || stop?.spot_id || stop?.destination_id || stop?.location_id || null;
+          sortedStops.map(async (rawStop, index) => {
+            const stop = normalizeStopInput(rawStop, index);
+            const pointId = extractPointIdFromStop(stop);
+            const embeddedPoint =
+              stop?.spot && typeof stop.spot === 'object'
+                ? stop.spot
+                : stop?.point && typeof stop.point === 'object'
+                  ? stop.point
+                  : null;
 
-            let pointDetail = null;
-            if (pointId) {
+            let pointDetail = embeddedPoint;
+            if (!pointDetail && pointId) {
               try {
                 pointDetail = await fetchPointById(pointId);
               } catch (_error) {
@@ -165,13 +221,8 @@ export default function TourPanel() {
               }
             }
 
-            const normalized = normalizeTourRoutePoint(
-              buildStopRouteCandidate(stop, pointDetail),
-              index,
-              lang
-            );
-
-            return normalized;
+            const candidate = buildStopRouteCandidate(stop, pointDetail);
+            return normalizeTourRoutePoint(candidate, index, lang);
           })
         )
       ).filter(Boolean);
@@ -184,6 +235,19 @@ export default function TourPanel() {
         );
       }
 
+      const routeResult = await createRouteFromPoints(
+        routePoints,
+        'driving',
+        lang === 'en' ? 'en' : 'vi'
+      );
+      if (!routeResult?.geometry?.coordinates?.length) {
+        throw new Error(
+          t('mapPage.tourPanel.routeFailed', {
+            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
+          })
+        );
+      }
+
       clearDirections();
       setHighlightedRoute({
         type: 'tour',
@@ -192,12 +256,64 @@ export default function TourPanel() {
         tourName: tour.name,
         vehicle: 'driving',
         points: routePoints,
+        geometry: routeResult.geometry,
+        routeProperties: routeResult.properties,
+        fullRoute: routeResult.fullRoute,
         meta: {
           tour_name: tour.name,
           total_stops: routePoints.length,
         },
       });
       setShowOnlyHighlightedRoute(true);
+
+      const resolvedMap = mapRef || mapRefObj?.current?.single || null;
+      const drawRouteOnMap = (targetMap) => {
+        if (!targetMap) return;
+
+        const routeFeature = {
+          type: 'Feature',
+          geometry: routeResult.geometry,
+          properties: {
+            ...(routeResult.properties || {}),
+            tour_name: tour.name,
+            total_stops: routePoints.length,
+          },
+        };
+        const routePointsFeatureCollection = buildHighlightRoutePointsFeatureCollection(
+          routeResult.points?.length ? routeResult.points : routePoints
+        );
+
+        clearHighlightedRouteLayers(targetMap);
+        addOrUpdateHighlightedRouteLayers(targetMap, {
+          routeFeature,
+          routePointsFeatureCollection,
+        });
+
+        const coordinates = routeResult.geometry.coordinates;
+        if (Array.isArray(coordinates) && coordinates.length > 1) {
+          const bounds = coordinates.reduce(
+            (acc, coord) => acc.extend(coord),
+            new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
+          );
+
+          targetMap.fitBounds(bounds, {
+            padding: 88,
+            duration: 850,
+          });
+        }
+      };
+
+      if (resolvedMap?.isStyleLoaded?.()) {
+        try {
+          drawRouteOnMap(resolvedMap);
+        } catch (_drawError) {}
+      } else if (resolvedMap) {
+        resolvedMap.once('style.load', () => {
+          try {
+            drawRouteOnMap(resolvedMap);
+          } catch (_drawError) {}
+        });
+      }
 
       toast.success(
         t('mapPage.tourPanel.routeReady', {
@@ -215,7 +331,6 @@ export default function TourPanel() {
       setRouteLoadingTourId(null);
     }
   };
-
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
@@ -267,6 +382,10 @@ export default function TourPanel() {
             variant="outline"
             className="h-8 text-sm"
             onClick={() => {
+              const resolvedMap = mapRef || mapRefObj?.current?.single || null;
+              if (resolvedMap) {
+                clearHighlightedRouteLayers(resolvedMap);
+              }
               clearHighlightedRoute();
               toast.info(
                 t('mapPage.tourPanel.routeCleared', {
@@ -426,3 +545,5 @@ export default function TourPanel() {
     </div>
   );
 }
+
+

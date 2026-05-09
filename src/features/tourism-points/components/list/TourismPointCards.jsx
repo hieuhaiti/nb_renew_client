@@ -3,7 +3,7 @@ import { Bookmark, MapPin, Clock, Star } from 'lucide-react';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #075fac, #034f8d)' };
+const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 
 export function TourismPointSkeletonCard({ isFeatured }) {
   if (isFeatured) {
@@ -81,7 +81,7 @@ export function TourismPointFeaturedCard({ point, onClick, t, categoryName, isLi
 
   return (
     <div
-      className="group mb-5 grid cursor-pointer overflow-hidden rounded-3xl border border-[#a8bed4] bg-white shadow-[0_14px_34px_rgba(5,79,141,0.13)] grid-cols-1 md:grid-cols-[1.1fr_1fr]"
+      className="group mb-5 grid cursor-pointer overflow-hidden rounded-3xl border border-[#a8bed4] bg-white shadow-[0_14px_34px_rgba(13,74,130,0.14)] grid-cols-1 md:grid-cols-[1.1fr_1fr]"
       onClick={onClick}
     >
       {/* Image */}
@@ -229,7 +229,7 @@ export function TourismPointStandardCard({ point, onClick, viewMode, t, category
   return (
     <div
       onClick={onClick}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[22px] border border-[#a8bed4] bg-white shadow-[0_8px_22px_rgba(5,79,141,0.08)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(5,79,141,0.16)]"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[22px] border border-[#a8bed4] bg-white shadow-[0_8px_22px_rgba(13,74,130,0.10)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(13,74,130,0.18)]"
     >
       {/* Thumbnail */}
       <div className="relative h-43.75 overflow-hidden">

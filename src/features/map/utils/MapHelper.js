@@ -1,3 +1,14 @@
+import mapboxgl from 'mapbox-gl';
+
+export {
+  addTrafficFlowLayer,
+  buildIncidentPopupHTML,
+  INCIDENTS_LAYER as TRAFFIC_INCIDENTS_LAYER,
+  removeTrafficFlowLayer,
+  removeTrafficIncidentLayer,
+  updateTrafficIncidentData,
+} from '@/features/map/utils/trafficLayerUtils';
+
 const EMPTY_FEATURE_COLLECTION = {
   type: 'FeatureCollection',
   features: [],
@@ -58,6 +69,30 @@ const POINT_TEXT_COLOR = 'black';
 const POINT_TEXT_HALO_COLOR = 'white';
 const POINT_TEXT_HALO_WIDTH = 2;
 const POINT_TEXT_OPACITY = 1;
+
+export const HIGHLIGHT_ROUTE_SOURCE_ID = 'highlight-route';
+export const HIGHLIGHT_ROUTE_POINTS_SOURCE_ID = 'highlight-route-points';
+export const HIGHLIGHT_ROUTE_LAYER_IDS = [
+  // Current route layer ids
+  'highlight-route-shadow',
+  'highlight-route-outline',
+  'highlight-route-main',
+  'highlight-route-pattern',
+  'highlight-route-arrows',
+  'highlight-route-points-shadow',
+  'highlight-route-points-bg',
+  'highlight-route-points-inner',
+  'highlight-route-points-label',
+  'highlight-route-points-name',
+  // Legacy/alternate route layer ids for robust cleanup
+  'route-line-shadow',
+  'route-line',
+  'route-points',
+  'route-labels',
+  'route-arrow',
+];
+
+const routePinMarkersByMap = new WeakMap();
 
 function isObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
@@ -171,9 +206,9 @@ export function normalizePointsToFeatureCollection(payload) {
   if (directGeojson?.type === 'FeatureCollection' && Array.isArray(directGeojson.features)) {
     return {
       ...directGeojson,
-      features: directGeojson.features.map((feature, index) =>
-        toFeature(feature, `${feature?.id ?? index}`)
-      ).filter(Boolean),
+      features: directGeojson.features
+        .map((feature, index) => toFeature(feature, `${feature?.id ?? index}`))
+        .filter(Boolean),
     };
   }
 
@@ -218,6 +253,19 @@ function ensureSource(map, sourceId, data) {
 function ensureLayer(map, layer) {
   if (map.getLayer(layer.id)) return;
   map.addLayer(layer);
+}
+
+function ensureGeojsonSource(map, sourceId, data) {
+  const source = map.getSource(sourceId);
+  if (source && typeof source.setData === 'function') {
+    source.setData(data);
+    return;
+  }
+
+  map.addSource(sourceId, {
+    type: 'geojson',
+    data,
+  });
 }
 
 function normalizeSvgIcon(iconSvg) {
@@ -602,7 +650,9 @@ export function addOrUpdateSubcategoryLayer(
   ];
   const progressBuckets = getFeatureProgressBuckets(featureCollection);
   const hasAllProgressIcons = (markerImageBaseId) =>
-    progressBuckets.every((bucket) => map.hasImage(getProgressIconImageId(markerImageBaseId, bucket)));
+    progressBuckets.every((bucket) =>
+      map.hasImage(getProgressIconImageId(markerImageBaseId, bucket))
+    );
 
   // Clean up legacy split point layers so only one symbol layer remains.
   [`${sourceId}-circle`, `${sourceId}-icon`, `${sourceId}-label`].forEach((legacyLayerId) => {
@@ -768,6 +818,261 @@ export function addOrUpdateSubcategoryLayer(
   }
 
   ensureFallbackPointLayer();
+}
+
+export function clearHighlightedRouteLayers(map) {
+  if (!map) return;
+  clearRoutePinMarkers(map);
+
+  [...HIGHLIGHT_ROUTE_LAYER_IDS].reverse().forEach((layerId) => {
+    if (map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
+  });
+
+  if (map.getSource(HIGHLIGHT_ROUTE_POINTS_SOURCE_ID)) {
+    map.removeSource(HIGHLIGHT_ROUTE_POINTS_SOURCE_ID);
+  }
+
+  if (map.getSource(HIGHLIGHT_ROUTE_SOURCE_ID)) {
+    map.removeSource(HIGHLIGHT_ROUTE_SOURCE_ID);
+  }
+}
+
+function createPin({ color, num = null, glyph = null }) {
+  const wrap = document.createElement('div');
+  wrap.className = 'pin-wrap';
+  wrap.dataset.routeMarker = 'true';
+  const pin = document.createElement('div');
+  pin.className = 'pin';
+  pin.style.setProperty('--pin-color', color);
+
+  const inner = document.createElement('div');
+  inner.className = 'inner';
+
+  if (num !== null && num !== undefined) {
+    const n = document.createElement('div');
+    n.className = 'num';
+    n.textContent = String(num);
+    inner.appendChild(n);
+  } else if (glyph != null) {
+    const g = document.createElement('div');
+    g.className = 'glyph';
+    g.textContent = String(glyph);
+    inner.appendChild(g);
+  }
+
+  pin.appendChild(inner);
+  wrap.appendChild(pin);
+  return wrap;
+}
+
+function getRoutePointColor(properties) {
+  const isStart = Boolean(properties?.is_start);
+  const isEnd = Boolean(properties?.is_end);
+  return isStart || isEnd ? '#DC2626' : '#FACC15';
+}
+
+function clearRoutePinMarkers(map) {
+  const markers = routePinMarkersByMap.get(map);
+  if (Array.isArray(markers) && markers.length > 0) {
+    markers.forEach((marker) => marker.remove());
+  }
+  routePinMarkersByMap.delete(map);
+
+  const container = map?.getContainer?.();
+  if (!container) return;
+  const markerNodes = container.querySelectorAll('.pin-wrap[data-route-marker=\"true\"]');
+  markerNodes.forEach((node) => {
+    const markerElement = node.closest('.mapboxgl-marker');
+    if (markerElement) markerElement.remove();
+  });
+}
+
+function addRoutePinMarkers(map, routePointsFeatureCollection) {
+  if (!map) return;
+  clearRoutePinMarkers(map);
+
+  const features = Array.isArray(routePointsFeatureCollection?.features)
+    ? routePointsFeatureCollection.features
+    : [];
+  if (features.length === 0) return;
+
+  const markers = features
+    .map((feature) => {
+      const coordinates = feature?.geometry?.coordinates;
+      if (!Array.isArray(coordinates) || coordinates.length < 2) return null;
+
+      const properties = isObject(feature?.properties) ? feature.properties : {};
+      const element = createPin({
+        color: getRoutePointColor(properties),
+        num: properties.step_number ?? null,
+        glyph: properties.glyph ?? null,
+      });
+
+      return new mapboxgl.Marker({
+        element,
+        anchor: 'bottom',
+      })
+        .setLngLat([Number(coordinates[0]), Number(coordinates[1])])
+        .addTo(map);
+    })
+    .filter(Boolean);
+
+  routePinMarkersByMap.set(map, markers);
+}
+
+export function addOrUpdateHighlightedRouteLayers(
+  map,
+  {
+    routeFeature,
+    routePointsFeatureCollection,
+    routeSourceId = HIGHLIGHT_ROUTE_SOURCE_ID,
+    routePointsSourceId = HIGHLIGHT_ROUTE_POINTS_SOURCE_ID,
+  }
+) {
+  if (!map || !routeFeature || !routePointsFeatureCollection) return;
+
+  ensureGeojsonSource(map, routeSourceId, routeFeature);
+  ensureGeojsonSource(map, routePointsSourceId, routePointsFeatureCollection);
+  addRoutePinMarkers(map, routePointsFeatureCollection);
+
+  ensureLayer(map, {
+    id: 'highlight-route-shadow',
+    type: 'line',
+    source: routeSourceId,
+    paint: { 'line-color': 'rgba(0,0,0,0.35)', 'line-width': 12, 'line-blur': 2 },
+    layout: {
+      'line-join': 'round',
+      'line-cap': 'round',
+    },
+  });
+
+  ensureLayer(map, {
+    id: 'highlight-route-outline',
+    type: 'line',
+    source: routeSourceId,
+    paint: {
+      'line-color': '#ffffff',
+      'line-opacity': 0.95,
+      'line-width': 10,
+    },
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round',
+    },
+  });
+
+  ensureLayer(map, {
+    id: 'highlight-route-main',
+    type: 'line',
+    source: routeSourceId,
+    paint: {
+      'line-color': '#DC2626',
+      'line-opacity': 0.98,
+      'line-width': 7,
+    },
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round',
+    },
+  });
+
+  ensureLayer(map, {
+    id: 'highlight-route-arrows',
+    type: 'symbol',
+    source: routeSourceId,
+    layout: {
+      'symbol-placement': 'line',
+      'symbol-spacing': 64,
+      'text-field': '>',
+      'text-size': 11,
+      'text-keep-upright': false,
+      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+    },
+    paint: {
+      'text-color': '#B91C1C',
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 1,
+      'text-opacity': 0.8,
+    },
+  });
+
+  ensureLayer(map, {
+    id: 'highlight-route-points-shadow',
+    type: 'circle',
+    source: routePointsSourceId,
+    paint: {
+      'circle-radius': 14,
+      'circle-color': '#111111',
+      'circle-opacity': 0.18,
+    },
+  });
+
+  ensureLayer(map, {
+    id: 'highlight-route-points-bg',
+    type: 'circle',
+    source: routePointsSourceId,
+    paint: {
+      'circle-radius': 12,
+      'circle-color': [
+        'case',
+        ['boolean', ['get', 'is_start'], false],
+        '#DC2626',
+        ['boolean', ['get', 'is_end'], false],
+        '#DC2626',
+        '#FACC15',
+      ],
+      'circle-stroke-color': '#ffffff',
+      'circle-stroke-width': 2.5,
+    },
+  });
+
+  ensureLayer(map, {
+    id: 'highlight-route-points-inner',
+    type: 'circle',
+    source: routePointsSourceId,
+    paint: {
+      'circle-radius': 0,
+      'circle-color': '#ffffff',
+      'circle-opacity': 0,
+    },
+  });
+
+  ensureLayer(map, {
+    id: 'highlight-route-points-label',
+    type: 'symbol',
+    source: routePointsSourceId,
+    layout: {
+      'text-field': ['to-string', ['get', 'step_number']],
+      'text-size': 10,
+      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+    },
+    paint: {
+      'text-color': '#111827',
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 1.2,
+      'text-opacity': 0,
+    },
+  });
+
+  ensureLayer(map, {
+    id: 'highlight-route-points-name',
+    type: 'symbol',
+    source: routePointsSourceId,
+    layout: {
+      'text-field': ['coalesce', ['get', 'name'], ''],
+      'text-size': 12,
+      'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+      'text-offset': [0, 1.8],
+      'text-anchor': 'top',
+    },
+    paint: {
+      'text-color': '#111827',
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 1.8,
+    },
+  });
 }
 
 export function removeSubcategoryLayer(map, sourceId) {

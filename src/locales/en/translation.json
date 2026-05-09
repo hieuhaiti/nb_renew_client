@@ -588,6 +588,7 @@
       "viewOnMap": "View on map"
     },
     "direction": {
+      "title": "Directions",
       "driving": "Driving",
       "walking": "Walking",
       "cycling": "Cycling",

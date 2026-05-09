@@ -1,6 +1,67 @@
 import React, { useMemo } from 'react';
-import { Clock3, MapPin } from 'lucide-react';
-import { formatStopDuration } from '@/lib/utils';
+import { Clock3, MapPin, Images } from 'lucide-react';
+import { formatStopDuration, withBaseUrl } from '@/lib/utils';
+import { useGetSpotMedia } from '@/services/api/tourism-points/tourismPointsApi';
+import { useModalCarouselStore } from '@/features/map/store/useModalStore';
+
+function StopMediaStrip({ spot_id }) {
+  const { data: mediaResp } = useGetSpotMedia({ spot_id, options: { enabled: Boolean(spot_id) } });
+  const { openCarouselModal } = useModalCarouselStore();
+
+  const images = useMemo(() => {
+    const raw =
+      mediaResp?.data?.media ||
+      mediaResp?.data?.items ||
+      mediaResp?.media ||
+      (Array.isArray(mediaResp?.data) ? mediaResp.data : null) ||
+      [];
+    return raw
+      .filter((m) => {
+        const type = (m?.file_type || m?.media_type || m?.type || '').toLowerCase();
+        return !type.startsWith('video');
+      })
+      .map((m) => m?.url || m?.file_url || m?.image_url || '')
+      .filter(Boolean);
+  }, [mediaResp]);
+
+  if (!spot_id || images.length === 0) return null;
+
+  const preview = images.slice(0, 3);
+  const extra = images.length - preview.length;
+
+  return (
+    <div className="mt-2 flex items-center gap-1.5">
+      {preview.map((url, i) => (
+        <button
+          key={i}
+          type="button"
+          className="relative h-12 w-16 shrink-0 overflow-hidden rounded-[8px] border border-[#cfe0f4] focus:outline-none"
+          onClick={() => openCarouselModal(images)}
+          aria-label="Xem ảnh địa điểm"
+        >
+          <img
+            src={withBaseUrl(url)}
+            alt=""
+            className="h-full w-full object-cover transition-opacity hover:opacity-85"
+          />
+          {i === preview.length - 1 && extra > 0 && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-[8px] bg-black/45 text-xs font-bold text-white">
+              +{extra}
+            </div>
+          )}
+        </button>
+      ))}
+      <button
+        type="button"
+        className="text-muted-foreground hover:text-primary ml-0.5 flex items-center gap-1 text-xs transition-colors"
+        onClick={() => openCarouselModal(images)}
+      >
+        <Images className="h-3.5 w-3.5" />
+        {images.length}
+      </button>
+    </div>
+  );
+}
 
 export function TourDetailStopsSection({ stops, t }) {
   const byDay = useMemo(() => {
@@ -43,7 +104,6 @@ export function TourDetailStopsSection({ stops, t }) {
 
                 return (
                   <div key={stop.id} className="flex gap-3">
-                    {/* Timeline line + circle */}
                     <div className="flex flex-col items-center">
                       <div className="border-primary bg-muted text-primary flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] text-sm font-semibold">
                         {stop.stop_order}
@@ -51,13 +111,12 @@ export function TourDetailStopsSection({ stops, t }) {
                       {!isLast && <div className="bg-muted my-0.5 w-px flex-1" />}
                     </div>
 
-                    {/* Content */}
-                    <div className={`min-w-0 flex-1 pb-3 ${isLast ? '' : ''}`}>
+                    <div className={`min-w-0 flex-1 pb-3`}>
                       <p
                         className="text-foreground text-sm font-medium"
                         title={stop.title_vi || ''}
                       >
-                        {stop.title_vi || t('tourPage.unknown', '?i?m d?ng')}
+                        {stop.title_vi || t('tourPage.unknown', 'Điểm dừng')}
                       </p>
                       {stop.description_vi && (
                         <p className="text-muted-foreground mt-0.5 text-sm">
@@ -79,6 +138,7 @@ export function TourDetailStopsSection({ stops, t }) {
                           </span>
                         )}
                       </div>
+                      <StopMediaStrip spot_id={stop.spot_id} />
                     </div>
                   </div>
                 );

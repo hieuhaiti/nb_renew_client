@@ -78,7 +78,7 @@ export default function HomePageContent() {
 
   const container = 'mx-auto w-full max-w-[1320px] px-4 sm:px-6';
   const card =
-    'rounded-[24px] border border-[#cbdced] bg-card shadow-[0_14px_34px_rgba(0,83,161,0.10)]';
+    'rounded-[24px] border border-[#a9c0de] bg-card shadow-[0_18px_42px_rgba(13,74,130,0.14)]';
 
   const homeData = useMemo(() => getHomeData(lang), [lang]);
   const {
@@ -131,7 +131,14 @@ export default function HomePageContent() {
     isLoading: isHomeSearchLoading,
     isFetching: isHomeSearchFetching,
   } = useSearchSpotsQuery(
-    { search: debouncedKeyword, page: 1, limit: 8, status: 'active', sortBy: 'created_at', sortOrder: 'DESC' },
+    {
+      search: debouncedKeyword,
+      page: 1,
+      limit: 8,
+      status: 'active',
+      sortBy: 'created_at',
+      sortOrder: 'DESC',
+    },
     { enabled: debouncedKeyword.length >= 2 }
   );
 
@@ -153,9 +160,10 @@ export default function HomePageContent() {
       name: s.name,
       subtitle: s.category_name || '',
       description: s.description || '',
-      image: (s.primary_image || s.primary_image_url)
-        ? withBaseUrl(s.primary_image || s.primary_image_url)
-        : '',
+      image:
+        s.primary_image || s.primary_image_url
+          ? withBaseUrl(s.primary_image || s.primary_image_url)
+          : '',
       province: s.province_name || s.address || '',
       rating: s.rating_avg ? parseFloat(s.rating_avg).toFixed(1) : null,
     }));
@@ -214,10 +222,10 @@ export default function HomePageContent() {
   })();
 
   const statGradients = [
-    'linear-gradient(135deg, #0b74bd, #064f8e)',
-    'linear-gradient(135deg, #21a77e, #08775a)',
-    'linear-gradient(135deg, #ee9b2f, #c96a13)',
-    'linear-gradient(135deg, #d95733, #a92c17)',
+    'linear-gradient(135deg, #0b66c3, #0ea5e9)',
+    'linear-gradient(135deg, #10b981, #059669)',
+    'linear-gradient(135deg, #f59e0b, #d97706)',
+    'linear-gradient(135deg, #ef4444, #b91c1c)',
   ];
 
   const eventColors = [
@@ -227,58 +235,56 @@ export default function HomePageContent() {
   ];
 
   const qlColors = [
-    { gradient: 'linear-gradient(135deg, #0b74bd, #064f8e)', hover: 'hover:border-primary/50' },
+    { gradient: 'linear-gradient(135deg, #0b66c3, #0ea5e9)', hover: 'hover:border-primary/50' },
     { gradient: 'linear-gradient(135deg, #6f61e8, #493bc7)', hover: 'hover:border-quinary/50' },
-    { gradient: 'linear-gradient(135deg, #21a77e, #08775a)', hover: 'hover:border-secondary/50' },
-    { gradient: 'linear-gradient(135deg, #ee9b2f, #c96a13)', hover: 'hover:border-tertiary/50' },
-    { gradient: 'linear-gradient(135deg, #d95733, #a92c17)', hover: 'hover:border-quaternary/50' },
+    { gradient: 'linear-gradient(135deg, #10b981, #059669)', hover: 'hover:border-secondary/50' },
+    { gradient: 'linear-gradient(135deg, #f59e0b, #d97706)', hover: 'hover:border-tertiary/50' },
+    { gradient: 'linear-gradient(135deg, #ef4444, #b91c1c)', hover: 'hover:border-quaternary/50' },
   ];
 
   return (
     <RootLayout>
-      <div className="bg-background py-6 space-y-6">
-
+      <div className="bg-background space-y-6 py-6">
         {/* ─── Hero + Sidebar ─── */}
         <section className="w-full">
           <div className={container}>
             <div className="grid gap-5 lg:grid-cols-[1.55fr_1fr]">
-
               {/* Hero banner */}
               <div
-                className="relative min-h-[560px] overflow-hidden rounded-[28px] shadow-[0_14px_34px_rgba(0,83,161,0.14)] flex flex-col justify-between p-8 sm:p-10 text-white"
+                className="relative flex min-h-107.5 flex-col justify-between overflow-hidden rounded-[26px] p-8 text-white shadow-[0_18px_42px_rgba(13,74,130,0.14)] sm:p-10"
                 style={{
                   background:
-                    'linear-gradient(90deg,rgba(4,39,66,.88) 0%,rgba(4,39,66,.54) 55%,rgba(4,39,66,.18) 100%), url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80") center/cover',
+                    'linear-gradient(135deg,rgba(3,95,172,.92),rgba(14,165,233,.86),rgba(16,185,129,.72)), url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80") center/cover',
                 }}
               >
                 <div>
-                  <span className="inline-flex rounded-full border border-white/35 bg-white/16 px-3.5 py-2 text-sm font-bold backdrop-blur-sm mb-5">
+                  <span className="mb-5 inline-flex rounded-full border border-white/35 bg-white/16 px-3.5 py-2 text-sm font-bold backdrop-blur-sm">
                     Cổng thông tin du lịch tích hợp bản đồ GIS, thời tiết, VR360 và gợi ý hành trình
                   </span>
-                  <h1 className="max-w-3xl text-[clamp(30px,4vw,48px)] font-black leading-[1.16] tracking-[-1.4px]">
+                  <h1 className="max-w-3xl text-[clamp(30px,4vw,48px)] leading-[1.16] font-black tracking-[-1.4px]">
                     Khám phá điểm đến đẹp hơn, trực quan hơn và dễ chọn hành trình hơn.
                   </h1>
-                  <p className="mt-4 max-w-2xl text-white/90 text-sm sm:text-base leading-relaxed">
+                  <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base">
                     Trang chủ được thiết kế theo hướng sáng, rõ và giàu thông tin thực tế: điểm đến,
                     sự kiện, tour, ẩm thực, OCOP, bản đồ số và nội dung cộng đồng.
                   </p>
                   <div className="mt-6 flex flex-wrap gap-3">
                     <Button
-                      className="rounded-full h-11 px-5 font-bold shadow-md"
+                      className="h-11 rounded-full px-5 font-bold shadow-md"
                       onClick={() => navigate('/map')}
                     >
                       Khám phá bản đồ GIS
                     </Button>
                     <Button
                       variant="quinary"
-                      className="rounded-full h-11 px-5 font-bold shadow-md"
+                      className="h-11 rounded-full px-5 font-bold shadow-md"
                       onClick={() => navigate('/vr360')}
                     >
                       Trải nghiệm VR360
                     </Button>
                     <Button
                       variant="gold"
-                      className="rounded-full h-11 px-5 font-bold shadow-md"
+                      className="h-11 rounded-full px-5 font-bold shadow-md"
                       onClick={() => navigate('/tourism-point')}
                     >
                       Xem điểm nổi bật
@@ -286,10 +292,10 @@ export default function HomePageContent() {
                   </div>
                 </div>
 
-                <div className="space-y-4 mt-8">
+                <div className="mt-8 space-y-4">
                   {/* Search */}
-                  <div className="relative max-w-3xl rounded-[22px] bg-white/92 shadow-[0_10px_28px_rgba(0,0,0,.18)] px-5 py-4 text-[#22364d]">
-                    <label className="text-[#667085] text-xs font-semibold block mb-1.5">
+                  <div className="relative max-w-3xl rounded-[22px] bg-white/92 px-5 py-4 text-[#22364d] shadow-[0_10px_28px_rgba(0,0,0,.18)]">
+                    <label className="mb-1.5 block text-xs font-semibold text-[#667085]">
                       Tìm kiếm điểm đến, dịch vụ, sự kiện...
                     </label>
                     <div className="relative flex items-center">
@@ -300,7 +306,7 @@ export default function HomePageContent() {
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => setTimeout(() => setIsSearchFocused(false), 120)}
                         placeholder="Ví dụ: Tràng An, Hoa Lư, Bái Đính..."
-                        className="border-0 bg-transparent pl-6 pr-7 py-0 h-auto shadow-none focus-visible:ring-0 font-semibold text-sm text-[#22364d]"
+                        className="h-auto border-0 bg-transparent py-0 pr-7 pl-6 text-sm font-semibold text-[#22364d] shadow-none focus-visible:ring-0"
                       />
                       {keyword && (
                         <Button
@@ -317,15 +323,19 @@ export default function HomePageContent() {
                     </div>
 
                     {shouldShowSearchOverlay && (
-                      <div className="absolute right-0 bottom-full left-0 z-30 mb-2 max-h-72 overflow-auto rounded-xl border border-border bg-card shadow-lg">
+                      <div className="border-border bg-card absolute right-0 bottom-full left-0 z-30 mb-2 max-h-72 overflow-auto rounded-xl border shadow-lg">
                         {isHomeSearchLoading || isHomeSearchFetching ? (
                           <div className="flex items-center justify-center px-3 py-6">
                             <LoadingInline size="small" />
                           </div>
                         ) : homeSearchResults.length === 0 ? (
-                          <div className="flex flex-col items-center gap-2 px-3 py-6 text-sm text-muted-foreground">
+                          <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-sm">
                             <MapPin className="h-5 w-5 opacity-70" />
-                            <p>{t('mapPage.toolbar.searchNoResult', { defaultValue: 'No matching destination found.' })}</p>
+                            <p>
+                              {t('mapPage.toolbar.searchNoResult', {
+                                defaultValue: 'No matching destination found.',
+                              })}
+                            </p>
                           </div>
                         ) : (
                           <div className="p-1.5">
@@ -338,12 +348,19 @@ export default function HomePageContent() {
                                 onMouseDown={(e) => e.preventDefault()}
                                 onClick={() => handleGoMapWithSearch(item)}
                               >
-                                <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                                <MapPin className="text-primary h-4 w-4 shrink-0" />
                                 <div className="min-w-0 flex-1 text-left">
-                                  <p className="truncate text-sm font-medium text-foreground">{item.name}</p>
-                                  <p className="truncate text-sm text-muted-foreground">{item.address || t('mapPage.destination.noAddress', { defaultValue: 'No address' })}</p>
+                                  <p className="text-foreground truncate text-sm font-medium">
+                                    {item.name}
+                                  </p>
+                                  <p className="text-muted-foreground truncate text-sm">
+                                    {item.address ||
+                                      t('mapPage.destination.noAddress', {
+                                        defaultValue: 'No address',
+                                      })}
+                                  </p>
                                 </div>
-                                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                                <ArrowUpRight className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
                               </Button>
                             ))}
                           </div>
@@ -357,11 +374,13 @@ export default function HomePageContent() {
                     {HERO_STATS.map((stat, i) => (
                       <div
                         key={stat.label}
-                        className="rounded-[18px] p-4 shadow-md min-h-[86px]"
+                        className="min-h-[86px] rounded-[18px] p-4 shadow-md"
                         style={{ background: statGradients[i % statGradients.length] }}
                       >
                         <span className="text-sm font-bold text-white/92">{stat.label}</span>
-                        <strong className="block mt-1.5 text-[23px] font-black text-white">{stat.value}</strong>
+                        <strong className="mt-1.5 block text-[23px] font-black text-white">
+                          {stat.value}
+                        </strong>
                       </div>
                     ))}
                   </div>
@@ -370,7 +389,6 @@ export default function HomePageContent() {
 
               {/* Sidebar */}
               <div className="flex flex-col gap-4">
-
                 {/* Weather card */}
                 <div className={`${card} p-5`}>
                   <SectionLabel>Thời tiết nhanh</SectionLabel>
@@ -381,32 +399,32 @@ export default function HomePageContent() {
                       </h2>
                       <p className="text-muted-foreground mt-1 text-sm">{weatherSummary}</p>
                     </div>
-                    <div className="text-primary text-[44px] font-black shrink-0">
+                    <div className="text-primary shrink-0 text-[44px] font-black">
                       {weather ? formatTemperature(weather?.main?.temp) : '--'}
                     </div>
                   </div>
                   <div className="mt-4 grid gap-2">
-                    <div className="flex items-center justify-between rounded-[14px] bg-primary/8 px-3.5 py-2.5">
-                      <span className="flex items-center gap-2 text-sm font-semibold text-primary/80">
+                    <div className="bg-primary/8 flex items-center justify-between rounded-[14px] px-3.5 py-2.5">
+                      <span className="text-primary/80 flex items-center gap-2 text-sm font-semibold">
                         <Wind size={14} /> Gió
                       </span>
-                      <strong className="text-sm text-primary">
+                      <strong className="text-primary text-sm">
                         {weather ? formatWindSpeedKph(weather?.wind?.speed) : '--'}
                       </strong>
                     </div>
-                    <div className="flex items-center justify-between rounded-[14px] bg-gold/10 px-3.5 py-2.5">
-                      <span className="flex items-center gap-2 text-sm font-semibold text-gold opacity-80">
+                    <div className="bg-gold/10 flex items-center justify-between rounded-[14px] px-3.5 py-2.5">
+                      <span className="text-gold flex items-center gap-2 text-sm font-semibold opacity-80">
                         <Sun size={14} /> AQI
                       </span>
-                      <strong className="text-sm text-gold">
+                      <strong className="text-gold text-sm">
                         {weatherOverview?.aqiValue ?? '--'} · {t(aqiMeta.labelKey)}
                       </strong>
                     </div>
-                    <div className="flex items-center justify-between rounded-[14px] bg-secondary/8 px-3.5 py-2.5">
-                      <span className="flex items-center gap-2 text-sm font-semibold text-secondary opacity-80">
+                    <div className="bg-secondary/8 flex items-center justify-between rounded-[14px] px-3.5 py-2.5">
+                      <span className="text-secondary flex items-center gap-2 text-sm font-semibold opacity-80">
                         <CloudRain size={14} /> Độ ẩm
                       </span>
-                      <strong className="text-sm text-secondary">
+                      <strong className="text-secondary text-sm">
                         {weather ? formatHumidity(weather?.main?.humidity) : '--'}
                       </strong>
                     </div>
@@ -414,20 +432,20 @@ export default function HomePageContent() {
                 </div>
 
                 {/* Events card */}
-                <div className={`${card} relative overflow-hidden p-5`}
-                  style={{ background: 'linear-gradient(135deg, #fff 0%, #fff7ed 100%)' }}
-                >
-                  <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full blur-2xl opacity-40 bg-tertiary" />
+                <div className={`${card} relative overflow-hidden p-5`}>
+                  <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full opacity-40 blur-2xl" />
                   <div className="relative">
                     <div className="flex items-center gap-2">
                       <Sparkles size={13} className="text-tertiary animate-pulse" />
                       <SectionLabel color="var(--tertiary)">Lễ hội theo mùa</SectionLabel>
-                      <span className="relative flex h-2 w-2 ml-1">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tertiary opacity-75" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-tertiary" />
+                      <span className="relative ml-1 flex h-2 w-2">
+                        <span className="bg-tertiary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+                        <span className="bg-tertiary relative inline-flex h-2 w-2 rounded-full" />
                       </span>
                     </div>
-                    <h2 className="text-foreground mt-2 text-xl font-bold">Sự kiện và lễ hội sắp diễn ra</h2>
+                    <h2 className="text-foreground mt-2 text-xl font-bold">
+                      Sự kiện và lễ hội sắp diễn ra
+                    </h2>
                     <div className="mt-4 grid gap-2">
                       {heroEvents.map((event, i) => (
                         <div
@@ -435,13 +453,15 @@ export default function HomePageContent() {
                           className={`${eventColors[i % eventColors.length]} flex flex-col gap-1 rounded-[16px] px-3.5 py-2.5`}
                         >
                           <span className="text-sm font-semibold">{event.title}</span>
-                          <strong className="text-muted-foreground text-sm font-semibold">{event.time}</strong>
+                          <strong className="text-muted-foreground text-sm font-semibold">
+                            {event.time}
+                          </strong>
                         </div>
                       ))}
                     </div>
                     <Button
                       variant="outline"
-                      className="mt-4 w-full rounded-xl border-tertiary/40 text-tertiary hover:bg-tertiary/8"
+                      className="border-tertiary/40 text-tertiary hover:bg-tertiary/8 mt-4 w-full rounded-xl"
                       onClick={() => navigate('/tourism-point')}
                     >
                       Xem điểm liên quan
@@ -452,7 +472,9 @@ export default function HomePageContent() {
                 {/* Quick suggestions */}
                 <div className={`${card} p-5`}>
                   <SectionLabel>Gợi ý nhanh</SectionLabel>
-                  <h2 className="text-foreground mt-1 text-xl font-bold">Điểm nên xem trước khi đi</h2>
+                  <h2 className="text-foreground mt-1 text-xl font-bold">
+                    Điểm nên xem trước khi đi
+                  </h2>
                   <div className="mt-4 grid gap-2">
                     {featuredSpots.slice(0, 3).map((item, i) => {
                       const colors = ['text-primary', 'text-secondary', 'text-tertiary'];
@@ -460,11 +482,13 @@ export default function HomePageContent() {
                         <button
                           key={item.id}
                           type="button"
-                          className="flex h-[42px] w-full items-center justify-between rounded-[14px] bg-muted/40 px-3.5 hover:bg-muted transition-colors"
+                          className="bg-muted/40 hover:bg-muted flex h-[42px] w-full items-center justify-between rounded-[14px] px-3.5 transition-colors"
                           onClick={() => navigate('/tourism-point')}
                         >
-                          <span className="text-sm font-semibold text-foreground">{item.name}</span>
-                          <span className={`text-sm font-bold ${colors[i % colors.length]}`}>Chi tiết</span>
+                          <span className="text-foreground text-sm font-semibold">{item.name}</span>
+                          <span className={`text-sm font-bold ${colors[i % colors.length]}`}>
+                            Chi tiết
+                          </span>
                         </button>
                       );
                     })}
@@ -481,23 +505,26 @@ export default function HomePageContent() {
             <div
               className="flex flex-wrap items-center justify-between gap-4 rounded-[24px] border p-5"
               style={{
-                borderColor: '#f1d8a4',
-                background: 'linear-gradient(135deg, #fff8e8, #e8fbf5)',
+                borderColor: '#a9c0de',
+                background: 'linear-gradient(135deg, #ffffff, #eef8ff 52%, #f0fdf4)',
               }}
             >
               <div className="flex items-center gap-4">
                 <div
-                  className="flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-[17px] text-white text-xl shadow-md"
-                  style={{ background: 'linear-gradient(135deg, #ee9b2f, #c96512)' }}
+                  className="flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-[17px] text-xl text-white shadow-md"
+                  style={{ background: 'linear-gradient(135deg, #0b66c3, #0ea5e9, #10b981)' }}
                 >
                   <CalendarDays size={22} />
                 </div>
                 <div>
                   <p className="text-foreground font-bold">{PROMO_BANNER.title}</p>
-                  <p className="text-muted-foreground text-sm mt-0.5">{PROMO_BANNER.description}</p>
+                  <p className="text-muted-foreground mt-0.5 text-sm">{PROMO_BANNER.description}</p>
                 </div>
               </div>
-              <Button className="rounded-full h-11 px-5 font-bold" onClick={() => navigate(PROMO_BANNER.path)}>
+              <Button
+                className="h-11 rounded-full px-5 font-bold"
+                onClick={() => navigate(PROMO_BANNER.path)}
+              >
                 {PROMO_BANNER.cta}
               </Button>
             </div>
@@ -509,9 +536,12 @@ export default function HomePageContent() {
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Truy cập nhanh</SectionLabel>
-              <h2 className="text-foreground text-2xl font-black mt-0.5">Các module chính của hệ thống</h2>
-              <p className="text-muted-foreground text-sm mt-2">
-                Thiết kế lại để người dùng vào trang chủ là thấy ngay bản đồ, VR360, lịch trình, dịch vụ và OCOP.
+              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+                Các module chính của hệ thống
+              </h2>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Thiết kế lại để người dùng vào trang chủ là thấy ngay bản đồ, VR360, lịch trình,
+                dịch vụ và OCOP.
               </p>
               <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
                 {QUICK_LINKS.map((item, i) => {
@@ -521,7 +551,7 @@ export default function HomePageContent() {
                       key={item.id}
                       type="button"
                       onClick={() => navigate(item.path)}
-                      className={`group flex flex-col items-start overflow-hidden rounded-[18px] border border-[#aac0d7] p-4 min-h-[96px] text-left bg-gradient-to-b from-white to-[#f8fbfe] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(7,78,135,.14)] ${c.hover}`}
+                      className={`group flex min-h-[96px] flex-col items-start overflow-hidden rounded-[18px] border border-[#aac0d7] bg-gradient-to-b from-white to-[#f8fbfe] p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(7,78,135,.14)] ${c.hover}`}
                     >
                       <div className="mb-3 flex items-center gap-2.5">
                         <span
@@ -534,9 +564,13 @@ export default function HomePageContent() {
                           {item.icon === 'service' && <Sun size={15} />}
                           {item.icon === 'ocop' && <ArrowRight size={15} />}
                         </span>
-                        <span className="text-sm font-black text-foreground truncate">{item.title}</span>
+                        <span className="text-foreground truncate text-sm font-black">
+                          {item.title}
+                        </span>
                       </div>
-                      <p className="text-muted-foreground text-sm line-clamp-2">{item.description}</p>
+                      <p className="text-muted-foreground line-clamp-2 text-sm">
+                        {item.description}
+                      </p>
                     </button>
                   );
                 })}
@@ -550,9 +584,12 @@ export default function HomePageContent() {
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Gợi ý nổi bật</SectionLabel>
-              <h2 className="text-foreground text-2xl font-black mt-0.5">Điểm đến tiêu biểu đang được quan tâm</h2>
-              <p className="text-muted-foreground text-sm mt-2">
-                Kết hợp hình ảnh lớn, thẻ trạng thái tải và nút hành động nhanh để đi từ trang chủ đến bản đồ hoặc trang chi tiết.
+              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+                Điểm đến tiêu biểu đang được quan tâm
+              </h2>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Kết hợp hình ảnh lớn, thẻ trạng thái tải và nút hành động nhanh để đi từ trang chủ
+                đến bản đồ hoặc trang chi tiết.
               </p>
               <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
                 {featuredSpots.map((item) => (
@@ -565,7 +602,10 @@ export default function HomePageContent() {
                         src={item.image || placeholderImg}
                         alt={item.name}
                         className="h-full w-full object-cover"
-                        onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                       <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-[#034f8d]">
@@ -578,14 +618,27 @@ export default function HomePageContent() {
                       )}
                     </div>
                     <div className="p-4">
-                      <p className="text-muted-foreground text-sm font-semibold mb-1.5">{item.subtitle}</p>
+                      <p className="text-muted-foreground mb-1.5 text-sm font-semibold">
+                        {item.subtitle}
+                      </p>
                       <h3 className="text-foreground text-base font-black">{item.name}</h3>
-                      <p className="text-muted-foreground text-sm mt-2 line-clamp-2">{item.description}</p>
+                      <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
+                        {item.description}
+                      </p>
                       <div className="mt-4 flex gap-2">
-                        <Button size="sm" className="rounded-lg" onClick={() => navigate('/tourism-point')}>
+                        <Button
+                          size="sm"
+                          className="rounded-lg"
+                          onClick={() => navigate('/tourism-point')}
+                        >
                           Chi tiết
                         </Button>
-                        <Button size="sm" variant="outline" className="rounded-lg" onClick={() => navigate('/map')}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-lg"
+                          onClick={() => navigate('/map')}
+                        >
                           Bản đồ
                         </Button>
                       </div>
@@ -601,26 +654,29 @@ export default function HomePageContent() {
         <section className="w-full">
           <div className={container}>
             <div className="grid gap-5 lg:grid-cols-2">
-
               {/* News */}
               <div className={`${card} p-6`}>
                 <SectionLabel>Tin tức ngắn</SectionLabel>
-                <h2 className="text-foreground text-2xl font-black mt-0.5">Thông tin mới</h2>
+                <h2 className="text-foreground mt-0.5 text-2xl font-black">Thông tin mới</h2>
                 <div className="mt-5 grid gap-0">
                   {newsList.map((item, i) => (
                     <article
                       key={item.id}
                       className={`grid grid-cols-[46px_1fr] gap-3.5 py-3.5 ${i < newsList.length - 1 ? 'border-b border-dashed border-[#a9bdd2]' : ''}`}
                     >
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#e9f5fb] text-primary text-lg mt-0.5">
+                      <div className="text-primary mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#e9f5fb] text-lg">
                         <FileText size={18} />
                       </div>
                       <div className="min-w-0">
-                        <span className="inline-block rounded-full border border-[#a9bdd2] px-2.5 py-0.5 text-xs font-bold text-[#52647a] mb-1.5">
+                        <span className="mb-1.5 inline-block rounded-full border border-[#a9bdd2] px-2.5 py-0.5 text-xs font-bold text-[#52647a]">
                           {formatNewsDate(item.published_at || item.created_at)}
                         </span>
-                        <h4 className="text-foreground text-sm font-bold line-clamp-2">{item.title}</h4>
-                        <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{item.summary}</p>
+                        <h4 className="text-foreground line-clamp-2 text-sm font-bold">
+                          {item.title}
+                        </h4>
+                        <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+                          {item.summary}
+                        </p>
                       </div>
                     </article>
                   ))}
@@ -632,48 +688,55 @@ export default function HomePageContent() {
                 <div className={`${card} p-6`}>
                   <SectionLabel>Tour gợi ý</SectionLabel>
                   {featuredTour?.cover_image_url && (
-                    <div className="mt-3 w-[55%] mx-auto h-[150px] overflow-hidden rounded-[18px]">
+                    <div className="mx-auto mt-3 h-[150px] w-[55%] overflow-hidden rounded-[18px]">
                       <img
                         src={withBaseUrl(featuredTour.cover_image_url)}
                         alt={featuredTour.name || ''}
                         className="h-full w-full object-cover"
-                        onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                     </div>
                   )}
-                  <h3 className="text-foreground text-base font-black mt-3 line-clamp-2">
+                  <h3 className="text-foreground mt-3 line-clamp-2 text-base font-black">
                     {featuredTour
-                      ? (featuredTour.name || featuredTour.name_vi || 'Tour gợi ý')
+                      ? featuredTour.name || featuredTour.name_vi || 'Tour gợi ý'
                       : 'Tour Tràng An Classic – Đi Thuyền Qua 3 Tuyến Hang Động'}
                   </h3>
-                  <p className="text-muted-foreground text-sm mt-2 line-clamp-3">
+                  <p className="text-muted-foreground mt-2 line-clamp-3 text-sm">
                     {featuredTour
-                      ? (featuredTour.description_vi || featuredTour.description_en || '')
+                      ? featuredTour.description_vi || featuredTour.description_en || ''
                       : 'Khám phá Quần thể Di Tích Tràng An qua 3 tuyến du lịch nổi tiếng.'}
                   </p>
                   <div className="mt-4 grid grid-cols-3 gap-2.5">
-                    <div className="rounded-[14px] border border-[#aac0d7] bg-muted/30 p-3">
-                      <p className="text-sm font-black text-foreground">
-                        {featuredTour?.duration_days ? `${featuredTour.duration_days} ngày` : '1 ngày'}
+                    <div className="bg-muted/30 rounded-[14px] border border-[#aac0d7] p-3">
+                      <p className="text-foreground text-sm font-black">
+                        {featuredTour?.duration_days
+                          ? `${featuredTour.duration_days} ngày`
+                          : '1 ngày'}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">lịch trình</p>
+                      <p className="text-muted-foreground mt-0.5 text-xs">lịch trình</p>
                     </div>
-                    <div className="rounded-[14px] border border-[#aac0d7] bg-muted/30 p-3">
-                      <p className="text-sm font-black text-foreground">
+                    <div className="bg-muted/30 rounded-[14px] border border-[#aac0d7] p-3">
+                      <p className="text-foreground text-sm font-black">
                         {featuredTour?.price_from_vnd
                           ? formatVND(Number(featuredTour.price_from_vnd))
                           : 'Liên hệ'}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">từ / khách</p>
+                      <p className="text-muted-foreground mt-0.5 text-xs">từ / khách</p>
                     </div>
-                    <div className="rounded-[14px] border border-[#aac0d7] bg-muted/30 p-3">
-                      <p className="text-sm font-black text-foreground">
+                    <div className="bg-muted/30 rounded-[14px] border border-[#aac0d7] p-3">
+                      <p className="text-foreground text-sm font-black">
                         {featuredTour?.rating_avg
                           ? `⭐ ${parseFloat(featuredTour.rating_avg).toFixed(1)}`
                           : '⭐ --'}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {featuredTour?.rating_count ? `${featuredTour.rating_count} đánh giá` : 'đánh giá'}
+                      <p className="text-muted-foreground mt-0.5 text-xs">
+                        {featuredTour?.rating_count
+                          ? `${featuredTour.rating_count} đánh giá`
+                          : 'đánh giá'}
                       </p>
                     </div>
                   </div>
@@ -684,15 +747,17 @@ export default function HomePageContent() {
 
                 <div className={`${card} p-6`}>
                   <SectionLabel>Lịch trình cá nhân</SectionLabel>
-                  <h2 className="text-foreground text-xl font-black mt-0.5">Lên kế hoạch chuyến đi trong 30 giây</h2>
+                  <h2 className="text-foreground mt-0.5 text-xl font-black">
+                    Lên kế hoạch chuyến đi trong 30 giây
+                  </h2>
                   <div className="mt-4 grid gap-2">
                     {ITINERARY_ITEMS.map((item) => (
                       <div
                         key={`${item.time}-${item.activity}`}
-                        className="flex h-[42px] items-center justify-between rounded-[14px] bg-muted/40 px-3.5"
+                        className="bg-muted/40 flex h-[42px] items-center justify-between rounded-[14px] px-3.5"
                       >
-                        <span className="text-sm text-foreground">{item.activity}</span>
-                        <strong className="text-sm text-foreground">{item.time}</strong>
+                        <span className="text-foreground text-sm">{item.activity}</span>
+                        <strong className="text-foreground text-sm">{item.time}</strong>
                       </div>
                     ))}
                   </div>
@@ -716,11 +781,12 @@ export default function HomePageContent() {
                 />
                 <div className="p-6 sm:p-8">
                   <SectionLabel>Ẩm thực & trải nghiệm địa phương</SectionLabel>
-                  <h2 className="text-foreground text-xl font-black mt-0.5">
+                  <h2 className="text-foreground mt-0.5 text-xl font-black">
                     Không chỉ xem bản đồ, người dùng còn có thể khám phá ẩm thực đặc sản.
                   </h2>
-                  <p className="text-muted-foreground text-sm mt-2">
-                    Khối này được thiết kế lớn để tăng cảm hứng du lịch: món nổi bật, địa điểm ăn uống, từ khóa tìm nhanh và liên kết dịch vụ ngay trong trang chủ.
+                  <p className="text-muted-foreground mt-2 text-sm">
+                    Khối này được thiết kế lớn để tăng cảm hứng du lịch: món nổi bật, địa điểm ăn
+                    uống, từ khóa tìm nhanh và liên kết dịch vụ ngay trong trang chủ.
                   </p>
                   <div className="mt-4 mb-4 flex flex-wrap gap-2">
                     {FOOD_TAGS.map((tag) => (
@@ -736,10 +802,10 @@ export default function HomePageContent() {
                     {FOOD_BULLETS.map((item) => (
                       <div
                         key={item.label}
-                        className="flex h-[42px] items-center justify-between rounded-[14px] bg-muted/40 px-3.5"
+                        className="bg-muted/40 flex h-[42px] items-center justify-between rounded-[14px] px-3.5"
                       >
-                        <span className="text-sm text-foreground">{item.label}</span>
-                        <strong className="text-sm text-foreground">{item.value}</strong>
+                        <span className="text-foreground text-sm">{item.label}</span>
+                        <strong className="text-foreground text-sm">{item.value}</strong>
                       </div>
                     ))}
                   </div>
@@ -754,8 +820,12 @@ export default function HomePageContent() {
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Doanh nghiệp du lịch</SectionLabel>
-              <h2 className="text-foreground text-2xl font-black mt-0.5">Voucher đang có gần bạn</h2>
-              <p className="text-muted-foreground text-sm mt-2">Voucher ưu đãi từ các doanh nghiệp du lịch trong khu vực.</p>
+              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+                Voucher đang có gần bạn
+              </h2>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Voucher ưu đãi từ các doanh nghiệp du lịch trong khu vực.
+              </p>
 
               {nearbyVouchers.length > 0 ? (
                 <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -769,28 +839,36 @@ export default function HomePageContent() {
                         style={{ background: 'linear-gradient(135deg, #edf7fd, #fff)' }}
                       >
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs text-muted-foreground truncate">{voucher.business_name}</p>
-                          <h3 className="text-sm font-black text-foreground mt-0.5 line-clamp-1">{voucher.title_vi}</h3>
+                          <p className="text-muted-foreground truncate text-xs">
+                            {voucher.business_name}
+                          </p>
+                          <h3 className="text-foreground mt-0.5 line-clamp-1 text-sm font-black">
+                            {voucher.title_vi}
+                          </h3>
                         </div>
-                        <span className="shrink-0 rounded-full bg-primary px-3 py-1.5 text-xs font-black text-white whitespace-nowrap">
+                        <span className="bg-primary shrink-0 rounded-full px-3 py-1.5 text-xs font-black whitespace-nowrap text-white">
                           {formatVoucherDiscount(voucher)}
                         </span>
                       </div>
                       <div className="p-4">
-                        <div className="rounded-[10px] border border-[#9db8d2] bg-[#f8fbfe] py-2 text-center font-mono text-sm font-black tracking-wider text-primary mb-3">
+                        <div className="text-primary mb-3 rounded-[10px] border border-[#9db8d2] bg-[#f8fbfe] py-2 text-center font-mono text-sm font-black tracking-wider">
                           {voucher.code}
                         </div>
                         <div className="grid gap-1.5">
                           {voucher.min_order_value && (
                             <div className="flex items-center justify-between">
-                              <span className="text-xs text-muted-foreground">Đơn tối thiểu</span>
-                              <span className="text-xs font-semibold">{formatVND(Number(voucher.min_order_value))}</span>
+                              <span className="text-muted-foreground text-xs">Đơn tối thiểu</span>
+                              <span className="text-xs font-semibold">
+                                {formatVND(Number(voucher.min_order_value))}
+                              </span>
                             </div>
                           )}
                           {voucher.valid_until && (
                             <div className="flex items-center justify-between">
-                              <span className="text-xs text-muted-foreground">Hạn sử dụng</span>
-                              <span className="text-xs font-semibold">{formatNewsDate(voucher.valid_until)}</span>
+                              <span className="text-muted-foreground text-xs">Hạn sử dụng</span>
+                              <span className="text-xs font-semibold">
+                                {formatNewsDate(voucher.valid_until)}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -807,7 +885,7 @@ export default function HomePageContent() {
                   ))}
                 </div>
               ) : (
-                <p className="py-6 text-center text-sm text-muted-foreground">
+                <p className="text-muted-foreground py-6 text-center text-sm">
                   Không có voucher nào trong khu vực hiện tại.
                 </p>
               )}
@@ -820,9 +898,12 @@ export default function HomePageContent() {
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Sản phẩm OCOP</SectionLabel>
-              <h2 className="text-foreground text-2xl font-black mt-0.5">Gian hàng địa phương tích hợp trên trang chủ</h2>
-              <p className="text-muted-foreground text-sm mt-2">
-                Giới thiệu sản phẩm, chứng nhận, địa phương và liên kết đặt hàng ngay trong trang chủ.
+              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+                Gian hàng địa phương tích hợp trên trang chủ
+              </h2>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Giới thiệu sản phẩm, chứng nhận, địa phương và liên kết đặt hàng ngay trong trang
+                chủ.
               </p>
               <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
                 {ocopProducts.map((product) => (
@@ -830,23 +911,28 @@ export default function HomePageContent() {
                     key={product.id}
                     className="overflow-hidden rounded-[20px] border border-[#aac0d7] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(7,78,135,.14)]"
                   >
-                    <div className="flex items-center justify-center py-4 px-6">
+                    <div className="flex items-center justify-center px-6 py-4">
                       <img
                         src={withBaseUrl(product.cover_image_url)}
                         alt={product.name || ''}
-                        className="h-[190px] w-[72%] object-cover rounded-[18px]"
-                        onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                        className="h-[190px] w-[72%] rounded-[18px] object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                     </div>
                     <div className="px-4 pb-4">
-                      <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
+                      <div className="text-muted-foreground mb-2 flex items-center gap-2 text-sm">
                         <span>{product.province_name || '--'}</span>
                         {product.star_rating && (
                           <span>{'⭐'.repeat(Number(product.star_rating))}</span>
                         )}
                       </div>
                       <h3 className="text-foreground text-base font-black">{product.name}</h3>
-                      <p className="text-muted-foreground text-sm mt-2 line-clamp-3">{product.description || ''}</p>
+                      <p className="text-muted-foreground mt-2 line-clamp-3 text-sm">
+                        {product.description || ''}
+                      </p>
                       <div className="mt-3 flex items-center justify-between">
                         <strong className="text-foreground text-sm">
                           {product.price_vnd ? formatVND(Number(product.price_vnd)) : '--'}
@@ -856,10 +942,19 @@ export default function HomePageContent() {
                         )}
                       </div>
                       <div className="mt-3 flex gap-2">
-                        <Button size="sm" className="rounded-[10px]" onClick={() => navigate('/ocop')}>
+                        <Button
+                          size="sm"
+                          className="rounded-[10px]"
+                          onClick={() => navigate('/ocop')}
+                        >
                           Xem sản phẩm
                         </Button>
-                        <Button size="sm" variant="outline" className="rounded-[10px]" onClick={() => navigate('/ocop')}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-[10px]"
+                          onClick={() => navigate('/ocop')}
+                        >
                           Liên hệ
                         </Button>
                       </div>
@@ -876,9 +971,12 @@ export default function HomePageContent() {
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Vlog & chia sẻ</SectionLabel>
-              <h2 className="text-foreground text-2xl font-black mt-0.5">Câu chuyện du lịch từ cộng đồng</h2>
-              <p className="text-muted-foreground text-sm mt-2">
-                Tăng chiều sâu nội dung cộng đồng với trải nghiệm thực tế, mẹo di chuyển và gợi ý lên lịch trình.
+              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+                Câu chuyện du lịch từ cộng đồng
+              </h2>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Tăng chiều sâu nội dung cộng đồng với trải nghiệm thực tế, mẹo di chuyển và gợi ý
+                lên lịch trình.
               </p>
               <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
                 {VLOG_STORIES.map((story) => (
@@ -890,12 +988,15 @@ export default function HomePageContent() {
                       src={story.image}
                       alt={story.title}
                       className="h-[190px] w-full object-cover"
-                      onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = placeholderImg;
+                      }}
                     />
                     <div className="p-4">
-                      <p className="text-muted-foreground text-sm mb-2">Tác giả: {story.author}</p>
+                      <p className="text-muted-foreground mb-2 text-sm">Tác giả: {story.author}</p>
                       <h3 className="text-foreground text-base font-black">{story.title}</h3>
-                      <p className="text-muted-foreground text-sm mt-2">{story.description}</p>
+                      <p className="text-muted-foreground mt-2 text-sm">{story.description}</p>
                     </div>
                   </article>
                 ))}
@@ -919,7 +1020,7 @@ export default function HomePageContent() {
                     <Button
                       type="button"
                       variant="link"
-                      className="h-auto p-0 text-sm text-primary font-bold hover:underline"
+                      className="text-primary h-auto p-0 text-sm font-bold hover:underline"
                       onClick={() => navigate(link.path)}
                     >
                       {link.label}
@@ -931,7 +1032,6 @@ export default function HomePageContent() {
             </div>
           </div>
         </section>
-
       </div>
     </RootLayout>
   );

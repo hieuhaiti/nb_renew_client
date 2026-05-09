@@ -12,32 +12,33 @@ export function TourismDetailTopBar({
 }) {
   return (
     <>
-      <div className="border-primary/20 bg-card mb-3 flex items-center justify-between rounded-[10px] border-[0.5px] px-2.5 py-1.5">
-        <Button onClick={onBack} variant="outline" size="sm" className="h-8 gap-1.5">
+      <div className="mb-4 flex items-center justify-between">
+        <Button onClick={onBack} variant="ghost" size="sm" className="h-9 gap-2 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold text-foreground shadow-sm hover:bg-[#eef7ff]">
           <ArrowLeft className="h-4 w-4" />
           {t('common.back', 'Quay lại')}
         </Button>
 
-        <div className="flex items-center gap-1.5">
-          <Button
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
             onClick={onToggleFavorite}
             aria-pressed={isLiked}
-            variant={isLiked ? 'default' : 'outline'}
-            size="icon-sm"
-            className="h-8 w-8 rounded-md"
+            className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#cfe0f4] bg-white shadow-sm hover:bg-[#eef7ff]"
           >
-            <Heart className="h-4 w-4" />
-            <span className="sr-only">{t('tourism.actions.save', 'Lưu')}</span>
-          </Button>
-          <Button onClick={onShare} variant="outline" size="icon-sm" className="h-8 w-8 rounded-md">
-            <Share2 className="h-4 w-4" />
-            <span className="sr-only">{t('tourism.actions.share', 'Chia sẻ')}</span>
-          </Button>
+            <Heart className={`h-4 w-4 ${isLiked ? 'fill-destructive text-destructive' : 'text-foreground'}`} />
+          </button>
+          <button
+            type="button"
+            onClick={onShare}
+            className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#cfe0f4] bg-white shadow-sm hover:bg-[#eef7ff]"
+          >
+            <Share2 className="h-4 w-4 text-foreground" />
+          </button>
         </div>
       </div>
 
       {shareStatus !== 'idle' && (
-        <div className="border-primary/20 text-muted-foreground bg-card mb-3 rounded-[8px] border-[0.5px] px-3 py-1.5 text-sm">
+        <div className="mb-3 rounded-[10px] border border-[#cfe0f4] bg-[#eef7ff] px-3 py-2 text-sm text-[#0b66c3]">
           {shareStatus === 'copied'
             ? t('tourism.share.copied', 'Đã sao chép liên kết')
             : t('tourism.share.shared', 'Đã chia sẻ')}

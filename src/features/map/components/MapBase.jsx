@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useTranslation } from 'react-i18next';
 import { useSubcategoryLayerQuery } from '@/services/api/map/mapDataLayerService';
@@ -13,9 +13,17 @@ import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import {
   addOrUpdateSubcategoryLayer,
+  addOrUpdateHighlightedRouteLayers,
+  addTrafficFlowLayer,
+  buildIncidentPopupHTML,
+  clearHighlightedRouteLayers,
+  TRAFFIC_INCIDENTS_LAYER,
   mapFeatureToDestination,
   normalizePointsToFeatureCollection,
+  removeTrafficFlowLayer,
+  removeTrafficIncidentLayer,
   removeSubcategoryLayer,
+  updateTrafficIncidentData,
 } from '@/features/map/utils/MapHelper';
 import {
   buildHighlightRoutePointsFeatureCollection,
@@ -26,61 +34,29 @@ import { withBaseUrl } from '@/lib/utils';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
 import { useTrafficStore } from '@/features/map/store/useTrafficStore';
-import {
-  addTrafficFlowLayer,
-  buildIncidentPopupHTML,
-  INCIDENTS_LAYER as TRAFFIC_INCIDENTS_LAYER,
-  removeTrafficFlowLayer,
-  removeTrafficIncidentLayer,
-  updateTrafficIncidentData,
-} from '@/features/map/utils/trafficLayerUtils';
 
 mapboxgl.accessToken = env.mapboxToken;
 
 const SUBCATEGORY_LAYER_SUFFIXES = ['fill', 'line', 'point', 'cluster', 'cluster-count'];
 
-const HIGHLIGHT_ROUTE_SOURCE_ID = 'highlight-route';
-const HIGHLIGHT_ROUTE_POINTS_SOURCE_ID = 'highlight-route-points';
-const HIGHLIGHT_ROUTE_LAYER_IDS = [
-  'highlight-route-shadow',
-  'highlight-route-outline',
-  'highlight-route-main',
-  'highlight-route-pattern',
-  'highlight-route-arrows',
-  'highlight-route-points-shadow',
-  'highlight-route-points-bg',
-  'highlight-route-points-inner',
-  'highlight-route-points-label',
-  'highlight-route-points-name',
-];
-
-/**
- * MapBaseArea — main map canvas area that stays visible behind overlays.
- */
 export default function MapBaseArea() {
   const DIRECTION_ROUTE_SOURCE_ID = 'direction-route-source';
   const DIRECTION_ROUTE_LAYER_ID = 'direction-route-layer';
-
-  // Map state
 
   const { t } = useTranslation();
   const mapContainer = useRef(null);
   const singleMapContainerRef = useRef(null);
   const splitMapContainerRef = useRef(null);
-  const { setMapRef, isSplitMode } = useMapStore();
+  const { setMapRef } = useMapStore();
 
   const mapRef = useRef({
-    single: null, // map đơn
-    split: null, // map phải
-    compare: null, // instance compare
+    single: null,
+    split: null,
+    compare: null,
   });
 
-  // Map style
   const mapStyle = useMapStyleStore((s) => s.mapStyle);
-  const [mapsReady, setMapsReady] = useState({
-    single: false,
-    split: false,
-  });
+  const [mapsReady, setMapsReady] = useState({ single: false, split: false });
 
   const [mapState, setMapState] = useState({
     lat: defaultLatLong.lat,
@@ -104,10 +80,7 @@ export default function MapBaseArea() {
   const showIncidents = useTrafficStore((state) => state.showIncidents);
   const incidentGeoJSON = useTrafficStore((state) => state.incidentGeoJSON);
 
-  const routeMarkersRef = useRef({
-    start: null,
-    end: null,
-  });
+  const routeMarkersRef = useRef({ start: null, end: null });
   const hadDirectionsRef = useRef(false);
 
   const selectedSubcategoryIdsSafe = useMemo(
@@ -157,28 +130,9 @@ export default function MapBaseArea() {
     });
   };
 
-  const clearHighlightRouteLayers = (map) => {
-    if (!map) return;
-
-    [...HIGHLIGHT_ROUTE_LAYER_IDS].reverse().forEach((layerId) => {
-      if (map.getLayer(layerId)) {
-        map.removeLayer(layerId);
-      }
-    });
-
-    if (map.getSource(HIGHLIGHT_ROUTE_POINTS_SOURCE_ID)) {
-      map.removeSource(HIGHLIGHT_ROUTE_POINTS_SOURCE_ID);
-    }
-
-    if (map.getSource(HIGHLIGHT_ROUTE_SOURCE_ID)) {
-      map.removeSource(HIGHLIGHT_ROUTE_SOURCE_ID);
-    }
-  };
-
   useEffect(() => {
     if (mapRef.current.single || !singleMapContainerRef.current) return;
 
-    // Lấy terrainState hiện tại để khởi tạo pitch đúng
     const initialTerrain = useMapStyleStore.getState().terrainState;
 
     mapRef.current.single = new mapboxgl.Map({
@@ -203,16 +157,12 @@ export default function MapBaseArea() {
       preserveDrawingBuffer: true,
     });
 
-    // Ẩn split map ban đầu
     mapRef.current.split.getContainer().style.display = 'none';
 
-    // Use single map as main reference
     const map = mapRef.current.single;
-    const splitMap = mapRef.current.split;
 
     const handleSingleLoad = () => {
       setMapRef(map);
-      // Store full mapRef so satellite store can access single/split maps without prop drilling
       useMapStore.getState().setMapRefObj(mapRef);
 
       const center = map.getCenter();
@@ -222,7 +172,6 @@ export default function MapBaseArea() {
       ];
       map.setMaxBounds(mapBounds);
 
-      // Add Map Controls (only to single map)
       map.addControl(
         new mapboxgl.NavigationControl({
           showCompass: true,
@@ -248,7 +197,6 @@ export default function MapBaseArea() {
     mapRef.current.split.on('load', handleSplitLoad);
 
     const handleMove = () => {
-      // Sync split map when in compare mode
       if (
         useMapStore.getState().isSplitMode &&
         mapRef.current.split &&
@@ -265,11 +213,7 @@ export default function MapBaseArea() {
 
     const handleMoveEnd = () => {
       const center = map.getCenter();
-      setMapState({
-        lat: center.lat,
-        lng: center.lng,
-        zoom: map.getZoom(),
-      });
+      setMapState({ lat: center.lat, lng: center.lng, zoom: map.getZoom() });
       handleMove();
     };
 
@@ -361,20 +305,28 @@ export default function MapBaseArea() {
       const points = Array.isArray(highlightedRoute?.points) ? highlightedRoute.points : [];
 
       if (points.length < 2) {
-        clearHighlightRouteLayers(map);
+        clearHighlightedRouteLayers(map);
         return;
       }
 
       try {
-        const routeResult = await createRouteFromPoints(
-          points,
-          highlightedRoute?.vehicle || 'driving',
-          lang === 'en' ? 'en' : 'vi'
-        );
+        const hasPrecomputedGeometry = Boolean(highlightedRoute?.geometry?.coordinates?.length);
+        const routeResult = hasPrecomputedGeometry
+          ? {
+              geometry: highlightedRoute.geometry,
+              properties: highlightedRoute.routeProperties || {},
+              fullRoute: highlightedRoute.fullRoute || null,
+              points,
+            }
+          : await createRouteFromPoints(
+              points,
+              highlightedRoute?.vehicle || 'driving',
+              lang === 'en' ? 'en' : 'vi'
+            );
 
         if (didCancel) return;
         if (!routeResult?.geometry?.coordinates?.length) {
-          clearHighlightRouteLayers(map);
+          clearHighlightedRouteLayers(map);
           return;
         }
 
@@ -391,172 +343,10 @@ export default function MapBaseArea() {
           routeResult.points?.length ? routeResult.points : points
         );
 
-        clearHighlightRouteLayers(map);
-
-        map.addSource(HIGHLIGHT_ROUTE_SOURCE_ID, {
-          type: 'geojson',
-          data: routeFeature,
-        });
-
-        map.addSource(HIGHLIGHT_ROUTE_POINTS_SOURCE_ID, {
-          type: 'geojson',
-          data: routePoints,
-        });
-
-        map.addLayer({
-          id: 'highlight-route-shadow',
-          type: 'line',
-          source: HIGHLIGHT_ROUTE_SOURCE_ID,
-          paint: {
-            'line-color': '#111111',
-            'line-opacity': 0.22,
-            'line-width': 14,
-          },
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round',
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-outline',
-          type: 'line',
-          source: HIGHLIGHT_ROUTE_SOURCE_ID,
-          paint: {
-            'line-color': '#ffffff',
-            'line-opacity': 0.95,
-            'line-width': 10,
-          },
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round',
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-main',
-          type: 'line',
-          source: HIGHLIGHT_ROUTE_SOURCE_ID,
-          paint: {
-            'line-color': '#DC2626',
-            'line-opacity': 0.98,
-            'line-width': 7,
-          },
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round',
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-pattern',
-          type: 'line',
-          source: HIGHLIGHT_ROUTE_SOURCE_ID,
-          paint: {
-            'line-color': '#FACC15',
-            'line-opacity': 0.8,
-            'line-width': 2.5,
-            'line-dasharray': [0.6, 2],
-          },
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round',
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-arrows',
-          type: 'symbol',
-          source: HIGHLIGHT_ROUTE_SOURCE_ID,
-          layout: {
-            'symbol-placement': 'line',
-            'symbol-spacing': 64,
-            'text-field': '▶',
-            'text-size': 11,
-            'text-keep-upright': false,
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          },
-          paint: {
-            'text-color': '#B91C1C',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 1,
-            'text-opacity': 0.8,
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-points-shadow',
-          type: 'circle',
-          source: HIGHLIGHT_ROUTE_POINTS_SOURCE_ID,
-          paint: {
-            'circle-radius': 14,
-            'circle-color': '#111111',
-            'circle-opacity': 0.18,
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-points-bg',
-          type: 'circle',
-          source: HIGHLIGHT_ROUTE_POINTS_SOURCE_ID,
-          paint: {
-            'circle-radius': 12,
-            'circle-color': [
-              'case',
-              ['boolean', ['get', 'is_start'], false],
-              '#DC2626',
-              ['boolean', ['get', 'is_end'], false],
-              '#DC2626',
-              '#F59E0B',
-            ],
-            'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': 2.5,
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-points-inner',
-          type: 'circle',
-          source: HIGHLIGHT_ROUTE_POINTS_SOURCE_ID,
-          paint: {
-            'circle-radius': 5,
-            'circle-color': '#ffffff',
-            'circle-opacity': 0.95,
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-points-label',
-          type: 'symbol',
-          source: HIGHLIGHT_ROUTE_POINTS_SOURCE_ID,
-          layout: {
-            'text-field': ['to-string', ['get', 'step_number']],
-            'text-size': 10,
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          },
-          paint: {
-            'text-color': '#111827',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 1.2,
-          },
-        });
-
-        map.addLayer({
-          id: 'highlight-route-points-name',
-          type: 'symbol',
-          source: HIGHLIGHT_ROUTE_POINTS_SOURCE_ID,
-          layout: {
-            'text-field': ['coalesce', ['get', 'name'], ''],
-            'text-size': 12,
-            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-            'text-offset': [0, 1.8],
-            'text-anchor': 'top',
-          },
-          paint: {
-            'text-color': '#111827',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 1.8,
-          },
+        clearHighlightedRouteLayers(map);
+        addOrUpdateHighlightedRouteLayers(map, {
+          routeFeature,
+          routePointsFeatureCollection: routePoints,
         });
 
         const coordinates = routeResult.geometry.coordinates;
@@ -572,7 +362,7 @@ export default function MapBaseArea() {
       } catch (error) {
         if (!didCancel) {
           console.error('Error rendering highlighted route:', error);
-          clearHighlightRouteLayers(map);
+          clearHighlightedRouteLayers(map);
         }
       }
     };
@@ -740,16 +530,12 @@ export default function MapBaseArea() {
         removeSubcategoryLayer(map, sourceId);
       });
       prevRenderedSourceIdsRef.current.clear();
-      clearHighlightRouteLayers(map);
+      clearHighlightedRouteLayers(map);
       removeTrafficFlowLayer(map);
       removeTrafficIncidentLayer(map);
 
-      if (routeMarkersRef.current.start) {
-        routeMarkersRef.current.start.remove();
-      }
-      if (routeMarkersRef.current.end) {
-        routeMarkersRef.current.end.remove();
-      }
+      if (routeMarkersRef.current.start) routeMarkersRef.current.start.remove();
+      if (routeMarkersRef.current.end) routeMarkersRef.current.end.remove();
       routeMarkersRef.current = { start: null, end: null };
     };
   }, []);
@@ -759,12 +545,8 @@ export default function MapBaseArea() {
     if (!map || !mapsReady.single) return;
 
     const removeRouteLayer = () => {
-      if (map.getLayer(DIRECTION_ROUTE_LAYER_ID)) {
-        map.removeLayer(DIRECTION_ROUTE_LAYER_ID);
-      }
-      if (map.getSource(DIRECTION_ROUTE_SOURCE_ID)) {
-        map.removeSource(DIRECTION_ROUTE_SOURCE_ID);
-      }
+      if (map.getLayer(DIRECTION_ROUTE_LAYER_ID)) map.removeLayer(DIRECTION_ROUTE_LAYER_ID);
+      if (map.getSource(DIRECTION_ROUTE_SOURCE_ID)) map.removeSource(DIRECTION_ROUTE_SOURCE_ID);
     };
 
     const clearRouteVisuals = () => {
@@ -783,10 +565,7 @@ export default function MapBaseArea() {
 
     const renderRoute = () => {
       const geometryCoordinates = directions?.geometry?.coordinates;
-
-      if (!Array.isArray(geometryCoordinates) || geometryCoordinates.length < 2) {
-        return;
-      }
+      if (!Array.isArray(geometryCoordinates) || geometryCoordinates.length < 2) return;
 
       removeRouteLayer();
 
@@ -817,13 +596,8 @@ export default function MapBaseArea() {
         },
       });
 
-      if (routeMarkersRef.current.start) {
-        routeMarkersRef.current.start.remove();
-      }
-
-      if (routeMarkersRef.current.end) {
-        routeMarkersRef.current.end.remove();
-      }
+      if (routeMarkersRef.current.start) routeMarkersRef.current.start.remove();
+      if (routeMarkersRef.current.end) routeMarkersRef.current.end.remove();
 
       if (typeof startLocation?.lng === 'number' && typeof startLocation?.lat === 'number') {
         routeMarkersRef.current.start = new mapboxgl.Marker({ color: '#16a34a' })
@@ -888,7 +662,6 @@ export default function MapBaseArea() {
     DIRECTION_ROUTE_SOURCE_ID,
   ]);
 
-  // Re-apply traffic layers after basemap style change (stable handler, reads store directly)
   useEffect(() => {
     const map = mapRef.current.single;
     if (!map || !mapsReady.single) return;
@@ -906,31 +679,22 @@ export default function MapBaseArea() {
     return () => map.off('style.load', handleStyleLoad);
   }, [mapsReady.single]);
 
-  // Traffic Flow layer
   useEffect(() => {
     const map = mapRef.current.single;
     if (!map || !mapsReady.single) return;
 
-    if (isTrafficEnabled && showFlow) {
-      addTrafficFlowLayer(map);
-    } else {
-      removeTrafficFlowLayer(map);
-    }
+    if (isTrafficEnabled && showFlow) addTrafficFlowLayer(map);
+    else removeTrafficFlowLayer(map);
   }, [isTrafficEnabled, showFlow, mapsReady.single]);
 
-  // Traffic Incidents layer — re-runs when data refreshes too
   useEffect(() => {
     const map = mapRef.current.single;
     if (!map || !mapsReady.single) return;
 
-    if (isTrafficEnabled && showIncidents) {
-      updateTrafficIncidentData(map, incidentGeoJSON);
-    } else {
-      removeTrafficIncidentLayer(map);
-    }
+    if (isTrafficEnabled && showIncidents) updateTrafficIncidentData(map, incidentGeoJSON);
+    else removeTrafficIncidentLayer(map);
   }, [isTrafficEnabled, showIncidents, incidentGeoJSON, mapsReady.single]);
 
-  // Traffic Incidents hover popup
   useEffect(() => {
     const map = mapRef.current.single;
     if (!map || !mapsReady.single || !isTrafficEnabled || !showIncidents) return;
@@ -948,8 +712,8 @@ export default function MapBaseArea() {
       const feature = e.features[0];
       const coords = feature.geometry.coordinates.slice();
       map.getCanvas().style.cursor = 'pointer';
-      const lang = useLanguageStore.getState().lang;
-      popup.setLngLat(coords).setHTML(buildIncidentPopupHTML(feature.properties, lang)).addTo(map);
+      const currentLang = useLanguageStore.getState().lang;
+      popup.setLngLat(coords).setHTML(buildIncidentPopupHTML(feature.properties, currentLang)).addTo(map);
     };
 
     const onLeave = () => {

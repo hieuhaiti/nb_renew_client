@@ -588,6 +588,7 @@
       "viewOnMap": "Xem trên bản đồ"
     },
     "direction": {
+      "title": "Chỉ đường",
       "driving": "Ô tô",
       "walking": "Đi bộ",
       "cycling": "Xe đạp",

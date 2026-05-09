@@ -79,13 +79,12 @@ export function normalizeTourRoutePoint(rawPoint, index = 0, lang = 'vi') {
 
 export const createRouteFromPoints = async (points, vehicle = 'driving', language = 'vi') => {
   if (!Array.isArray(points) || points.length < 2) {
-    console.warn('Cần ít nhất 2 điểm để tạo route');
     return null;
   }
 
   const accessToken = env.mapboxToken;
   if (!accessToken) {
-    throw new Error('Mapbox access token không được tìm thấy');
+    throw new Error('Mapbox access token khong duoc tim thay');
   }
 
   const normalizedPoints = points
@@ -94,7 +93,7 @@ export const createRouteFromPoints = async (points, vehicle = 'driving', languag
     .sort((a, b) => a.stopOrder - b.stopOrder);
 
   if (normalizedPoints.length < 2) {
-    throw new Error('Không đủ điểm hợp lệ để tạo route');
+    throw new Error('Khong du diem hop le de tao route');
   }
 
   const coordinatesString = normalizedPoints
@@ -122,13 +121,13 @@ export const createRouteFromPoints = async (points, vehicle = 'driving', languag
   const data = await response.json();
   const route = data?.routes?.[0];
   if (!route) {
-    throw new Error('Không tìm thấy đường đi');
+    throw new Error('Khong tim thay duong di');
   }
 
   return {
     geometry: route.geometry,
     properties: {
-      name: `Route: ${normalizedPoints.map((p) => p.data.name).join(' → ')}`,
+      name: `Route: ${normalizedPoints.map((p) => p.data.name).join(' -> ')}`,
       start_point: normalizedPoints[0]?.data?.name || '',
       end_point: normalizedPoints[normalizedPoints.length - 1]?.data?.name || '',
       total_points: normalizedPoints.length,

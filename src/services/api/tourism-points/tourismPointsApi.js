@@ -6,6 +6,7 @@ export function useGetAllDataPoints({
   search = '',
   subcategory_id,
   category_id,
+  parent_category_id,
   category_ids,
   options = {},
 } = {}) {
@@ -15,6 +16,8 @@ export function useGetAllDataPoints({
   if (page) queryParams.set('page', page);
   if (Array.isArray(category_ids) && category_ids.length > 0) {
     queryParams.set('category_ids', JSON.stringify(category_ids));
+  } else if (parent_category_id) {
+    queryParams.set('parent_category_id', parent_category_id);
   } else if (category_id) {
     queryParams.set('category_id', category_id);
   }
@@ -22,7 +25,16 @@ export function useGetAllDataPoints({
   if (subcategory_id) queryParams.set('subcategory_id', subcategory_id);
 
   return useApiQuery(
-    ['spots', limit, page, search, subcategory_id, category_id, JSON.stringify(category_ids || [])],
+    [
+      'spots',
+      limit,
+      page,
+      search,
+      subcategory_id,
+      category_id,
+      parent_category_id,
+      JSON.stringify(category_ids || []),
+    ],
     `spots?${queryParams.toString()}`,
     {
       staleTime: 5 * 60 * 1000,

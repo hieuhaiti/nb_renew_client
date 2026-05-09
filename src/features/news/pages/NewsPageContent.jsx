@@ -1,56 +1,132 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, RefreshCw, Inbox, ChevronLeft, ChevronRight, ArrowRight, Tag } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 import { useTranslation } from 'react-i18next';
-import LoadingInline from '@/components/common/LoadingInline';
 import RootLayout from '@/components/layout/RootLayout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useGetNewsList } from '@/services/api/news/newsService';
-import { getLocaleFromLanguage } from '@/lib/utils';
-import NewsHeroHighlights, { SectionHeading } from '@/features/news/components/NewsHeroHighlights';
-import NewsCardsGrid from '@/features/news/components/NewsCardsGrid';
+import { withBaseUrl, getLocaleFromLanguage } from '@/lib/utils';
+import placeholderImg from '@/assets/images/placeholder.png';
+
+const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const HERO_BG = `linear-gradient(135deg,rgba(3,95,172,.90),rgba(37,99,235,.85),rgba(14,165,233,.75)), url("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80") center/cover`;
 
 function formatDate(value, locale) {
-  if (!value) return '--';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '--';
-  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return new Intl.DateTimeFormat(locale || 'vi-VN', { dateStyle: 'medium' }).format(d);
+}
+
+function tagLabel(slug) {
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function NewsCard({ item, navigate, locale }) {
+  const slug = item?.slug || item?.id || '';
+  const title = item?.title || '—';
+  const summary = item?.summary || '';
+  const imageSrc = withBaseUrl(item?.thumbnail_url || '') || placeholderImg;
+  const author = item?.author_name || 'Ban biên tập';
+  const date = formatDate(item?.published_at || item?.created_at, locale);
+  const tags = Array.isArray(item?.tags) ? item.tags.slice(0, 3) : [];
+
+  return (
+    <article
+      onClick={() => slug && navigate(`/news/${encodeURIComponent(String(slug))}`)}
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
+    >
+      <div className="relative h-52 overflow-hidden">
+        <img
+          src={imageSrc}
+          alt={title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+        />
+        {item?.is_featured && (
+          <span className="absolute top-3 left-3 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-0.5 text-xs font-bold text-[#b45309] backdrop-blur-sm">
+            Nổi bật
+          </span>
+        )}
+        {date && (
+          <span className="absolute bottom-3 right-3 rounded-full bg-black/45 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+            {date}
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col p-4">
+        <p className="text-xs text-muted-foreground">{author}</p>
+
+        <h3
+          className="mt-1.5 line-clamp-2 text-sm font-black leading-snug text-foreground transition-colors group-hover:text-[#0b66c3]"
+          title={title}
+        >
+          {title}
+        </h3>
+
+        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+          {summary || 'Chưa có tóm tắt.'}
+        </p>
+
+        {tags.length > 0 && (
+          <div className="mt-2.5 flex flex-wrap gap-1">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-[#cfe0f4] bg-[#f8fbff] px-2 py-0.5 text-[10px] font-medium text-[#52647a]"
+              >
+                {tagLabel(tag)}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-auto flex items-center justify-end pt-3">
+          <span className="flex items-center gap-1 text-xs font-semibold text-[#0b66c3] group-hover:underline">
+            Đọc tiếp <ArrowRight size={11} />
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function NewsCardSkeleton() {
+  return (
+    <div className="animate-pulse overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white">
+      <div className="bg-muted h-52 w-full" />
+      <div className="space-y-2 p-4">
+        <div className="bg-muted h-3 w-1/3 rounded" />
+        <div className="bg-muted h-4 w-full rounded" />
+        <div className="bg-muted h-3 w-5/6 rounded" />
+        <div className="bg-muted h-3 w-2/3 rounded" />
+      </div>
+    </div>
+  );
 }
 
 export default function NewsPageContent() {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const locale = getLocaleFromLanguage(i18n.language);
 
-  const [keyword, setKeyword] = useState('');
+  const [search, setSearch] = useState('');
   const [featuredFilter, setFeaturedFilter] = useState('all');
+  const [tagFilter, setTagFilter] = useState('');
   const [page, setPage] = useState(1);
-  const limit = 9;
-  const [debouncedKeyword] = useDebounce(keyword.trim(), 400);
-
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedKeyword, featuredFilter]);
+  const [debouncedSearch] = useDebounce(search.trim(), 400);
 
   const isFeaturedParam =
     featuredFilter === 'featured' ? true : featuredFilter === 'normal' ? false : undefined;
 
   const { data, isLoading, isError, isFetching, refetch } = useGetNewsList({
     page,
-    limit,
-    search: debouncedKeyword || undefined,
+    limit: 9,
+    search: debouncedSearch || undefined,
     is_published: true,
     is_featured: isFeaturedParam,
+    tag: tagFilter || undefined,
   });
 
   const items = useMemo(() => {
@@ -63,154 +139,195 @@ export default function NewsPageContent() {
   const totalPages = Math.max(1, Number(pagination?.totalPages || pagination?.pages || 1));
   const currentPage = Math.max(1, Number(pagination?.page || page));
 
-  const featuredCount = useMemo(() => {
-    return items.filter((item) => Boolean(item?.is_featured)).length;
+  /* Extract unique tags from loaded items for chips */
+  const availableTags = useMemo(() => {
+    const all = items.flatMap((item) => (Array.isArray(item?.tags) ? item.tags : []));
+    return [...new Set(all)].slice(0, 12);
   }, [items]);
+
+  const featuredCount = useMemo(
+    () => items.filter((item) => Boolean(item?.is_featured)).length,
+    [items]
+  );
+
+  const handleReset = () => {
+    setSearch('');
+    setFeaturedFilter('all');
+    setTagFilter('');
+    setPage(1);
+  };
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen py-4 sm:py-5 lg:py-6">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:w-[80%] lg:px-0 xl:w-[70%] 2xl:w-[60%]">
-          <NewsHeroHighlights
-            t={t}
-            total={total}
-            featuredCount={featuredCount}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onGotoList={() =>
-              document.getElementById('news-list')?.scrollIntoView({ behavior: 'smooth' })
-            }
-            onGotoMap={() => navigate('/map')}
-          />
-
-          <section className="mt-4">
-            <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
-              <CardContent className="space-y-4 px-5 py-5">
-                <SectionHeading
-                  title={t('newsPage.filters.title')}
-                  description={t('newsPage.filters.description')}
-                />
-
-                <div className="grid gap-3 lg:grid-cols-[2fr_1fr_auto]">
-                  <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">
-                      {t('newsPage.filters.keyword')}
-                    </label>
-                    <div className="relative">
-                      <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                      <Input
-                        value={keyword}
-                        onChange={(event) => setKeyword(event.target.value)}
-                        placeholder={t('newsPage.filters.placeholder')}
-                        className="h-11 pl-9"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">
-                      {t('newsPage.filters.featured')}
-                    </label>
-                    <Select value={featuredFilter} onValueChange={setFeaturedFilter}>
-                      <SelectTrigger className="h-11 w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{t('newsPage.filters.options.all')}</SelectItem>
-                        <SelectItem value="featured">
-                          {t('newsPage.filters.options.featured')}
-                        </SelectItem>
-                        <SelectItem value="normal">
-                          {t('newsPage.filters.options.normal')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-end gap-2">
-                    <Button
-                      variant="outline"
-                      className="h-11 rounded-xl"
-                      onClick={() => refetch?.()}
-                      disabled={isFetching}
-                    >
-                      {isFetching ? (
-                        <span className="inline-flex items-center gap-2">
-                          <LoadingInline size="small" color="muted" />
-                          {t('newsPage.actions.loading')}
-                        </span>
-                      ) : (
-                        t('newsPage.actions.refresh')
-                      )}
-                    </Button>
-                    <Button
-                      className="h-11 rounded-xl"
-                      onClick={() => {
-                        setKeyword('');
-                        setFeaturedFilter('all');
-                      }}
-                    >
-                      {t('newsPage.actions.reset')}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-
-          <section id="news-list" className="mt-6">
-            <div className="mb-4 flex items-end justify-between gap-3">
-              <SectionHeading
-                title={t('newsPage.list.title')}
-                description={t('newsPage.list.description', { count: items.length })}
-              />
+      <div className="min-h-screen">
+        {/* Hero */}
+        <section className="px-6 py-10 text-white" style={{ background: HERO_BG }}>
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-6 max-w-2xl">
+              <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
+                Tin tức & Khám phá Ninh Bình
+              </span>
+              <h1 className="mt-2 text-4xl font-black leading-tight tracking-tight">
+                Tin tức du lịch
+              </h1>
+              <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
+                Cập nhật tin tức, bài viết và câu chuyện về du lịch, văn hoá và con người Ninh Bình.
+              </p>
             </div>
 
-            {isLoading ? (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div
-                    key={`news-skeleton-${index}`}
-                    className="border-border/70 bg-card h-80 animate-pulse rounded-2xl border"
-                  />
-                ))}
-              </div>
-            ) : isError ? (
-              <div className="text-destructive py-12 text-center text-sm">
-                {t('newsPage.states.error')}
-              </div>
-            ) : items.length === 0 ? (
-              <div className="text-muted-foreground py-12 text-center text-sm">
-                {t('newsPage.states.empty')}
-              </div>
-            ) : (
-              <>
-                <NewsCardsGrid items={items} t={t} locale={locale} formatDate={formatDate} />
-
-                <div className="mt-6 flex items-center justify-center gap-3">
-                  <Button
-                    variant="outline"
-                    className="rounded-xl"
-                    disabled={currentPage <= 1}
-                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                  >
-                    {t('common.prev')}
-                  </Button>
-                  <span className="typo-meta text-muted-foreground">
-                    {t('newsPage.pagination.page', { page: currentPage, totalPages })}
-                  </span>
-                  <Button
-                    variant="outline"
-                    className="rounded-xl"
-                    disabled={currentPage >= totalPages}
-                    onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-                  >
-                    {t('common.next')}
-                  </Button>
+            {/* Stats */}
+            <div className="mb-6 flex flex-wrap gap-3">
+              {[
+                { value: total, label: 'Bài viết' },
+                { value: featuredCount, label: 'Nổi bật' },
+                { value: `${currentPage}/${totalPages}`, label: 'Trang' },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
+                >
+                  <div className="text-2xl font-black leading-none">{s.value}</div>
+                  <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
                 </div>
-              </>
-            )}
-          </section>
+              ))}
+            </div>
+
+            {/* Search bar */}
+            <div
+              className="flex flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
+              style={{
+                background: 'rgba(255,255,255,0.94)',
+                border: '1px solid rgba(255,255,255,0.75)',
+                boxShadow: '0 12px 28px rgba(0,0,0,.14)',
+              }}
+            >
+              <div className="relative min-w-0 flex-1">
+                <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm bài viết, địa danh, chủ đề..."
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                  className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                />
+              </div>
+              <select
+                value={featuredFilter}
+                onChange={(e) => { setFeaturedFilter(e.target.value); setPage(1); }}
+                className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+              >
+                <option value="all">Tất cả bài viết</option>
+                <option value="featured">Nổi bật</option>
+                <option value="normal">Thường</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => { setPage(1); refetch?.(); }}
+                className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
+                style={BTN_GRADIENT}
+              >
+                Tìm kiếm
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Content */}
+        <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
+
+          {/* Tag chips + toolbar */}
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Tag size={13} className="shrink-0 text-muted-foreground" />
+              <button
+                type="button"
+                onClick={() => { setTagFilter(''); setPage(1); }}
+                className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                  !tagFilter
+                    ? 'bg-[#0b66c3] text-white'
+                    : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
+                }`}
+              >
+                Tất cả
+              </button>
+              {availableTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => { setTagFilter(tagFilter === tag ? '' : tag); setPage(1); }}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                    tagFilter === tag
+                      ? 'bg-[#0b66c3] text-white'
+                      : 'border border-[#cfe0f4] bg-[#f8fbff] text-[#52647a] hover:bg-[#eef7ff]'
+                  }`}
+                >
+                  {tagLabel(tag)}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">{total}</strong> bài viết
+              </p>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
+              >
+                <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
+                Làm mới
+              </button>
+            </div>
+          </div>
+
+          {/* News grid */}
+          {isLoading ? (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 9 }).map((_, i) => <NewsCardSkeleton key={i} />)}
+            </div>
+          ) : isError ? (
+            <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
+              Không thể tải danh sách bài viết lúc này.
+            </div>
+          ) : items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
+              <Inbox size={40} className="mb-3 opacity-30" />
+              <p className="text-base font-semibold text-foreground">Không tìm thấy bài viết</p>
+              <p className="mt-1 text-sm">Thử thay đổi từ khóa hoặc bộ lọc.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {items.map((item) => (
+                <NewsCard key={item?.id} item={item} navigate={navigate} locale={locale} />
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+              >
+                <ChevronLeft size={15} /> Trước
+              </button>
+              <span className="rounded-full border border-[#cfe0f4] bg-white px-4 py-1.5 text-sm font-semibold">
+                {currentPage} / {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+              >
+                Sau <ChevronRight size={15} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </RootLayout>

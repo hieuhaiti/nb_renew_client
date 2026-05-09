@@ -45,7 +45,11 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply text-foreground antialiased;
+    background:
+      radial-gradient(circle at 8% 12%, rgba(14, 165, 233, 0.16), transparent 26%),
+      radial-gradient(circle at 92% 8%, rgba(245, 158, 11, 0.14), transparent 28%),
+      var(--background);
     font-family:
       'Be Vietnam Pro',
       system-ui,
@@ -61,6 +65,66 @@
   .animate-spin {
     animation: spin 1s linear infinite;
   }
+}
+
+/* Route DOM marker */
+.pin-wrap {
+  cursor: pointer;
+}
+
+.pin {
+  width: 34px;
+  height: 34px;
+  position: relative;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--pin-color, #dc2626);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.38);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  transform: translateY(-2px);
+}
+
+.pin::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  background: inherit;
+  border-right: 2px solid rgba(255, 255, 255, 0.85);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 2px;
+}
+
+.pin .inner {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+}
+
+.pin .num {
+  font-weight: 900;
+  font-size: 12px;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.pin .glyph {
+  font-size: 14px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.pin-wrap {
+  cursor: pointer;
 }
 
 /* ===== Semantic Typography System =====
@@ -476,6 +540,48 @@
     background: var(--gold-soft);
     color: var(--gold-soft-foreground);
   }
+
+  /* ===== Gradient utilities =====
+   * gradient-primary   — blue brand CTA, hero elements
+   * gradient-nature    — green eco / nature content
+   * gradient-sunset    — orange warm / food / culture
+   * gradient-mystic    — purple VR / luxury experiences
+   * gradient-ocean     — blue→green for water / map content
+   * gradient-hero      — dramatic multi-stop hero overlay
+   * gradient-warm      — orange→red festive / urgent
+   * ========================================= */
+  .gradient-primary {
+    background-image: linear-gradient(135deg, var(--primary-1), var(--primary-3));
+  }
+
+  .gradient-nature {
+    background-image: linear-gradient(135deg, var(--secondary-1), var(--secondary-3));
+  }
+
+  .gradient-sunset {
+    background-image: linear-gradient(135deg, var(--tertiary-1), var(--tertiary-3));
+  }
+
+  .gradient-mystic {
+    background-image: linear-gradient(135deg, var(--quinary-1), var(--quinary-3));
+  }
+
+  .gradient-ocean {
+    background-image: linear-gradient(135deg, var(--primary-2), var(--secondary-2));
+  }
+
+  .gradient-hero {
+    background-image: linear-gradient(
+      160deg,
+      var(--primary-3) 0%,
+      var(--primary-2) 55%,
+      var(--secondary-2) 100%
+    );
+  }
+
+  .gradient-warm {
+    background-image: linear-gradient(135deg, var(--tertiary-1), var(--quaternary));
+  }
 }
 
 @theme inline {
@@ -489,6 +595,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xs: calc(var(--radius) * 0.2);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -548,6 +655,20 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Gradient color stops */
+  --color-primary-1: var(--primary-1);
+  --color-primary-2: var(--primary-2);
+  --color-primary-3: var(--primary-3);
+  --color-secondary-1: var(--secondary-1);
+  --color-secondary-2: var(--secondary-2);
+  --color-secondary-3: var(--secondary-3);
+  --color-tertiary-1: var(--tertiary-1);
+  --color-tertiary-2: var(--tertiary-2);
+  --color-tertiary-3: var(--tertiary-3);
+  --color-quinary-1: var(--quinary-1);
+  --color-quinary-2: var(--quinary-2);
+  --color-quinary-3: var(--quinary-3);
 
   /* ===== Shadows ===== */
   --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.05);

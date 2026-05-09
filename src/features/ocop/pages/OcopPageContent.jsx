@@ -1,688 +1,422 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Gift, MapPinned, Search, Sparkles, Star } from 'lucide-react';
+import {
+  Search,
+  Star,
+  MapPin,
+  RefreshCw,
+  Inbox,
+  ChevronLeft,
+  ChevronRight,
+  ArrowRight,
+  ShieldCheck,
+} from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 import RootLayout from '@/components/layout/RootLayout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { useGetOcopCategories, useGetOcopProducts } from '@/services/api/ocop/ocopService';
+import { useGetOcopProducts } from '@/services/api/ocop/ocopService';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 
-const PROVINCE_LABELS = {
-  37: 'Ninh Bình',
+const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const HERO_BG = `linear-gradient(135deg,rgba(5,150,105,.92),rgba(3,95,172,.88),rgba(14,165,233,.78)), url("https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80") center/cover`;
+
+/* Category labels extracted from API data */
+const CATEGORY_LABELS = {
+  thuoc_và_cskh: 'Thuốc & CSKH',
+  thu_cong_my_nghe: 'Thủ công mỹ nghệ',
+  thuc_pham: 'Thực phẩm',
+  do_uong: 'Đồ uống',
+  du_lich_dich_vu: 'Du lịch & Dịch vụ',
+  my_pham: 'Mỹ phẩm',
+  trang_tri: 'Trang trí',
+  qua_tang: 'Quà tặng',
+  nong_san: 'Nông sản',
+  thao_duoc: 'Thảo dược',
+  chan_nuoi: 'Chăn nuôi',
+  may_mac: 'May mặc',
 };
 
-const FEATURED_VENDORS = [
-  {
-    id: 'vendor-1',
-    icon: '🌿',
-    name: 'HTX Sinh Dược Ninh Bình',
-    description:
-      'Chuyên các dòng trà thảo mộc, mỹ phẩm thiên nhiên và quà tặng du lịch gắn với hành trình sinh thái.',
-  },
-  {
-    id: 'vendor-2',
-    icon: '🍯',
-    name: 'Trang trại Cúc Phương',
-    description:
-      'Cung cấp mật ong, dược liệu và sản phẩm thiên nhiên cho tuyến du lịch rừng và nghỉ dưỡng.',
-  },
-  {
-    id: 'vendor-3',
-    icon: '🏺',
-    name: 'Xưởng Gốm An Nhiên',
-    description:
-      'Phát triển sản phẩm thủ công cao cấp, phù hợp quà tặng, trang trí và trải nghiệm làng nghề.',
-  },
-];
+const CATEGORY_COLORS = {
+  thuoc_và_cskh:    { bg: 'bg-purple-50',  text: 'text-purple-700', border: 'border-purple-200' },
+  thu_cong_my_nghe: { bg: 'bg-amber-50',   text: 'text-amber-700',  border: 'border-amber-200'  },
+  thuc_pham:        { bg: 'bg-green-50',   text: 'text-green-700',  border: 'border-green-200'  },
+  do_uong:          { bg: 'bg-teal-50',    text: 'text-teal-700',   border: 'border-teal-200'   },
+  my_pham:          { bg: 'bg-pink-50',    text: 'text-pink-700',   border: 'border-pink-200'   },
+  nong_san:         { bg: 'bg-lime-50',    text: 'text-lime-700',   border: 'border-lime-200'   },
+};
 
-const DEFAULT_POPULAR_CATEGORY_KEYS = ['food', 'beverage', 'herbal', 'craft', 'souvenir', 'eco'];
-
-function getCategoryLabel(category, labelMap = {}) {
-  if (!category) return '--';
-  return labelMap[category] || category;
+function getCategoryLabel(key) {
+  if (!key) return '—';
+  return CATEGORY_LABELS[key] || key.replace(/_/g, ' ');
 }
 
-function getProvinceLabel(product) {
-  const provinceCode = String(product?.province_code || '').trim();
-  if (!provinceCode) return '--';
-  return PROVINCE_LABELS[provinceCode] || `Tỉnh ${provinceCode}`;
+function getCategoryColor(key) {
+  return CATEGORY_COLORS[key] || {
+    bg: 'bg-[#eef7ff]', text: 'text-[#0b66c3]', border: 'border-[#cfe0f4]',
+  };
 }
 
-function getProductName(product) {
-  return product?.name_vi || product?.name_en || product?.name || 'OCOP';
+function getProductName(p) {
+  return p?.name_vi || p?.name_en || p?.name || 'Sản phẩm OCOP';
 }
 
-function getProductDescription(product) {
-  return product?.description_vi || product?.description_en || product?.description || '';
+function getProductStars(p) {
+  return Math.min(5, Math.max(0, Number(p?.star_rating ?? 0)));
 }
 
-function getProductStars(product) {
-  const value = Number(product?.star_rating || product?.stars || 0);
-  return Number.isFinite(value) ? value : 0;
-}
 
-function SectionHeading({ title, description }) {
+function OcopCard({ item, navigate }) {
+  const name = getProductName(item);
+  const stars = getProductStars(item);
+  const imageSrc = withBaseUrl(item?.cover_image_url || '') || placeholderImg;
+  const price = Number(item?.price_vnd);
+  const priceLabel = Number.isFinite(price) && price > 0 ? formatVND(price) : null;
+  const catConf = getCategoryColor(item?.category);
+
   return (
-    <div>
-      <h2 className="typo-card-title text-foreground truncate">{title}</h2>
-      {description ? <p className="typo-body text-muted-foreground mt-1">{description}</p> : null}
+    <article
+      onClick={() => item?.id && navigate(`/ocop/${item.id}`)}
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
+    >
+      {/* Image */}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={imageSrc}
+          alt={name}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+        />
+
+        {/* Star badge */}
+        {stars > 0 && (
+          <span className="absolute top-3 left-3 flex items-center gap-1 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-0.5 text-xs font-bold text-[#b45309] backdrop-blur-sm">
+            <Star size={10} className="fill-[#d99200] text-[#d99200]" />
+            {stars} sao
+          </span>
+        )}
+
+        {/* Category badge */}
+        <span className={`absolute top-3 right-3 rounded-full border px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm ${catConf.bg} ${catConf.text} ${catConf.border}`}>
+          {getCategoryLabel(item?.category)}
+        </span>
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-1 flex-col p-4">
+        <h3
+          className="line-clamp-2 text-sm font-black leading-snug text-foreground transition-colors group-hover:text-[#0b66c3]"
+          title={name}
+        >
+          {name}
+        </h3>
+
+        {item?.producer_name && (
+          <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+            {item.producer_name}
+          </p>
+        )}
+
+        {item?.location_name || item?.province_name ? (
+          <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin size={10} className="shrink-0" />
+            <span className="line-clamp-1">{item?.location_name || item?.province_name}</span>
+          </div>
+        ) : null}
+
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+          {item?.description || 'Chưa có mô tả.'}
+        </p>
+
+        {/* Certification */}
+        {item?.certification_no && (
+          <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+            <ShieldCheck size={11} className="shrink-0 text-[#10b981]" />
+            <span className="truncate">{item.certification_no}</span>
+          </div>
+        )}
+
+        {/* Price + CTA */}
+        <div className="mt-auto flex items-end justify-between gap-2 pt-3">
+          <div>
+            {priceLabel ? (
+              <>
+                <div className="text-base font-black text-[#0b66c3]">{priceLabel}</div>
+                {item?.unit && (
+                  <div className="text-[10px] text-muted-foreground">/ {item.unit}</div>
+                )}
+              </>
+            ) : (
+              <div className="text-sm font-semibold text-[#10b981]">Liên hệ</div>
+            )}
+          </div>
+          <span className="flex items-center gap-1 text-xs font-semibold text-[#0b66c3] group-hover:underline">
+            Chi tiết <ArrowRight size={11} />
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function OcopCardSkeleton() {
+  return (
+    <div className="animate-pulse overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white">
+      <div className="bg-muted h-48 w-full" />
+      <div className="space-y-2 p-4">
+        <div className="bg-muted h-4 w-3/4 rounded" />
+        <div className="bg-muted h-3 w-1/2 rounded" />
+        <div className="bg-muted h-3 w-full rounded" />
+        <div className="bg-muted h-3 w-2/3 rounded" />
+      </div>
     </div>
   );
 }
 
 export default function OcopPageContent() {
   const navigate = useNavigate();
-  const fallbackImage = withBaseUrl(placeholderImg);
 
-  const [keyword, setKeyword] = useState('');
-  const [provinceFilter, setProvinceFilter] = useState('all');
-  const [starFilter, setStarFilter] = useState('all');
+  const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [chipCategory, setChipCategory] = useState('all');
-  const [debouncedKeyword] = useDebounce(keyword.trim(), 400);
+  const [starFilter, setStarFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const [debouncedSearch] = useDebounce(search.trim(), 400);
 
   const { data, isLoading, isError, isFetching, refetch } = useGetOcopProducts({
-    page: 1,
+    page,
     limit: 12,
-    search: debouncedKeyword || undefined,
+    search: debouncedSearch || undefined,
     category: categoryFilter !== 'all' ? categoryFilter : undefined,
-    province_code: provinceFilter !== 'all' ? provinceFilter : undefined,
     star_rating: starFilter !== 'all' ? starFilter : undefined,
   });
 
-  const { data: categoriesData } = useGetOcopCategories();
+  const products = useMemo(() => data?.data?.items || data?.items || [], [data]);
+  const pagination = useMemo(() => data?.data?.pagination || data?.pagination || null, [data]);
+  const total = pagination?.total ?? products.length;
+  const totalPages = pagination?.totalPages ?? 1;
 
-  const products = useMemo(() => {
-    if (!data) return [];
-    return data?.data?.items || data?.items || [];
-  }, [data]);
-
-  const categoryOptions = useMemo(() => {
-    const rawValue =
-      categoriesData?.data?.items ||
-      categoriesData?.data?.categories ||
-      categoriesData?.items ||
-      categoriesData?.categories ||
-      categoriesData?.data ||
-      [];
-    const raw = Array.isArray(rawValue) ? rawValue : [];
-
-    return raw
-      .map((item) => {
-        const key = String(
-          item?.code ||
-            item?.category ||
-            item?.slug ||
-            item?.value ||
-            item?.key ||
-            item?.id ||
-            item?.name ||
-            item?.name_vi ||
-            item?.name_en ||
-            ''
-        ).trim();
-
-        if (!key) return null;
-
-        return {
-          key,
-          label:
-            item?.name_vi ||
-            item?.name_en ||
-            item?.display_name ||
-            item?.label ||
-            item?.name ||
-            key,
-        };
-      })
-      .filter(Boolean);
-  }, [categoriesData]);
-
-  const productCategoryKeys = useMemo(() => {
-    const values = products.map((item) => item?.category).filter(Boolean);
-    return [...new Set(values)];
+  /* Extract unique categories from loaded products for chips */
+  const availableCategories = useMemo(() => {
+    const keys = [...new Set(products.map((p) => p?.category).filter(Boolean))];
+    return keys;
   }, [products]);
 
-  const categories = useMemo(() => {
-    if (categoryOptions.length) {
-      return categoryOptions.map((item) => item.key);
-    }
-    return productCategoryKeys;
-  }, [categoryOptions, productCategoryKeys]);
-
-  const popularCategories = useMemo(() => {
-    if (categories.length) return categories.slice(0, 6);
-    return DEFAULT_POPULAR_CATEGORY_KEYS;
-  }, [categories]);
-
-  const categoryLabelMap = useMemo(() => {
-    return categoryOptions.reduce((acc, item) => {
-      if (item?.key && !acc[item.key]) {
-        acc[item.key] = item.label;
-      }
-      return acc;
-    }, {});
-  }, [categoryOptions]);
-
-  const provinces = useMemo(() => {
-    const values = products.map((item) => String(item?.province_code || '').trim()).filter(Boolean);
-    return [...new Set(values)];
-  }, [products]);
-
-  const filteredProducts = useMemo(() => {
-    const normalizedKeyword = keyword.trim().toLowerCase();
-
-    return products.filter((product) => {
-      const star = getProductStars(product);
-      const category = product?.category || '';
-      const provinceCode = String(product?.province_code || '').trim();
-      const searchText = [
-        getProductName(product),
-        getProductDescription(product),
-        product?.producer_name || '',
-        getCategoryLabel(category, categoryLabelMap),
-      ]
-        .join(' ')
-        .toLowerCase();
-
-      const matchKeyword = !normalizedKeyword || searchText.includes(normalizedKeyword);
-      const matchProvince = provinceFilter === 'all' || provinceCode === provinceFilter;
-      const matchStar = starFilter === 'all' || String(star) === starFilter;
-      const matchCategory = categoryFilter === 'all' || category === categoryFilter;
-      const matchChip = chipCategory === 'all' || category === chipCategory;
-
-      return matchKeyword && matchProvince && matchStar && matchCategory && matchChip;
-    });
-  }, [
-    products,
-    keyword,
-    provinceFilter,
-    starFilter,
-    categoryFilter,
-    chipCategory,
-    categoryLabelMap,
-  ]);
-
-  const total = data?.data?.pagination?.total || products.length;
-
-  const averageRating = useMemo(() => {
-    const values = products.map((item) => getProductStars(item)).filter((value) => value > 0);
-    if (!values.length) return null;
-    const sum = values.reduce((acc, value) => acc + value, 0);
-    return sum / values.length;
+  const averageStars = useMemo(() => {
+    const vals = products.map(getProductStars).filter(Boolean);
+    if (!vals.length) return null;
+    return (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1);
   }, [products]);
 
   const handleReset = () => {
-    setKeyword('');
-    setProvinceFilter('all');
-    setStarFilter('all');
+    setSearch('');
     setCategoryFilter('all');
-    setChipCategory('all');
+    setStarFilter('all');
+    setPage(1);
   };
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen py-4 sm:py-5 lg:py-6">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:w-[80%] lg:px-0 xl:w-[70%] 2xl:w-[60%]">
-          <section className="grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
-            <Card className="border-border/70 relative gap-0 overflow-hidden rounded-3xl py-0 shadow-sm">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center" />
-              <div className="from-card/95 via-card/88 to-card/82 absolute inset-0 bg-linear-to-r" />
-              <CardContent className="relative px-6 py-8 sm:px-8 sm:py-9">
-                <span className="typo-badge bg-primary/10 text-primary inline-flex rounded-full px-3 py-1">
-                  Gian hàng OCOP gắn với điểm đến du lịch và trải nghiệm địa phương
-                </span>
-
-                <h1 className="typo-hero text-foreground mt-4 max-w-4xl">
-                  Khám phá sản phẩm OCOP đặc sắc, dễ tìm, dễ lọc và dễ kết nối mua hàng.
-                </h1>
-
-                <p className="typo-body text-muted-foreground mt-3 max-w-3xl leading-relaxed">
-                  Trang này tập trung giới thiệu sản phẩm OCOP theo địa phương, hạng sao, danh mục
-                  và đơn vị cung cấp, đồng thời liên kết chặt với bản đồ, điểm du lịch và ưu đãi
-                  theo mùa.
-                </p>
-
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Button
-                    className="rounded-xl"
-                    onClick={() =>
-                      document
-                        .getElementById('ocop-products')
-                        ?.scrollIntoView({ behavior: 'smooth' })
-                    }
-                  >
-                    Khám phá gian hàng
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="rounded-xl"
-                    onClick={() =>
-                      document
-                        .getElementById('ocop-vendors')
-                        ?.scrollIntoView({ behavior: 'smooth' })
-                    }
-                  >
-                    Đơn vị cung cấp
-                  </Button>
-                </div>
-
-                <div className="mt-6 grid gap-2 sm:grid-cols-3">
-                  <div className="border-border/60 bg-card/90 rounded-2xl border p-4">
-                    <p className="typo-kpi text-foreground">{total}</p>
-                    <p className="typo-meta text-muted-foreground">Sản phẩm OCOP đang giới thiệu</p>
-                  </div>
-                  <div className="border-border/60 bg-card/90 rounded-2xl border p-4">
-                    <p className="typo-kpi text-foreground">{FEATURED_VENDORS.length}</p>
-                    <p className="typo-meta text-muted-foreground">Đơn vị cung cấp tiêu biểu</p>
-                  </div>
-                  <div className="border-border/60 bg-card/90 rounded-2xl border p-4">
-                    <p className="typo-kpi text-foreground">
-                      {averageRating ? `${averageRating.toFixed(1)}/5` : '--'}
-                    </p>
-                    <p className="typo-meta text-muted-foreground">Điểm hài lòng trung bình</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
-              <CardContent className="px-5 py-5">
-                <SectionHeading
-                  title="Điểm nổi bật"
-                  description="Gợi ý nhanh để du khách chọn đúng sản phẩm phù hợp hành trình"
-                />
-
-                <div className="mt-4 grid gap-3">
-                  <div className="border-border/70 bg-primary/5 flex gap-3 rounded-2xl border p-4">
-                    <div className="bg-card grid h-12 w-12 place-content-center rounded-2xl">
-                      <Gift className="text-primary h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="typo-section-title text-foreground">Combo quà tặng du lịch</p>
-                      <p className="typo-meta text-muted-foreground mt-1">
-                        Gợi ý giỏ quà OCOP cho du khách với mức giá theo ngân sách.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="border-border/70 bg-secondary/8 flex gap-3 rounded-2xl border p-4">
-                    <div className="bg-card grid h-12 w-12 place-content-center rounded-2xl">
-                      <Sparkles className="text-secondary h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="typo-section-title text-foreground">Lọc theo hạng sao</p>
-                      <p className="typo-meta text-muted-foreground mt-1">
-                        Tìm nhanh sản phẩm 3 sao, 4 sao, 5 sao theo tỉnh và nhóm ngành.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="border-border/70 bg-warning/8 flex gap-3 rounded-2xl border p-4">
-                    <div className="bg-card grid h-12 w-12 place-content-center rounded-2xl">
-                      <MapPinned className="text-warning h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="typo-section-title text-foreground">Gắn với điểm tham quan</p>
-                      <p className="typo-meta text-muted-foreground mt-1">
-                        Mỗi sản phẩm liên kết với điểm du lịch để gợi ý mua sắm theo hành trình.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-
-          <section className="mt-4">
-            <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
-              <CardContent className="space-y-4 px-5 py-5">
-                <SectionHeading
-                  title="Bộ lọc sản phẩm"
-                  description="Tìm theo tên, địa phương, hạng sao và danh mục"
-                />
-
-                <div className="grid gap-3 lg:grid-cols-[2fr_1.2fr_1fr_1fr_auto]">
-                  <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">Từ khóa</label>
-                    <div className="relative">
-                      <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                      <Input
-                        value={keyword}
-                        onChange={(event) => setKeyword(event.target.value)}
-                        placeholder="Ví dụ: trà, mật ong, gốm, tinh dầu..."
-                        className="h-11 pl-9"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">Địa phương</label>
-                    <Select value={provinceFilter} onValueChange={setProvinceFilter}>
-                      <SelectTrigger className="h-11 w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tất cả địa phương</SelectItem>
-                        {provinces.map((item) => (
-                          <SelectItem key={item} value={item}>
-                            {PROVINCE_LABELS[item] || `Tỉnh ${item}`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">Hạng sao</label>
-                    <Select value={starFilter} onValueChange={setStarFilter}>
-                      <SelectTrigger className="h-11 w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tất cả</SelectItem>
-                        <SelectItem value="3">3 sao</SelectItem>
-                        <SelectItem value="4">4 sao</SelectItem>
-                        <SelectItem value="5">5 sao</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="typo-meta text-muted-foreground">Danh mục</label>
-                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                      <SelectTrigger className="h-11 w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tất cả</SelectItem>
-                        {categories.map((item) => (
-                          <SelectItem key={item} value={item}>
-                            {getCategoryLabel(item, categoryLabelMap)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-end">
-                    <Button className="h-11 rounded-xl" onClick={handleReset}>
-                      Làm mới
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    variant={chipCategory === 'all' ? 'default' : 'outline'}
-                    className="rounded-full"
-                    onClick={() => setChipCategory('all')}
-                  >
-                    Tất cả
-                  </Button>
-
-                  {categories.map((item) => (
-                    <Button
-                      key={item}
-                      size="sm"
-                      variant={chipCategory === item ? 'default' : 'outline'}
-                      className="rounded-full"
-                      onClick={() => setChipCategory(item)}
-                    >
-                      {getCategoryLabel(item, categoryLabelMap)}
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-
-          <section id="ocop-products" className="mt-6">
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-              <SectionHeading
-                title="Sản phẩm OCOP nổi bật"
-                description={`Đang hiển thị ${filteredProducts.length} sản phẩm phù hợp`}
-              />
-              <Button
-                variant="outline"
-                className="rounded-xl"
-                onClick={() => refetch?.()}
-                disabled={isFetching}
-              >
-                {isFetching ? 'Đang tải...' : 'Làm mới dữ liệu'}
-              </Button>
+      <div className="min-h-screen">
+        {/* Hero */}
+        <section className="px-6 py-10 text-white" style={{ background: HERO_BG }}>
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-6 max-w-2xl">
+              <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
+                Chương trình OCOP – Mỗi xã một sản phẩm
+              </span>
+              <h1 className="mt-2 text-4xl font-black leading-tight tracking-tight">
+                Sản phẩm OCOP Ninh Bình
+              </h1>
+              <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
+                Khám phá đặc sản địa phương được chứng nhận OCOP 3–5 sao, từ thực phẩm, thảo dược đến thủ công mỹ nghệ.
+              </p>
             </div>
 
-            {isLoading ? (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {Array.from({ length: 8 }).map((_, index) => (
-                  <div
-                    key={`ocop-skeleton-${index}`}
-                    className="border-border/70 bg-card h-72 animate-pulse rounded-2xl border"
-                  />
-                ))}
-              </div>
-            ) : isError ? (
-              <div className="text-destructive py-12 text-center text-sm">
-                Không thể tải dữ liệu OCOP lúc này.
-              </div>
-            ) : filteredProducts.length === 0 ? (
-              <div className="text-muted-foreground py-12 text-center text-sm">
-                Chưa có sản phẩm OCOP phù hợp.
-              </div>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {filteredProducts.map((item) => {
-                  const name = getProductName(item);
-                  const description = getProductDescription(item);
-                  const stars = getProductStars(item);
-                  const imageSrc = withBaseUrl(item?.cover_image_url || '') || fallbackImage;
-                  const priceValue = Number(item?.price_vnd);
-                  const priceLabel = Number.isFinite(priceValue) ? formatVND(priceValue) : '--';
-                  const provinceLabel = getProvinceLabel(item);
-                  const categoryLabel = getCategoryLabel(item?.category, categoryLabelMap);
-                  const unitLabel = item?.unit || '--';
-
-                  return (
-                    <Card
-                      key={item?.id || `${name}-${item?.created_at || ''}`}
-                      className="border-border/70 gap-0 overflow-hidden rounded-2xl border py-0 shadow-sm"
-                    >
-                      <div className="relative h-52">
-                        <img
-                          src={imageSrc}
-                          alt={name}
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = placeholderImg;
-                          }}
-                        />
-
-                        {stars > 0 ? (
-                          <span className="typo-badge bg-card/90 text-foreground absolute top-3 left-3 rounded-full px-2.5 py-1">
-                            {'?'.repeat(stars)} · {stars} sao
-                          </span>
-                        ) : null}
-
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="absolute top-3 right-3 h-9 w-9 rounded-full"
-                        >
-                          <Star className="fill-gold text-gold h-4 w-4" />
-                        </Button>
-                      </div>
-
-                      <CardContent className="px-4 py-4">
-                        <div className="typo-meta text-muted-foreground flex items-center justify-between gap-2">
-                          <span title={provinceLabel} className="truncate">
-                            {provinceLabel}
-                          </span>
-                          <span title={item?.producer_name || '--'} className="truncate">
-                            {item?.producer_name || '--'}
-                          </span>
-                        </div>
-
-                        <h3
-                          className="typo-section-title text-foreground mt-2 truncate"
-                          title={name}
-                        >
-                          {name}
-                        </h3>
-
-                        <p
-                          className="typo-body text-muted-foreground line-clamp-3"
-                          title={description || 'Chưa có mô tả'}
-                        >
-                          {description || 'Chưa có mô tả.'}
-                        </p>
-
-                        <div className="mt-2 flex flex-wrap gap-1.5">
-                          <span className="typo-badge bg-secondary/15 text-secondary rounded-full px-2 py-1">
-                            {categoryLabel}
-                          </span>
-                          <span className="typo-badge bg-primary/10 text-primary rounded-full px-2 py-1">
-                            {unitLabel}
-                          </span>
-                        </div>
-
-                        <div className="mt-4 flex items-center justify-between gap-2">
-                          <strong className="text-warning text-lg font-bold">{priceLabel}</strong>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="rounded-lg"
-                            onClick={() => {
-                              if (item?.id) {
-                                navigate(`/ocop/${item.id}`);
-                              }
-                            }}
-                            disabled={!item?.id}
-                          >
-                            Xem chi tiết
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </section>
-
-          <section className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
-            <Card className="from-primary/90 via-primary to-secondary/90 text-primary-foreground gap-0 rounded-3xl border-0 bg-linear-to-r py-0 shadow-sm">
-              <CardContent className="px-6 py-6 sm:px-7">
-                <span className="typo-badge border-primary-foreground/40 bg-primary-foreground/10 text-primary-foreground inline-flex rounded-full border px-3 py-1">
-                  Ưu đãi theo mùa du lịch
-                </span>
-                <h3 className="mt-3 text-3xl leading-tight font-bold">
-                  Mua quà địa phương ngay trong hành trình khám phá.
-                </h3>
-                <p className="text-primary-foreground/90 mt-2 text-sm">
-                  Kết nối gian hàng OCOP với bản đồ điểm đến, khu trải nghiệm, nhà hàng và tour để
-                  du khách mua sắm thuận tiện hơn.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    className="border-primary-foreground/50 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 rounded-xl"
-                    onClick={() => navigate('/map')}
-                  >
-                    Mở bản đồ
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-primary-foreground/50 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 rounded-xl"
-                    onClick={() => navigate('/tourism-point')}
-                  >
-                    Xem điểm du lịch
-                  </Button>
+            {/* Stats */}
+            <div className="mb-6 flex flex-wrap gap-3">
+              {[
+                { value: total, label: 'Sản phẩm' },
+                { value: availableCategories.length || '—', label: 'Danh mục' },
+                { value: averageStars ? `${averageStars} ★` : '—', label: 'Sao TB' },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
+                >
+                  <div className="text-2xl font-black leading-none">{s.value}</div>
+                  <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
-              <CardContent className="px-5 py-5">
-                <SectionHeading
-                  title="Danh mục phổ biến"
-                  description="Nhóm sản phẩm được quan tâm nhiều"
-                />
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {popularCategories.map((item, index) => (
-                    <Button
-                      key={item}
-                      size="sm"
-                      variant={index === 0 ? 'default' : 'outline'}
-                      className="rounded-full"
-                      onClick={() => {
-                        setChipCategory(item);
-                        setCategoryFilter(item);
-                        document
-                          .getElementById('ocop-products')
-                          ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }}
-                    >
-                      {getCategoryLabel(item, categoryLabelMap)}
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-
-          <section id="ocop-vendors" className="mt-6">
-            <div className="mb-4">
-              <SectionHeading
-                title="Đơn vị cung cấp tiêu biểu"
-                description="Các cơ sở sản xuất và hợp tác xã gắn với du lịch trải nghiệm"
-              />
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {FEATURED_VENDORS.map((vendor) => (
-                <Card key={vendor.id} className="border-border/70 rounded-3xl shadow-sm">
-                  <CardContent className="px-5 py-5">
-                    <div className="flex gap-3">
-                      <div className="bg-warning/15 grid h-14 w-14 place-content-center rounded-2xl text-2xl">
-                        {vendor.icon}
-                      </div>
-                      <div className="min-w-0">
-                        <h3
-                          className="typo-section-title text-foreground truncate"
-                          title={vendor.name}
-                        >
-                          {vendor.name}
-                        </h3>
-                        <p
-                          className="typo-body text-muted-foreground mt-1 line-clamp-3"
-                          title={vendor.description}
-                        >
-                          {vendor.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <Button variant="outline" className="mt-4 rounded-xl">
-                      Liên hệ đơn vị
-                    </Button>
-                  </CardContent>
-                </Card>
               ))}
             </div>
-          </section>
+
+            {/* Search bar */}
+            <div
+              className="flex flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
+              style={{
+                background: 'rgba(255,255,255,0.94)',
+                border: '1px solid rgba(255,255,255,0.75)',
+                boxShadow: '0 12px 28px rgba(0,0,0,.14)',
+              }}
+            >
+              <div className="relative min-w-0 flex-1">
+                <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
+                <input
+                  type="text"
+                  placeholder="Tìm sản phẩm, nhà sản xuất..."
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                  className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                />
+              </div>
+              <select
+                value={starFilter}
+                onChange={(e) => { setStarFilter(e.target.value); setPage(1); }}
+                className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+              >
+                <option value="all">Tất cả hạng sao</option>
+                <option value="5">5 sao ★★★★★</option>
+                <option value="4">4 sao ★★★★</option>
+                <option value="3">3 sao ★★★</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => { setPage(1); refetch?.(); }}
+                className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
+                style={BTN_GRADIENT}
+              >
+                Tìm kiếm
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Content */}
+        <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
+
+          {/* Category chips + toolbar */}
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => { setCategoryFilter('all'); setPage(1); }}
+                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                  categoryFilter === 'all'
+                    ? 'bg-[#0b66c3] text-white'
+                    : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
+                }`}
+              >
+                Tất cả
+              </button>
+              {availableCategories.map((key) => {
+                const conf = getCategoryColor(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => { setCategoryFilter(key); setPage(1); }}
+                    className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                      categoryFilter === key
+                        ? 'bg-[#0b66c3] text-white'
+                        : `border ${conf.border} ${conf.bg} ${conf.text} hover:opacity-80`
+                    }`}
+                  >
+                    {getCategoryLabel(key)}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">{total}</strong> sản phẩm
+              </p>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
+              >
+                <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
+                Làm mới
+              </button>
+            </div>
+          </div>
+
+          {/* Product grid */}
+          {isLoading ? (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => <OcopCardSkeleton key={i} />)}
+            </div>
+          ) : isError ? (
+            <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
+              Không thể tải dữ liệu OCOP lúc này.
+            </div>
+          ) : products.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
+              <Inbox size={40} className="mb-3 opacity-30" />
+              <p className="text-base font-semibold text-foreground">Chưa có sản phẩm phù hợp</p>
+              <p className="mt-1 text-sm">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {products.map((item) => (
+                <OcopCard key={item?.id} item={item} navigate={navigate} />
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+              >
+                <ChevronLeft size={15} /> Trước
+              </button>
+              <span className="rounded-full border border-[#cfe0f4] bg-white px-4 py-1.5 text-sm font-semibold">
+                {page} / {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+              >
+                Sau <ChevronRight size={15} />
+              </button>
+            </div>
+          )}
+
+          {/* Bottom CTA */}
+          <div
+            className="mt-10 overflow-hidden rounded-[22px] px-7 py-7 text-white"
+            style={{ background: HERO_BG }}
+          >
+            <p className="mb-1 text-xs font-semibold text-white/75">Mua sắm trong hành trình</p>
+            <h3 className="text-2xl font-black leading-tight">
+              Kết hợp mua sản phẩm OCOP với hành trình du lịch Ninh Bình
+            </h3>
+            <p className="mt-1.5 text-sm text-white/85">
+              Tìm điểm mua hàng trên bản đồ, liên kết với tour và điểm tham quan gần nhất.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                { label: 'Mở bản đồ', path: '/map' },
+                { label: 'Xem tour', path: '/tour' },
+                { label: 'Điểm tham quan', path: '/tourism-point' },
+              ].map((item) => (
+                <button
+                  key={item.path}
+                  type="button"
+                  onClick={() => navigate(item.path)}
+                  className="h-9 rounded-[10px] border border-white/35 bg-white/15 px-4 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/25"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </RootLayout>

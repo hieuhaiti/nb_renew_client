@@ -258,19 +258,15 @@ export default function TourismDetailPage() {
     },
   });
 
-  const [newCleanliness, setNewCleanliness] = useState(0);
-  const [newService, setNewService] = useState(0);
-  const [newValue, setNewValue] = useState(0);
-  const [newAccessibility, setNewAccessibility] = useState(0);
-  const [hoverCleanliness, setHoverCleanliness] = useState(0);
-  const [hoverService, setHoverService] = useState(0);
-  const [hoverValue, setHoverValue] = useState(0);
-  const [hoverAccessibility, setHoverAccessibility] = useState(0);
+  const [newStars, setNewStars] = useState(0);
+  const [hoverStars, setHoverStars] = useState(0);
+  const [newTitle, setNewTitle] = useState('');
+  const [newPros, setNewPros] = useState('');
+  const [newCons, setNewCons] = useState('');
 
   const [newComment, setNewComment] = useState('');
 
   const [newVisitDate, setNewVisitDate] = useState(getDefaultVisitDate());
-  const [newRecommend, setNewRecommend] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
 
@@ -305,77 +301,54 @@ export default function TourismDetailPage() {
   const handleCreateReview = async () => {
     if (!attraction?.id) return;
 
-    if (
-      Number(newCleanliness) === 0 ||
-      Number(newService) === 0 ||
-      Number(newValue) === 0 ||
-      Number(newAccessibility) === 0
-    ) {
-      toast.error(t('tourism.review.missing_rating', 'Please provide ratings.'));
+    if (Number(newStars) === 0) {
+      toast.error(t('tourism.review.missing_rating', 'Vui lòng chọn số sao đánh giá.'));
       return;
     }
 
-    const overall = Math.round(
-      (Number(newCleanliness) + Number(newService) + Number(newValue) + Number(newAccessibility)) /
-        4
-    );
-
-    // Build JSON payload — field names per Postman /ratings spec.
-    // TODO: cleanliness_rating / service_rating / value_rating / accessibility_rating /
-    //       visit_season / recommend are not in the Postman /ratings spec — verify with backend.
     const payload = {
       spot_id: String(attraction.id),
-      stars: Number(overall),
+      stars: Number(newStars),
+      title: newTitle || '',
       content: newComment || '',
-      // TODO: photo_urls not confirmed in Postman spec — replace images[] with photo_urls[].
-      photo_urls: [],
+      pros: newPros || '',
+      cons: newCons || '',
       visit_date: newVisitDate ? new Date(newVisitDate).toISOString() : null,
-      cleanliness_rating: Number(newCleanliness) || null,
-      service_rating: Number(newService) || null,
-      value_rating: Number(newValue) || null,
-      accessibility_rating: Number(newAccessibility) || null,
-      recommend: Boolean(newRecommend),
     };
 
     if (selectedFiles && selectedFiles.length > 0) {
       const fd = new FormData();
-      fd.append('spot_id', String(payload.spot_id));
+      fd.append('spot_id', payload.spot_id);
       fd.append('stars', String(payload.stars));
-      fd.append('content', payload.content || '');
-      if (payload.cleanliness_rating !== null)
-        fd.append('cleanliness_rating', String(payload.cleanliness_rating));
-      if (payload.service_rating !== null)
-        fd.append('service_rating', String(payload.service_rating));
-      if (payload.value_rating !== null) fd.append('value_rating', String(payload.value_rating));
-      if (payload.accessibility_rating !== null)
-        fd.append('accessibility_rating', String(payload.accessibility_rating));
+      if (payload.title) fd.append('title', payload.title);
+      fd.append('content', payload.content);
+      if (payload.pros) fd.append('pros', payload.pros);
+      if (payload.cons) fd.append('cons', payload.cons);
       if (payload.visit_date) fd.append('visit_date', payload.visit_date);
-      fd.append('recommend', payload.recommend ? 'true' : 'false');
-
       selectedFiles.forEach((f) => fd.append('photo_urls', f));
       createReviewMut.mutate(fd);
     } else {
       createReviewMut.mutate(payload);
     }
 
+    setNewStars(0);
+    setNewTitle('');
     setNewComment('');
-    setNewCleanliness(0);
-    setNewService(0);
-    setNewValue(0);
-    setNewAccessibility(0);
-    setNewRecommend(true);
+    setNewPros('');
+    setNewCons('');
+
     setSelectedFiles([]);
     setPreviews([]);
   };
 
   const handleResetReviewForm = () => {
+    setNewStars(0);
+    setNewTitle('');
     setNewComment('');
-    setNewCleanliness(0);
-    setNewService(0);
-    setNewValue(0);
-    setNewAccessibility(0);
+    setNewPros('');
+    setNewCons('');
     setNewVisitDate(getDefaultVisitDate());
-    setNewRecommend(true);
+
     setSelectedFiles([]);
     setPreviews([]);
   };
@@ -419,7 +392,7 @@ export default function TourismDetailPage() {
   if (isLoading) {
     return (
       <RootLayout>
-        <div className="bg-background min-h-screen">
+        <div className="min-h-screen">
           <LoadingOverlay />
         </div>
       </RootLayout>
@@ -428,7 +401,7 @@ export default function TourismDetailPage() {
   if (!attraction || isError) {
     return (
       <RootLayout>
-        <div className="bg-background flex min-h-screen items-center justify-center">
+        <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
             <h2 className="text-foreground mb-4 text-2xl font-bold">
               {t('tourism.not_found', 'Tourism point not found')}
@@ -445,15 +418,9 @@ export default function TourismDetailPage() {
     );
   }
 
-  // Compute a display rating for a review as the rounded average of the 4 detailed criteria
   const computeDisplayRating = (r) => {
     if (!r) return 0;
-    const nums = [r.cleanliness_rating, r.service_rating, r.value_rating, r.accessibility_rating]
-      .map((x) => (x === undefined || x === null ? NaN : Number(x)))
-      .filter((n) => !Number.isNaN(n));
-    if (nums.length === 0) return Math.round(Number(r.rating) || 0);
-    const sum = nums.reduce((a, b) => a + b, 0);
-    return Math.round(sum / nums.length);
+    return Math.round(Number(r.stars ?? r.rating ?? 0));
   };
 
   /* Two-column detail layout */
@@ -463,12 +430,13 @@ export default function TourismDetailPage() {
   const serverPagination =
     reviewsQuery?.data?.data?.pagination || reviewsQuery?.data?.pagination || null;
   const pageDisplay = serverPagination?.page ?? reviewPage ?? 1;
-  const pagesDisplay = serverPagination?.pages ?? serverPagination?.total_pages ?? 1;
+  const pagesDisplay =
+    serverPagination?.totalPages ?? serverPagination?.total_pages ?? serverPagination?.pages ?? 1;
 
   const reviewItems =
+    reviewsQuery?.data?.data?.ratings ||
     reviewsQuery?.data?.data?.reviews ||
     reviewsQuery?.data?.data?.items ||
-    reviewsQuery?.data?.data ||
     [];
   const safeReviewItems = Array.isArray(reviewItems) ? reviewItems : [];
 
@@ -651,31 +619,19 @@ export default function TourismDetailPage() {
     {
       key: 'ticket',
       label: t('tourism.ticket_price', 'Giá vé'),
-      value: (
-        <span
-          className={`text-sm font-medium ${
-            ticketDisplay === t('tourism.free', 'Miễn phí') ? 'text-primary' : 'text-foreground'
-          }`}
-        >
-          {ticketDisplay}
-        </span>
-      ),
+      value: <span className="text-foreground text-sm font-medium">{ticketDisplay}</span>,
     },
     {
       key: 'crowd',
       label: t('tourism.crowd_level', 'Lượng người'),
-      value: (
-        <span className={`text-sm font-medium ${isHighCrowd ? 'text-warning' : 'text-primary'}`}>
-          {crowdDisplay}
-        </span>
-      ),
+      value: <span className="text-foreground text-sm font-medium">{crowdDisplay}</span>,
     },
   ];
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen pb-8">
-        <div className="mx-auto max-w-7xl px-3 py-4 md:px-4">
+      <div className="min-h-screen pb-10">
+        <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
           <TourismDetailTopBar
             onBack={() => navigate('/tourism-point')}
             isLiked={isLiked}
@@ -685,8 +641,8 @@ export default function TourismDetailPage() {
             shareStatus={shareStatus}
           />
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
-            <main className="space-y-3">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
+            <main>
               <TourismDetailHero
                 imageSrc={safeImagesMapped[currentImageIndex]}
                 title={attractionName}
@@ -725,46 +681,20 @@ export default function TourismDetailPage() {
                 reviewPage={reviewPage}
                 onPrevPage={() => setReviewPage((p) => Math.max(1, p - 1))}
                 onNextPage={() => setReviewPage((p) => p + 1)}
+                newStars={newStars}
+                hoverStars={hoverStars}
+                onStarsChange={setNewStars}
+                onHoverStars={setHoverStars}
+                newTitle={newTitle}
+                onTitleChange={setNewTitle}
                 newVisitDate={newVisitDate}
                 onVisitDateChange={setNewVisitDate}
-                newRecommend={newRecommend}
-                onRecommendChange={setNewRecommend}
-                criteria={[
-                  {
-                    key: 'cleanliness',
-                    label: t('tourism.cleanliness', 'Sạch sẽ'),
-                    value: newCleanliness,
-                    hover: hoverCleanliness,
-                    setValue: setNewCleanliness,
-                    setHover: setHoverCleanliness,
-                  },
-                  {
-                    key: 'service',
-                    label: t('tourism.service', 'Dịch vụ'),
-                    value: newService,
-                    hover: hoverService,
-                    setValue: setNewService,
-                    setHover: setHoverService,
-                  },
-                  {
-                    key: 'value',
-                    label: t('tourism.value', 'Giá trị'),
-                    value: newValue,
-                    hover: hoverValue,
-                    setValue: setNewValue,
-                    setHover: setHoverValue,
-                  },
-                  {
-                    key: 'accessibility',
-                    label: t('tourism.accessibility', 'Tiếp cận'),
-                    value: newAccessibility,
-                    hover: hoverAccessibility,
-                    setValue: setNewAccessibility,
-                    setHover: setHoverAccessibility,
-                  },
-                ]}
                 newComment={newComment}
                 onCommentChange={setNewComment}
+                newPros={newPros}
+                onProsChange={setNewPros}
+                newCons={newCons}
+                onConsChange={setNewCons}
                 onSelectFiles={handleFilesChange}
                 previews={previews}
                 onRemoveFile={handleRemoveFile}

@@ -11,6 +11,7 @@ import { TourDetailStopsSection } from '@/features/tours/components/TourDetailSt
 import { TourDetailReviewsSection } from '@/features/tours/components/TourDetailReviewsSection';
 import { TourDetailSidebar } from '@/features/tours/components/TourDetailSidebar';
 import { useTourDetailPageModel } from '@/features/tours/hooks/useTourDetailPageModel';
+import ModalCarousel from '@/features/map/components/ModalCarousel';
 
 export default function TourDetailPage() {
   const { t } = useTranslation();
@@ -189,6 +190,7 @@ export default function TourDetailPage() {
           </div>
         </div>
       </div>
+      <ModalCarousel />
     </RootLayout>
   );
 }

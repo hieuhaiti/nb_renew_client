@@ -4,6 +4,7 @@ export function useGetAllTours({
   page,
   limit,
   search,
+  duration_days,
   params = {},
   options = {},
 } = {}) {
@@ -11,9 +12,10 @@ export function useGetAllTours({
   if (page) qs.set('page', page);
   if (limit) qs.set('limit', limit);
   if (search) qs.set('search', search);
+  if (duration_days) qs.set('duration_days', duration_days);
 
   return useApiQuery(
-    ['tours', page || 'all', limit || 'all', search || ''],
+    ['tours', page || 'all', limit || 'all', search || '', duration_days || ''],
     `tours?${qs.toString()}`,
     {
       select: (res) => res?.data ?? { tours: [], pagination: null },

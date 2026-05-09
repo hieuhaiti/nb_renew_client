@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import ThemeSwitch from '@/components/common/ThemeSwitch';
 import LanguageSwitch from '@/components/common/LanguageSwitch';
 import useAuthStore from '@/stores/useAuthStore.js';
 import { tokenManager } from '@/lib/tokenManager';
@@ -149,14 +148,9 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* DESKTOP RIGHT: Theme, Lang, User */}
+        {/* DESKTOP RIGHT: Lang, User */}
         <div className="hidden items-center gap-2 2xl:flex">
-          {!isAuthenticated && (
-            <>
-              <ThemeSwitch />
-              <LanguageSwitch />
-            </>
-          )}
+          <LanguageSwitch />
 
           {isAuthenticated ? (
             <div className="relative" data-header-interactive>
@@ -198,11 +192,6 @@ export default function Header() {
                     </p>
                     <p className="text-muted-foreground truncate text-sm">{user?.email}</p>
                   </div>
-                  <div className="mx-2 mb-1 flex items-center justify-center gap-6 rounded-xl p-2">
-                    <ThemeSwitch />
-                    <LanguageSwitch />
-                  </div>
-                  <div className="border-border my-1 border-t" />
                   <Button
                     id="header-profile-btn"
                     type="button"
@@ -375,15 +364,8 @@ export default function Header() {
                 </Button>
               )}
 
-              {/* Theme & Language */}
+              {/* Language */}
               <div className="bg-muted/50 border-border space-y-1 rounded-2xl border p-3">
-                <div className="flex items-center justify-between px-1 py-1.5">
-                  <span className="text-foreground text-sm font-medium">
-                    {t('common.toggle_theme')}
-                  </span>
-                  <ThemeSwitch />
-                </div>
-                <div className="border-border border-t" />
                 <div className="flex items-center justify-between px-1 py-1.5">
                   <span className="text-foreground text-sm font-medium">
                     {t('common.toggle_lang')}

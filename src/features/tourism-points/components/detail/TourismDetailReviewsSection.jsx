@@ -1,10 +1,185 @@
 import React from 'react';
-import { Star, Check, X, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Star, ThumbsUp, BadgeCheck, MessageSquare, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+
+const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const BAR_GRADIENT = 'linear-gradient(135deg, #0b66c3, #0ea5e9)';
+
+function StarsDisplay({ count, size = 12 }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          size={size}
+          className={
+            i < count
+              ? 'fill-[#d99200] text-[#d99200]'
+              : 'fill-[#d99200] text-[#d99200] opacity-20'
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+function StarPicker({ value, hover, onValue, onHover, size = 'h-6 w-6' }) {
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }).map((_, idx) => (
+        <button
+          key={idx}
+          type="button"
+          onMouseEnter={() => onHover(idx + 1)}
+          onMouseLeave={() => onHover(0)}
+          onClick={() => onValue(idx + 1)}
+          className="p-0.5 transition-transform hover:scale-110"
+        >
+          <Star
+            className={`${size} transition-colors ${
+              idx < (hover || value)
+                ? 'fill-[#d99200] text-[#d99200]'
+                : 'fill-[#d99200] text-[#d99200] opacity-20'
+            }`}
+          />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
+  const starCount = computeDisplayRating(r);
+  const userName = r.user_name || r.user?.name || r.author || t('tourism.anonymous', 'Khách');
+  const photoUrls = Array.isArray(r.photo_urls) ? r.photo_urls.filter(Boolean) : [];
+  const dateStr = r.visit_date || r.created_at;
+
+  return (
+    <article className="rounded-[14px] border border-[#cfe0f4] bg-white p-4">
+      <div className="flex items-start gap-3">
+        {/* Avatar */}
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+          style={BTN_GRADIENT}
+        >
+          {userName.charAt(0).toUpperCase()}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span
+                  className="text-foreground text-sm font-semibold"
+                  title={userName}
+                >
+                  {userName}
+                </span>
+                {r.is_verified_visit && (
+                  <BadgeCheck size={14} className="shrink-0 text-[#10b981]" />
+                )}
+              </div>
+              {starCount > 0 && (
+                <div className="mt-0.5">
+                  <StarsDisplay count={starCount} size={12} />
+                </div>
+              )}
+            </div>
+            {dateStr && (
+              <span className="text-muted-foreground shrink-0 text-xs">
+                {new Date(dateStr).toLocaleDateString('vi-VN')}
+              </span>
+            )}
+          </div>
+
+          {/* Title */}
+          {r.title && (
+            <p className="text-foreground mt-2 text-sm font-semibold">{r.title}</p>
+          )}
+
+          {/* Content */}
+          {(r.content || r.comment || r.body) && (
+            <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed">
+              {r.content || r.comment || r.body}
+            </p>
+          )}
+
+          {/* Pros / Cons */}
+          {(r.pros || r.cons) && (
+            <div className="mt-2.5 grid gap-1.5 sm:grid-cols-2">
+              {r.pros && (
+                <div className="rounded-[8px] bg-[#f0fdf4] px-3 py-2 text-xs text-[#059669]">
+                  <span className="font-semibold">+ </span>
+                  {r.pros}
+                </div>
+              )}
+              {r.cons && (
+                <div className="rounded-[8px] bg-[#fff7ed] px-3 py-2 text-xs text-[#d97706]">
+                  <span className="font-semibold">- </span>
+                  {r.cons}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Photos */}
+          {photoUrls.length > 0 && (
+            <div className="mt-2.5 flex items-center gap-2 overflow-x-auto">
+              {photoUrls.map((src, idx) => (
+                <img
+                  key={idx}
+                  src={withBaseUrl(src)}
+                  alt={`review-photo-${idx}`}
+                  className="h-14 w-20 shrink-0 rounded-[8px] object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = placeholderImg;
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Footer */}
+          <div className="mt-2.5 flex items-center justify-between gap-2">
+            {r.helpful_count > 0 ? (
+              <span className="text-muted-foreground flex items-center gap-1 text-xs">
+                <ThumbsUp size={11} />
+                {r.helpful_count} {t('tourism.helpful', 'hữu ích')}
+              </span>
+            ) : (
+              <span />
+            )}
+            {r.can_delete && (
+              <button
+                type="button"
+                onClick={() => onDeleteReview(r.id)}
+                className="h-6 rounded-[6px] border border-[#cfe0f4] bg-white px-2 text-xs text-muted-foreground hover:bg-[#eef7ff]"
+              >
+                {t('tourism.delete', 'Xoá')}
+              </button>
+            )}
+          </div>
+
+          {/* Reply */}
+          {r.reply_text && (
+            <div className="mt-2.5 rounded-[10px] border border-[#cfe0f4] bg-[#eef7ff] p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-[#0b66c3]">
+                <MessageSquare size={11} />
+                {r.reply_by_name || t('tourism.operator_reply', 'Phản hồi từ đơn vị')}
+              </div>
+              <p className="text-muted-foreground text-xs leading-relaxed">{r.reply_text}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
 
 export function TourismDetailReviewsSection({
   t,
@@ -20,13 +195,20 @@ export function TourismDetailReviewsSection({
   reviewPage,
   onPrevPage,
   onNextPage,
+  newStars,
+  hoverStars,
+  onStarsChange,
+  onHoverStars,
+  newTitle,
+  onTitleChange,
   newVisitDate,
   onVisitDateChange,
-  newRecommend,
-  onRecommendChange,
-  criteria,
   newComment,
   onCommentChange,
+  newPros,
+  onProsChange,
+  newCons,
+  onConsChange,
   onSelectFiles,
   previews,
   onRemoveFile,
@@ -35,219 +217,154 @@ export function TourismDetailReviewsSection({
   isSubmitting,
 }) {
   return (
-    <section className="border-border bg-card mb-3 rounded-[10px] border-[0.5px] px-4 py-3.5">
-      <h2 className="text-foreground mb-3 text-sm font-medium">
+    <section className="border-border bg-card mb-3 rounded-[16px] border px-5 py-4">
+      <h2 className="text-foreground mb-4 text-base font-bold">
         {t('tourism.reviews', 'Đánh giá')}
       </h2>
 
-      <div className="border-muted grid gap-3 border-b-[0.5px] pb-4 md:grid-cols-[80px_minmax(0,1fr)]">
-        <div>
-          <div className="typo-kpi text-primary leading-none font-medium">
-            {averageDisplayRating > 0 ? averageDisplayRating.toFixed(1) : '-'}
+      {/* Summary */}
+      <div className="mb-4 rounded-[14px] border border-[#cfe0f4] bg-[#eef7ff] p-4">
+        <div className="grid gap-4 md:grid-cols-[88px_minmax(0,1fr)]">
+          <div className="flex flex-col items-center justify-center">
+            <div className="text-4xl font-black leading-none text-[#0b66c3]">
+              {averageDisplayRating > 0 ? averageDisplayRating.toFixed(1) : '—'}
+            </div>
+            <div className="mt-1.5">
+              <StarsDisplay count={Math.round(averageDisplayRating)} size={14} />
+            </div>
+            <div className="text-muted-foreground mt-1 text-center text-xs">
+              {totalReviewCount} {t('tourism.reviews_count', 'đánh giá')}
+            </div>
           </div>
-          <div className="text-primary mt-1 flex items-center gap-0.5">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <Star
-                key={`summary-star-${idx}`}
-                className={`h-3 w-3 ${
-                  idx < Math.round(averageDisplayRating)
-                    ? 'fill-gold text-gold'
-                    : 'fill-gold text-gold opacity-30'
-                }`}
-              />
-            ))}
-          </div>
-          <div className="text-muted-foreground mt-1 text-sm">
-            {totalReviewCount} {t('tourism.reviews_count', 'lượt đánh giá')}
-          </div>
-        </div>
 
-        <div className="space-y-1.5">
-          {[5, 4, 3, 2, 1].map((score) => {
-            const count = Number(starCounts[score] ?? 0);
-            const ratio = totalReviewCount > 0 ? (count / Math.max(1, totalReviewCount)) * 100 : 0;
-            return (
-              <div
-                key={`bar-${score}`}
-                className="text-muted-foreground flex items-center gap-2 text-sm"
-              >
-                <span className="w-4 text-right">{score}</span>
-                <div className="bg-muted h-1.25 flex-1 overflow-hidden rounded-[3px]">
-                  <div className="bg-primary h-full" style={{ width: `${ratio}%` }} />
+          <div className="space-y-1.5">
+            {[5, 4, 3, 2, 1].map((score) => {
+              const count = Number(starCounts[score] ?? 0);
+              const ratio =
+                totalReviewCount > 0
+                  ? (count / Math.max(1, totalReviewCount)) * 100
+                  : 0;
+              return (
+                <div
+                  key={score}
+                  className="flex items-center gap-2 text-xs text-muted-foreground"
+                >
+                  <span className="w-3 shrink-0 text-right font-medium">{score}</span>
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/70">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${ratio}%`, background: BAR_GRADIENT }}
+                    />
+                  </div>
+                  <span className="w-5 shrink-0 text-right">{count}</span>
                 </div>
-                <span className="w-8 text-right">{count}</span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div className="max-h-90 space-y-3 overflow-y-auto py-3 pr-1">
+      {/* Review list */}
+      <div className="max-h-96 space-y-3 overflow-y-auto pr-1">
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <div
-              key={`review-loading-${i}`}
-              className="border-border bg-muted h-27.5 animate-pulse rounded-[8px] border-[0.5px]"
+              key={i}
+              className="h-28 animate-pulse rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff]"
             />
           ))
         ) : reviews.length > 0 ? (
           reviews.map((r) => (
-            <article key={r.id} className="border-border bg-card rounded-[8px] border-[0.5px] p-3">
-              <div className="flex items-start gap-2.5">
-                <div className="bg-primary-foreground text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-medium">
-                  {((r.user_name || r.user?.name || r.author || 'K') + '').charAt(0).toUpperCase()}
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span
-                        className="text-foreground truncate text-sm font-medium"
-                        title={
-                          r.user_name || r.user?.name || r.author || t('tourism.anonymous', 'Khách')
-                        }
-                      >
-                        {r.user_name || r.user?.name || r.author || t('tourism.anonymous', 'Khách')}
-                      </span>
-                      <div className="flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, sIdx) => (
-                          <Star
-                            key={`rv-${r.id}-star-${sIdx}`}
-                            className={`h-3 w-3 ${
-                              sIdx < computeDisplayRating(r)
-                                ? 'fill-gold text-gold'
-                                : 'fill-gold text-gold opacity-30'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <span className="text-muted-foreground text-sm">
-                      {new Date(r.created_at || r.createdAt || r.date).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    {r.comment ||
-                      r.body ||
-                      r.content ||
-                      t('tourism.no_comment', 'Không có nội dung.')}
-                  </p>
-
-                  <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-                    {[
-                      {
-                        label: t('tourism.cleanliness', 'Sạch sẽ'),
-                        value: Number(r.cleanliness_rating ?? 0),
-                      },
-                      {
-                        label: t('tourism.service', 'Dịch vụ'),
-                        value: Number(r.service_rating ?? 0),
-                      },
-                      {
-                        label: t('tourism.value', 'Giá trị'),
-                        value: Number(r.value_rating ?? 0),
-                      },
-                      {
-                        label: t('tourism.accessibility', 'Tiếp cận'),
-                        value: Number(r.accessibility_rating ?? 0),
-                      },
-                    ].map((metric) => (
-                      <div
-                        key={`${r.id}-${metric.label}`}
-                        className="bg-muted flex items-center justify-between rounded-[6px] px-2 py-1"
-                      >
-                        <span className="text-muted-foreground text-sm">{metric.label}</span>
-                        <div className="flex items-center gap-0.5">
-                          {Array.from({ length: 5 }).map((_, miniIdx) => (
-                            <Star
-                              key={`${r.id}-${metric.label}-${miniIdx}`}
-                              className={`h-2.5 w-2.5 ${
-                                miniIdx < metric.value
-                                  ? 'fill-gold text-gold'
-                                  : 'fill-gold text-gold opacity-30'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {Array.isArray(r.images) && r.images.length > 0 && (
-                    <div className="mt-2 flex items-center gap-2 overflow-x-auto">
-                      {r.images.map((src, idx) => (
-                        <img
-                          key={`${r.id}-${idx}`}
-                          src={withBaseUrl(src)}
-                          alt={`review-${r.id}-${idx}`}
-                          className="h-12 w-16 rounded-[6px] object-cover"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = placeholderImg;
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {r.can_delete && (
-                    <div className="mt-2 flex justify-end">
-                      <Button
-                        variant="outline"
-                        size="xs"
-                        onClick={() => onDeleteReview(r.id)}
-                        className="h-6 px-2 text-sm"
-                      >
-                        {t('tourism.delete', 'Xoá')}
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </article>
+            <ReviewCard
+              key={r.id}
+              r={r}
+              computeDisplayRating={computeDisplayRating}
+              onDeleteReview={onDeleteReview}
+              t={t}
+            />
           ))
         ) : (
-          <div className="text-muted-foreground border-border bg-muted rounded-[8px] border-[0.5px] px-3 py-4 text-sm">
+          <div className="rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] px-4 py-6 text-center text-sm text-muted-foreground">
             {t('tourism.no_reviews', 'Chưa có đánh giá nào.')}
           </div>
         )}
       </div>
 
-      <div className="mb-1 flex items-center justify-between">
-        <span className="text-muted-foreground text-sm">
-          {t('tourism.page', 'Trang')} {pageDisplay} / {pagesDisplay}
-        </span>
-        <div className="flex items-center gap-1.5">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={reviewPage <= 1}
-            onClick={onPrevPage}
-            className="h-7 px-2.5 text-sm"
-          >
-            {t('common.prev', 'Trước')}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={reviewPage >= pagesDisplay}
-            onClick={onNextPage}
-            className="h-7 px-2.5 text-sm"
-          >
-            {t('common.next', 'Sau')}
-          </Button>
+      {/* Pagination */}
+      {pagesDisplay > 1 && (
+        <div className="mt-3 mb-4 flex items-center justify-between">
+          <span className="text-muted-foreground text-xs">
+            {t('tourism.page', 'Trang')} {pageDisplay} / {pagesDisplay}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              disabled={reviewPage <= 1}
+              onClick={onPrevPage}
+              className="flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold text-foreground disabled:opacity-40 hover:bg-[#eef7ff]"
+            >
+              <ChevronLeft size={13} />
+              {t('common.prev', 'Trước')}
+            </button>
+            <button
+              type="button"
+              disabled={reviewPage >= pagesDisplay}
+              onClick={onNextPage}
+              className="flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold text-foreground disabled:opacity-40 hover:bg-[#eef7ff]"
+            >
+              {t('common.next', 'Sau')}
+              <ChevronRight size={13} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="border-muted mt-4 border-t-[0.5px] pt-4">
-        <h3 className="text-foreground mb-3 text-sm font-medium">
+      {/* Write review form */}
+      <div className="mt-4 rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] p-4">
+        <h3 className="text-foreground mb-4 text-sm font-bold">
           {t('tourism.write_your_review', 'Viết đánh giá của bạn')}
         </h3>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        {/* Star picker */}
+        <div className="mb-4 flex items-center justify-between rounded-[10px] border border-[#cfe0f4] bg-white px-3 py-2.5">
+          <span className="text-foreground text-sm">
+            {t('tourism.your_rating', 'Số sao đánh giá')}{' '}
+            <span className="text-red-500">*</span>
+          </span>
+          <StarPicker
+            value={newStars}
+            hover={hoverStars}
+            onValue={onStarsChange}
+            onHover={onHoverStars}
+            size="h-6 w-6"
+          />
+        </div>
+
+        {/* Title + Visit date */}
+        <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <label htmlFor="visit-date" className="text-muted-foreground mb-1 block text-sm">
+            <label
+              htmlFor="review-title"
+              className="text-muted-foreground mb-1 block text-xs font-medium"
+            >
+              {t('tourism.review_title', 'Tiêu đề (tuỳ chọn)')}
+            </label>
+            <Input
+              id="review-title"
+              value={newTitle}
+              onChange={(e) => onTitleChange(e.target.value)}
+              placeholder={t(
+                'tourism.review_title_placeholder',
+                'Tóm tắt trải nghiệm của bạn...'
+              )}
+              className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="visit-date"
+              className="text-muted-foreground mb-1 block text-xs font-medium"
+            >
               {t('tourism.visit_date', 'Ngày tham quan')}
             </label>
             <Input
@@ -255,72 +372,17 @@ export function TourismDetailReviewsSection({
               type="date"
               value={newVisitDate}
               onChange={(e) => onVisitDateChange(e.target.value)}
-              className="border-border bg-muted h-9 border-[0.5px] text-sm"
+              className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
             />
           </div>
-
-          <div>
-            <label className="text-muted-foreground mb-1 block text-sm">
-              {t('tourism.recommend', 'B?n c? ?? xu?t ??a ?i?m n?y?')}
-            </label>
-            <div className="border-border bg-card inline-flex rounded-[8px] border-[0.5px] p-1">
-              <Button
-                type="button"
-                variant={newRecommend ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => onRecommendChange(true)}
-                className="h-7 rounded-[6px] px-3 text-sm"
-              >
-                <Check className="h-3 w-3" /> {t('common.yes', 'Có')}
-              </Button>
-              <Button
-                type="button"
-                variant={!newRecommend ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => onRecommendChange(false)}
-                className="ml-1 h-7 rounded-[6px] px-3 text-sm"
-              >
-                <X className="h-3 w-3" /> {t('common.no', 'Không')}
-              </Button>
-            </div>
-          </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
-          {criteria.map((criterion) => (
-            <div
-              key={criterion.key}
-              className="bg-muted flex items-center justify-between rounded-[6px] px-2 py-1.5"
-            >
-              <span className="text-muted-foreground text-sm">{criterion.label}</span>
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, idx) => (
-                  <Button
-                    key={`${criterion.key}-${idx}`}
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    onMouseEnter={() => criterion.setHover(idx + 1)}
-                    onMouseLeave={() => criterion.setHover(0)}
-                    onClick={() => criterion.setValue(idx + 1)}
-                    className="h-5 w-5 p-0"
-                  >
-                    <Star
-                      className={`h-3.5 w-3.5 ${
-                        idx < (criterion.hover || criterion.value)
-                          ? 'fill-gold text-gold'
-                          : 'fill-gold text-gold opacity-30'
-                      }`}
-                    />
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-3">
-          <label htmlFor="review-comment" className="text-muted-foreground mb-1 block text-sm">
+        {/* Content */}
+        <div className="mb-3">
+          <label
+            htmlFor="review-comment"
+            className="text-muted-foreground mb-1 block text-xs font-medium"
+          >
             {t('tourism.your_comment', 'Cảm nhận của bạn')}
           </label>
           <Textarea
@@ -330,19 +392,56 @@ export function TourismDetailReviewsSection({
             onChange={(e) => onCommentChange(e.target.value)}
             placeholder={t(
               'tourism.leave_comment_placeholder',
-              'Chia sẻ trải nghiệm, cảm nhận của bạn về địa điểm này...'
+              'Chia sẻ trải nghiệm của bạn về địa điểm này...'
             )}
-            className="border-border bg-muted h-16 min-h-16 resize-none border-[0.5px] text-sm"
+            className="min-h-20 resize-none rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
           />
         </div>
 
-        <div className="mt-3">
-          <label htmlFor="review-file-input" className="text-muted-foreground mb-1 block text-sm">
+        {/* Pros / Cons */}
+        <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <label
+              htmlFor="review-pros"
+              className="text-muted-foreground mb-1 block text-xs font-medium"
+            >
+              {t('tourism.pros', 'Điểm tích cực')}
+            </label>
+            <Input
+              id="review-pros"
+              value={newPros}
+              onChange={(e) => onProsChange(e.target.value)}
+              placeholder={t('tourism.pros_placeholder', 'Điểm bạn thích...')}
+              className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="review-cons"
+              className="text-muted-foreground mb-1 block text-xs font-medium"
+            >
+              {t('tourism.cons', 'Điểm cần cải thiện')}
+            </label>
+            <Input
+              id="review-cons"
+              value={newCons}
+              onChange={(e) => onConsChange(e.target.value)}
+              placeholder={t('tourism.cons_placeholder', 'Điểm chưa hài lòng...')}
+              className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+            />
+          </div>
+        </div>
+
+        {/* Photo upload */}
+        <div className="mb-4">
+          <label
+            htmlFor="review-file-input"
+            className="text-muted-foreground mb-1.5 block text-xs font-medium"
+          >
             {t('tourism.upload_photos', 'Tải ảnh (tối đa 5 ảnh)')}
           </label>
-
           <div
-            className="text-muted-foreground border-border hover:bg-muted flex h-13 cursor-pointer items-center justify-center gap-2 rounded-[8px] border-[0.5px] border-dashed text-sm transition"
+            className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-[#cfe0f4] bg-white text-sm text-muted-foreground transition hover:bg-[#eef7ff]"
             onClick={() => document.getElementById('review-file-input')?.click()}
             role="button"
             tabIndex={0}
@@ -353,9 +452,9 @@ export function TourismDetailReviewsSection({
               }
             }}
           >
-            <Plus className="text-primary h-3.5 w-3.5" />
-            {t('tourism.upload_hint', 'Nhấn để chọn ảnh hoặc kéo thả vào đây')}
-            <Input
+            <Plus size={14} className="text-[#0b66c3]" />
+            {t('tourism.upload_hint', 'Nhấn để chọn ảnh')}
+            <input
               id="review-file-input"
               type="file"
               accept="image/*"
@@ -366,37 +465,43 @@ export function TourismDetailReviewsSection({
           </div>
 
           {previews.length > 0 && (
-            <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+            <div className="mt-2 flex flex-wrap gap-2">
               {previews.map((u, i) => (
-                <div key={`preview-${i}`} className="group relative overflow-hidden rounded-[7px]">
-                  <img src={u} alt={`preview-${i}`} className="h-14 w-full object-cover" />
-                  <Button
+                <div key={i} className="group relative h-16 w-20 overflow-hidden rounded-[8px]">
+                  <img src={u} alt={`preview-${i}`} className="h-full w-full object-cover" />
+                  <button
                     type="button"
-                    size="icon-xs"
-                    variant="ghost"
                     onClick={() => onRemoveFile(i)}
-                    className="bg-card/90 absolute top-1 right-1 h-5 w-5 rounded-full p-0 text-sm opacity-0 group-hover:opacity-100"
+                    className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-xs text-white opacity-0 transition group-hover:opacity-100"
                   >
-                    x
-                  </Button>
+                    ×
+                  </button>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className="mt-3 flex items-center justify-end gap-2">
-          <Button variant="outline" onClick={onReset} className="h-8 rounded-[7px] px-3 text-sm">
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={onReset}
+            className="h-9 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold text-foreground hover:bg-[#eef7ff]"
+          >
             {t('tourism.cancel', 'Huỷ')}
-          </Button>
-          <Button
-            variant="default"
+          </button>
+          <button
+            type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
-            className="h-8 rounded-[7px] px-3 text-sm disabled:opacity-70"
+            className="h-9 rounded-[10px] px-5 text-sm font-bold text-white disabled:opacity-60"
+            style={BTN_GRADIENT}
           >
-            {isSubmitting ? t('tourism.sending', 'Äang gửi...') : t('tourism.submit_review', 'Gửi')}
-          </Button>
+            {isSubmitting
+              ? t('tourism.sending', 'Đang gửi...')
+              : t('tourism.submit_review', 'Gửi đánh giá')}
+          </button>
         </div>
       </div>
     </section>

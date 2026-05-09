@@ -27,8 +27,8 @@ import {
 
 const PAGE_SIZE_OPTIONS = [6, 12, 24, 48];
 
-const HERO_BG = `linear-gradient(90deg, rgba(3,79,141,.96), rgba(7,119,190,.9)), url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80") center/cover`;
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #075fac, #034f8d)' };
+const HERO_BG = `linear-gradient(135deg,rgba(3,95,172,.92),rgba(14,165,233,.86),rgba(16,185,129,.72)), url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80") center/cover`;
+const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 
 export default function TourismPointPage() {
   const { t } = useTranslation();
@@ -40,12 +40,15 @@ export default function TourismPointPage() {
   const [favorites, setFavorites] = useState(new Set());
   const selectedCategoryId = Number(currentSettings.selectedCategory) || 0;
   const selectedSubcategoryId = Number(currentSettings.selectedSubcategory) || 0;
+  const parentCategoryIdForAllSubtypes =
+    selectedCategoryId > 0 && !selectedSubcategoryId ? selectedCategoryId : undefined;
 
   const { data, isLoading, isError } = useGetAllDataPoints({
     limit: currentSettings.limit,
     page: currentSettings.page,
     search: debouncedQuery,
-    category_id: selectedSubcategoryId || selectedCategoryId || undefined,
+    category_id: selectedSubcategoryId || undefined,
+    parent_category_id: parentCategoryIdForAllSubtypes,
   });
 
   const { data: categoriesData } = categoriesService({ lang });
@@ -153,12 +156,12 @@ export default function TourismPointPage() {
     `h-9.5 px-4.5 rounded-full border text-sm font-bold transition-colors cursor-pointer ${
       active
         ? 'text-white border-transparent'
-        : 'bg-white border-[#d9b4a4] text-foreground hover:bg-primary-soft'
+        : 'bg-white border-[#cfe0f4] text-foreground hover:bg-primary-soft'
     }`;
 
   return (
     <RootLayout>
-      <div className="min-h-screen" style={{ background: 'linear-gradient(180deg,#eef7fc 0%,#f8fbfd 100%)' }}>
+      <div className="min-h-screen">
 
         {/* ── Hero ── */}
         <section className="px-6 py-9 text-white" style={{ background: HERO_BG }}>

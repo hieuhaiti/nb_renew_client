@@ -1,7 +1,92 @@
 import React from 'react';
-import { Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+
+const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const BAR_GRADIENT = 'linear-gradient(135deg, #0b66c3, #0ea5e9)';
+
+function StarsDisplay({ count, size = 12 }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          size={size}
+          className={
+            i < count
+              ? 'fill-[#d99200] text-[#d99200]'
+              : 'fill-[#d99200] text-[#d99200] opacity-20'
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+function TourReviewCard({ r, t }) {
+  const stars = Number(r.stars || r.rating || 0);
+  const userName =
+    r.user_name || r.user?.name || r.author || t('tourPage.guest', 'Khách');
+  const dateStr = r.created_at || r.createdAt || r.date;
+
+  const subRatings = [
+    { label: t('tourPage.cleanliness', 'Sạch sẽ'), value: Number(r.cleanliness_rating ?? 0) },
+    { label: t('tourPage.service', 'Dịch vụ'), value: Number(r.service_rating ?? 0) },
+    { label: t('tourPage.value', 'Giá trị'), value: Number(r.value_rating ?? 0) },
+    { label: t('tourPage.accessibility', 'Tiếp cận'), value: Number(r.accessibility_rating ?? 0) },
+  ].filter((m) => m.value > 0);
+
+  return (
+    <article className="rounded-[14px] border border-[#cfe0f4] bg-white p-4">
+      <div className="flex items-start gap-3">
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+          style={BTN_GRADIENT}
+        >
+          {userName.charAt(0).toUpperCase()}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <span className="text-foreground text-sm font-semibold">{userName}</span>
+              {stars > 0 && (
+                <div className="mt-0.5">
+                  <StarsDisplay count={stars} size={12} />
+                </div>
+              )}
+            </div>
+            {dateStr && (
+              <span className="text-muted-foreground shrink-0 text-xs">
+                {new Date(dateStr).toLocaleDateString('vi-VN')}
+              </span>
+            )}
+          </div>
+
+          {(r.comment || r.body || r.content) && (
+            <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+              {r.comment || r.body || r.content}
+            </p>
+          )}
+
+          {subRatings.length > 0 && (
+            <div className="mt-2.5 grid grid-cols-2 gap-1.5">
+              {subRatings.map((m) => (
+                <div
+                  key={m.label}
+                  className="flex items-center justify-between rounded-[8px] bg-[#f8fbff] px-2.5 py-1.5"
+                >
+                  <span className="text-muted-foreground text-xs">{m.label}</span>
+                  <StarsDisplay count={m.value} size={10} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
 
 export function TourDetailReviewsSection({
   t,
@@ -25,255 +110,167 @@ export function TourDetailReviewsSection({
   onResetForm,
 }) {
   return (
-    <section className="bg-card border-border mb-3 rounded-[10px] border-[0.5px] px-4 py-3.5">
-      <h2 className="text-foreground mb-3 text-sm font-medium">
+    <section className="bg-card border-border mb-3 rounded-[16px] border px-5 py-4">
+      <h2 className="text-foreground mb-4 text-base font-bold">
         {t('tourPage.reviews', 'Đánh giá')}
       </h2>
 
       {reviewId && (
-        <div className="border-border bg-muted mb-3 rounded-[8px] border-[0.5px] px-3 py-2">
-          <h3 className="text-foreground text-sm font-medium">
+        <div className="mb-4 rounded-[10px] border border-[#cfe0f4] bg-[#eef7ff] px-4 py-3">
+          <h3 className="text-foreground text-sm font-semibold">
             {t('tourPage.review', 'Đánh giá')} #{singleReview?.id || reviewId}
           </h3>
-          {singleReview ? (
-            <div className="text-muted-foreground mt-1 text-sm">
-              {singleReview.comment || t('tourPage.noComment', 'Không có nội dung')}
-            </div>
-          ) : (
-            <div className="text-muted-foreground mt-1 text-sm">
-              {t('tourPage.reviewNotFound', 'Không tìm thấy đánh giá')}
-            </div>
-          )}
+          <p className="text-muted-foreground mt-1 text-sm">
+            {singleReview?.comment ||
+              singleReview?.content ||
+              t('tourPage.reviewNotFound', 'Không tìm thấy đánh giá')}
+          </p>
         </div>
       )}
 
-      <div className="border-muted grid gap-3 border-b-[0.5px] pb-4 md:grid-cols-[80px_minmax(0,1fr)]">
-        <div>
-          <div className="typo-kpi text-primary leading-none font-medium">
-            {totalReviews ? Number(totalReviews > 0 ? criteria.averageRating : 0).toFixed(1) : '-'}
+      {/* Summary */}
+      <div className="mb-4 rounded-[14px] border border-[#cfe0f4] bg-[#eef7ff] p-4">
+        <div className="grid gap-4 md:grid-cols-[88px_minmax(0,1fr)]">
+          <div className="flex flex-col items-center justify-center">
+            <div className="text-4xl font-black leading-none text-[#0b66c3]">
+              {totalReviews > 0 && criteria.averageRating > 0
+                ? Number(criteria.averageRating).toFixed(1)
+                : '—'}
+            </div>
+            <div className="mt-1.5">
+              <StarsDisplay count={Math.round(criteria.averageRating)} size={14} />
+            </div>
+            <div className="text-muted-foreground mt-1 text-xs text-center">
+              {totalReviews} {t('tourPage.reviewsCount', 'đánh giá')}
+            </div>
           </div>
-          <div className="text-primary mt-1 flex items-center gap-0.5">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <Star
-                key={`summary-star-${idx}`}
-                className={`h-3 w-3 ${
-                  idx < Math.round(criteria.averageRating)
-                    ? 'fill-gold text-gold'
-                    : 'fill-gold text-gold opacity-30'
-                }`}
-              />
-            ))}
-          </div>
-          <div className="text-muted-foreground mt-1 text-sm">
-            {totalReviews} {t('tourPage.reviewsCount', 'lượt đánh giá')}
-          </div>
-        </div>
 
-        <div className="space-y-1.5">
-          {[5, 4, 3, 2, 1].map((score) => {
-            const count = Number(starCounts[score] ?? 0);
-            const ratio = totalReviews > 0 ? (count / Math.max(1, totalReviews)) * 100 : 0;
-            return (
-              <div
-                key={`bar-${score}`}
-                className="text-muted-foreground flex items-center gap-2 text-sm"
-              >
-                <span className="w-4 text-right">{score}</span>
-                <div className="bg-muted h-1.25 flex-1 overflow-hidden rounded-[3px]">
-                  <div className="bg-primary h-full" style={{ width: `${ratio}%` }} />
+          <div className="space-y-1.5">
+            {[5, 4, 3, 2, 1].map((score) => {
+              const count = Number(starCounts[score] ?? 0);
+              const ratio =
+                totalReviews > 0 ? (count / Math.max(1, totalReviews)) * 100 : 0;
+              return (
+                <div key={score} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="w-3 shrink-0 text-right font-medium">{score}</span>
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/70">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${ratio}%`, background: BAR_GRADIENT }}
+                    />
+                  </div>
+                  <span className="w-5 shrink-0 text-right">{count}</span>
                 </div>
-                <span className="w-8 text-right">{count}</span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div className="max-h-90 space-y-3 overflow-y-auto py-3 pr-1">
+      {/* Review list */}
+      <div className="max-h-96 space-y-3 overflow-y-auto pr-1">
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <div
-              key={`review-loading-${i}`}
-              className="border-border bg-muted h-27.5 animate-pulse rounded-[8px] border-[0.5px]"
+              key={i}
+              className="h-28 animate-pulse rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff]"
             />
           ))
         ) : reviews.length > 0 ? (
-          reviews.map((r) => (
-            <article key={r.id} className="bg-card border-border rounded-[8px] border-[0.5px] p-3">
-              <div className="flex items-start gap-2.5">
-                <div className="bg-primary-foreground text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-medium">
-                  {((r.user_name || r.user?.name || r.author || 'K') + '').charAt(0).toUpperCase()}
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span
-                        className="text-foreground truncate text-sm font-medium"
-                        title={
-                          r.user_name || r.user?.name || r.author || t('tourPage.guest', 'Khách')
-                        }
-                      >
-                        {r.user_name || r.user?.name || r.author || t('tourPage.guest', 'Khách')}
-                      </span>
-                      <div className="flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, sIdx) => (
-                          <Star
-                            key={`rv-${r.id}-star-${sIdx}`}
-                            className={`h-3 w-3 ${
-                              sIdx < Number(r.rating || 0)
-                                ? 'fill-gold text-gold'
-                                : 'fill-gold text-gold opacity-30'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <span className="text-muted-foreground text-sm">
-                      {new Date(r.created_at || r.createdAt || r.date).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    {r.comment ||
-                      r.body ||
-                      r.content ||
-                      t('tourPage.noComment', 'Không có nội dung.')}
-                  </p>
-
-                  <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-                    {[
-                      {
-                        label: t('tourPage.cleanliness', 'Sạch sẽ'),
-                        value: Number(r.cleanliness_rating ?? 0),
-                      },
-                      {
-                        label: t('tourPage.service', 'Dịch vụ'),
-                        value: Number(r.service_rating ?? 0),
-                      },
-                      {
-                        label: t('tourPage.value', 'Giá trị'),
-                        value: Number(r.value_rating ?? 0),
-                      },
-                      {
-                        label: t('tourPage.accessibility', 'Tiếp cận'),
-                        value: Number(r.accessibility_rating ?? 0),
-                      },
-                    ].map((metric) => (
-                      <div
-                        key={`${r.id}-${metric.label}`}
-                        className="bg-muted flex items-center justify-between rounded-[6px] px-2 py-1"
-                      >
-                        <span className="text-muted-foreground text-sm">{metric.label}</span>
-                        <div className="flex items-center gap-0.5">
-                          {Array.from({ length: 5 }).map((_, miniIdx) => (
-                            <Star
-                              key={`${r.id}-${metric.label}-${miniIdx}`}
-                              className={`h-2.5 w-2.5 ${
-                                miniIdx < metric.value
-                                  ? 'fill-gold text-gold'
-                                  : 'fill-gold text-gold opacity-30'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))
+          reviews.map((r) => <TourReviewCard key={r.id} r={r} t={t} />)
         ) : (
-          <div className="text-muted-foreground border-border bg-muted rounded-[8px] border-[0.5px] px-3 py-4 text-sm">
+          <div className="rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] px-4 py-6 text-center text-sm text-muted-foreground">
             {t('tourPage.noReviews', 'Chưa có đánh giá nào.')}
           </div>
         )}
       </div>
 
-      <div className="mb-1 flex items-center justify-between">
-        <span className="text-muted-foreground text-sm">
-          {t('tourPage.page', 'Trang')} {pageDisplay} / {pagesDisplay}
-        </span>
-        <div className="flex items-center gap-1.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={reviewPage <= 1}
-            onClick={onPrevPage}
-            className="bg-card border-border hover:bg-muted h-7 border-[0.5px] px-2.5 text-sm"
-          >
-            {t('common.prev', 'Trước')}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={reviewPage >= pagesDisplay}
-            onClick={onNextPage}
-            className="bg-card border-border hover:bg-muted h-7 border-[0.5px] px-2.5 text-sm"
-          >
-            {t('common.next', 'Sau')}
-          </Button>
+      {/* Pagination */}
+      {pagesDisplay > 1 && (
+        <div className="mt-3 mb-4 flex items-center justify-between">
+          <span className="text-muted-foreground text-xs">
+            {t('tourPage.page', 'Trang')} {pageDisplay} / {pagesDisplay}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              disabled={reviewPage <= 1}
+              onClick={onPrevPage}
+              className="flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold text-foreground disabled:opacity-40 hover:bg-[#eef7ff]"
+            >
+              <ChevronLeft size={13} />
+              {t('common.prev', 'Trước')}
+            </button>
+            <button
+              type="button"
+              disabled={reviewPage >= pagesDisplay}
+              onClick={onNextPage}
+              className="flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold text-foreground disabled:opacity-40 hover:bg-[#eef7ff]"
+            >
+              {t('common.next', 'Sau')}
+              <ChevronRight size={13} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="border-muted mt-4 border-t-[0.5px] pt-4">
-        <h3 className="text-foreground mb-3 text-sm font-medium">
+      {/* Write review form */}
+      <div className="mt-4 rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] p-4">
+        <h3 className="text-foreground mb-4 text-sm font-bold">
           {t('tourPage.leaveReview', 'Viết đánh giá của bạn')}
         </h3>
 
-        <div className="mb-3">
-          <div className="text-muted-foreground mb-1 block text-sm">
-            {t('tourPage.starCount', 'Điểm sao tổng (tự tính)')}
-          </div>
-          <div className="flex items-center gap-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={`new-rating-${i}`}
-                className={`h-3.5 w-3.5 ${
-                  i + 1 <= newRating ? 'fill-gold text-gold' : 'fill-gold text-gold opacity-30'
-                }`}
-              />
-            ))}
-            <span className="text-muted-foreground text-sm">
-              {newRating ? `${newRating}/5` : t('tourPage.noRating', 'Chưa có đánh giá')}
-            </span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+        {/* Criteria */}
+        <div className="mb-4 space-y-2">
+          <p className="text-muted-foreground mb-2 text-xs font-semibold uppercase tracking-wide">
+            {t('tourPage.rateCriteria', 'Đánh giá theo tiêu chí')}
+          </p>
           {criteria.items.map((criterion) => (
             <div
               key={criterion.key}
-              className="bg-muted flex items-center justify-between rounded-[6px] px-2 py-1.5"
+              className="flex items-center justify-between rounded-[10px] border border-[#cfe0f4] bg-white px-3 py-2"
             >
-              <span className="text-muted-foreground text-sm">{criterion.label}</span>
-              <div className="flex items-center gap-0.5">
+              <span className="text-foreground text-sm">{criterion.label}</span>
+              <div className="flex items-center gap-1">
                 {Array.from({ length: 5 }).map((_, idx) => (
-                  <Button
-                    key={`${criterion.key}-${idx}`}
+                  <button
+                    key={idx}
                     type="button"
-                    variant="ghost"
-                    size="icon-xs"
                     onClick={() => criterion.setValue(idx + 1)}
-                    className="h-5 w-5 p-0"
+                    className="p-0.5 transition-transform hover:scale-110"
                   >
                     <Star
-                      className={`h-3.5 w-3.5 ${
+                      size={20}
+                      className={
                         idx < criterion.value
-                          ? 'fill-gold text-gold'
-                          : 'fill-gold text-gold opacity-30'
-                      }`}
+                          ? 'fill-[#d99200] text-[#d99200]'
+                          : 'fill-[#d99200] text-[#d99200] opacity-20'
+                      }
                     />
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-3">
-          <label htmlFor="tour-review-comment" className="text-muted-foreground mb-1 block text-sm">
+        {/* Computed average */}
+        {newRating > 0 && (
+          <div className="mb-4 flex items-center gap-2 rounded-[10px] border border-[#cfe0f4] bg-white px-3 py-2">
+            <span className="text-muted-foreground text-xs">
+              {t('tourPage.avgScore', 'Điểm trung bình')}
+            </span>
+            <span className="ml-auto text-sm font-black text-[#0b66c3]">{newRating}/5</span>
+            <StarsDisplay count={newRating} size={14} />
+          </div>
+        )}
+
+        {/* Comment */}
+        <div className="mb-4">
+          <label
+            htmlFor="tour-review-comment"
+            className="text-muted-foreground mb-1.5 block text-xs font-medium"
+          >
             {t('tourPage.comment', 'Nội dung đánh giá')}
           </label>
           <Textarea
@@ -285,26 +282,30 @@ export function TourDetailReviewsSection({
               'tourPage.leave_comment_placeholder',
               'Chia sẻ trải nghiệm, cảm nhận của bạn về tour này...'
             )}
-            className="border-border bg-muted h-16 min-h-16 resize-none border-[0.5px] text-sm"
+            className="min-h-20 resize-none rounded-[10px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
           />
         </div>
 
-        <div className="mt-3 flex items-center justify-end gap-2">
-          <Button
-            variant="outline"
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
             onClick={onResetForm}
-            className="h-8 rounded-[7px] px-3 text-sm"
+            className="h-9 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold text-foreground hover:bg-[#eef7ff]"
           >
             {t('tourPage.cancel', 'Huỷ')}
-          </Button>
-          <Button
-            variant="default"
+          </button>
+          <button
+            type="button"
             onClick={onCreateReview}
             disabled={isSubmitting}
-            className="h-8 rounded-[7px] px-3 text-sm disabled:opacity-70"
+            className="h-9 rounded-[10px] px-5 text-sm font-bold text-white disabled:opacity-60"
+            style={BTN_GRADIENT}
           >
-            {isSubmitting ? t('tourPage.sending', 'Đang gửi...') : t('tourPage.sendReview', 'Gửi')}
-          </Button>
+            {isSubmitting
+              ? t('tourPage.sending', 'Đang gửi...')
+              : t('tourPage.sendReview', 'Gửi đánh giá')}
+          </button>
         </div>
       </div>
     </section>

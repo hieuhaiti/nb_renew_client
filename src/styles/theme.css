@@ -10,10 +10,10 @@
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-color: 0 83 161;
+  --shadow-color: 13 74 130;
 
   /* App shell */
-  --background: #f6fafe;
+  --background: #edf7ff;
   --foreground: #171c1f;
 
   /* Elevated surfaces */
@@ -25,11 +25,15 @@
   --popover-foreground: #171c1f;
 
   /* High-emphasis brand/action */
-  --primary: #0053a1;
+  --primary: #0b66c3;
   --primary-foreground: #ffffff;
-  --primary-hover: #0b6bcb;
-  --primary-soft: #ddeeff;
-  --primary-soft-foreground: #0c355f;
+  --primary-hover: #0ea5e9;
+  --primary-soft: #eef7ff;
+  --primary-soft-foreground: #0477bf;
+  /* Primary gradient stops — 1 = brightest, 3 = deepest */
+  --primary-1: #0ea5e9;
+  --primary-2: #0b66c3;
+  --primary-3: #004b9b;
 
   /* Lower-emphasis filled surfaces */
   --secondary: #006b55;
@@ -37,6 +41,10 @@
   --secondary-hover: #0a7c63;
   --secondary-soft: #ddf3ed;
   --secondary-soft-foreground: #0d4b3d;
+  /* Secondary gradient stops */
+  --secondary-1: #10c99c;
+  --secondary-2: #0a7c63;
+  --secondary-3: #004730;
 
   /* Tertiary — Sunset Sand */
   --tertiary: #c97520;
@@ -45,6 +53,10 @@
   --tertiary-soft: #fae8d2;
   --tertiary-soft-foreground: #8f5110;
   --tertiary-soft-hover: #f6dbc0;
+  /* Tertiary gradient stops */
+  --tertiary-1: #f0a033;
+  --tertiary-2: #c97520;
+  --tertiary-3: #8b5010;
 
   /* Quaternary — Coral Reef */
   --quaternary: #c43a25;
@@ -61,6 +73,10 @@
   --quinary-soft: #e5e0fb;
   --quinary-soft-foreground: #3d2b8c;
   --quinary-soft-hover: #d7cff8;
+  /* Quinary gradient stops */
+  --quinary-1: #8c7ee6;
+  --quinary-2: #5244b3;
+  --quinary-3: #2d1e7e;
 
   /* Gold — Golden Hour */
   --gold: #eab308;
@@ -85,9 +101,9 @@
   --surface-deal: #fff1e4;
 
   /* Subtle UI and helper content */
-  --muted: #e9f0f6;
-  --muted-foreground: #5b6773;
-  --muted-hover: #dde7ef;
+  --muted: #eef7ff;
+  --muted-foreground: #667085;
+  --muted-hover: #daeeff;
 
   /* Hover / selected / nuanced POI support */
   --accent: #ffdcc2;
@@ -118,10 +134,10 @@
   --weather-wind: #06b6d4;
 
   /* Inputs and separators */
-  --border: #7b87a7;
-  --input: #dce6ef;
-  --input-hover: #cfdae6;
-  --ring: #0b6bcb;
+  --border: #cfe0f4;
+  --input: #d2e1f2;
+  --input-hover: #bdd4ee;
+  --ring: #0b66c3;
 
   /* Data viz */
   --chart-1: #0053a1;
@@ -192,11 +208,21 @@
   --primary-hover: #a4d2ff;
   --primary-soft: #12283d;
   --primary-soft-foreground: #d9ecff;
+  /* Primary gradient stops */
+  --primary-1: #d6edff;
+  --primary-2: #8ac4ff;
+  --primary-3: #4a9ef8;
 
   /* Lower-emphasis filled surfaces */
   --secondary: #39caa2;
   --secondary-foreground: #04261e;
   --secondary-hover: #52ddb6;
+  --secondary-soft: #143d2f;
+  --secondary-soft-foreground: #66e8c0;
+  /* Secondary gradient stops */
+  --secondary-1: #80f5d8;
+  --secondary-2: #39caa2;
+  --secondary-3: #0fa880;
 
   /* Tertiary — Sunset Sand */
   --tertiary: #f5a652;
@@ -205,6 +231,10 @@
   --tertiary-soft: #4a3114;
   --tertiary-soft-foreground: #f7c58f;
   --tertiary-soft-hover: #5a3d1b;
+  /* Tertiary gradient stops */
+  --tertiary-1: #ffd9a8;
+  --tertiary-2: #f5a652;
+  --tertiary-3: #d97b20;
 
   /* Quaternary — Coral Reef */
   --quaternary: #f26d58;
@@ -221,6 +251,10 @@
   --quinary-soft: #2b2358;
   --quinary-soft-foreground: #c9c1ff;
   --quinary-soft-hover: #362c6a;
+  /* Quinary gradient stops */
+  --quinary-1: #cdc5ff;
+  --quinary-2: #8b7be8;
+  --quinary-3: #6356d4;
 
   /* Gold — Golden Hour */
   --gold: #fde047;
