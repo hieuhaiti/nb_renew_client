@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 import { CalendarDays, ExternalLink, LocateFixed, MapPin, Search, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -58,6 +58,18 @@ export default function EventPanel() {
 
   const [debouncedSearch] = useDebounce(filters.search, 350);
 
+  const getFestivalTypeLabel = useCallback((value, fallbackLabel = '') => {
+    const normalizedKey = String(value || 'other')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_');
+
+    return t(`mapPage.eventPanel.festivalTypes.${normalizedKey}`, {
+      defaultValue:
+        fallbackLabel || t('mapPage.eventPanel.festivalTypes.other', { defaultValue: 'Other' }),
+    });
+  }, [t]);
+
   const { data: festivalTypesData } = useFestivalTypesQuery();
   const {
     data: festivalsData,
@@ -71,8 +83,14 @@ export default function EventPanel() {
 
   const typeOptions = useMemo(() => {
     const apiTypes = normalizeFestivalTypesPayload(festivalTypesData);
-    return [{ value: 'all', label: t('common.all', { defaultValue: 'All' }) }, ...apiTypes];
-  }, [festivalTypesData, t]);
+    return [
+      { value: 'all', label: t('common.all', { defaultValue: 'All' }) },
+      ...apiTypes.map((item) => ({
+        ...item,
+        label: getFestivalTypeLabel(item.value, item.label),
+      })),
+    ];
+  }, [festivalTypesData, getFestivalTypeLabel, t]);
 
   const festivals = useMemo(
     () => normalizeFestivalListPayload(festivalsData, { lang }),
@@ -143,7 +161,6 @@ export default function EventPanel() {
         ? normalizeFestivalModel(detail, { lang, fallbackId: festival.id })
         : null;
       const resolvedFestival = normalizedDetail ? { ...festival, ...normalizedDetail } : festival;
-      console.log(resolvedFestival);
 
       setSelectedFestival(resolvedFestival);
       if (openFestivalTarget(resolvedFestival)) return;
@@ -286,7 +303,7 @@ export default function EventPanel() {
                         variant="outline"
                         className="border-[var(--event-panel-chip-border)] bg-[var(--event-panel-chip-bg)] text-[var(--event-panel-chip-fg)] shrink-0"
                       >
-                        {festival.festival_type}
+                        {getFestivalTypeLabel(festival.festival_type, festival.festival_type)}
                       </Badge>
                     )}
                   </div>

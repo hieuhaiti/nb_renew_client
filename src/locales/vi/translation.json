@@ -575,6 +575,7 @@
       "empty": "Không có tour phù hợp với bộ lọc.",
       "openRoute": "Mở chỉ đường",
       "loadingRoute": "Đang mở...",
+      "routeSummary": "{{from}} → {{to}}",
       "hideOtherPoints": "Ẩn điểm khác",
       "showOtherPoints": "Hiện điểm khác",
       "clearRoute": "Xóa tuyến",
@@ -582,6 +583,30 @@
       "routeFailed": "Không thể hiển thị tuyến tour lúc này.",
       "routeCleared": "Đã xóa tuyến tour khỏi bản đồ.",
       "routeInsufficientStops": "Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường."
+    },
+    "eventPanel": {
+      "title": "Lễ hội & Sự kiện",
+      "syncing": "Đang đồng bộ...",
+      "count": "{{count}} sự kiện",
+      "reset": "Đặt lại",
+      "searchPlaceholder": "Tìm tên lễ hội...",
+      "upcoming": "Sắp diễn ra",
+      "error": "Không thể tải danh sách sự kiện từ hệ thống.",
+      "empty": "Không có sự kiện phù hợp với bộ lọc hiện tại.",
+      "openingMap": "Đang mở...",
+      "viewOnMap": "Xem trên bản đồ",
+      "website": "Website",
+      "festivalTypes": {
+        "other": "Khác",
+        "historical": "Lịch sử",
+        "religious": "Tâm linh",
+        "cultural": "Văn hóa",
+        "traditional": "Truyền thống",
+        "music": "Âm nhạc",
+        "food": "Ẩm thực",
+        "craft": "Làng nghề",
+        "sport": "Thể thao"
+      }
     },
     "capacityPanel": {
       "title": "Sức chứa điểm du lịch",

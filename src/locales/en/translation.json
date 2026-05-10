@@ -575,6 +575,7 @@
       "empty": "No tours match your filters.",
       "openRoute": "View on map",
       "loadingRoute": "Opening...",
+      "routeSummary": "{{from}} → {{to}}",
       "hideOtherPoints": "Hide other points",
       "showOtherPoints": "Show other points",
       "clearRoute": "Clear route",
@@ -582,6 +583,30 @@
       "routeFailed": "Cannot display this tour route right now.",
       "routeCleared": "Tour route was removed from the map.",
       "routeInsufficientStops": "A tour needs at least 2 stops to draw a route."
+    },
+    "eventPanel": {
+      "title": "Festivals & Events",
+      "syncing": "Syncing...",
+      "count": "{{count}} events",
+      "reset": "Reset",
+      "searchPlaceholder": "Search festival name...",
+      "upcoming": "Upcoming",
+      "error": "Unable to load event list from the system.",
+      "empty": "No events match the current filters.",
+      "openingMap": "Opening...",
+      "viewOnMap": "View on map",
+      "website": "Website",
+      "festivalTypes": {
+        "other": "Other",
+        "historical": "Historical",
+        "religious": "Religious",
+        "cultural": "Cultural",
+        "traditional": "Traditional",
+        "music": "Music",
+        "food": "Food",
+        "craft": "Craft",
+        "sport": "Sport"
+      }
     },
     "capacityPanel": {
       "title": "Tourist capacity",

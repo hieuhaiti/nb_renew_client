@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useDebounce } from 'use-debounce';
-import { Clock3, Eye, Route, Search, Star, Trash2 } from 'lucide-react';
+import { Clock3, Eye, MapPin, Route, Search, Star, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -508,6 +508,19 @@ export default function TourPanel() {
                     <Clock3 className="h-3.5 w-3.5 shrink-0" />
                     {formatTourDurationLabel(tour, t)}
                   </p>
+
+                  {(tour.start_location || tour.end_location) && (
+                    <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      {tour.start_location && tour.end_location
+                        ? t('mapPage.tourPanel.routeSummary', {
+                            defaultValue: '{{from}} → {{to}}',
+                            from: tour.start_location,
+                            to: tour.end_location,
+                          })
+                        : tour.start_location || tour.end_location}
+                    </p>
+                  )}
 
                   <p
                     className="typo-body text-muted-foreground line-clamp-3"

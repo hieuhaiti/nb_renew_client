@@ -33,11 +33,16 @@ function getLocalizedValue(item, lang = 'vi', baseField) {
 }
 
 export function normalizeTourModel(item, { lang = 'vi', fallbackId } = {}) {
+  const rawIncludes = item?.includes;
+  const rawExcludes = item?.excludes;
+
   return {
     id: item?.id ?? fallbackId ?? null,
     slug: item?.slug || null,
     name: getLocalizedValue(item, lang, 'name') || 'Untitled tour',
     description: getLocalizedValue(item, lang, 'description') || '',
+    start_location: getLocalizedValue(item, lang, 'start_location') || '',
+    end_location: getLocalizedValue(item, lang, 'end_location') || '',
     duration_days: toNumber(item?.duration_days),
     duration_hours: toNumber(item?.duration_hours),
     tour_type: item?.tour_type || null,
@@ -48,6 +53,12 @@ export function normalizeTourModel(item, { lang = 'vi', fallbackId } = {}) {
     average_rating: toNumber(item?.rating_avg ?? item?.average_rating),
     total_reviews: toNumber(item?.rating_count ?? item?.total_reviews),
     total_bookings: toNumber(item?.total_bookings),
+    includes: Array.isArray(rawIncludes)
+      ? rawIncludes.map((entry) => normalizeTextValue(entry, lang))
+      : [],
+    excludes: Array.isArray(rawExcludes)
+      ? rawExcludes.map((entry) => normalizeTextValue(entry, lang))
+      : [],
     main_image_url: item?.cover_image_url || item?.main_image_url || null,
     is_featured: Boolean(item?.is_featured),
     is_active: item?.is_active ?? true,
