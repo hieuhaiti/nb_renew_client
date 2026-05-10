@@ -245,38 +245,37 @@ export default function MapBaseArea() {
     const query = subcategoryLayerQueries[0];
     const data = query?.data;
 
-    if (!data) return;
+    if (data) {
+      const allFeatures = normalizePointsToFeatureCollection(data);
 
-    const allFeatures = normalizePointsToFeatureCollection(data);
+      selectedSubcategoryIdsSafe.forEach((subcategoryId) => {
+        const sourceId = `subcategory-${subcategoryId}`;
+        const featureCollection = {
+          type: 'FeatureCollection',
+          features: allFeatures.features.filter(
+            (f) => String(f.properties?.category_id) === String(subcategoryId)
+          ),
+        };
+        const color = colorBySubcategoryId.get(String(subcategoryId));
+        const icon = iconBySubcategoryId.get(String(subcategoryId));
+        addOrUpdateSubcategoryLayer(map, {
+          sourceId,
+          featureCollection,
+          color,
+          iconUrl: icon?.iconUrl,
+          iconImageId: icon?.iconImageId,
+        });
 
-    selectedSubcategoryIdsSafe.forEach((subcategoryId) => {
-      const sourceId = `subcategory-${subcategoryId}`;
-      const featureCollection = {
-        type: 'FeatureCollection',
-        features: allFeatures.features.filter(
-          (f) => String(f.properties?.category_id) === String(subcategoryId)
-        ),
-      };
-      const color = colorBySubcategoryId.get(String(subcategoryId));
-
-      const icon = iconBySubcategoryId.get(String(subcategoryId));
-      addOrUpdateSubcategoryLayer(map, {
-        sourceId,
-        featureCollection,
-        color,
-        iconUrl: icon?.iconUrl,
-        iconImageId: icon?.iconImageId,
+        const shouldShowLayer = !(showOnlyHighlightedRoute && highlightedRoute);
+        SUBCATEGORY_LAYER_SUFFIXES.forEach((suffix) => {
+          const layerId = `${sourceId}-${suffix}`;
+          if (map.getLayer(layerId)) {
+            map.setLayoutProperty(layerId, 'visibility', shouldShowLayer ? 'visible' : 'none');
+          }
+        });
+        currentSourceIds.add(sourceId);
       });
-
-      const shouldShowLayer = !(showOnlyHighlightedRoute && highlightedRoute);
-      SUBCATEGORY_LAYER_SUFFIXES.forEach((suffix) => {
-        const layerId = `${sourceId}-${suffix}`;
-        if (map.getLayer(layerId)) {
-          map.setLayoutProperty(layerId, 'visibility', shouldShowLayer ? 'visible' : 'none');
-        }
-      });
-      currentSourceIds.add(sourceId);
-    });
+    }
 
     prevRenderedSourceIdsRef.current.forEach((sourceId) => {
       if (!currentSourceIds.has(sourceId)) {

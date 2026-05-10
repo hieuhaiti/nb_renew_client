@@ -44,22 +44,48 @@
     background-color: rgb(186 199 210 / 36%);
   }
 
+  html {
+    font-family: var(
+      --font-sans,
+      'Be Vietnam Pro',
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Arial,
+      sans-serif
+    );
+  }
+
   body {
     @apply text-foreground antialiased;
     background:
       radial-gradient(circle at 8% 12%, rgba(14, 165, 233, 0.16), transparent 26%),
       radial-gradient(circle at 92% 8%, rgba(245, 158, 11, 0.14), transparent 28%),
       var(--background);
-    font-family:
+    font-family: var(
+      --font-sans,
       'Be Vietnam Pro',
       system-ui,
       -apple-system,
-      sans-serif;
-    line-height: 1.65;
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Arial,
+      sans-serif
+    );
+    font-size: 0.9375rem;
     font-weight: 400;
+    line-height: 1.55;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
   }
 
   .animate-spin {
@@ -111,44 +137,53 @@
 }
 
 .pin .num {
-  font-weight: 900;
-  font-size: 12px;
   color: #fff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  line-height: 1;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
 .pin .glyph {
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
 }
 
-.pin-wrap {
-  cursor: pointer;
-}
-
 /* ===== Semantic Typography System =====
- * Dùng các class này thay cho arbitrary text-[...] / font-[...] / leading-[...]
- * Không hardcode font-family trong component — kế thừa từ body.
- * Không thêm font mới ngoài Be Vietnam Pro.
- *
- * Tier map:
- *   typo-hero        28–40px / 700 / lh 1.15  — page/hero headings
- *   typo-kpi         34px    / 800 / lh 1.1   — KPI / stat numbers
- *   typo-card-title  24px    / 700 / lh 1.25  — card, dialog titles
- *   typo-brand-title 20px    / 800 / lh 1.25  — brand, nav brand name
- *   typo-search      17px    / 400            — search / primary input
- *   typo-section-title 16px  / 700 / lh 1.4  — section / popup titles
- *   typo-body        14px    / 400 / lh 1.6   — default body / UI text
- *   typo-meta        13px    / 400 / lh 1.5   — supporting / helper text
- *   typo-badge       12px    / 600 / lh 1     — badges / chips / micro labels
+ * Prefer semantic classes over arbitrary text/font/leading utilities.
+ * Minimum readable UI text size is 0.75rem (12px).
  * ========================================= */
 @layer components {
   .typo-hero {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.01em;
+    font-family: var(--font-heading, var(--font-sans));
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+
+  .typo-display {
+    font-family: var(--font-heading, var(--font-sans));
+    font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+
+  .typo-page-title {
+    font-family: var(--font-heading, var(--font-sans));
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+
+  .typo-page-subtitle {
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
   }
 
   .typo-kpi {
@@ -156,58 +191,136 @@
     font-weight: 800;
     line-height: 1.1;
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
   }
 
   .typo-card-title {
+    font-family: var(--font-heading, var(--font-sans));
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1.25;
     letter-spacing: -0.01em;
   }
 
+  .typo-dialog-title {
+    font-family: var(--font-heading, var(--font-sans));
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .typo-dialog-description {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.55;
+  }
+
+  .typo-section-title {
+    font-family: var(--font-heading, var(--font-sans));
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
   .typo-brand-title {
+    font-family: var(--font-heading, var(--font-sans));
     font-size: 1.25rem;
     font-weight: 800;
     line-height: 1.25;
     letter-spacing: -0.01em;
   }
 
-  .typo-search {
-    font-size: 1.0625rem;
-    font-weight: 400;
-    line-height: 1.5;
-  }
-
-  .typo-section-title {
-    font-size: 1.125rem;
-    font-weight: 700;
-    line-height: 1.4;
-  }
-
   .typo-body {
     font-size: 0.9375rem;
     font-weight: 400;
-    line-height: 1.65;
+    line-height: 1.55;
+  }
+
+  .typo-body-sm {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.55;
   }
 
   .typo-meta {
+    color: var(--muted-foreground);
     font-size: 0.8125rem;
     font-weight: 400;
     line-height: 1.5;
   }
 
-  .typo-badge {
+  .typo-caption {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-overline {
     font-size: 0.75rem;
     font-weight: 700;
     line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  .typo-display {
-    font-size: 1.875rem;
-    font-weight: 800;
-    line-height: 1.2;
-    letter-spacing: -0.015em;
+  .typo-nav {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .typo-sidebar {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .typo-tab {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .typo-button {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .typo-form {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .typo-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .typo-table-header {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+  }
+
+  .typo-table-cell {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  .typo-badge,
+  .typo-chip {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.01em;
   }
 
   .typo-price {
@@ -234,27 +347,71 @@
     text-decoration: line-through;
   }
 
-  .typo-caption {
-    color: var(--muted-foreground);
-    font-size: 0.75rem;
-    font-weight: 400;
-    line-height: 1.5;
-  }
-
-  .typo-overline {
-    font-size: 0.75rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
   .typo-rating {
     color: var(--rating-color);
     font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1;
     font-variant-numeric: tabular-nums;
+  }
+
+  .typo-link {
+    color: var(--primary);
+    font-size: inherit;
+    font-weight: 600;
+    line-height: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .typo-link:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+  }
+
+  .typo-empty-title {
+    color: var(--foreground);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .typo-empty-description {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.55;
+  }
+
+  .nav a,
+  .menu a {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .btn,
+  .pill,
+  .action-btn {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .chip,
+  .tag,
+  .badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  input,
+  select,
+  textarea,
+  .field input {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.45;
   }
 
   /* ===== Traffic Incident Popup ===== */
@@ -264,8 +421,10 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 0;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 16px 32px -4px rgb(0 0 0 / 0.16);
-    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.08),
+      0 16px 32px -4px rgb(0 0 0 / 0.16);
+    font-family: var(--font-sans, 'Be Vietnam Pro', system-ui, sans-serif);
     overflow: hidden;
     min-width: 200px;
     max-width: 280px;
@@ -275,13 +434,12 @@
     border-top-color: var(--popover) !important;
   }
 
-  /* ── layout ── */
+  /* layout */
   .traffic-popup-inner {
     display: flex;
     flex-direction: column;
   }
 
-  /* header: left colored border + title row + delay badge */
   .traffic-popup-header {
     display: flex;
     align-items: center;
@@ -308,23 +466,24 @@
   }
 
   .traffic-popup-title {
-    font-size: 13px;
-    font-weight: 600;
     color: var(--foreground);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.25;
     white-space: nowrap;
   }
 
   .traffic-popup-delay-badge {
-    font-size: 11px;
-    font-weight: 700;
     flex-shrink: 0;
     padding: 2px 7px;
     border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.01em;
   }
 
-  /* body: road badge, route, meta */
   .traffic-popup-body {
     display: flex;
     flex-direction: column;
@@ -335,18 +494,19 @@
   .traffic-popup-road-badge {
     display: inline-flex;
     align-self: flex-start;
-    font-size: 11px;
-    font-weight: 700;
     padding: 2px 8px;
-    border-radius: 4px;
     border: 1px solid;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
     letter-spacing: 0.03em;
     text-transform: uppercase;
   }
 
   .traffic-popup-route {
-    font-size: 12px;
     color: var(--muted-foreground);
+    font-size: 0.75rem;
     line-height: 1.5;
     word-break: break-word;
   }
@@ -360,22 +520,35 @@
   }
 
   .traffic-popup-chip {
-    font-size: 11px;
     color: var(--muted-foreground);
     background: var(--muted);
     padding: 2px 7px;
     border-radius: 99px;
+    font-size: 0.75rem;
+    line-height: 1;
     white-space: nowrap;
   }
 }
 
 @layer utilities {
+  .text-primary-soft-foreground {
+    color: var(--primary-soft-foreground);
+  }
+
+  .text-secondary-soft-foreground {
+    color: var(--secondary-soft-foreground);
+  }
+
   .text-tertiary {
     color: var(--tertiary);
   }
 
   .text-tertiary-foreground {
     color: var(--tertiary-foreground);
+  }
+
+  .text-tertiary-soft-foreground {
+    color: var(--tertiary-soft-foreground);
   }
 
   .text-quaternary {
@@ -386,6 +559,10 @@
     color: var(--quaternary-foreground);
   }
 
+  .text-quaternary-soft-foreground {
+    color: var(--quaternary-soft-foreground);
+  }
+
   .text-quinary {
     color: var(--quinary);
   }
@@ -394,12 +571,20 @@
     color: var(--quinary-foreground);
   }
 
+  .text-quinary-soft-foreground {
+    color: var(--quinary-soft-foreground);
+  }
+
   .text-gold {
     color: var(--gold);
   }
 
   .text-gold-foreground {
     color: var(--gold-foreground);
+  }
+
+  .text-gold-soft-foreground {
+    color: var(--gold-soft-foreground);
   }
 
   .text-price {
@@ -420,6 +605,16 @@
 
   .text-luxury {
     color: var(--luxury-color);
+  }
+
+  .bg-primary-soft {
+    background-color: var(--primary-soft);
+    color: var(--primary-soft-foreground);
+  }
+
+  .bg-secondary-soft {
+    background-color: var(--secondary-soft);
+    color: var(--secondary-soft-foreground);
   }
 
   .bg-tertiary {
@@ -507,7 +702,7 @@
     font-size: 0.75rem;
     font-weight: 700;
     line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     white-space: nowrap;
   }
 
@@ -532,8 +727,8 @@
   }
 
   .badge--eco {
-    background: #d4f5ec;
-    color: #004e3d;
+    background: var(--secondary-soft);
+    color: var(--secondary-soft-foreground);
   }
 
   .badge--top {
@@ -542,13 +737,13 @@
   }
 
   /* ===== Gradient utilities =====
-   * gradient-primary   — blue brand CTA, hero elements
-   * gradient-nature    — green eco / nature content
-   * gradient-sunset    — orange warm / food / culture
-   * gradient-mystic    — purple VR / luxury experiences
-   * gradient-ocean     — blue→green for water / map content
-   * gradient-hero      — dramatic multi-stop hero overlay
-   * gradient-warm      — orange→red festive / urgent
+   * gradient-primary — blue brand CTA, hero elements
+   * gradient-nature — green eco / nature content
+   * gradient-sunset — orange warm / food / culture
+   * gradient-mystic — purple VR / luxury experiences
+   * gradient-ocean — blue → green for water / map content
+   * gradient-hero — dramatic multi-stop hero overlay
+   * gradient-warm — orange → red festive / urgent
    * ========================================= */
   .gradient-primary {
     background-image: linear-gradient(135deg, var(--primary-1), var(--primary-3));
@@ -563,7 +758,7 @@
   }
 
   .gradient-mystic {
-    background-image: linear-gradient(135deg, var(--quinary-1), var(--quinary-3));
+    background-image: linear-gradient(135deg, var(--quaternary), var(--quaternary-hover));
   }
 
   .gradient-ocean {
@@ -580,12 +775,13 @@
   }
 
   .gradient-warm {
-    background-image: linear-gradient(135deg, var(--tertiary-1), var(--quaternary));
+    background-image: linear-gradient(135deg, var(--tertiary-1), var(--quinary));
   }
 }
 
 @theme inline {
-  --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  --font-sans:
+    'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
   --font-mono: 'Fira Code', 'Consolas', monospace;
 
   --radius-sm: calc(var(--radius) * 0.6);
@@ -608,30 +804,63 @@
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-foreground: var(--primary-soft-foreground);
 
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-secondary-soft-foreground: var(--secondary-soft-foreground);
 
   --color-tertiary: var(--tertiary);
   --color-tertiary-foreground: var(--tertiary-foreground);
+  --color-tertiary-hover: var(--tertiary-hover);
+  --color-tertiary-soft: var(--tertiary-soft);
+  --color-tertiary-soft-foreground: var(--tertiary-soft-foreground);
 
   --color-quaternary: var(--quaternary);
   --color-quaternary-foreground: var(--quaternary-foreground);
+  --color-quaternary-hover: var(--quaternary-hover);
+  --color-quaternary-soft: var(--quaternary-soft);
+  --color-quaternary-soft-foreground: var(--quaternary-soft-foreground);
 
   --color-quinary: var(--quinary);
   --color-quinary-foreground: var(--quinary-foreground);
+  --color-quinary-hover: var(--quinary-hover);
+  --color-quinary-soft: var(--quinary-soft);
+  --color-quinary-soft-foreground: var(--quinary-soft-foreground);
 
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
+  --color-gold-hover: var(--gold-hover);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-soft-foreground: var(--gold-soft-foreground);
+
+  --color-price: var(--price-color);
+  --color-price-original: var(--price-original);
+  --color-deal: var(--deal-color);
+  --color-luxury: var(--luxury-color);
+  --color-rating: var(--rating-color);
+
+  --color-surface-beach: var(--surface-beach);
+  --color-surface-nature: var(--surface-nature);
+  --color-surface-city: var(--surface-city);
+  --color-surface-luxury: var(--surface-luxury);
+  --color-surface-deal: var(--surface-deal);
 
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-muted-hover: var(--muted-hover);
 
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-hover: var(--accent-hover);
 
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-hover: var(--destructive-hover);
 
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
@@ -639,6 +868,7 @@
 
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-input-hover: var(--input-hover);
   --color-ring: var(--ring);
 
   --color-chart-1: var(--chart-1);
@@ -670,7 +900,7 @@
   --color-quinary-2: var(--quinary-2);
   --color-quinary-3: var(--quinary-3);
 
-  /* ===== Shadows ===== */
+  /* Shadows */
   --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.05);
   --shadow-md:
     0 4px 6px -1px rgb(var(--shadow-color) / 0.1), 0 2px 4px -2px rgb(var(--shadow-color) / 0.1);
@@ -689,10 +919,8 @@
     0 -20px 25px -5px rgb(var(--shadow-color) / 0.2),
     0 -8px 10px -6px rgb(var(--shadow-color) / 0.2);
 
-  /* ===== Elevated Custom Shadow ===== */
   --shadow-elevated:
     0 2px 6px rgb(var(--shadow-color) / 0.1), 0 12px 28px rgb(var(--shadow-color) / 0.12);
 
-  /* Loading */
   --loading-spinner: var(--primary);
 }

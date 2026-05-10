@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bot, LogIn, Send, Sparkles } from 'lucide-react';
+import { Bot, LogIn, Menu, MessageSquare, Plus, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,10 +13,23 @@ export default function ChatbotPanel() {
   const language = i18n.language?.startsWith('vi') ? 'vi' : 'en';
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const { messages, isSending, isLoading, error, sendMessage, loadRecentSession, clearSession } =
-    useChatbotStore();
+  const {
+    sessions,
+    messages,
+    isSending,
+    isLoading,
+    error,
+    sendMessage,
+    loadRecentSession,
+    loadAllSessions,
+    switchSession,
+    deleteSession,
+    startNewChat,
+    clearSession,
+  } = useChatbotStore();
 
   const [input, setInput] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -37,6 +50,26 @@ export default function ChatbotPanel() {
     if (!msg.trim() || isSending) return;
     if (typeof text !== 'string') setInput('');
     sendMessage(msg, language);
+  };
+
+  const handleOpenHistory = () => {
+    loadAllSessions();
+    setShowHistory(true);
+  };
+
+  const handleSelectSession = async (id) => {
+    await switchSession(id);
+    setShowHistory(false);
+  };
+
+  const handleDeleteSession = async (e, id) => {
+    e.stopPropagation();
+    await deleteSession(id);
+  };
+
+  const handleNewChat = () => {
+    startNewChat();
+    setShowHistory(false);
   };
 
   const quickPrompts = [
@@ -60,11 +93,7 @@ export default function ChatbotPanel() {
             })}
           </p>
         </div>
-        <Button
-          type="button"
-          className="rounded-full"
-          onClick={() => navigate('/login')}
-        >
+        <Button type="button" className="rounded-full" onClick={() => navigate('/login')}>
           <LogIn className="size-4" />
           {t('common.login', { defaultValue: 'Đăng nhập' })}
         </Button>
@@ -73,7 +102,7 @@ export default function ChatbotPanel() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
+    <div className="relative flex h-full min-h-0 flex-col gap-3 overflow-hidden">
       {/* Header */}
       <div className="bg-card shrink-0 rounded-2xl border p-3 shadow-sm">
         <div className="flex items-start gap-3">
@@ -94,6 +123,14 @@ export default function ChatbotPanel() {
               })}
             </p>
           </div>
+          <button
+            type="button"
+            onClick={handleOpenHistory}
+            className="text-muted-foreground hover:text-foreground hover:bg-muted shrink-0 rounded-xl p-1.5 transition-colors"
+            aria-label={t('mapPage.chatbot.historyTitle', { defaultValue: 'Lịch sử trò chuyện' })}
+          >
+            <Menu className="size-4.5" />
+          </button>
         </div>
 
         {messages.length === 0 && !isLoading && (
@@ -126,8 +163,7 @@ export default function ChatbotPanel() {
             <div className="flex h-full items-center justify-center px-4">
               <p className="typo-meta text-muted-foreground text-center">
                 {t('mapPage.chatbot.emptyState', {
-                  defaultValue:
-                    'Hãy bắt đầu cuộc trò chuyện hoặc chọn gợi ý phía trên.',
+                  defaultValue: 'Hãy bắt đầu cuộc trò chuyện hoặc chọn gợi ý phía trên.',
                 })}
               </p>
             </div>
@@ -225,6 +261,90 @@ export default function ChatbotPanel() {
           </div>
         </div>
       </div>
+
+      {/* History Overlay */}
+      {showHistory && (
+        <div className="absolute inset-0 z-10 flex flex-col overflow-hidden rounded-2xl border bg-card shadow-xl">
+          {/* Overlay header */}
+          <div className="flex shrink-0 items-center justify-between border-b px-4 py-3">
+            <h4 className="typo-section-title text-foreground">
+              {t('mapPage.chatbot.historyTitle', { defaultValue: 'Lịch sử trò chuyện' })}
+            </h4>
+            <button
+              type="button"
+              onClick={() => setShowHistory(false)}
+              className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl p-1.5 transition-colors"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+
+          {/* New chat button */}
+          <div className="shrink-0 border-b px-3 py-2">
+            <button
+              type="button"
+              onClick={handleNewChat}
+              className="hover:bg-muted text-primary flex w-full items-center gap-2 rounded-xl px-3 py-2 transition-colors"
+            >
+              <Plus className="size-4" />
+              <span className="typo-body">
+                {t('mapPage.chatbot.newChat', { defaultValue: 'Cuộc trò chuyện mới' })}
+              </span>
+            </button>
+          </div>
+
+          {/* Sessions list */}
+          <div className="min-h-0 flex-1 overflow-y-auto p-3">
+            {sessions.length === 0 ? (
+              <div className="flex h-full items-center justify-center">
+                <p className="typo-meta text-muted-foreground text-center">
+                  {t('mapPage.chatbot.noHistory', {
+                    defaultValue: 'Chưa có cuộc trò chuyện nào.',
+                  })}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {sessions.map((session) => (
+                  <div
+                    key={session.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleSelectSession(session.id)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSelectSession(session.id)}
+                    className="hover:bg-muted group flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 transition-colors"
+                  >
+                    <MessageSquare className="text-muted-foreground size-4 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="typo-body text-foreground truncate">
+                        {session.title ??
+                          session.name ??
+                          t('mapPage.chatbot.sessionLabel', {
+                            defaultValue: 'Phiên {{id}}',
+                            id: String(session.id).slice(0, 8),
+                          })}
+                      </p>
+                      {session.created_at && (
+                        <p className="typo-meta text-muted-foreground">
+                          {new Date(session.created_at).toLocaleDateString('vi-VN')}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteSession(e, session.id)}
+                      className="text-muted-foreground hover:text-destructive shrink-0 rounded-lg p-1 opacity-0 transition-colors group-hover:opacity-100"
+                      aria-label={t('mapPage.chatbot.deleteSession', { defaultValue: 'Xóa phiên' })}
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

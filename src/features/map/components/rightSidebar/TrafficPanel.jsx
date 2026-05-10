@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Activity, AlertTriangle, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { Activity, AlertTriangle, RefreshCw, Wifi, WifiOff, Construction, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
@@ -49,28 +49,56 @@ export default function TrafficPanel() {
       clearIncidents();
       return;
     }
-
     doLoad();
     intervalRef.current = setInterval(doLoad, REFRESH_MS);
-
     return () => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     };
   }, [isTrafficEnabled]);
 
-  const incidentCount = incidentGeoJSON?.features?.length ?? 0;
+  const stats = useMemo(() => {
+    const features = incidentGeoJSON?.features ?? [];
+    const total = features.length;
+    const accidents = features.filter((f) => Number(f.properties?.iconCategory) === 1).length;
+    const jams = features.filter((f) => Number(f.properties?.iconCategory) === 6).length;
+    const works = features.filter((f) => Number(f.properties?.iconCategory) === 9).length;
+
+    const delays = features.map((f) => Number(f.properties?.delay ?? 0)).filter((d) => d > 0);
+    const avgDelayMin =
+      delays.length > 0 ? Math.round(delays.reduce((a, b) => a + b, 0) / delays.length / 60) : null;
+
+    return { total, accidents, jams, works, avgDelayMin };
+  }, [incidentGeoJSON]);
+
+  const isLive = isTrafficEnabled && !isLoading && !error;
 
   return (
     <div className="space-y-3">
-      {/* Master toggle */}
-      <div className="flex items-center justify-between gap-3">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="typo-section-title text-foreground">
-            {t('mapPage.traffic.title', { defaultValue: 'Giao thông' })}
-          </p>
-          <p className="typo-meta text-muted-foreground">
-            {t('mapPage.traffic.subtitle', { defaultValue: 'Flow và sự cố theo thời gian thực' })}
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                'mt-0.5 h-2 w-2 shrink-0 rounded-full',
+                isLive ? 'animate-pulse bg-emerald-500' : 'bg-muted-foreground/40'
+              )}
+            />
+            <p className="typo-section-title text-foreground">
+              {t('mapPage.traffic.title', { defaultValue: 'Giao thông' })}
+            </p>
+          </div>
+          <p className="typo-meta text-muted-foreground ml-4">
+            {isTrafficEnabled
+              ? isLoading
+                ? t('mapPage.traffic.loading', { defaultValue: 'Đang cập nhật...' })
+                : error
+                  ? t('mapPage.traffic.error', { defaultValue: 'Không thể tải dữ liệu' })
+                  : t('mapPage.traffic.subtitle', {
+                      defaultValue: 'Flow và sự cố theo thời gian thực',
+                    })
+              : t('mapPage.traffic.disabled', { defaultValue: 'Đã tắt' })}
           </p>
         </div>
         <button
@@ -79,7 +107,7 @@ export default function TrafficPanel() {
           aria-checked={isTrafficEnabled}
           onClick={() => setTrafficEnabled(!isTrafficEnabled)}
           className={cn(
-            'focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+            'focus-visible:ring-ring relative mt-0.5 inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
             isTrafficEnabled ? 'bg-primary' : 'bg-input'
           )}
         >
@@ -94,41 +122,95 @@ export default function TrafficPanel() {
 
       {isTrafficEnabled && (
         <>
-          {/* Layer checkboxes */}
-          <div className="bg-muted/40 border-border space-y-1 rounded-xl border p-3">
-            <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-1 py-1.5 transition-colors">
-              <Checkbox id="traffic-flow" checked={showFlow} onCheckedChange={setShowFlow} />
-              <div className="flex min-w-0 flex-1 items-center gap-2">
-                <Activity className="h-4 w-4 shrink-0 text-emerald-500" />
-                <span className="typo-body text-foreground font-medium">
-                  {t('mapPage.traffic.flow', { defaultValue: 'Traffic Flow' })}
+          {/* Quick stats grid */}
+          <div className="grid grid-cols-4 gap-1.5">
+            {[
+              {
+                icon: <AlertTriangle className="h-3 w-3" />,
+                value: stats.total,
+                label: lang === 'en' ? 'Total' : 'Tổng',
+                color: '#f97316',
+                bg: '#f9731612',
+              },
+              {
+                icon: <Car className="h-3 w-3" />,
+                value: stats.accidents,
+                label: lang === 'en' ? 'Accident' : 'Tai nạn',
+                color: '#dc2626',
+                bg: '#dc262612',
+              },
+              {
+                icon: <Activity className="h-3 w-3" />,
+                value: stats.jams,
+                label: lang === 'en' ? 'Jam' : 'Ùn tắc',
+                color: '#ef4444',
+                bg: '#ef444412',
+              },
+              {
+                icon: <Construction className="h-3 w-3" />,
+                value: stats.works,
+                label: lang === 'en' ? 'Works' : 'Thi công',
+                color: '#3b82f6',
+                bg: '#3b82f612',
+              },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="flex flex-col items-center gap-0.5 rounded-xl px-1.5 py-2"
+                style={{ backgroundColor: s.bg }}
+              >
+                <span style={{ color: s.color }}>{s.icon}</span>
+                <span
+                  className="text-sm leading-none font-black tabular-nums"
+                  style={{ color: s.color }}
+                >
+                  {s.value}
+                </span>
+                <span
+                  className="text-center text-[9px] leading-none font-medium"
+                  style={{ color: s.color, opacity: 0.75 }}
+                >
+                  {s.label}
                 </span>
               </div>
+            ))}
+          </div>
+
+          {/* Avg delay badge */}
+          {stats.avgDelayMin !== null && (
+            <div className="bg-muted/50 border-border flex items-center justify-between rounded-xl border px-3 py-2">
+              <span className="typo-meta text-muted-foreground">
+                {lang === 'en' ? 'Avg. delay' : 'Delay trung bình'}
+              </span>
+              <span className="typo-meta font-semibold text-orange-500">
+                +{stats.avgDelayMin} {lang === 'en' ? 'min' : 'phút'}
+              </span>
+            </div>
+          )}
+
+          {/* Layer toggles */}
+          <div className="bg-muted/40 border-border space-y-0.5 rounded-xl border p-2">
+            <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors">
+              <Checkbox id="traffic-flow" checked={showFlow} onCheckedChange={setShowFlow} />
+              <Activity className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+              <span className="typo-body text-foreground flex-1 font-medium">
+                {t('mapPage.traffic.flow', { defaultValue: 'Traffic Flow' })}
+              </span>
             </label>
-
-            <div className="border-border border-t" />
-
-            <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-1 py-1.5 transition-colors">
+            <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors">
               <Checkbox
                 id="traffic-incidents"
                 checked={showIncidents}
                 onCheckedChange={setShowIncidents}
               />
-              <div className="flex min-w-0 flex-1 items-center gap-2">
-                <AlertTriangle className="h-4 w-4 shrink-0 text-orange-500" />
-                <span className="typo-body text-foreground font-medium">
-                  {t('mapPage.traffic.incidents', { defaultValue: 'Sự cố giao thông' })}
-                </span>
-                {incidentCount > 0 && (
-                  <span className="typo-badge ml-auto rounded-full bg-orange-500/15 px-1.5 py-0.5 text-orange-600 tabular-nums">
-                    {incidentCount}
-                  </span>
-                )}
-              </div>
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-orange-500" />
+              <span className="typo-body text-foreground flex-1 font-medium">
+                {t('mapPage.traffic.incidents', { defaultValue: 'Sự cố giao thông' })}
+              </span>
             </label>
           </div>
 
-          {/* Status bar */}
+          {/* Status + refresh */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               {error ? (
@@ -139,17 +221,14 @@ export default function TrafficPanel() {
                   </span>
                 </>
               ) : isLoading ? (
-                <span className="typo-meta text-muted-foreground">
+                <span className="typo-meta text-muted-foreground animate-pulse">
                   {t('mapPage.traffic.loading', { defaultValue: 'Đang cập nhật...' })}
                 </span>
               ) : (
                 <>
                   <Wifi className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                   <span className="typo-meta text-muted-foreground">
-                    {t('mapPage.traffic.incidentCount', {
-                      defaultValue: '{{count}} sự cố',
-                      count: incidentCount,
-                    })}
+                    {t('mapPage.traffic.live', { defaultValue: 'Dữ liệu thời gian thực' })}
                   </span>
                 </>
               )}
@@ -177,7 +256,7 @@ export default function TrafficPanel() {
                 {FLOW_LEGEND.map((item) => (
                   <div key={item.en} className="flex items-center gap-1.5">
                     <span
-                      className="inline-block h-2.5 w-5 shrink-0 rounded-full"
+                      className="inline-block h-2 w-4 shrink-0 rounded-full"
                       style={{ backgroundColor: item.color }}
                     />
                     <span className="typo-meta text-muted-foreground">{item[lang] ?? item.vi}</span>
@@ -197,7 +276,7 @@ export default function TrafficPanel() {
                 {INCIDENT_LEGEND.map((item) => (
                   <div key={item.en} className="flex items-center gap-1.5">
                     <span
-                      className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                      className="inline-block h-2 w-2 shrink-0 rounded-full"
                       style={{ backgroundColor: item.color }}
                     />
                     <span className="typo-meta text-muted-foreground">{item[lang] ?? item.vi}</span>

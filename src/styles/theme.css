@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --radius: 0.625rem;
   --radius-xs: 0.125rem;
   --radius-sm: 0.25rem;
@@ -8,6 +8,7 @@
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
   --radius-full: 9999px;
+  --font-sans: 'Be Vietnam Pro', system-ui, Arial, sans-serif;
 
   /* Shadows */
   --shadow-color: 13 74 130;
@@ -27,71 +28,71 @@
   /* High-emphasis brand/action */
   --primary: #0b66c3;
   --primary-foreground: #ffffff;
-  --primary-hover: #0ea5e9;
+  --primary-hover: #004b9b;
   --primary-soft: #eef7ff;
   --primary-soft-foreground: #0477bf;
-  /* Primary gradient stops — 1 = brightest, 3 = deepest */
-  --primary-1: #0ea5e9;
-  --primary-2: #0b66c3;
-  --primary-3: #004b9b;
+  /* Primary gradient stops - 1 = brightest, 3 = deepest */
+  --primary-1: #0b66c3;
+  --primary-2: #0ea5e9;
+  --primary-3: #06b6d4;
 
   /* Lower-emphasis filled surfaces */
-  --secondary: #006b55;
+  --secondary: #10b981;
   --secondary-foreground: #ffffff;
-  --secondary-hover: #0a7c63;
-  --secondary-soft: #ddf3ed;
-  --secondary-soft-foreground: #0d4b3d;
+  --secondary-hover: #059669;
+  --secondary-soft: #def8ed;
+  --secondary-soft-foreground: #067a51;
   /* Secondary gradient stops */
-  --secondary-1: #10c99c;
-  --secondary-2: #0a7c63;
-  --secondary-3: #004730;
+  --secondary-1: #10b981;
+  --secondary-2: #059669;
+  --secondary-3: #067a51;
 
-  /* Tertiary — Sunset Sand */
-  --tertiary: #c97520;
-  --tertiary-foreground: #ffffff;
-  --tertiary-hover: #b5671a;
-  --tertiary-soft: #fae8d2;
-  --tertiary-soft-foreground: #8f5110;
-  --tertiary-soft-hover: #f6dbc0;
+  /* Tertiary - Sunset Sand */
+  --tertiary: #f59e0b;
+  --tertiary-foreground: #3b2a00;
+  --tertiary-hover: #d97706;
+  --tertiary-soft: #fff1dc;
+  --tertiary-soft-foreground: #b76100;
+  --tertiary-soft-hover: #ffe8c3;
   /* Tertiary gradient stops */
-  --tertiary-1: #f0a033;
-  --tertiary-2: #c97520;
-  --tertiary-3: #8b5010;
+  --tertiary-1: #f59e0b;
+  --tertiary-2: #d97706;
+  --tertiary-3: #b76100;
 
-  /* Quaternary — Coral Reef */
-  --quaternary: #c43a25;
+  /* Quaternary - Coral Reef */
+  --quaternary: #7c3aed;
   --quaternary-foreground: #ffffff;
-  --quaternary-hover: #ad311e;
-  --quaternary-soft: #f6ddd8;
-  --quaternary-soft-foreground: #8f2618;
-  --quaternary-soft-hover: #f2cfc8;
+  --quaternary-hover: #493bc7;
+  --quaternary-soft: #f1edff;
+  --quaternary-soft-foreground: #493bc7;
+  --quaternary-soft-hover: #e4ddff;
 
-  /* Quinary — Misty Lavender */
-  --quinary: #5e4ec7;
+  /* Quinary - Misty Lavender */
+  --quinary: #ef4444;
   --quinary-foreground: #ffffff;
-  --quinary-hover: #5244b3;
-  --quinary-soft: #e5e0fb;
-  --quinary-soft-foreground: #3d2b8c;
-  --quinary-soft-hover: #d7cff8;
+  --quinary-hover: #b91c1c;
+  --quinary-soft: #fee2e2;
+  --quinary-soft-foreground: #b91c1c;
+  --quinary-soft-hover: #fecaca;
   /* Quinary gradient stops */
-  --quinary-1: #8c7ee6;
-  --quinary-2: #5244b3;
-  --quinary-3: #2d1e7e;
+  --quinary-1: #ef4444;
+  --quinary-2: #dc2626;
+  --quinary-3: #b91c1c;
 
-  /* Gold — Golden Hour */
-  --gold: #eab308;
-  --gold-foreground: #422006;
-  --gold-hover: #d4a008;
-  --gold-soft: #fff3c4;
-  --gold-soft-foreground: #713f12;
+  /* Gold - Golden Hour */
+  --gold: #facc15;
+  --gold-foreground: #3b2a00;
+  --gold-hover: #f5b21d;
+  --gold-soft: #fff4cf;
+  --gold-soft-foreground: #9a5a00;
   --gold-soft-hover: #ffe89a;
 
   /* Semantic emphasis */
-  --price-color: #b86908;
-  --price-original: #5b6773;
-  --deal-color: #006b55;
-  --luxury-color: #5e4ec7;
-  --rating-color: #eab308;
+  --price-color: #0b4f91;
+  --price-original: #667085;
+  --deal-color: #ef4444;
+  --luxury-color: #7c3aed;
+  --rating-color: #b76100;
 
   /* Surface tints */
   --surface-beach: #fff6ea;
@@ -157,6 +158,19 @@
   --sidebar-border: #d0dbe6;
   --sidebar-ring: #0b6bcb;
 
+  /* Event panel */
+  --event-panel-surface: #f7fbff;
+  --event-panel-header-bg: #edf6ff;
+  --event-panel-border: #c6dcf3;
+  --event-panel-control-bg: #ffffff;
+  --event-panel-card-bg: #ffffff;
+  --event-panel-card-hover-bg: #f2f9ff;
+  --event-panel-chip-bg: #eef7ff;
+  --event-panel-chip-fg: #0477bf;
+  --event-panel-chip-border: #b7d6f3;
+  --event-panel-active-bg: #e8f3ff;
+  --event-panel-active-border: #63a6df;
+
   /* Glass / atmospheric tokens */
   --glass-bg: rgba(255, 255, 255, 0.68);
   --glass-bg-strong: rgba(255, 255, 255, 0.82);
@@ -186,170 +200,144 @@
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
   --radius-full: 9999px;
+  --font-sans: 'Be Vietnam Pro', system-ui, Arial, sans-serif;
 
-  /* Shadows */
   --shadow-color: 138 196 255;
 
-  /* App shell */
-  --background: #0f1720;
-  --foreground: #edf3f8;
+  --background: #0b121a;
+  --foreground: #eef6ff;
 
-  /* Elevated surfaces */
-  --card: #18232f;
-  --card-foreground: #edf3f8;
+  --card: #121c27;
+  --card-foreground: #eef6ff;
 
-  /* Floating overlays */
-  --popover: #18232f;
-  --popover-foreground: #edf3f8;
+  --popover: #162333;
+  --popover-foreground: #eef6ff;
 
-  /* High-emphasis brand/action */
-  --primary: #8ac4ff;
-  --primary-foreground: #032447;
-  --primary-hover: #a4d2ff;
-  --primary-soft: #12283d;
-  --primary-soft-foreground: #d9ecff;
-  /* Primary gradient stops */
-  --primary-1: #d6edff;
-  --primary-2: #8ac4ff;
+  --primary: #8cc8ff;
+  --primary-foreground: #061b33;
+  --primary-hover: #b6ddff;
+  --primary-soft: #102a42;
+  --primary-soft-foreground: #cae5ff;
+  --primary-1: #d7efff;
+  --primary-2: #8cc8ff;
   --primary-3: #4a9ef8;
 
-  /* Lower-emphasis filled surfaces */
-  --secondary: #39caa2;
-  --secondary-foreground: #04261e;
-  --secondary-hover: #52ddb6;
-  --secondary-soft: #143d2f;
-  --secondary-soft-foreground: #66e8c0;
-  /* Secondary gradient stops */
-  --secondary-1: #80f5d8;
-  --secondary-2: #39caa2;
-  --secondary-3: #0fa880;
+  --secondary: #4adea8;
+  --secondary-foreground: #05291e;
+  --secondary-hover: #6ee7bf;
+  --secondary-soft: #12382b;
+  --secondary-soft-foreground: #a7f3d0;
+  --secondary-1: #a7f3d0;
+  --secondary-2: #4adea8;
+  --secondary-3: #10b981;
 
-  /* Tertiary — Sunset Sand */
-  --tertiary: #f5a652;
-  --tertiary-foreground: #3a1e00;
-  --tertiary-hover: #f7b56e;
-  --tertiary-soft: #4a3114;
-  --tertiary-soft-foreground: #f7c58f;
-  --tertiary-soft-hover: #5a3d1b;
-  /* Tertiary gradient stops */
-  --tertiary-1: #ffd9a8;
-  --tertiary-2: #f5a652;
-  --tertiary-3: #d97b20;
+  --tertiary: #fbbf77;
+  --tertiary-foreground: #321a00;
+  --tertiary-hover: #ffd099;
+  --tertiary-soft: #3d2915;
+  --tertiary-soft-foreground: #ffd7a3;
+  --tertiary-soft-hover: #4d331b;
+  --tertiary-1: #ffe0b3;
+  --tertiary-2: #fbbf77;
+  --tertiary-3: #d97706;
 
-  /* Quaternary — Coral Reef */
-  --quaternary: #f26d58;
-  --quaternary-foreground: #2a0c07;
-  --quaternary-hover: #f58472;
-  --quaternary-soft: #4a1f18;
-  --quaternary-soft-foreground: #ffb5ab;
-  --quaternary-soft-hover: #5a2820;
+  --quaternary: #b2a3ff;
+  --quaternary-foreground: #1a123f;
+  --quaternary-hover: #c7bfff;
+  --quaternary-soft: #30275c;
+  --quaternary-soft-foreground: #ded8ff;
+  --quaternary-soft-hover: #3b3170;
 
-  /* Quinary — Misty Lavender */
-  --quinary: #8b7be8;
-  --quinary-foreground: #0f0a2a;
-  --quinary-hover: #a394ee;
-  --quinary-soft: #2b2358;
-  --quinary-soft-foreground: #c9c1ff;
-  --quinary-soft-hover: #362c6a;
-  /* Quinary gradient stops */
-  --quinary-1: #cdc5ff;
-  --quinary-2: #8b7be8;
-  --quinary-3: #6356d4;
+  --quinary: #ff8f8f;
+  --quinary-foreground: #351010;
+  --quinary-hover: #ffb4b4;
+  --quinary-soft: #43201f;
+  --quinary-soft-foreground: #ffcaca;
+  --quinary-soft-hover: #542928;
+  --quinary-1: #ffb4b4;
+  --quinary-2: #ff8f8f;
+  --quinary-3: #e45b53;
 
-  /* Gold — Golden Hour */
-  --gold: #fde047;
-  --gold-foreground: #2a1a00;
-  --gold-hover: #fde96b;
-  --gold-soft: #41300d;
-  --gold-soft-foreground: #f9dfa2;
-  --gold-soft-hover: #4f3a10;
+  --gold: #fde68a;
+  --gold-foreground: #2c2100;
+  --gold-hover: #fef3c7;
+  --gold-soft: #3d300f;
+  --gold-soft-foreground: #fde68a;
+  --gold-soft-hover: #4d3d14;
 
-  /* Semantic emphasis */
-  --price-color: #f5b973;
-  --price-original: #bac7d2;
-  --deal-color: #39caa2;
-  --luxury-color: #8b7be8;
-  --rating-color: #fde047;
+  --price-color: #ffc078;
+  --price-original: #aab7c4;
+  --deal-color: #ff8f8f;
+  --luxury-color: #b2a3ff;
+  --rating-color: #fde68a;
 
-  /* Surface tints */
-  --surface-beach: #1a2230;
-  --surface-nature: #13251d;
-  --surface-city: #122130;
-  --surface-luxury: #201c3d;
-  --surface-deal: #2a2118;
+  --surface-beach: #221a12;
+  --surface-nature: #11251d;
+  --surface-city: #101f2f;
+  --surface-luxury: #211d3d;
+  --surface-deal: #2a1b1b;
 
-  /* Subtle UI and helper content */
   --muted: #24313d;
   --muted-foreground: #bac7d2;
   --muted-hover: #2d3b48;
 
-  /* Hover / selected / nuanced POI support */
   --accent: #4b2f17;
   --accent-foreground: #ffd9be;
   --accent-hover: #5c3a1d;
 
-  /* Legacy / normalized aliases */
-  --bg-tertiary: var(--accent);
-  --loading-spinner: var(--primary);
-
-  /* Neutral interactive surface */
   --surface-hover: #1d2a36;
   --surface-active: #273542;
 
-  /* Errors */
-  --destructive: #ff8e86;
-  --destructive-foreground: #32110e;
-  --destructive-hover: #ffaaa3;
+  --destructive: #ff8f8f;
+  --destructive-foreground: #351010;
+  --destructive-hover: #ffb4b4;
 
-  /* Warning feedback */
-  --warning: #f5b973;
-  --warning-foreground: #2e1700;
-  --warning-soft: #3e2d1d;
+  --warning: #ffc078;
+  --warning-foreground: #321a00;
+  --warning-soft: #3d2915;
 
-  /* Weather */
   --weather-temp: #fb923c;
   --weather-humidity: #60a5fa;
   --weather-wind: #67e8f9;
 
-  /* Inputs and separators */
   --border: #2b3b48;
   --input: #21303c;
   --input-hover: #283845;
-  --ring: #8ac4ff;
+  --ring: #8cc8ff;
 
-  /* Data viz */
-  --chart-1: #8ac4ff;
-  --chart-2: #39caa2;
-  --chart-3: #ffbe93;
-  --chart-4: #58a8ff;
-  --chart-5: #6dfad2;
+  --chart-1: #8cc8ff;
+  --chart-2: #4adea8;
+  --chart-3: #fbbf77;
+  --chart-4: #60a5fa;
+  --chart-5: #67e8f9;
 
-  /* Sidebar */
-  --sidebar: #122130;
-  --sidebar-foreground: #edf3f8;
-  --sidebar-primary: #8ac4ff;
-  --sidebar-primary-foreground: #032447;
+  --sidebar: #101f2f;
+  --sidebar-foreground: #eef6ff;
+  --sidebar-primary: #8cc8ff;
+  --sidebar-primary-foreground: #061b33;
   --sidebar-accent: #173042;
-  --sidebar-accent-foreground: #d9ecff;
+  --sidebar-accent-foreground: #cae5ff;
   --sidebar-accent-hover: #1d3b50;
   --sidebar-border: #284051;
-  --sidebar-ring: #8ac4ff;
+  --sidebar-ring: #8cc8ff;
 
-  /* Glass / atmospheric tokens */
+  --event-panel-surface: #101b28;
+  --event-panel-header-bg: #16273a;
+  --event-panel-border: #2b4158;
+  --event-panel-control-bg: #18293c;
+  --event-panel-card-bg: #142232;
+  --event-panel-card-hover-bg: #1b3046;
+  --event-panel-chip-bg: #1d3550;
+  --event-panel-chip-fg: #cae5ff;
+  --event-panel-chip-border: #315170;
+  --event-panel-active-bg: #1b3550;
+  --event-panel-active-border: #6fa9dd;
+
   --glass-bg: rgba(18, 31, 43, 0.62);
   --glass-bg-strong: rgba(20, 34, 47, 0.82);
   --glass-border: rgba(160, 188, 214, 0.16);
   --glass-border-strong: rgba(160, 188, 214, 0.24);
-  --panel-blur: 24px;
-  --panel-saturate: 180%;
+
   --ambient-shadow: 0 10px 40px rgba(11, 107, 203, 0.18);
   --ambient-shadow-strong: 0 16px 56px rgba(11, 107, 203, 0.24);
-
-  /* Error colors */
-  --error-400: #fca5a5;
-  --error-401: #fbbf24;
-  --error-403: #f59e0b;
-  --error-404: #a3e635;
-  --error-500: #86efac;
-  --error-503: #60a5fa;
 }

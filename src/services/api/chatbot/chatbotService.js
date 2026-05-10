@@ -42,13 +42,15 @@ export async function deleteChatSession(sessionId) {
  */
 export function extractBotReply(data) {
   if (!data) return null;
+  // Actual API shape: { message: { role, content, ... }, map_actions: [] }
+  if (data.message && typeof data.message === 'object' && data.message.content)
+    return String(data.message.content);
   if (data.reply?.content) return String(data.reply.content);
   if (data.bot_message?.content) return String(data.bot_message.content);
   if (data.assistant_message?.content) return String(data.assistant_message.content);
   if (typeof data.reply === 'string') return data.reply;
   if (typeof data.response === 'string') return data.response;
   if (typeof data.content === 'string') return data.content;
-  // Fallback: if message is a long string it's the reply, not a status label
   if (typeof data.message === 'string' && data.message.length > 30) return data.message;
   return null;
 }

@@ -26,11 +26,11 @@ const GEOMETRY_TYPES = {
 const SVG_DEFAULT_VIEWBOX = '0 0 24 24';
 const DEFAULT_MARKER_COLOR = '#3b82f6';
 
-const MARKER_SIZE = 40;
-const MARKER_RADIUS = 19;
-const MARKER_STROKE_WIDTH = 2;
-const MARKER_ICON_SIZE = 20;
-const DEFAULT_MARKER_DOT_RADIUS = 5;
+const MARKER_SIZE = 48;
+const MARKER_RADIUS = 20;
+const MARKER_STROKE_WIDTH = 4;
+const MARKER_ICON_SIZE = 24;
+const DEFAULT_MARKER_DOT_RADIUS = 6;
 
 const MARKER_PROGRESS_CURRENT = 50;
 const MARKER_PROGRESS_TOTAL = 100;
@@ -1073,6 +1073,62 @@ export function addOrUpdateHighlightedRouteLayers(
       'text-halo-width': 1.8,
     },
   });
+}
+
+/**
+ * applyCapacityUpdateToCollection — returns a new FeatureCollection with the
+ * feature matching `capacityUpdate.spot_id` updated in-place.
+ * Recomputes CAPACITY_PROGRESS_PERCENT_PROPERTY and CAPACITY_PROGRESS_BUCKET_PROPERTY
+ * so Mapbox icon expressions pick up the new progress bar immediately after setData().
+ *
+ * @param {object} featureCollection  Current GeoJSON FeatureCollection held by the source
+ * @param {object} capacityUpdate     Payload from capacity_update / capacity_alert WS event:
+ *   { spot_id, visitor_count, capacity_pct, status, recorded_at }
+ * @returns {object} New FeatureCollection (same reference when spot not found)
+ */
+export function applyCapacityUpdateToCollection(featureCollection, capacityUpdate) {
+  if (!featureCollection?.features || !capacityUpdate?.spot_id) return featureCollection;
+
+  const spotId = String(capacityUpdate.spot_id);
+  let matched = false;
+
+  const features = featureCollection.features.map((feature) => {
+    const props = feature.properties ?? {};
+    const id = String(props.spot_id ?? props.id ?? '');
+    if (id !== spotId) return feature;
+
+    matched = true;
+
+    const visitorCount =
+      capacityUpdate.visitor_count != null ? capacityUpdate.visitor_count : props.visitor_count;
+
+    const patchedProps = {
+      ...props,
+      visitor_count: visitorCount,
+      current_visitor_count: visitorCount,
+      capacity_pct: capacityUpdate.capacity_pct ?? props.capacity_pct,
+      capacity_status: capacityUpdate.status ?? props.capacity_status,
+      recorded_at: capacityUpdate.recorded_at ?? props.recorded_at,
+    };
+
+    // Prefer the direct pct from the WS payload; fall back to ratio computed from counts.
+    const progressPercent =
+      capacityUpdate.capacity_pct != null
+        ? clamp(
+            Math.round(Number(capacityUpdate.capacity_pct)),
+            MARKER_PROGRESS_MIN_PERCENT,
+            MARKER_PROGRESS_MAX_PERCENT
+          )
+        : getProgressPercentForFeature(patchedProps);
+
+    patchedProps[CAPACITY_PROGRESS_PERCENT_PROPERTY] = progressPercent;
+    patchedProps[CAPACITY_PROGRESS_BUCKET_PROPERTY] = getProgressBucketFromPercent(progressPercent);
+
+    return { ...feature, properties: patchedProps };
+  });
+
+  if (!matched) return featureCollection;
+  return { ...featureCollection, features };
 }
 
 export function removeSubcategoryLayer(map, sourceId) {

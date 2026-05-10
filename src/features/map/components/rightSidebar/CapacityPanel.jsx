@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Clock, LocateFixed, RefreshCw, Search, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetCurrentCapacity } from '@/services/api/capacity/capacityService';
+import {
+  useGetCurrentCapacity,
+  useCapacityWebSocket,
+} from '@/services/api/capacity/capacityService';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { cn } from '@/lib/utils';
 
@@ -63,6 +66,25 @@ function getStatusMeta(status) {
 function getStatusLabel(status, isVi) {
   const meta = getStatusMeta(status);
   return isVi ? meta.labelVi : meta.labelEn;
+}
+
+function getViewOnMapVariant(status) {
+  switch (status) {
+    case 'overloaded':
+      return 'destructive';
+    case 'near_full':
+      return 'gold';
+    case 'busy':
+      return 'tertiary';
+    case 'moderate':
+      return 'default';
+    case 'normal':
+      return 'default';
+    case 'low':
+      return 'secondary';
+    default:
+      return 'outline';
+  }
 }
 
 function resolveCapacityPct(item) {
@@ -137,18 +159,40 @@ export default function CapacityPanel() {
 
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [capacityOverrides, setCapacityOverrides] = useState(() => new Map());
 
   const numberFormatter = useMemo(() => new Intl.NumberFormat(isVi ? 'vi-VN' : 'en-US'), [isVi]);
 
   const { data, isLoading, isError, isFetching, refetch } = useGetCurrentCapacity();
+  const { data: wsData, status: wsStatus } = useCapacityWebSocket();
+
+  useEffect(() => {
+    if (!wsData?.spot_id) return;
+    setCapacityOverrides((prev) => {
+      const next = new Map(prev);
+      next.set(String(wsData.spot_id), {
+        visitor_count: wsData.visitor_count,
+        capacity_pct: wsData.capacity_pct,
+        status: wsData.status,
+        recorded_at: wsData.recorded_at,
+      });
+      return next;
+    });
+  }, [wsData]);
 
   const items = useMemo(() => {
     const raw = data?.data?.capacity ?? data?.data?.spots ?? data?.data?.items ?? data?.data ?? [];
     if (!Array.isArray(raw)) return [];
-    return raw.map((item) =>
-      normalizeItem(item, t('mapPage.capacityPanel.defaultName', { defaultValue: 'Địa điểm' }))
-    );
-  }, [data, t]);
+    return raw.map((item) => {
+      const id = String(item.spot_id ?? item.id ?? '');
+      const override = id ? capacityOverrides.get(id) : undefined;
+      const merged = override ? { ...item, ...override } : item;
+      return normalizeItem(
+        merged,
+        t('mapPage.capacityPanel.defaultName', { defaultValue: 'Địa điểm' })
+      );
+    });
+  }, [data, capacityOverrides, t]);
 
   const filtered = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -193,7 +237,14 @@ export default function CapacityPanel() {
             {t('mapPage.capacityPanel.title', { defaultValue: 'Sức chứa điểm đến' })}
           </p>
           <p className="typo-meta text-muted-foreground truncate">
-            {isFetching ? (
+            {wsStatus === 'open' ? (
+              <span className="flex items-center gap-1 text-emerald-600">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 animate-pulse" />
+                {t('mapPage.capacityPanel.live', { defaultValue: 'Trực tiếp' })}
+              </span>
+            ) : wsStatus === 'connecting' ? (
+              t('mapPage.capacityPanel.connecting', { defaultValue: 'Đang kết nối...' })
+            ) : isFetching ? (
               t('mapPage.capacityPanel.syncing', { defaultValue: 'Đang cập nhật...' })
             ) : latestRecordedAt ? (
               <span className="flex items-center gap-1">
@@ -208,17 +259,19 @@ export default function CapacityPanel() {
             )}
           </p>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          className="typo-meta h-7 shrink-0"
-          disabled={isFetching}
-          onClick={() => refetch()}
-        >
-          <RefreshCw className={cn('h-3.5 w-3.5', isFetching && 'animate-spin')} />
-          {t('mapPage.capacityPanel.refresh', { defaultValue: 'Làm mới' })}
-        </Button>
+        {wsStatus !== 'open' && (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="typo-meta h-7 shrink-0"
+            disabled={isFetching}
+            onClick={() => refetch()}
+          >
+            <RefreshCw className={cn('h-3.5 w-3.5', isFetching && 'animate-spin')} />
+            {t('mapPage.capacityPanel.refresh', { defaultValue: 'Làm mới' })}
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -320,10 +373,7 @@ export default function CapacityPanel() {
                   >
                     {item.name}
                   </h4>
-                  <Badge
-                    variant="outline"
-                    className={cn('typo-badge shrink-0', meta.badgeClass)}
-                  >
+                  <Badge variant="outline" className={cn('typo-badge shrink-0', meta.badgeClass)}>
                     {getStatusLabel(item.status, isVi)}
                   </Badge>
                 </div>
@@ -355,7 +405,7 @@ export default function CapacityPanel() {
                   <Button
                     type="button"
                     size="sm"
-                    variant="outline"
+                    variant={getViewOnMapVariant(item.status)}
                     className="typo-meta h-7 w-full"
                     onClick={() => handleFlyTo(item)}
                   >

@@ -22,7 +22,6 @@ import {
   ChevronDown,
   Video,
   Newspaper,
-  RectangleGoggles,
   CalendarDays,
   Gift,
 } from 'lucide-react';
@@ -122,7 +121,10 @@ export default function Header() {
           className="group h-auto rounded-xl px-2 py-1.5 leading-none"
         >
           <span className="relative inline-flex items-center gap-2">
-            <span className="typo-brand-title from-primary via-secondary to-tertiary bg-gradient-to-r bg-clip-text tracking-tight text-transparent">
+            <span className="from-primary to-secondary text-primary-foreground inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm">
+              <Map className="size-6.5" />
+            </span>
+            <span className="typo-brand-title from-primary via-secondary to-tertiary text-foreground bg-gradient-to-r bg-clip-text tracking-tight transition-colors duration-300 group-hover:text-transparent">
               {t('common.app_name')}
             </span>
             <span className="from-primary via-secondary to-tertiary absolute -bottom-1 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r transition-all duration-300 group-hover:w-full" />
@@ -139,6 +141,7 @@ export default function Header() {
               key={item.path}
               type="button"
               variant={isActive(item.path) ? 'default' : 'ghost'}
+              className={`font-bold ${isActive(item.path) ? 'from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90 bg-gradient-to-r' : ''}`}
               onClick={() => navigate(item.path)}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
@@ -287,7 +290,7 @@ export default function Header() {
                   key={item.path}
                   type="button"
                   variant={isActive(item.path) ? 'default' : 'ghost'}
-                  className="justify-start"
+                  className={`justify-start font-bold ${isActive(item.path) ? 'from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90 bg-gradient-to-r' : ''}`}
                   onClick={() => {
                     navigate(item.path);
                     setIsMobileMenuOpen(false);
@@ -331,7 +334,7 @@ export default function Header() {
                     id="mobile-profile-btn"
                     type="button"
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start font-bold"
                     onClick={() => {
                       navigate('/profile');
                       setIsMobileMenuOpen(false);
@@ -344,7 +347,7 @@ export default function Header() {
                     id="mobile-logout-btn"
                     type="button"
                     variant="destructive"
-                    className="w-full justify-start"
+                    className="w-full justify-start font-bold"
                     onClick={handleLogout}
                   >
                     <LogOut size={16} />
@@ -358,6 +361,7 @@ export default function Header() {
                     navigate('/login');
                     setIsMobileMenuOpen(false);
                   }}
+                  className="font-bold"
                 >
                   <LogIn size={16} className="mr-2" />
                   {t('common.login')}

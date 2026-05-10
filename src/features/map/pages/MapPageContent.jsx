@@ -75,6 +75,8 @@ export default function MapPage() {
   const mapRef = useMapStore((state) => state.mapRef);
   const mapRefObj = useMapStore((state) => state.mapRefObj);
   const setHighlightedPoint = useMapStore((state) => state.setHighlightedPoint);
+  const setHighlightedRoute = useMapStore((state) => state.setHighlightedRoute);
+  const setShowOnlyHighlightedRoute = useMapStore((state) => state.setShowOnlyHighlightedRoute);
   const clearHighlightedRoute = useMapStore((state) => state.clearHighlightedRoute);
   const setMapStyle = useMapStyleStore((state) => state.setMapStyle);
   const directions = useDirectionsStore((state) => state.directions);
@@ -201,8 +203,11 @@ export default function MapPage() {
   const hasDirectionDetails = Boolean(directions?.legs?.[0]?.steps?.length || directions);
 
   useEffect(() => {
-    const { activePanel: panel, clearPanel: clear, openDirectionPanel: open } =
-      useMapPanelStore.getState();
+    const {
+      activePanel: panel,
+      clearPanel: clear,
+      openDirectionPanel: open,
+    } = useMapPanelStore.getState();
     if (!directions) {
       if (panel === 'direction') clear();
       return;
@@ -349,10 +354,17 @@ export default function MapPage() {
 
     const prefillKeyword = location.state?.prefillKeyword?.trim?.() || '';
     const prefillResult = location.state?.selectedSearchResult;
-    if (!prefillKeyword && !prefillResult) return;
+    console.log(prefillResult);
+
+    const prefillRoute = location.state?.highlightedRoute;
+    if (!prefillKeyword && !prefillResult && !prefillRoute) return;
 
     prefillHandledRef.current = true;
     if (prefillKeyword) setKeyword(prefillKeyword);
+    if (prefillRoute) {
+      setHighlightedRoute(prefillRoute);
+      setShowOnlyHighlightedRoute(Boolean(prefillRoute));
+    }
     if (prefillResult) handleSelectSearchResult(prefillResult);
   }, [location.state]);
 

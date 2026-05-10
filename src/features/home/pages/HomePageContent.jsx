@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
@@ -6,7 +6,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarDays,
-  CloudRain,
+  Droplets,
   Compass,
   FileText,
   MapPin,
@@ -63,7 +63,7 @@ function formatVoucherDiscount(voucher) {
 function SectionLabel({ children, color }) {
   return (
     <p
-      className="mb-1 text-xs font-bold tracking-widest uppercase"
+      className="mb-1 text-base font-bold tracking-widest uppercase"
       style={{ color: color || 'var(--primary)' }}
     >
       {children}
@@ -116,15 +116,28 @@ export default function HomePageContent() {
     sortOrder: 'ASC',
   });
 
+  const upcomingFestivals = useMemo(
+    () => normalizeFestivalListPayload(festivalsData, { lang }).slice(0, 3),
+    [festivalsData, lang]
+  );
+
   const heroEvents = useMemo(() => {
-    const festivals = normalizeFestivalListPayload(festivalsData, { lang });
-    if (festivals.length === 0) return HERO_EVENTS;
+    if (upcomingFestivals.length === 0) return HERO_EVENTS;
     const locale = getLocaleFromLanguage(lang);
-    return festivals.slice(0, 3).map((f) => ({
+    return upcomingFestivals.map((f) => ({
       title: f.name,
       time: formatFestivalDateRange(f.start_date, f.end_date, locale),
+      point: {
+        id: f.spot_id || f.spot_slug || null,
+        spot_id: f.spot_id || null,
+        spot_slug: f.spot_slug || null,
+        name: f.location_name || f.name || '',
+        description: f.description || '',
+        address: f.location_name || '',
+        coordinates: f.coordinates || null,
+      },
     }));
-  }, [festivalsData, lang, HERO_EVENTS]);
+  }, [upcomingFestivals, lang, HERO_EVENTS]);
 
   const {
     data: homeSearchData,
@@ -158,6 +171,9 @@ export default function HomePageContent() {
     const mapped = apiItems.map((s) => ({
       id: s.id,
       name: s.name,
+      spot_id: s.spot_id || s.id || null,
+      slug: s.slug || s.spot_slug || null,
+      spot_slug: s.spot_slug || s.slug || null,
       subtitle: s.category_name || '',
       description: s.description || '',
       image:
@@ -165,6 +181,14 @@ export default function HomePageContent() {
           ? withBaseUrl(s.primary_image || s.primary_image_url)
           : '',
       province: s.province_name || s.address || '',
+      address: s.address || s.province_name || '',
+      coordinates:
+        Number.isFinite(Number(s.longitude ?? s.lng)) &&
+        Number.isFinite(Number(s.latitude ?? s.lat))
+          ? [Number(s.longitude ?? s.lng), Number(s.latitude ?? s.lat)]
+          : null,
+      longitude: s.longitude ?? s.lng ?? null,
+      latitude: s.latitude ?? s.lat ?? null,
       rating: s.rating_avg ? parseFloat(s.rating_avg).toFixed(1) : null,
     }));
     if (mapped.length >= 3) return mapped.slice(0, 3);
@@ -242,10 +266,104 @@ export default function HomePageContent() {
     { gradient: 'linear-gradient(135deg, #ef4444, #b91c1c)', hover: 'hover:border-quaternary/50' },
   ];
 
+  const gradientHoverClass =
+    'transition-all duration-300 hover:bg-gradient-to-r hover:from-primary hover:via-secondary hover:to-tertiary hover:text-white';
+
+  const getPointCoordinates = (point) => {
+    if (Array.isArray(point?.coordinates) && point.coordinates.length >= 2)
+      return point.coordinates;
+    if (Array.isArray(point?.coords) && point.coords.length >= 2) return point.coords;
+    if (Number.isFinite(Number(point?.lng)) && Number.isFinite(Number(point?.lat))) {
+      return [Number(point.lng), Number(point.lat)];
+    }
+    if (Number.isFinite(Number(point?.longitude)) && Number.isFinite(Number(point?.latitude))) {
+      return [Number(point.longitude), Number(point.latitude)];
+    }
+    return null;
+  };
+
+  const buildPointHighlightState = (point) => {
+    if (!point) return null;
+    return {
+      selectedSearchResult: {
+        id: point.id,
+        slug: point?.slug || point?.spot_slug || identifier,
+        name: point?.name || point?.title || '',
+        description: point?.description || '',
+        address: point?.address || point?.location_name || point?.province || '',
+        coordinates: getPointCoordinates(point),
+        raw: point,
+      },
+    };
+  };
+
+  const buildRouteHighlightState = (tour) => {
+    const rawStops = Array.isArray(tour?.stops)
+      ? tour.stops
+      : Array.isArray(tour?.tour_stops)
+        ? tour.tour_stops
+        : [];
+
+    const points = rawStops
+      .map((stop, index) => {
+        const coordinates = getPointCoordinates(stop);
+        if (!coordinates) return null;
+        return {
+          id: stop?.id ?? `${tour?.id || 'tour'}-${index}`,
+          slug: stop?.slug || stop?.spot_slug || null,
+          name: stop?.name || stop?.title || '',
+          description: stop?.description || '',
+          coordinates,
+          raw: stop,
+        };
+      })
+      .filter(Boolean);
+
+    if (points.length < 2) return null;
+
+    return {
+      highlightedRoute: {
+        type: 'tour',
+        tourId: tour?.id || null,
+        tourSlug: tour?.slug || null,
+        tourName: tour?.name || '',
+        vehicle: 'driving',
+        points,
+        meta: {
+          tour_name: tour?.name || '',
+          total_stops: points.length,
+        },
+      },
+    };
+  };
+
+  const handleOpenPointDetail = (point) => {
+    const pointSlug = point.slug;
+
+    if (!pointSlug) return;
+    navigate(`/tourism-point/point/${encodeURIComponent(String(pointSlug))}`);
+  };
+
+  const handleOpenPointOnMap = (point) => {
+    const highlightState = buildPointHighlightState(point);
+    navigate('/map', highlightState ? { state: highlightState } : undefined);
+  };
+
+  const handleOpenTourOnMap = (tour) => {
+    const routeState = buildRouteHighlightState(tour);
+    if (routeState) {
+      navigate('/map', { state: routeState });
+      return;
+    }
+
+    const fallbackState = buildPointHighlightState(tour);
+    navigate('/map', fallbackState ? { state: fallbackState } : undefined);
+  };
+
   return (
     <RootLayout>
       <div className="bg-background space-y-6 py-6">
-        {/* ─── Hero + Sidebar ─── */}
+        {/* Hero + Sidebar */}
         <section className="w-full">
           <div className={container}>
             <div className="grid gap-5 lg:grid-cols-[1.55fr_1fr]">
@@ -258,33 +376,33 @@ export default function HomePageContent() {
                 }}
               >
                 <div>
-                  <span className="mb-5 inline-flex rounded-full border border-white/35 bg-white/16 px-3.5 py-2 text-sm font-bold backdrop-blur-sm">
+                  <span className="mb-5 inline-flex rounded-full border border-white/35 bg-white/16 px-3.5 py-2 text-base font-bold backdrop-blur-sm">
                     Cổng thông tin du lịch tích hợp bản đồ GIS, thời tiết, VR360 và gợi ý hành trình
                   </span>
                   <h1 className="max-w-3xl text-[clamp(30px,4vw,48px)] leading-[1.16] font-black tracking-[-1.4px]">
                     Khám phá điểm đến đẹp hơn, trực quan hơn và dễ chọn hành trình hơn.
                   </h1>
-                  <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base">
+                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/90 sm:text-base">
                     Trang chủ được thiết kế theo hướng sáng, rõ và giàu thông tin thực tế: điểm đến,
                     sự kiện, tour, ẩm thực, OCOP, bản đồ số và nội dung cộng đồng.
                   </p>
                   <div className="mt-6 flex flex-wrap gap-3">
                     <Button
-                      className="h-11 rounded-full px-5 font-bold shadow-md"
+                      className={`h-11 rounded-full px-5 font-bold shadow-md ${gradientHoverClass}`}
                       onClick={() => navigate('/map')}
                     >
                       Khám phá bản đồ GIS
                     </Button>
                     <Button
                       variant="quinary"
-                      className="h-11 rounded-full px-5 font-bold shadow-md"
+                      className={`h-11 rounded-full px-5 font-bold shadow-md ${gradientHoverClass}`}
                       onClick={() => navigate('/vr360')}
                     >
                       Trải nghiệm VR360
                     </Button>
                     <Button
                       variant="gold"
-                      className="h-11 rounded-full px-5 font-bold shadow-md"
+                      className={`h-11 rounded-full px-5 font-bold shadow-md ${gradientHoverClass}`}
                       onClick={() => navigate('/tourism-point')}
                     >
                       Xem điểm nổi bật
@@ -306,7 +424,7 @@ export default function HomePageContent() {
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => setTimeout(() => setIsSearchFocused(false), 120)}
                         placeholder="Ví dụ: Tràng An, Hoa Lư, Bái Đính..."
-                        className="h-auto border-0 bg-transparent py-0 pr-7 pl-6 text-sm font-semibold text-[#22364d] shadow-none focus-visible:ring-0"
+                        className="h-auto border-0 bg-transparent py-0 pr-7 pl-6 text-base font-semibold text-[#22364d] shadow-none focus-visible:ring-0"
                       />
                       {keyword && (
                         <Button
@@ -329,7 +447,7 @@ export default function HomePageContent() {
                             <LoadingInline size="small" />
                           </div>
                         ) : homeSearchResults.length === 0 ? (
-                          <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-sm">
+                          <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-base">
                             <MapPin className="h-5 w-5 opacity-70" />
                             <p>
                               {t('mapPage.toolbar.searchNoResult', {
@@ -350,10 +468,10 @@ export default function HomePageContent() {
                               >
                                 <MapPin className="text-primary h-4 w-4 shrink-0" />
                                 <div className="min-w-0 flex-1 text-left">
-                                  <p className="text-foreground truncate text-sm font-medium">
+                                  <p className="text-foreground truncate text-base font-medium">
                                     {item.name}
                                   </p>
-                                  <p className="text-muted-foreground truncate text-sm">
+                                  <p className="text-muted-foreground truncate text-base">
                                     {item.address ||
                                       t('mapPage.destination.noAddress', {
                                         defaultValue: 'No address',
@@ -377,7 +495,7 @@ export default function HomePageContent() {
                         className="min-h-[86px] rounded-[18px] p-4 shadow-md"
                         style={{ background: statGradients[i % statGradients.length] }}
                       >
-                        <span className="text-sm font-bold text-white/92">{stat.label}</span>
+                        <span className="text-base font-bold text-white/92">{stat.label}</span>
                         <strong className="mt-1.5 block text-[23px] font-black text-white">
                           {stat.value}
                         </strong>
@@ -394,10 +512,10 @@ export default function HomePageContent() {
                   <SectionLabel>Thời tiết nhanh</SectionLabel>
                   <div className="mt-3 flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-foreground text-xl font-bold">
+                      <h2 className="text-foreground text-2xl font-bold">
                         {weather?.name || 'Thành Phố Ninh Bình'}
                       </h2>
-                      <p className="text-muted-foreground mt-1 text-sm">{weatherSummary}</p>
+                      <p className="text-muted-foreground mt-1 text-base">{weatherSummary}</p>
                     </div>
                     <div className="text-primary shrink-0 text-[44px] font-black">
                       {weather ? formatTemperature(weather?.main?.temp) : '--'}
@@ -405,27 +523,32 @@ export default function HomePageContent() {
                   </div>
                   <div className="mt-4 grid gap-2">
                     <div className="bg-primary/8 flex items-center justify-between rounded-[14px] px-3.5 py-2.5">
-                      <span className="text-primary/80 flex items-center gap-2 text-sm font-semibold">
-                        <Wind size={14} /> Gió
+                      <span className="text-primary flex items-center gap-2 text-base font-bold opacity-80">
+                        <Droplets size={14} /> Độ ẩm
                       </span>
-                      <strong className="text-primary text-sm">
-                        {weather ? formatWindSpeedKph(weather?.wind?.speed) : '--'}
-                      </strong>
-                    </div>
-                    <div className="bg-gold/10 flex items-center justify-between rounded-[14px] px-3.5 py-2.5">
-                      <span className="text-gold flex items-center gap-2 text-sm font-semibold opacity-80">
-                        <Sun size={14} /> AQI
-                      </span>
-                      <strong className="text-gold text-sm">
-                        {weatherOverview?.aqiValue ?? '--'} · {t(aqiMeta.labelKey)}
+                      <strong className="text-primary text-base">
+                        {weather ? formatHumidity(weather?.main?.humidity) : '--'}
                       </strong>
                     </div>
                     <div className="bg-secondary/8 flex items-center justify-between rounded-[14px] px-3.5 py-2.5">
-                      <span className="text-secondary flex items-center gap-2 text-sm font-semibold opacity-80">
-                        <CloudRain size={14} /> Độ ẩm
+                      <span className="text-secondary/80 flex items-center gap-2 text-base font-bold">
+                        <Wind size={14} /> Gió
                       </span>
-                      <strong className="text-secondary text-sm">
-                        {weather ? formatHumidity(weather?.main?.humidity) : '--'}
+                      <strong className="text-secondary text-base">
+                        {weather ? formatWindSpeedKph(weather?.wind?.speed) : '--'}
+                      </strong>
+                    </div>
+                    <div className="bg-tertiary/10 flex items-center justify-between rounded-[14px] px-3.5 py-2.5">
+                      <span className="text-tertiary flex items-center gap-2 text-base font-bold opacity-80">
+                        <img
+                          src={aqiMeta.iconSrc}
+                          alt={t(aqiMeta.labelKey)}
+                          className="h-3.5 w-3.5 object-contain"
+                        />
+                        AQI
+                      </span>
+                      <strong className="text-tertiary text-base">
+                        {weatherOverview?.aqiValue ?? '--'} · {t(aqiMeta.labelKey)}
                       </strong>
                     </div>
                   </div>
@@ -443,7 +566,7 @@ export default function HomePageContent() {
                         <span className="bg-tertiary relative inline-flex h-2 w-2 rounded-full" />
                       </span>
                     </div>
-                    <h2 className="text-foreground mt-2 text-xl font-bold">
+                    <h2 className="text-foreground mt-2 text-2xl font-bold">
                       Sự kiện và lễ hội sắp diễn ra
                     </h2>
                     <div className="mt-4 grid gap-2">
@@ -452,8 +575,8 @@ export default function HomePageContent() {
                           key={`${event.title}-${i}`}
                           className={`${eventColors[i % eventColors.length]} flex flex-col gap-1 rounded-[16px] px-3.5 py-2.5`}
                         >
-                          <span className="text-sm font-semibold">{event.title}</span>
-                          <strong className="text-muted-foreground text-sm font-semibold">
+                          <span className="text-base font-semibold">{event.title}</span>
+                          <strong className="text-muted-foreground text-base font-semibold">
                             {event.time}
                           </strong>
                         </div>
@@ -461,10 +584,10 @@ export default function HomePageContent() {
                     </div>
                     <Button
                       variant="outline"
-                      className="border-tertiary/40 text-tertiary hover:bg-tertiary/8 mt-4 w-full rounded-xl"
-                      onClick={() => navigate('/tourism-point')}
+                      className={`border-tertiary/40 text-tertiary hover:bg-tertiary/8 mt-4 w-full rounded-xl ${gradientHoverClass}`}
+                      onClick={() => navigate('/festival')}
                     >
-                      Xem điểm liên quan
+                      Xem thêm các lễ hội
                     </Button>
                   </div>
                 </div>
@@ -472,7 +595,7 @@ export default function HomePageContent() {
                 {/* Quick suggestions */}
                 <div className={`${card} p-5`}>
                   <SectionLabel>Gợi ý nhanh</SectionLabel>
-                  <h2 className="text-foreground mt-1 text-xl font-bold">
+                  <h2 className="text-foreground mt-1 text-2xl font-bold">
                     Điểm nên xem trước khi đi
                   </h2>
                   <div className="mt-4 grid gap-2">
@@ -483,10 +606,12 @@ export default function HomePageContent() {
                           key={item.id}
                           type="button"
                           className="bg-muted/40 hover:bg-muted flex h-[42px] w-full items-center justify-between rounded-[14px] px-3.5 transition-colors"
-                          onClick={() => navigate('/tourism-point')}
+                          onClick={() => handleOpenPointDetail(item)}
                         >
-                          <span className="text-foreground text-sm font-semibold">{item.name}</span>
-                          <span className={`text-sm font-bold ${colors[i % colors.length]}`}>
+                          <span className="text-foreground text-base font-semibold">
+                            {item.name}
+                          </span>
+                          <span className={`text-base font-bold ${colors[i % colors.length]}`}>
                             Chi tiết
                           </span>
                         </button>
@@ -499,7 +624,7 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── Promo Banner ─── */}
+        {/* Promo Banner */}
         <section className="w-full">
           <div className={container}>
             <div
@@ -511,18 +636,20 @@ export default function HomePageContent() {
             >
               <div className="flex items-center gap-4">
                 <div
-                  className="flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-[17px] text-xl text-white shadow-md"
+                  className="flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-[17px] text-2xl text-white shadow-md"
                   style={{ background: 'linear-gradient(135deg, #0b66c3, #0ea5e9, #10b981)' }}
                 >
                   <CalendarDays size={22} />
                 </div>
                 <div>
                   <p className="text-foreground font-bold">{PROMO_BANNER.title}</p>
-                  <p className="text-muted-foreground mt-0.5 text-sm">{PROMO_BANNER.description}</p>
+                  <p className="text-muted-foreground mt-0.5 text-base">
+                    {PROMO_BANNER.description}
+                  </p>
                 </div>
               </div>
               <Button
-                className="h-11 rounded-full px-5 font-bold"
+                className={`h-11 rounded-full px-5 font-bold ${gradientHoverClass}`}
                 onClick={() => navigate(PROMO_BANNER.path)}
               >
                 {PROMO_BANNER.cta}
@@ -531,15 +658,15 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── Quick Access Modules ─── */}
+        {/* Quick Access Modules */}
         <section className="w-full">
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Truy cập nhanh</SectionLabel>
-              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+              <h2 className="text-foreground mt-0.5 text-2xl font-bold">
                 Các module chính của hệ thống
               </h2>
-              <p className="text-muted-foreground mt-2 text-sm">
+              <p className="text-muted-foreground mt-2 text-base">
                 Thiết kế lại để người dùng vào trang chủ là thấy ngay bản đồ, VR360, lịch trình,
                 dịch vụ và OCOP.
               </p>
@@ -564,11 +691,11 @@ export default function HomePageContent() {
                           {item.icon === 'service' && <Sun size={15} />}
                           {item.icon === 'ocop' && <ArrowRight size={15} />}
                         </span>
-                        <span className="text-foreground truncate text-sm font-black">
+                        <span className="text-foreground truncate text-base font-black">
                           {item.title}
                         </span>
                       </div>
-                      <p className="text-muted-foreground line-clamp-2 text-sm">
+                      <p className="text-muted-foreground line-clamp-2 text-base">
                         {item.description}
                       </p>
                     </button>
@@ -579,15 +706,15 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── Featured Destinations ─── */}
+        {/* Featured Destinations */}
         <section className="w-full">
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Gợi ý nổi bật</SectionLabel>
-              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+              <h2 className="text-foreground mt-0.5 text-2xl font-bold">
                 Điểm đến tiêu biểu đang được quan tâm
               </h2>
-              <p className="text-muted-foreground mt-2 text-sm">
+              <p className="text-muted-foreground mt-2 text-base">
                 Kết hợp hình ảnh lớn, thẻ trạng thái tải và nút hành động nhanh để đi từ trang chủ
                 đến bản đồ hoặc trang chi tiết.
               </p>
@@ -618,26 +745,26 @@ export default function HomePageContent() {
                       )}
                     </div>
                     <div className="p-4">
-                      <p className="text-muted-foreground mb-1.5 text-sm font-semibold">
+                      <p className="text-muted-foreground mb-1.5 text-base font-semibold">
                         {item.subtitle}
                       </p>
-                      <h3 className="text-foreground text-base font-black">{item.name}</h3>
-                      <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
+                      <h3 className="text-foreground text-xl font-bold">{item.name}</h3>
+                      <p className="text-muted-foreground mt-2 line-clamp-2 text-base">
                         {item.description}
                       </p>
                       <div className="mt-4 flex gap-2">
                         <Button
                           size="sm"
-                          className="rounded-lg"
-                          onClick={() => navigate('/tourism-point')}
+                          className={`rounded-lg ${gradientHoverClass}`}
+                          onClick={() => handleOpenPointDetail(item)}
                         >
                           Chi tiết
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="rounded-lg"
-                          onClick={() => navigate('/map')}
+                          className={`rounded-lg ${gradientHoverClass}`}
+                          onClick={() => handleOpenPointOnMap(item)}
                         >
                           Bản đồ
                         </Button>
@@ -650,14 +777,14 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── News + Tour + Itinerary ─── */}
+        {/* News + Tour + Itinerary */}
         <section className="w-full">
           <div className={container}>
             <div className="grid gap-5 lg:grid-cols-2">
               {/* News */}
               <div className={`${card} p-6`}>
                 <SectionLabel>Tin tức ngắn</SectionLabel>
-                <h2 className="text-foreground mt-0.5 text-2xl font-black">Thông tin mới</h2>
+                <h2 className="text-foreground mt-0.5 text-2xl font-bold">Thông tin mới</h2>
                 <div className="mt-5 grid gap-0">
                   {newsList.map((item, i) => (
                     <article
@@ -671,10 +798,10 @@ export default function HomePageContent() {
                         <span className="mb-1.5 inline-block rounded-full border border-[#a9bdd2] px-2.5 py-0.5 text-xs font-bold text-[#52647a]">
                           {formatNewsDate(item.published_at || item.created_at)}
                         </span>
-                        <h4 className="text-foreground line-clamp-2 text-sm font-bold">
+                        <h4 className="text-foreground line-clamp-2 text-xl font-bold">
                           {item.title}
                         </h4>
-                        <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+                        <p className="text-muted-foreground mt-1 line-clamp-2 text-base">
                           {item.summary}
                         </p>
                       </div>
@@ -700,19 +827,19 @@ export default function HomePageContent() {
                       />
                     </div>
                   )}
-                  <h3 className="text-foreground mt-3 line-clamp-2 text-base font-black">
+                  <h3 className="text-foreground mt-3 line-clamp-2 text-xl font-bold">
                     {featuredTour
                       ? featuredTour.name || featuredTour.name_vi || 'Tour gợi ý'
-                      : 'Tour Tràng An Classic – Đi Thuyền Qua 3 Tuyến Hang Động'}
+                      : 'Tour Tràng An Classic - Đi Thuyền Qua 3 Tuyến Hang Động'}
                   </h3>
-                  <p className="text-muted-foreground mt-2 line-clamp-3 text-sm">
+                  <p className="text-muted-foreground mt-2 line-clamp-3 text-base">
                     {featuredTour
                       ? featuredTour.description_vi || featuredTour.description_en || ''
                       : 'Khám phá Quần thể Di Tích Tràng An qua 3 tuyến du lịch nổi tiếng.'}
                   </p>
                   <div className="mt-4 grid grid-cols-3 gap-2.5">
                     <div className="bg-muted/30 rounded-[14px] border border-[#aac0d7] p-3">
-                      <p className="text-foreground text-sm font-black">
+                      <p className="text-foreground text-base font-black">
                         {featuredTour?.duration_days
                           ? `${featuredTour.duration_days} ngày`
                           : '1 ngày'}
@@ -720,7 +847,7 @@ export default function HomePageContent() {
                       <p className="text-muted-foreground mt-0.5 text-xs">lịch trình</p>
                     </div>
                     <div className="bg-muted/30 rounded-[14px] border border-[#aac0d7] p-3">
-                      <p className="text-foreground text-sm font-black">
+                      <p className="text-foreground text-base font-black">
                         {featuredTour?.price_from_vnd
                           ? formatVND(Number(featuredTour.price_from_vnd))
                           : 'Liên hệ'}
@@ -728,7 +855,7 @@ export default function HomePageContent() {
                       <p className="text-muted-foreground mt-0.5 text-xs">từ / khách</p>
                     </div>
                     <div className="bg-muted/30 rounded-[14px] border border-[#aac0d7] p-3">
-                      <p className="text-foreground text-sm font-black">
+                      <p className="text-foreground text-base font-black">
                         {featuredTour?.rating_avg
                           ? `⭐ ${parseFloat(featuredTour.rating_avg).toFixed(1)}`
                           : '⭐ --'}
@@ -740,14 +867,17 @@ export default function HomePageContent() {
                       </p>
                     </div>
                   </div>
-                  <Button className="mt-4 w-full rounded-xl" onClick={() => navigate('/map')}>
+                  <Button
+                    className={`mt-4 w-full rounded-xl ${gradientHoverClass}`}
+                    onClick={() => handleOpenTourOnMap(featuredTour)}
+                  >
                     Xem tuyến trên bản đồ
                   </Button>
                 </div>
 
                 <div className={`${card} p-6`}>
                   <SectionLabel>Lịch trình cá nhân</SectionLabel>
-                  <h2 className="text-foreground mt-0.5 text-xl font-black">
+                  <h2 className="text-foreground mt-0.5 text-2xl font-bold">
                     Lên kế hoạch chuyến đi trong 30 giây
                   </h2>
                   <div className="mt-4 grid gap-2">
@@ -756,8 +886,8 @@ export default function HomePageContent() {
                         key={`${item.time}-${item.activity}`}
                         className="bg-muted/40 flex h-[42px] items-center justify-between rounded-[14px] px-3.5"
                       >
-                        <span className="text-foreground text-sm">{item.activity}</span>
-                        <strong className="text-foreground text-sm">{item.time}</strong>
+                        <span className="text-foreground text-base">{item.activity}</span>
+                        <strong className="text-foreground text-base">{item.time}</strong>
                       </div>
                     ))}
                   </div>
@@ -767,7 +897,7 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── Food Section ─── */}
+        {/* Food Section */}
         <section className="w-full">
           <div className={container}>
             <div className={`${card} overflow-hidden`}>
@@ -781,10 +911,10 @@ export default function HomePageContent() {
                 />
                 <div className="p-6 sm:p-8">
                   <SectionLabel>Ẩm thực & trải nghiệm địa phương</SectionLabel>
-                  <h2 className="text-foreground mt-0.5 text-xl font-black">
+                  <h2 className="text-foreground mt-0.5 text-2xl font-bold">
                     Không chỉ xem bản đồ, người dùng còn có thể khám phá ẩm thực đặc sản.
                   </h2>
-                  <p className="text-muted-foreground mt-2 text-sm">
+                  <p className="text-muted-foreground mt-2 text-base">
                     Khối này được thiết kế lớn để tăng cảm hứng du lịch: món nổi bật, địa điểm ăn
                     uống, từ khóa tìm nhanh và liên kết dịch vụ ngay trong trang chủ.
                   </p>
@@ -792,7 +922,7 @@ export default function HomePageContent() {
                     {FOOD_TAGS.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full border border-[#9db8d2] bg-white px-3 py-1.5 text-sm font-bold text-[#42566f]"
+                        className="rounded-full border border-[#9db8d2] bg-white px-3 py-1.5 text-base font-bold text-[#42566f]"
                       >
                         {tag}
                       </span>
@@ -804,8 +934,8 @@ export default function HomePageContent() {
                         key={item.label}
                         className="bg-muted/40 flex h-[42px] items-center justify-between rounded-[14px] px-3.5"
                       >
-                        <span className="text-foreground text-sm">{item.label}</span>
-                        <strong className="text-foreground text-sm">{item.value}</strong>
+                        <span className="text-foreground text-base">{item.label}</span>
+                        <strong className="text-foreground text-base">{item.value}</strong>
                       </div>
                     ))}
                   </div>
@@ -815,15 +945,13 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── Vouchers ─── */}
+        {/* Vouchers */}
         <section className="w-full" id="services">
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Doanh nghiệp du lịch</SectionLabel>
-              <h2 className="text-foreground mt-0.5 text-2xl font-black">
-                Voucher đang có gần bạn
-              </h2>
-              <p className="text-muted-foreground mt-2 text-sm">
+              <h2 className="text-foreground mt-0.5 text-2xl font-bold">Voucher đang có gần bạn</h2>
+              <p className="text-muted-foreground mt-2 text-base">
                 Voucher ưu đãi từ các doanh nghiệp du lịch trong khu vực.
               </p>
 
@@ -842,7 +970,7 @@ export default function HomePageContent() {
                           <p className="text-muted-foreground truncate text-xs">
                             {voucher.business_name}
                           </p>
-                          <h3 className="text-foreground mt-0.5 line-clamp-1 text-sm font-black">
+                          <h3 className="text-foreground mt-0.5 line-clamp-1 text-xl font-bold">
                             {voucher.title_vi}
                           </h3>
                         </div>
@@ -851,7 +979,7 @@ export default function HomePageContent() {
                         </span>
                       </div>
                       <div className="p-4">
-                        <div className="text-primary mb-3 rounded-[10px] border border-[#9db8d2] bg-[#f8fbfe] py-2 text-center font-mono text-sm font-black tracking-wider">
+                        <div className="text-primary mb-3 rounded-[10px] border border-[#9db8d2] bg-[#f8fbfe] py-2 text-center font-mono text-base font-black tracking-wider">
                           {voucher.code}
                         </div>
                         <div className="grid gap-1.5">
@@ -875,7 +1003,7 @@ export default function HomePageContent() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="mt-4 w-full rounded-[10px]"
+                          className={`mt-4 w-full rounded-[10px] ${gradientHoverClass}`}
                           onClick={() => navigate('/map')}
                         >
                           Xem doanh nghiệp trên bản đồ
@@ -885,7 +1013,7 @@ export default function HomePageContent() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground py-6 text-center text-sm">
+                <p className="text-muted-foreground py-6 text-center text-base">
                   Không có voucher nào trong khu vực hiện tại.
                 </p>
               )}
@@ -893,15 +1021,15 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── OCOP Products ─── */}
+        {/* OCOP Products */}
         <section className="w-full" id="ocop">
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Sản phẩm OCOP</SectionLabel>
-              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+              <h2 className="text-foreground mt-0.5 text-2xl font-bold">
                 Gian hàng địa phương tích hợp trên trang chủ
               </h2>
-              <p className="text-muted-foreground mt-2 text-sm">
+              <p className="text-muted-foreground mt-2 text-base">
                 Giới thiệu sản phẩm, chứng nhận, địa phương và liên kết đặt hàng ngay trong trang
                 chủ.
               </p>
@@ -923,28 +1051,28 @@ export default function HomePageContent() {
                       />
                     </div>
                     <div className="px-4 pb-4">
-                      <div className="text-muted-foreground mb-2 flex items-center gap-2 text-sm">
+                      <div className="text-muted-foreground mb-2 flex items-center gap-2 text-base">
                         <span>{product.province_name || '--'}</span>
                         {product.star_rating && (
                           <span>{'⭐'.repeat(Number(product.star_rating))}</span>
                         )}
                       </div>
-                      <h3 className="text-foreground text-base font-black">{product.name}</h3>
-                      <p className="text-muted-foreground mt-2 line-clamp-3 text-sm">
+                      <h3 className="text-foreground truncate text-xl font-bold">{product.name}</h3>
+                      <p className="text-muted-foreground mt-2 line-clamp-3 text-base">
                         {product.description || ''}
                       </p>
                       <div className="mt-3 flex items-center justify-between">
-                        <strong className="text-foreground text-sm">
+                        <strong className="text-foreground text-base">
                           {product.price_vnd ? formatVND(Number(product.price_vnd)) : '--'}
                         </strong>
                         {product.unit && (
-                          <span className="text-muted-foreground text-sm">/ {product.unit}</span>
+                          <span className="text-muted-foreground text-base">/ {product.unit}</span>
                         )}
                       </div>
                       <div className="mt-3 flex gap-2">
                         <Button
                           size="sm"
-                          className="rounded-[10px]"
+                          className={`rounded-[10px] ${gradientHoverClass}`}
                           onClick={() => navigate('/ocop')}
                         >
                           Xem sản phẩm
@@ -952,7 +1080,7 @@ export default function HomePageContent() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="rounded-[10px]"
+                          className={`rounded-[10px] ${gradientHoverClass}`}
                           onClick={() => navigate('/ocop')}
                         >
                           Liên hệ
@@ -966,15 +1094,15 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── Vlog & Blog ─── */}
+        {/* Vlog & Blog */}
         <section className="w-full">
           <div className={container}>
             <div className={`${card} p-6`}>
               <SectionLabel>Vlog & chia sẻ</SectionLabel>
-              <h2 className="text-foreground mt-0.5 text-2xl font-black">
+              <h2 className="text-foreground mt-0.5 text-2xl font-bold">
                 Câu chuyện du lịch từ cộng đồng
               </h2>
-              <p className="text-muted-foreground mt-2 text-sm">
+              <p className="text-muted-foreground mt-2 text-base">
                 Tăng chiều sâu nội dung cộng đồng với trải nghiệm thực tế, mẹo di chuyển và gợi ý
                 lên lịch trình.
               </p>
@@ -994,9 +1122,11 @@ export default function HomePageContent() {
                       }}
                     />
                     <div className="p-4">
-                      <p className="text-muted-foreground mb-2 text-sm">Tác giả: {story.author}</p>
-                      <h3 className="text-foreground text-base font-black">{story.title}</h3>
-                      <p className="text-muted-foreground mt-2 text-sm">{story.description}</p>
+                      <p className="text-muted-foreground mb-2 text-base">
+                        Tác giả: {story.author}
+                      </p>
+                      <h3 className="text-foreground text-xl font-bold">{story.title}</h3>
+                      <p className="text-muted-foreground mt-2 text-base">{story.description}</p>
                     </div>
                   </article>
                 ))}
@@ -1005,10 +1135,10 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* ─── Footer ─── */}
+        {/* Footer */}
         <section className="w-full pb-6">
           <div className={container}>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#9db8d2] pt-5 text-sm text-[#33506d]">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#9db8d2] pt-5 text-base text-[#33506d]">
               <p>Du lịch số Ninh Bình</p>
               <div className="flex items-center gap-1">
                 {[
@@ -1020,7 +1150,7 @@ export default function HomePageContent() {
                     <Button
                       type="button"
                       variant="link"
-                      className="text-primary h-auto p-0 text-sm font-bold hover:underline"
+                      className={`text-primary h-auto p-0 text-base font-bold hover:underline ${gradientHoverClass}`}
                       onClick={() => navigate(link.path)}
                     >
                       {link.label}

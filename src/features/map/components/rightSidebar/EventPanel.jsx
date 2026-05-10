@@ -34,7 +34,7 @@ import { useLanguageStore } from '@/stores/useLanguageStore.js';
 
 function FestivalRowSkeleton() {
   return (
-    <div className="space-y-2 rounded-lg border p-3">
+    <div className="space-y-2 rounded-lg border border-[var(--event-panel-border)] bg-[var(--event-panel-card-bg)] p-3">
       <Skeleton className="h-4 w-2/3" />
       <Skeleton className="h-3 w-1/2" />
       <Skeleton className="h-3 w-5/6" />
@@ -158,8 +158,8 @@ export default function EventPanel() {
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2">
+    <div className="space-y-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+      <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
           <p className="typo-section-title text-foreground">
             {t('mapPage.eventPanel.title', { defaultValue: 'Lễ hội & Sự kiện' })}
@@ -177,7 +177,7 @@ export default function EventPanel() {
           type="button"
           size="sm"
           variant="ghost"
-          className="typo-meta h-7"
+          className="typo-meta text-primary-soft-foreground h-7 hover:bg-primary-soft"
           onClick={resetFestivalFilters}
         >
           {t('mapPage.eventPanel.reset', { defaultValue: 'Đặt lại' })}
@@ -186,14 +186,14 @@ export default function EventPanel() {
 
       <div className="space-y-2">
         <div className="relative">
-          <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
+          <Search className="text-primary-soft-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
             value={filters.search}
             onChange={(event) => setFestivalFilters({ search: event.target.value, page: 1 })}
             placeholder={t('mapPage.eventPanel.searchPlaceholder', {
               defaultValue: 'Tìm tên lễ hội...',
             })}
-            className="h-9 pr-2 pl-8 text-sm"
+            className="h-9 border-[var(--event-panel-border)] bg-[var(--event-panel-control-bg)] pr-2 pl-8 text-sm"
           />
         </div>
 
@@ -202,7 +202,7 @@ export default function EventPanel() {
             value={filters.festival_type}
             onValueChange={(value) => setFestivalFilters({ festival_type: value, page: 1 })}
           >
-            <SelectTrigger className="h-9 w-full text-sm">
+            <SelectTrigger className="h-9 w-full border-[var(--event-panel-border)] bg-[var(--event-panel-control-bg)] text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -218,7 +218,7 @@ export default function EventPanel() {
             type="button"
             size="sm"
             variant={filters.upcoming ? 'default' : 'outline'}
-            className="h-9"
+            className="h-9 border-[var(--event-panel-border)]"
             onClick={() => setFestivalFilters({ upcoming: !filters.upcoming, page: 1 })}
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -234,13 +234,13 @@ export default function EventPanel() {
           ))}
         </div>
       ) : isError ? (
-        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
+        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
           {t('mapPage.eventPanel.error', {
             defaultValue: 'Không thể tải danh sách sự kiện từ hệ thống.',
           })}
         </div>
       ) : festivals.length === 0 ? (
-        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
+        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
           {t('mapPage.eventPanel.empty', {
             defaultValue: 'Không có sự kiện phù hợp với bộ lọc hiện tại.',
           })}
@@ -260,8 +260,8 @@ export default function EventPanel() {
                 className={cn(
                   'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
                   isActive
-                    ? 'border-primary/60 bg-primary/5'
-                    : 'bg-linear-to-b from-card to-muted/10 hover:bg-muted/40'
+                    ? 'border-[var(--event-panel-active-border)] bg-[var(--event-panel-active-bg)]'
+                    : 'border-[var(--event-panel-border)] bg-[var(--event-panel-card-bg)] hover:bg-[var(--event-panel-card-hover-bg)]'
                 )}
               >
                 {cover ? (
@@ -282,20 +282,23 @@ export default function EventPanel() {
                       {festival.name}
                     </h4>
                     {festival.festival_type && (
-                      <Badge variant="outline" className="shrink-0">
+                      <Badge
+                        variant="outline"
+                        className="border-[var(--event-panel-chip-border)] bg-[var(--event-panel-chip-bg)] text-[var(--event-panel-chip-fg)] shrink-0"
+                      >
                         {festival.festival_type}
                       </Badge>
                     )}
                   </div>
 
                   <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
-                    <CalendarDays className="h-3.5 w-3.5 shrink-0" />
+                    <CalendarDays className="text-tertiary h-3.5 w-3.5 shrink-0" />
                     {formatFestivalDateRange(festival.start_date, festival.end_date, locale)}
                   </p>
 
                   {festival.location_name && (
                     <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      <MapPin className="text-secondary h-3.5 w-3.5 shrink-0" />
                       {festival.location_name}
                     </p>
                   )}
