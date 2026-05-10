@@ -605,11 +605,21 @@ export default function MapToolbarCard({
                   })}
                   className="text-sm"
                 />
-                {showEndSuggestions && (endSuggestions.length > 0 || isSearchingEnd) && (
+                {showEndSuggestions && endLocationInput.placeName.trim().length >= 2 && (
                   <div className="bg-popover absolute z-20 mt-1 w-full rounded-md border p-1 shadow-md">
-                    {isSearchingEnd ? (
+                    {isSearchingEnd ||
+                    endLocationInput.placeName.trim() !== debouncedEndLocation.trim() ? (
                       <div className="flex items-center justify-center px-2 py-2">
                         <LoadingInline size="small" color="muted" />
+                      </div>
+                    ) : endSuggestions.length === 0 ? (
+                      <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-4 text-sm">
+                        <MapPin className="h-4 w-4 opacity-70" />
+                        <p>
+                          {t('mapPage.toolbar.searchNoResult', {
+                            defaultValue: 'No matching destination found for current filters.',
+                          })}
+                        </p>
                       </div>
                     ) : (
                       endSuggestions.map((suggestion) => (

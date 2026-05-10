@@ -156,8 +156,9 @@ export function useCapacityWebSocket({ enabled = true } = {}) {
         return;
       }
 
-      const base = (env.apiBaseUrlBE || '').replace(/^http/, 'ws').replace(/\/$/, '');
-      const socket = new WebSocket(`${base}/ws?token=${token}`);
+      const base = env.wsUrl;
+      const socket = new WebSocket(`${base}?token=${token}`);
+
       socketRef.current = socket;
 
       if (!unmountedRef.current) setStatus('connecting');

@@ -1456,7 +1456,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/spots/map?page=1&limit=10?lat=20.25&lng=105.97&radius_km=10",
+              "raw": "{{baseUrl}}/spots/map?page=1&lng=105.97&radius_km=10&limit=10&lat=20.25&capacity=true",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1510,16 +1510,24 @@
                   "disabled": true
                 },
                 {
-                  "key": "limit",
-                  "value": "10?lat=20.25"
-                },
-                {
                   "key": "lng",
                   "value": "105.97"
                 },
                 {
                   "key": "radius_km",
                   "value": "10"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "lat",
+                  "value": "20.25"
+                },
+                {
+                  "key": "capacity",
+                  "value": "true"
                 }
               ]
             }
@@ -2632,6 +2640,44 @@
           "response": []
         },
         {
+          "name": "Cấu hình lượng du khách tối đa trong 1 điểm",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"max_capacity\": 2000,\r\n  \"alert_threshold_pct\": 80    // Tuỳ chọn, mặc định 80%\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/capacity/spots/:spotId/settings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "capacity",
+                "spots",
+                ":spotId",
+                "settings"
+              ],
+              "variable": [
+                {
+                  "key": "spotId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Ghi nhận lượng khách",
           "request": {
             "method": "POST",
@@ -2643,7 +2689,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"current_count\": 1200,\n  \"source\": \"sensor\"\n}"
+              "raw": "{\n  \"visitor_count\": 2222,\n  \"max_capacity\": 2000,\n  \"data_source\": \"realtime\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/capacity/spots/{{spotId}}/log",

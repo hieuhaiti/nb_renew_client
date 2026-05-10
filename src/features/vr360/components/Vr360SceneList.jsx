@@ -112,10 +112,20 @@ export default function Vr360SceneList({
   onSceneSelect,
 }) {
   const { t } = useTranslation();
+  const [carouselApi, setCarouselApi] = useState(null);
+
+  useEffect(() => {
+    if (!carouselApi || !Array.isArray(scenes) || scenes.length === 0) return;
+    if (!selectedSceneId) return;
+
+    const selectedIndex = scenes.findIndex((scene) => String(scene.id) === String(selectedSceneId));
+    if (selectedIndex < 0) return;
+    carouselApi.scrollTo(selectedIndex);
+  }, [carouselApi, scenes, selectedSceneId]);
 
   return (
     <Card>
-      <CardHeader className="pb-3">
+      <CardHeader>
         <CardTitle className="typo-section-title flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Video className="text-primary h-4 w-4" />
@@ -141,7 +151,7 @@ export default function Vr360SceneList({
         ) : scenes.length === 0 ? (
           <p className="text-muted-foreground typo-body">{t('vr360.no_scenes')}</p>
         ) : (
-          <Carousel opts={{ align: 'start' }} className="w-full px-8">
+          <Carousel setApi={setCarouselApi} opts={{ align: 'center' }} className="w-full px-8">
             <CarouselContent className="-ml-3">
               {scenes.map((scene) => (
                 <CarouselItem key={scene.id} className="basis-1/4 pl-3">

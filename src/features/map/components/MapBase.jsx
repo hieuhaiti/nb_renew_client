@@ -14,6 +14,7 @@ import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import {
   addOrUpdateSubcategoryLayer,
   addOrUpdateHighlightedRouteLayers,
+  applyCapacityUpdateToCollection,
   addTrafficFlowLayer,
   buildIncidentPopupHTML,
   clearHighlightedRouteLayers,
@@ -34,6 +35,7 @@ import { withBaseUrl } from '@/lib/utils';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
 import { useTrafficStore } from '@/features/map/store/useTrafficStore';
+import { useCapacityWebSocket } from '@/services/api/capacity/capacityService';
 
 mapboxgl.accessToken = env.mapboxToken;
 
@@ -115,6 +117,9 @@ export default function MapBaseArea() {
   });
 
   const prevRenderedSourceIdsRef = useRef(new Set());
+  const featureCollectionBySourceId = useRef(new Map());
+
+  const { data: wsCapacityData } = useCapacityWebSocket();
 
   const setSubcategoryLayersVisibility = (map, isVisible) => {
     if (!map) return;
@@ -265,6 +270,7 @@ export default function MapBaseArea() {
           iconUrl: icon?.iconUrl,
           iconImageId: icon?.iconImageId,
         });
+        featureCollectionBySourceId.current.set(sourceId, featureCollection);
 
         const shouldShowLayer = !(showOnlyHighlightedRoute && highlightedRoute);
         SUBCATEGORY_LAYER_SUFFIXES.forEach((suffix) => {
@@ -280,6 +286,7 @@ export default function MapBaseArea() {
     prevRenderedSourceIdsRef.current.forEach((sourceId) => {
       if (!currentSourceIds.has(sourceId)) {
         removeSubcategoryLayer(map, sourceId);
+        featureCollectionBySourceId.current.delete(sourceId);
       }
     });
 
@@ -492,6 +499,7 @@ export default function MapBaseArea() {
           iconUrl: icon?.iconUrl,
           iconImageId: icon?.iconImageId,
         });
+        featureCollectionBySourceId.current.set(sourceId, featureCollection);
 
         const shouldShowLayer = !(showOnlyHighlightedRoute && highlightedRoute);
         SUBCATEGORY_LAYER_SUFFIXES.forEach((suffix) => {
@@ -521,6 +529,28 @@ export default function MapBaseArea() {
   ]);
 
   useEffect(() => {
+    if (!wsCapacityData?.spot_id) return;
+    const map = mapRef.current.single;
+    if (!map || !mapsReady.single) return;
+
+    const spotId = String(wsCapacityData.spot_id);
+
+    featureCollectionBySourceId.current.forEach((fc, sourceId) => {
+      const hasSpot = fc.features.some(
+        (f) => String(f.properties?.spot_id ?? f.properties?.id ?? f.id ?? '') === spotId
+      );
+      if (!hasSpot) return;
+
+      const source = map.getSource(sourceId);
+      if (!source || typeof source.setData !== 'function') return;
+
+      const updated = applyCapacityUpdateToCollection(fc, wsCapacityData);
+      featureCollectionBySourceId.current.set(sourceId, updated);
+      source.setData(updated);
+    });
+  }, [wsCapacityData, mapsReady.single]);
+
+  useEffect(() => {
     return () => {
       const map = mapRef.current.single;
       if (!map) return;
@@ -529,6 +559,7 @@ export default function MapBaseArea() {
         removeSubcategoryLayer(map, sourceId);
       });
       prevRenderedSourceIdsRef.current.clear();
+      featureCollectionBySourceId.current.clear();
       clearHighlightedRouteLayers(map);
       removeTrafficFlowLayer(map);
       removeTrafficIncidentLayer(map);

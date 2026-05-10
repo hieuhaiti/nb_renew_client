@@ -5,6 +5,7 @@ function buildPointsSearchEndpoint({
   page = 1,
   limit = 8,
   category_id,
+  parent_category_id,
   is_featured,
   status = 'active',
   sortBy = 'created_at',
@@ -16,6 +17,7 @@ function buildPointsSearchEndpoint({
   if (limit) query.set('limit', String(limit));
   if (search) query.set('search', String(search));
   if (category_id != null) query.set('category_id', String(category_id));
+  if (parent_category_id != null) query.set('parent_category_id', String(parent_category_id));
   if (typeof is_featured === 'boolean') query.set('is_featured', String(is_featured));
   if (status) query.set('status', String(status));
   if (sortBy) query.set('sortBy', String(sortBy));
@@ -36,6 +38,7 @@ export function useSearchSpotsQuery(params = {}, options = {}) {
       params?.page || 1,
       params?.limit || 8,
       params?.category_id || null,
+      params?.parent_category_id || null,
       params?.status || 'active',
       params?.sortBy || 'created_at',
       params?.sortOrder || 'DESC',

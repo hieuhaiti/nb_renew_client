@@ -13,6 +13,7 @@
     "toggle_lang": "Switch language",
     "prev": "Previous",
     "next": "Next",
+    "reset": "Reset View",
     "all": "All",
     "yes": "Yes",
     "no": "No",
@@ -447,6 +448,20 @@
     "hotspots": "hotspots",
     "current_scene": "Currently viewing",
     "play_narration": "Play sample narration",
+    "scene_prev": "Previous scene",
+    "scene_next": "Next scene",
+    "reset_view": "Reset view",
+    "narration_play": "Play narration",
+    "narration_pause": "Pause narration",
+    "narration_mute": "Mute",
+    "narration_unmute": "Unmute",
+    "narration_autoplay": "Auto play",
+    "narration_autoplay_on": "Auto play is on",
+    "narration_autoplay_off": "Auto play is off",
+    "narration_volume": "Narration volume",
+    "mobile_vr_split": "VR glasses mode",
+    "mobile_vr_split_on": "VR glasses mode is on",
+    "mobile_vr_split_off": "VR glasses mode is off",
     "minimap_title": "Map location",
     "minimap_placeholder": "Minimap will appear here",
     "features": {
@@ -650,4 +665,3 @@
     }
   }
 }
-

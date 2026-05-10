@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import RootLayout from '@/components/layout/RootLayout';
@@ -9,11 +9,11 @@ import {
 } from '@/services/api/vr360/aframeSceneService';
 import Vr360SceneList from '../components/Vr360SceneList';
 import Vr360SceneViewer from '../components/Vr360SceneViewer';
-import Vr360MiniMap from '../components/Vr360MiniMap';
+import MiniMap from '../components/MiniMap';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Map, Volume2 } from 'lucide-react';
+import { ArrowLeft, Map } from 'lucide-react';
 import { withBaseUrl } from '@/lib/utils';
 
 function normalizeList(data) {
@@ -47,6 +47,7 @@ function getCoordinatesFromSpot(spot) {
     parseGeometryValue(spot?.geometry_data) ||
     parseGeometryValue(spot?.geometry) ||
     parseGeometryValue(spot?.geojson?.geometry) ||
+    parseGeometryValue(spot?.geojson) ||
     null;
 
   if (geometry?.type === 'Point' && Array.isArray(geometry?.coordinates)) {
@@ -98,6 +99,14 @@ export default function Vr360PageContent() {
     return scenes.find((s) => s.is_main) ?? scenes[0];
   }, [scenes, selectedSceneId]);
 
+  const selectedSceneIndex = useMemo(() => {
+    if (!selectedScene?.id) return -1;
+    return scenes.findIndex((scene) => String(scene.id) === String(selectedScene.id));
+  }, [scenes, selectedScene?.id]);
+
+  const canGoPrevScene = selectedSceneIndex > 0;
+  const canGoNextScene = selectedSceneIndex > -1 && selectedSceneIndex < scenes.length - 1;
+
   const hotspotsQuery = useGetAframeSceneHotspots({
     spotId: selectedSpotId,
     sceneId: selectedScene?.id,
@@ -105,12 +114,20 @@ export default function Vr360PageContent() {
   const hotspots = useMemo(() => normalizeList(hotspotsQuery.data), [hotspotsQuery.data]);
 
   const spotCoordinates = useMemo(() => getCoordinatesFromSpot(selectedSpot), [selectedSpot]);
+  const miniMapScenes = useMemo(
+    () =>
+      scenes.map((scene) => ({
+        ...scene,
+        coordinates: scene?.coordinates || spotCoordinates || undefined,
+      })),
+    [scenes, spotCoordinates]
+  );
 
   useEffect(() => {
     if (!scenes.length) return;
-    const selectedIndex = scenes.findIndex((s) => String(s.id) === String(selectedScene?.id));
-    const start = Math.max(0, selectedIndex - 1);
-    const end = Math.min(scenes.length - 1, selectedIndex + 2);
+    const start = Math.max(0, selectedSceneIndex - 1);
+    const end = Math.min(scenes.length - 1, selectedSceneIndex + 2);
+
     for (let i = start; i <= end; i += 1) {
       const raw = scenes[i]?.equirectangular_image_url;
       if (!raw) continue;
@@ -119,12 +136,17 @@ export default function Vr360PageContent() {
       img.decoding = 'async';
       img.src = src;
     }
-  }, [scenes, selectedScene?.id]);
+  }, [scenes, selectedSceneIndex]);
 
-  function handleSpotChange(spotId) {
-    setSelectedSpotId(spotId);
-    setSelectedSceneId(null);
-  }
+  const handleGoPrevScene = useCallback(() => {
+    if (!canGoPrevScene) return;
+    setSelectedSceneId(scenes[selectedSceneIndex - 1]?.id ?? null);
+  }, [canGoPrevScene, scenes, selectedSceneIndex]);
+
+  const handleGoNextScene = useCallback(() => {
+    if (!canGoNextScene) return;
+    setSelectedSceneId(scenes[selectedSceneIndex + 1]?.id ?? null);
+  }, [canGoNextScene, scenes, selectedSceneIndex]);
 
   return (
     <RootLayout>
@@ -154,56 +176,37 @@ export default function Vr360PageContent() {
                   <Badge variant="secondary" className="typo-badge">
                     {t('vr360.current_scene')}
                   </Badge>
-                  <Badge className="typo-badge">360°</Badge>
+                  <Badge className="typo-badge">{t('vr360.scene_badge')}</Badge>
                 </div>
                 <CardTitle className="typo-section-title mt-1 line-clamp-2">
-                  {selectedScene?.name ?? '—'}
+                  {selectedScene?.name ?? '-'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
                 <p className="text-muted-foreground typo-body line-clamp-4">
                   {selectedScene?.description ?? t('vr360.viewer_placeholder')}
                 </p>
-                <Button variant="outline" size="sm" disabled className="w-fit gap-2">
-                  <Volume2 className="h-4 w-4" />
-                  {t('vr360.play_narration')}
-                </Button>
               </CardContent>
             </Card>
 
-            <Card className="xl:flex-1 xl:flex xl:flex-col xl:min-h-0">
+            <Card className="xl:flex xl:min-h-0 xl:flex-1 xl:flex-col">
               <CardHeader className="pb-2">
                 <CardTitle className="typo-section-title flex items-center gap-2">
                   <Map className="text-primary h-4 w-4" />
                   {t('vr360.minimap_title')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="xl:flex xl:flex-col xl:flex-1 xl:min-h-0 space-y-2">
-                <div className="h-36 xl:h-auto xl:flex-1 xl:min-h-0 overflow-hidden rounded-lg">
-                  <Vr360MiniMap coordinates={spotCoordinates} />
+              <CardContent className="space-y-2 xl:flex xl:min-h-0 xl:flex-1 xl:flex-col">
+                <div className="h-36 overflow-hidden rounded-lg xl:h-auto xl:min-h-0 xl:flex-1">
+                  <MiniMap
+                    scenes={miniMapScenes}
+                    currentSceneIndex={Math.max(0, selectedSceneIndex)}
+                    onSelectScene={(nextScene) => {
+                      if (!nextScene?.id) return;
+                      setSelectedSceneId(nextScene.id);
+                    }}
+                  />
                 </div>
-                {spotCoordinates && (
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-foreground typo-body">
-                      {spotCoordinates[1].toFixed(5)}, {spotCoordinates[0].toFixed(5)}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="w-fit"
-                      onClick={() =>
-                        navigate(
-                          '/map',
-                          selectedSpot?.id ? { state: { spotId: selectedSpot.id } } : undefined
-                        )
-                      }
-                    >
-                      <Map className="h-4 w-4" />
-                      {t('vr360.back_to_map')}
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </aside>
@@ -213,6 +216,10 @@ export default function Vr360PageContent() {
               <Vr360SceneViewer
                 scene={selectedScene}
                 hotspots={hotspots}
+                onPrevScene={handleGoPrevScene}
+                onNextScene={handleGoNextScene}
+                canGoPrevScene={canGoPrevScene}
+                canGoNextScene={canGoNextScene}
                 className="h-full w-full"
               />
             </div>

@@ -44,12 +44,18 @@ export function useGetAllDataPoints({
 }
 
 export function useGetDataPointById({ point_id } = {}) {
-  return useApiQuery(['spots', 'detail', point_id], `spots/${point_id}`, {
+  return useApiQuery(['spots', 'detail', point_id], `spots/id/${point_id}`, {
     staleTime: 5 * 60 * 1000,
     enabled: !!point_id,
   });
 }
 
+export function useGetDataPointBySlug({ slug } = {}) {
+  return useApiQuery(['spots', 'detail', slug], `spots/${slug}`, {
+    staleTime: 5 * 60 * 1000,
+    enabled: !!slug,
+  });
+}
 export function useGetNearbyPoints({ lat, lng, radius_km = 1, limit, options = {} } = {}) {
   const enabled =
     typeof lat === 'number' &&

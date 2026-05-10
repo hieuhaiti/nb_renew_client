@@ -97,7 +97,7 @@ export default function MapPage() {
       search: debouncedKeyword,
       page: 1,
       limit: 8,
-      category_id: activeChip !== 'all' ? activeChip : undefined,
+      parent_category_id: activeChip !== 'all' ? activeChip : undefined,
       status: 'active',
       sortBy: 'created_at',
       sortOrder: 'DESC',
@@ -278,18 +278,26 @@ export default function MapPage() {
     });
 
     if (normalizedCategoryId != null) {
-      const chipValue = String(normalizedCategoryId);
-      setActiveChip(chipValue);
-      setCategoryID(normalizedCategoryId);
-      setCurrentTourismPointSettings({
-        selectedCategory: normalizedCategoryId,
-        selectedSubcategory: normalizedSubcategoryId ?? 0,
-        page: 1,
-      });
-      setPendingSearchSelection({
-        categoryId: normalizedCategoryId,
-        subcategoryId: normalizedSubcategoryId,
-      });
+      const isValidTopLevelCategory = categoryDropdown.some(
+        (cat) => String(cat.id) === String(normalizedCategoryId)
+      );
+
+      if (isValidTopLevelCategory) {
+        const chipValue = String(normalizedCategoryId);
+        setActiveChip(chipValue);
+        setCategoryID(normalizedCategoryId);
+        setCurrentTourismPointSettings({
+          selectedCategory: normalizedCategoryId,
+          selectedSubcategory: normalizedSubcategoryId ?? 0,
+          page: 1,
+        });
+        setPendingSearchSelection({
+          categoryId: normalizedCategoryId,
+          subcategoryId: normalizedSubcategoryId,
+        });
+      } else {
+        setPendingSearchSelection(null);
+      }
     } else {
       setPendingSearchSelection(null);
     }

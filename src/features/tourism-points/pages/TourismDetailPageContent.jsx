@@ -5,7 +5,7 @@ import { Star, Clock3, MapPin, Globe, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import RootLayout from '@/components/layout/RootLayout';
 import {
-  useGetDataPointById,
+  useGetDataPointBySlug,
   useGetSpotMedia,
 } from '@/services/api/tourism-points/tourismPointsApi';
 import { formatVND, withBaseUrl } from '@/lib/utils';
@@ -98,8 +98,8 @@ export default function TourismDetailPage() {
     data: pointResp,
     isError,
     isLoading,
-  } = useGetDataPointById({
-    point_id: pointSlug,
+  } = useGetDataPointBySlug({
+    slug: pointSlug,
     format: 'json',
   });
   const attraction = useMemo(() => {

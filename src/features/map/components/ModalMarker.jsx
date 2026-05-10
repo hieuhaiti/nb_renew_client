@@ -4,14 +4,20 @@ import { MapPin, Camera, Star, Clock, Ticket, Navigation, RectangleGoggles } fro
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { useSpotDetailModalStore, useModalCarouselStore } from '@/features/map/store/useModalStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import {
-  useGetDataPointById,
+  useGetDataPointBySlug,
   useGetSpotMedia,
 } from '@/services/api/tourism-points/tourismPointsApi';
 import { useGetAframeScenes } from '@/services/api/vr360/aframeSceneService';
@@ -44,7 +50,7 @@ export default function ModalMarker() {
   const { openCarouselModal } = useModalCarouselStore();
   const { setEndLocation, triggerFocusStart } = useDirectionsStore();
 
-  const { data: spotData, isLoading } = useGetDataPointById({ point_id: spotSlug ?? spotId });
+  const { data: spotData, isLoading } = useGetDataPointBySlug({ slug: spotSlug });
   const spot = spotData?.data?.spot ?? spotData?.data ?? null;
 
   const { data: mediaData } = useGetSpotMedia({
@@ -101,6 +107,11 @@ export default function ModalMarker() {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeSpotModal()}>
       <DialogContent className="w-full max-w-md overflow-hidden rounded-2xl p-0">
+        <DialogHeader className="sr-only">
+          <DialogTitle>{spot?.name || t('mapPage.destination.unknownName')}</DialogTitle>
+          <DialogDescription>{t('mapPage.destination.title')}</DialogDescription>
+        </DialogHeader>
+
         {/* Hero image */}
         <div className="bg-muted relative h-48 w-full">
           {isLoading ? (
