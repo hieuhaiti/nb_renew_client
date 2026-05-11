@@ -14,26 +14,26 @@ export function TourDetailSidebar({ ticketDisplay, subtitle, onOpenMap, onContac
   return (
     <aside className="space-y-3 lg:sticky lg:top-4 lg:self-start">
       {/* Ticket price */}
-      <section className="bg-primary rounded-[10px] px-5 py-4">
+      <section className="from-primary to-secondary text-primary-foreground rounded-[10px] bg-gradient-to-r px-5 py-4">
         <div className="text-primary-foreground text-xl font-semibold">{ticketDisplay}</div>
         <p className="text-primary-foreground/70 mt-1 text-sm">{subtitle}</p>
 
         <div className="mt-4 space-y-2">
           <Button
             onClick={onOpenMap}
-            variant="default"
-            className="bg-card text-primary hover:bg-muted hover:text-primary h-8.5 w-full rounded-[7px] text-sm font-medium"
+            variant="tertiary"
+            className="h-8.5 w-full rounded-[7px] text-sm font-medium"
           >
             <Map className="h-3.5 w-3.5" />
-            {t('tourPage.openMap', 'Xem trên bản đồ')}
+            {t('tourPage.tourList', 'Open map')}
           </Button>
           <Button
             onClick={onContact}
-            variant="outline"
-            className="border-primary-foreground/25 text-primary hover:bg-primary-foreground/10 hover:text-primary-foreground h-8.5 w-full rounded-[7px] text-sm"
+            variant="quaternary"
+            className="h-8.5 w-full rounded-[7px] text-sm font-medium"
           >
             <Phone className="h-3.5 w-3.5" />
-            {t('tourPage.contact', 'Liên hệ tour')}
+            {t('tourPage.contact', 'Contact tour')}
           </Button>
         </div>
       </section>
@@ -67,3 +67,4 @@ export function TourDetailSidebar({ ticketDisplay, subtitle, onOpenMap, onContac
     </aside>
   );
 }
+

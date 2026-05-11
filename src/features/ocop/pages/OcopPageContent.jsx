@@ -37,12 +37,12 @@ const CATEGORY_LABELS = {
 };
 
 const CATEGORY_COLORS = {
-  thuoc_và_cskh:    { bg: 'bg-purple-50',  text: 'text-purple-700', border: 'border-purple-200' },
-  thu_cong_my_nghe: { bg: 'bg-amber-50',   text: 'text-amber-700',  border: 'border-amber-200'  },
-  thuc_pham:        { bg: 'bg-green-50',   text: 'text-green-700',  border: 'border-green-200'  },
-  do_uong:          { bg: 'bg-teal-50',    text: 'text-teal-700',   border: 'border-teal-200'   },
-  my_pham:          { bg: 'bg-pink-50',    text: 'text-pink-700',   border: 'border-pink-200'   },
-  nong_san:         { bg: 'bg-lime-50',    text: 'text-lime-700',   border: 'border-lime-200'   },
+  thuoc_và_cskh: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
+  thu_cong_my_nghe: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
+  thuc_pham: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
+  do_uong: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
+  my_pham: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200' },
+  nong_san: { bg: 'bg-lime-50', text: 'text-lime-700', border: 'border-lime-200' },
 };
 
 function getCategoryLabel(key) {
@@ -51,9 +51,13 @@ function getCategoryLabel(key) {
 }
 
 function getCategoryColor(key) {
-  return CATEGORY_COLORS[key] || {
-    bg: 'bg-[#eef7ff]', text: 'text-[#0b66c3]', border: 'border-[#cfe0f4]',
-  };
+  return (
+    CATEGORY_COLORS[key] || {
+      bg: 'bg-[#eef7ff]',
+      text: 'text-[#0b66c3]',
+      border: 'border-[#cfe0f4]',
+    }
+  );
 }
 
 function getProductName(p) {
@@ -63,7 +67,6 @@ function getProductName(p) {
 function getProductStars(p) {
   return Math.min(5, Math.max(0, Number(p?.star_rating ?? 0)));
 }
-
 
 function OcopCard({ item, navigate }) {
   const name = getProductName(item);
@@ -84,7 +87,10 @@ function OcopCard({ item, navigate }) {
           src={imageSrc}
           alt={name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = placeholderImg;
+          }}
         />
 
         {/* Star badge */}
@@ -96,7 +102,9 @@ function OcopCard({ item, navigate }) {
         )}
 
         {/* Category badge */}
-        <span className={`absolute top-3 right-3 rounded-full border px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm ${catConf.bg} ${catConf.text} ${catConf.border}`}>
+        <span
+          className={`absolute top-3 right-3 rounded-full border px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm ${catConf.bg} ${catConf.text} ${catConf.border}`}
+        >
           {getCategoryLabel(item?.category)}
         </span>
       </div>
@@ -104,32 +112,30 @@ function OcopCard({ item, navigate }) {
       {/* Body */}
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="line-clamp-2 text-sm font-black leading-snug text-foreground transition-colors group-hover:text-[#0b66c3]"
+          className="text-foreground line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-[#0b66c3]"
           title={name}
         >
           {name}
         </h3>
 
         {item?.producer_name && (
-          <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
-            {item.producer_name}
-          </p>
+          <p className="text-muted-foreground mt-1 line-clamp-1 text-xs">{item.producer_name}</p>
         )}
 
         {item?.location_name || item?.province_name ? (
-          <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
             <MapPin size={10} className="shrink-0" />
             <span className="line-clamp-1">{item?.location_name || item?.province_name}</span>
           </div>
         ) : null}
 
-        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground mt-2 line-clamp-2 text-xs leading-relaxed">
           {item?.description || 'Chưa có mô tả.'}
         </p>
 
         {/* Certification */}
         {item?.certification_no && (
-          <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="text-muted-foreground mt-2 flex items-center gap-1 text-xs">
             <ShieldCheck size={11} className="shrink-0 text-[#10b981]" />
             <span className="truncate">{item.certification_no}</span>
           </div>
@@ -142,7 +148,7 @@ function OcopCard({ item, navigate }) {
               <>
                 <div className="text-base font-black text-[#0b66c3]">{priceLabel}</div>
                 {item?.unit && (
-                  <div className="text-[10px] text-muted-foreground">/ {item.unit}</div>
+                  <div className="text-muted-foreground text-[10px]">/ {item.unit}</div>
                 )}
               </>
             ) : (
@@ -223,85 +229,102 @@ export default function OcopPageContent() {
               <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
                 Chương trình OCOP – Mỗi xã một sản phẩm
               </span>
-              <h1 className="mt-2 text-4xl font-black leading-tight tracking-tight">
+              <h1 className="mt-2 text-4xl leading-tight font-black tracking-tight">
                 Sản phẩm OCOP Ninh Bình
               </h1>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
-                Khám phá đặc sản địa phương được chứng nhận OCOP 3–5 sao, từ thực phẩm, thảo dược đến thủ công mỹ nghệ.
+              <p className="mt-2 text-sm leading-relaxed font-medium text-white/90">
+                Khám phá đặc sản địa phương được chứng nhận OCOP 3–5 sao, từ thực phẩm, thảo dược
+                đến thủ công mỹ nghệ.
               </p>
             </div>
 
-            {/* Stats */}
-            <div className="mb-6 flex flex-wrap gap-3">
-              {[
-                { value: total, label: 'Sản phẩm' },
-                { value: availableCategories.length || '—', label: 'Danh mục' },
-                { value: averageStars ? `${averageStars} ★` : '—', label: 'Sao TB' },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className="rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
-                >
-                  <div className="text-2xl font-black leading-none">{s.value}</div>
-                  <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Search bar */}
-            <div
-              className="flex flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
-              style={{
-                background: 'rgba(255,255,255,0.94)',
-                border: '1px solid rgba(255,255,255,0.75)',
-                boxShadow: '0 12px 28px rgba(0,0,0,.14)',
-              }}
-            >
-              <div className="relative min-w-0 flex-1">
-                <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
-                <input
-                  type="text"
-                  placeholder="Tìm sản phẩm, nhà sản xuất..."
-                  value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                  className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
-                />
+            <div className="mb-6 flex flex-row items-stretch gap-4 max-[1023px]:flex-col">
+              {/* Stats */}
+              <div className="flex flex-wrap items-stretch gap-3 self-stretch">
+                {[
+                  { value: total, label: 'Sản phẩm' },
+                  { value: availableCategories.length || '—', label: 'Danh mục' },
+                  { value: averageStars ? `${averageStars} ★` : '—', label: 'Sao TB' },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="flex min-h-[76px] flex-col justify-center rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
+                  >
+                    <div className="text-2xl leading-none font-black">{s.value}</div>
+                    <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
+                  </div>
+                ))}
               </div>
-              <select
-                value={starFilter}
-                onChange={(e) => { setStarFilter(e.target.value); setPage(1); }}
-                className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+
+              {/* Search bar */}
+              <div
+                className="flex flex-1 flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
+                style={{
+                  background: 'rgba(255,255,255,0.94)',
+                  border: '1px solid rgba(255,255,255,0.75)',
+                  boxShadow: '0 12px 28px rgba(0,0,0,.14)',
+                }}
               >
-                <option value="all">Tất cả hạng sao</option>
-                <option value="5">5 sao ★★★★★</option>
-                <option value="4">4 sao ★★★★</option>
-                <option value="3">3 sao ★★★</option>
-              </select>
-              <button
-                type="button"
-                onClick={() => { setPage(1); refetch?.(); }}
-                className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
-                style={BTN_GRADIENT}
-              >
-                Tìm kiếm
-              </button>
+                <div className="relative min-w-0 flex-1">
+                  <Search
+                    size={16}
+                    className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Tìm sản phẩm, nhà sản xuất..."
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setPage(1);
+                    }}
+                    className="text-foreground h-11 w-full rounded-xl border border-[#a8bed4] bg-white pr-3 pl-9 text-sm outline-none focus:border-[#0b66c3]"
+                  />
+                </div>
+                <select
+                  value={starFilter}
+                  onChange={(e) => {
+                    setStarFilter(e.target.value);
+                    setPage(1);
+                  }}
+                  className="text-foreground h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm outline-none focus:border-[#0b66c3]"
+                >
+                  <option value="all">Tất cả hạng sao</option>
+                  <option value="5">5 sao ★★★★★</option>
+                  <option value="4">4 sao ★★★★</option>
+                  <option value="3">3 sao ★★★</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPage(1);
+                    refetch?.();
+                  }}
+                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
+                  style={BTN_GRADIENT}
+                >
+                  Tìm kiếm
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Content */}
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
-
           {/* Category chips + toolbar */}
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-1.5">
               <button
                 type="button"
-                onClick={() => { setCategoryFilter('all'); setPage(1); }}
+                onClick={() => {
+                  setCategoryFilter('all');
+                  setPage(1);
+                }}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   categoryFilter === 'all'
                     ? 'bg-[#0b66c3] text-white'
-                    : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
+                    : 'text-muted-foreground border border-[#cfe0f4] bg-white hover:bg-[#eef7ff]'
                 }`}
               >
                 Tất cả
@@ -312,7 +335,10 @@ export default function OcopPageContent() {
                   <button
                     key={key}
                     type="button"
-                    onClick={() => { setCategoryFilter(key); setPage(1); }}
+                    onClick={() => {
+                      setCategoryFilter(key);
+                      setPage(1);
+                    }}
                     className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       categoryFilter === key
                         ? 'bg-[#0b66c3] text-white'
@@ -326,13 +352,13 @@ export default function OcopPageContent() {
             </div>
 
             <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 <strong className="text-foreground">{total}</strong> sản phẩm
               </p>
               <button
                 type="button"
                 onClick={handleReset}
-                className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
+                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold hover:bg-[#eef7ff]"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
                 Làm mới
@@ -343,16 +369,18 @@ export default function OcopPageContent() {
           {/* Product grid */}
           {isLoading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => <OcopCardSkeleton key={i} />)}
+              {Array.from({ length: 8 }).map((_, i) => (
+                <OcopCardSkeleton key={i} />
+              ))}
             </div>
           ) : isError ? (
-            <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
+            <div className="text-muted-foreground rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center">
               Không thể tải dữ liệu OCOP lúc này.
             </div>
           ) : products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
+            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20">
               <Inbox size={40} className="mb-3 opacity-30" />
-              <p className="text-base font-semibold text-foreground">Chưa có sản phẩm phù hợp</p>
+              <p className="text-foreground text-base font-semibold">Chưa có sản phẩm phù hợp</p>
               <p className="mt-1 text-sm">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
             </div>
           ) : (
@@ -370,7 +398,7 @@ export default function OcopPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
               >
                 <ChevronLeft size={15} /> Trước
               </button>
@@ -381,7 +409,7 @@ export default function OcopPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
               >
                 Sau <ChevronRight size={15} />
               </button>
@@ -394,7 +422,7 @@ export default function OcopPageContent() {
             style={{ background: HERO_BG }}
           >
             <p className="mb-1 text-xs font-semibold text-white/75">Mua sắm trong hành trình</p>
-            <h3 className="text-2xl font-black leading-tight">
+            <h3 className="text-2xl leading-tight font-black">
               Kết hợp mua sản phẩm OCOP với hành trình du lịch Ninh Bình
             </h3>
             <p className="mt-1.5 text-sm text-white/85">

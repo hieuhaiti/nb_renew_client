@@ -62,11 +62,20 @@ export function normalizeTourRoutePoint(rawPoint, index = 0, lang = 'vi') {
     index + 1;
   const dayNumber = toNumber(rawPoint?.day_number) ?? 1;
 
+  const spotId =
+    rawPoint?.spot_id ||
+    rawPoint?.spot?.id ||
+    rawPoint?.point_id ||
+    rawPoint?.id ||
+    null;
+
   return {
-    id: rawPoint?.id ?? rawPoint?.point_id ?? `tour-point-${index + 1}`,
+    id: rawPoint?.id ?? rawPoint?.point_id ?? rawPoint?.spot_id ?? `tour-point-${index + 1}`,
     stopOrder,
     dayNumber,
-    point_id: rawPoint?.point_id ?? rawPoint?.id ?? null,
+    point_id: rawPoint?.point_id ?? rawPoint?.id ?? rawPoint?.spot_id ?? null,
+    spot_id: spotId,
+    slug: rawPoint?.slug || rawPoint?.spot_slug || rawPoint?.spot?.slug || null,
     data: {
       ...rawPoint,
       name: pointName,
@@ -170,6 +179,8 @@ export function buildHighlightRoutePointsFeatureCollection(points) {
         properties: {
           id: point.id,
           point_id: point.point_id ?? point.id,
+          spot_id: point.spot_id ?? point.point_id ?? point.id,
+          slug: point.slug || point.data?.slug || point.data?.spot_slug || point.data?.spot?.slug || null,
           stop_order: point.stopOrder,
           step_number: stepNumber,
           name: point.data.name,

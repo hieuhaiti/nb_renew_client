@@ -15,7 +15,7 @@ export function TourDetailHero({ imageSrc, title, subtitle, tags, totalImages, t
           e.target.src = placeholderImg;
         }}
       />
-      <div className="from-primary/85 via-primary/45 absolute inset-0 bg-linear-to-t to-transparent" />
+      <div className="from-primary/65 via-secondary/25 absolute inset-0 bg-linear-to-t to-transparent" />
 
       <div className="absolute inset-x-0 bottom-0 p-4">
         <div className="mb-2 flex flex-wrap gap-2">

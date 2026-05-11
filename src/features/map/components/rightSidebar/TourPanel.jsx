@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useDebounce } from 'use-debounce';
-import { Clock3, Eye, MapPin, Route, Search, Star, Trash2 } from 'lucide-react';
+import { Clock3, Eye, Map, MapPin, Search, Star, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -191,7 +191,10 @@ export default function TourPanel() {
   const handleOpenTourRoute = async (tour) => {
     if (!tour?.id) return;
 
-    setSelectedTour(tour);
+    setSelectedTour({
+      ...tour,
+      cover_image_url: tour?.cover_image_url || null,
+    });
     setRouteLoadingTourId(String(tour.id));
 
     try {
@@ -339,8 +342,8 @@ export default function TourPanel() {
     }
   };
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2">
+    <div className="space-y-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+      <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
           <p className="typo-section-title text-foreground">
             {t('mapPage.tourPanel.title', { defaultValue: 'Tour du lịch' })}
@@ -543,10 +546,12 @@ export default function TourPanel() {
                     disabled={isRouteLoading}
                     onClick={() => handleOpenTourRoute(tour)}
                   >
-                    <Route className="h-3.5 w-3.5" />
+                    <Map className="h-3.5 w-3.5" />
                     {isRouteLoading
                       ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Đang mở...' })
-                      : t('mapPage.tourPanel.openRoute', { defaultValue: 'Mở chỉ đường' })}
+                      : t('mapPage.tourPanel.openTourOnMap', {
+                          defaultValue: 'Mở tour trên bản đồ',
+                        })}
                   </Button>
                   <Button
                     type="button"

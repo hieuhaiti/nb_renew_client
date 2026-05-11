@@ -21,16 +21,48 @@ const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' }
 const HERO_BG = `linear-gradient(135deg,rgba(3,95,172,.90),rgba(14,165,233,.85),rgba(126,34,206,.72)), url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80") center/cover`;
 
 const TYPE_CONFIG = {
-  religious:   { label: 'Tôn giáo',      bg: 'bg-purple-50',  text: 'text-purple-700', border: 'border-purple-200' },
-  traditional: { label: 'Truyền thống',  bg: 'bg-amber-50',   text: 'text-amber-700',  border: 'border-amber-200'  },
-  cultural:    { label: 'Văn hóa',       bg: 'bg-[#eef7ff]',  text: 'text-[#0b66c3]',  border: 'border-[#cfe0f4]'  },
-  folk:        { label: 'Dân gian',      bg: 'bg-green-50',   text: 'text-green-700',  border: 'border-green-200'  },
-  modern:      { label: 'Hiện đại',      bg: 'bg-teal-50',    text: 'text-teal-700',   border: 'border-teal-200'   },
-  seasonal:    { label: 'Theo mùa',      bg: 'bg-lime-50',    text: 'text-lime-700',   border: 'border-lime-200'   },
+  religious: {
+    label: 'Tôn giáo',
+    bg: 'bg-purple-50',
+    text: 'text-purple-700',
+    border: 'border-purple-200',
+  },
+  traditional: {
+    label: 'Truyền thống',
+    bg: 'bg-amber-50',
+    text: 'text-amber-700',
+    border: 'border-amber-200',
+  },
+  cultural: {
+    label: 'Văn hóa',
+    bg: 'bg-[#eef7ff]',
+    text: 'text-[#0b66c3]',
+    border: 'border-[#cfe0f4]',
+  },
+  folk: {
+    label: 'Dân gian',
+    bg: 'bg-green-50',
+    text: 'text-green-700',
+    border: 'border-green-200',
+  },
+  modern: { label: 'Hiện đại', bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
+  seasonal: {
+    label: 'Theo mùa',
+    bg: 'bg-lime-50',
+    text: 'text-lime-700',
+    border: 'border-lime-200',
+  },
 };
 
 function getTypeConfig(type) {
-  return TYPE_CONFIG[type] || { label: type || '—', bg: 'bg-[#f8fbff]', text: 'text-[#52647a]', border: 'border-[#cfe0f4]' };
+  return (
+    TYPE_CONFIG[type] || {
+      label: type || '—',
+      bg: 'bg-[#f8fbff]',
+      text: 'text-[#52647a]',
+      border: 'border-[#cfe0f4]',
+    }
+  );
 }
 
 function getFestivalName(f) {
@@ -85,14 +117,19 @@ function FestivalCard({ festival, navigate }) {
           src={imageSrc}
           alt={name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = placeholderImg;
+          }}
         />
 
         {/* Overlay gradient from bottom */}
         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
 
         {/* Type badge */}
-        <span className={`absolute top-3 left-3 rounded-full border px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm ${typeConf.bg} ${typeConf.text} ${typeConf.border}`}>
+        <span
+          className={`absolute top-3 left-3 rounded-full border px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm ${typeConf.bg} ${typeConf.text} ${typeConf.border}`}
+        >
           {typeConf.label}
         </span>
 
@@ -106,7 +143,7 @@ function FestivalCard({ festival, navigate }) {
 
         {/* Countdown badge */}
         {daysUntil && (
-          <span className="absolute bottom-3 right-3 rounded-full bg-[#f59e0b]/90 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
+          <span className="absolute right-3 bottom-3 rounded-full bg-[#f59e0b]/90 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
             {daysUntil}
           </span>
         )}
@@ -121,27 +158,27 @@ function FestivalCard({ festival, navigate }) {
       {/* Body */}
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="line-clamp-2 text-sm font-black leading-snug text-foreground transition-colors group-hover:text-[#0b66c3]"
+          className="text-foreground line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-[#0b66c3]"
           title={name}
         >
           {name}
         </h3>
 
         {location && (
-          <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-xs">
             <MapPin size={11} className="shrink-0" />
             <span className="line-clamp-1">{location}</span>
           </div>
         )}
 
-        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground mt-2 line-clamp-2 text-xs leading-relaxed">
           {description || 'Chưa có mô tả.'}
         </p>
 
         <div className="mt-auto pt-3">
           <div className="flex items-center justify-between">
             {festival?.spot_name && (
-              <span className="line-clamp-1 max-w-[60%] text-xs text-muted-foreground">
+              <span className="text-muted-foreground line-clamp-1 max-w-[60%] text-xs">
                 {festival.spot_name}
               </span>
             )}
@@ -195,10 +232,7 @@ export default function FestivalPageContent() {
 
   const festivals = useMemo(() => data?.data?.items || data?.items || [], [data]);
 
-  const pagination = useMemo(
-    () => data?.data?.pagination || data?.pagination || null,
-    [data]
-  );
+  const pagination = useMemo(() => data?.data?.pagination || data?.pagination || null, [data]);
   const total = pagination?.total ?? festivals.length;
   const totalPages = pagination?.totalPages ?? 1;
 
@@ -211,7 +245,11 @@ export default function FestivalPageContent() {
       [];
     if (Array.isArray(fromApi) && fromApi.length) {
       return fromApi
-        .map((item) => String(item?.code || item?.type || item?.slug || item?.value || item?.key || item?.id || '').trim())
+        .map((item) =>
+          String(
+            item?.code || item?.type || item?.slug || item?.value || item?.key || item?.id || ''
+          ).trim()
+        )
         .filter(Boolean);
     }
     return [...new Set(festivals.map((f) => f?.festival_type).filter(Boolean))];
@@ -239,85 +277,102 @@ export default function FestivalPageContent() {
               <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
                 Lễ hội truyền thống & văn hóa Ninh Bình
               </span>
-              <h1 className="mt-2 text-4xl font-black leading-tight tracking-tight">
+              <h1 className="mt-2 text-4xl leading-tight font-black tracking-tight">
                 Khám phá lễ hội đặc sắc
               </h1>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
-                Tra cứu và lên kế hoạch tham dự các lễ hội truyền thống, tôn giáo và văn hoá theo thời gian thực.
+              <p className="mt-2 text-sm leading-relaxed font-medium text-white/90">
+                Tra cứu và lên kế hoạch tham dự các lễ hội truyền thống, tôn giáo và văn hoá theo
+                thời gian thực.
               </p>
             </div>
 
-            {/* Stats */}
-            <div className="mb-6 flex flex-wrap gap-3">
-              {[
-                { value: total, label: 'Lễ hội' },
-                { value: upcomingCount, label: 'Sắp diễn ra' },
-                { value: allTypeKeys.length || '—', label: 'Loại hình' },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className="rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
-                >
-                  <div className="text-2xl font-black leading-none">{s.value}</div>
-                  <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Search bar */}
-            <div
-              className="flex flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
-              style={{
-                background: 'rgba(255,255,255,0.94)',
-                border: '1px solid rgba(255,255,255,0.75)',
-                boxShadow: '0 12px 28px rgba(0,0,0,.14)',
-              }}
-            >
-              <div className="relative min-w-0 flex-1">
-                <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm lễ hội, địa điểm..."
-                  value={keyword}
-                  onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
-                  className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
-                />
+            <div className="mb-6 flex flex-row items-stretch gap-4 max-[1023px]:flex-col">
+              {/* Stats */}
+              <div className="flex flex-wrap items-stretch gap-3 self-stretch">
+                {[
+                  { value: total, label: 'Lễ hội' },
+                  { value: upcomingCount, label: 'Sắp diễn ra' },
+                  { value: allTypeKeys.length || '—', label: 'Loại hình' },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="flex min-h-[76px] flex-col justify-center rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
+                  >
+                    <div className="text-2xl leading-none font-black">{s.value}</div>
+                    <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
+                  </div>
+                ))}
               </div>
-              <select
-                value={upcomingFilter}
-                onChange={(e) => { setUpcomingFilter(e.target.value); setPage(1); }}
-                className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+
+              {/* Search bar */}
+              <div
+                className="flex flex-1 flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
+                style={{
+                  background: 'rgba(255,255,255,0.94)',
+                  border: '1px solid rgba(255,255,255,0.75)',
+                  boxShadow: '0 12px 28px rgba(0,0,0,.14)',
+                }}
               >
-                <option value="upcoming">Sắp diễn ra</option>
-                <option value="past">Đã qua</option>
-                <option value="all">Tất cả</option>
-              </select>
-              <button
-                type="button"
-                onClick={() => { setPage(1); refetch?.(); }}
-                className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
-                style={BTN_GRADIENT}
-              >
-                Tìm lễ hội
-              </button>
+                <div className="relative min-w-0 flex-1">
+                  <Search
+                    size={16}
+                    className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm lễ hội, địa điểm..."
+                    value={keyword}
+                    onChange={(e) => {
+                      setKeyword(e.target.value);
+                      setPage(1);
+                    }}
+                    className="text-foreground h-11 w-full rounded-xl border border-[#a8bed4] bg-white pr-3 pl-9 text-sm outline-none focus:border-[#0b66c3]"
+                  />
+                </div>
+                <select
+                  value={upcomingFilter}
+                  onChange={(e) => {
+                    setUpcomingFilter(e.target.value);
+                    setPage(1);
+                  }}
+                  className="text-foreground h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm outline-none focus:border-[#0b66c3]"
+                >
+                  <option value="upcoming">Sắp diễn ra</option>
+                  <option value="past">Đã qua</option>
+                  <option value="all">Tất cả</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPage(1);
+                    refetch?.();
+                  }}
+                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
+                  style={BTN_GRADIENT}
+                >
+                  Tìm lễ hội
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Content */}
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
-
           {/* Type chips + toolbar */}
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-1.5">
               {/* All chip */}
               <button
                 type="button"
-                onClick={() => { setTypeFilter('all'); setPage(1); }}
+                onClick={() => {
+                  setTypeFilter('all');
+                  setPage(1);
+                }}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   typeFilter === 'all'
                     ? 'bg-[#0b66c3] text-white'
-                    : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
+                    : 'text-muted-foreground border border-[#cfe0f4] bg-white hover:bg-[#eef7ff]'
                 }`}
               >
                 Tất cả
@@ -328,7 +383,10 @@ export default function FestivalPageContent() {
                   <button
                     key={key}
                     type="button"
-                    onClick={() => { setTypeFilter(key); setPage(1); }}
+                    onClick={() => {
+                      setTypeFilter(key);
+                      setPage(1);
+                    }}
                     className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       typeFilter === key
                         ? 'bg-[#0b66c3] text-white'
@@ -342,13 +400,13 @@ export default function FestivalPageContent() {
             </div>
 
             <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 <strong className="text-foreground">{total}</strong> lễ hội
               </p>
               <button
                 type="button"
                 onClick={handleReset}
-                className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
+                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold hover:bg-[#eef7ff]"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
                 Làm mới
@@ -364,13 +422,13 @@ export default function FestivalPageContent() {
               ))}
             </div>
           ) : isError ? (
-            <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
+            <div className="text-muted-foreground rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center">
               Không thể tải dữ liệu lễ hội lúc này.
             </div>
           ) : festivals.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
+            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20">
               <Inbox size={40} className="mb-3 opacity-30" />
-              <p className="text-base font-semibold text-foreground">Chưa có lễ hội phù hợp</p>
+              <p className="text-foreground text-base font-semibold">Chưa có lễ hội phù hợp</p>
               <p className="mt-1 text-sm">Thử thay đổi bộ lọc hoặc tìm kiếm khác.</p>
             </div>
           ) : (
@@ -388,7 +446,7 @@ export default function FestivalPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
               >
                 <ChevronLeft size={15} /> Trước
               </button>
@@ -399,7 +457,7 @@ export default function FestivalPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
               >
                 Sau <ChevronRight size={15} />
               </button>
@@ -412,7 +470,7 @@ export default function FestivalPageContent() {
             style={{ background: HERO_BG }}
           >
             <p className="mb-1 text-xs font-semibold text-white/75">Lên kế hoạch tham quan</p>
-            <h3 className="text-2xl font-black leading-tight">
+            <h3 className="text-2xl leading-tight font-black">
               Kết hợp lễ hội với hành trình du lịch Ninh Bình
             </h3>
             <p className="mt-1.5 text-sm text-white/85">

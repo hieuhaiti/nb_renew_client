@@ -1,4 +1,4 @@
-import { Droplets, MapPin, Thermometer, Wind } from 'lucide-react';
+import { Droplets, Thermometer, Wind } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LoadingInline from '@/components/common/LoadingInline';
 import { defaultLatLong } from '@/features/map/constant/mapConstant';
@@ -58,29 +58,28 @@ export default function MapWeatherCard({ className, compact = false }) {
         <div className={cn('min-w-[16.5rem] px-2.5 py-2', compact ? 'text-sm' : 'text-base')}>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <span className="border-primary/35 bg-primary/5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border">
-                <MapPin className="text-primary h-2.5 w-2.5" />
-              </span>
               <span className="min-w-0 flex-1 truncate">
-                <span className="text-foreground font-semibold">{cityName}</span>
-                <span className="text-muted-foreground ml-1 truncate">{conditionLabel}</span>
+                <span className="text-foreground text-base font-bold">{cityName}</span>
+                <span className="text-muted-foreground ml-1 truncate text-sm">
+                  {conditionLabel}
+                </span>
               </span>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
               <div className="inline-flex items-center gap-1 rounded-full bg-[var(--weather-temp)]/15 px-2.5 py-1 font-semibold text-[var(--weather-temp)]">
                 <Thermometer className="h-3 w-3 shrink-0" />
-                <span>{formatTemperature(weather?.main?.temp, tempUnit)}</span>
+                <span className="text-xs">{formatTemperature(weather?.main?.temp, tempUnit)}</span>
               </div>
 
               <div className="inline-flex items-center gap-1 rounded-full bg-[var(--weather-humidity)]/15 px-2.5 py-1 font-semibold text-[var(--weather-humidity)]">
                 <Droplets className="h-3 w-3 shrink-0" />
-                <span>{formatHumidity(weather?.main?.humidity)}</span>
+                <span className="text-xs">{formatHumidity(weather?.main?.humidity)}</span>
               </div>
 
               <div className="inline-flex items-center gap-1 rounded-full bg-[var(--weather-wind)]/15 px-2.5 py-1 font-semibold text-[var(--weather-wind)]">
                 <Wind className="h-3 w-3 shrink-0" />
-                <span>{formatWindSpeedKph(weather?.wind?.speed)}</span>
+                <span className="text-xs">{formatWindSpeedKph(weather?.wind?.speed)}</span>
               </div>
 
               <div
@@ -95,7 +94,7 @@ export default function MapWeatherCard({ className, compact = false }) {
                   className="h-3 w-3 shrink-0 rounded-full object-cover"
                   alt="AQI"
                 />
-                <span>{t(aqiMeta.labelKey)}</span>
+                <span className="text-xs">{t(aqiMeta.labelKey)}</span>
               </div>
             </div>
           </div>

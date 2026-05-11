@@ -122,7 +122,7 @@ export default function MapRightSidebar({
                         className={cn(
                           'h-8 w-full justify-center gap-1 rounded-lg border px-1.5 text-sm shadow-none transition-colors sm:px-2',
                           isActive
-                            ? 'border-primary/60 bg-primary text-primary-foreground shadow-sm'
+                            ? 'border-primary/60 from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90 bg-gradient-to-r shadow-sm'
                             : 'border-border bg-card text-muted-foreground hover:text-foreground'
                         )}
                       >

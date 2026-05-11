@@ -8,6 +8,70 @@ import { useGetTourBySlug, useGetTourStops } from '@/services/api/tours/tourApi'
 import { useGetTourReviewByTourId, useCreateTourReview } from '@/services/api/tours/tourReviewApi';
 import { stripHtmlTags, getDurationLabel } from '@/features/tours/utils/tourDetail.utils';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
+import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
+import { createRouteFromPoints, normalizeTourRoutePoint } from '@/features/map/utils/highlightRouteUtils';
+
+function sortStops(stops) {
+  const list = Array.isArray(stops) ? stops : [];
+  return [...list].sort(
+    (a, b) =>
+      Number(a?.day_number ?? 1) - Number(b?.day_number ?? 1) ||
+      Number(a?.stop_order ?? a?.order_index ?? 0) - Number(b?.stop_order ?? b?.order_index ?? 0)
+  );
+}
+
+function parseGeometryValue(value) {
+  if (!value) return null;
+  if (typeof value === 'object') return value;
+  if (typeof value !== 'string') return null;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
+function resolveStopCandidate(stop, index = 0) {
+  const spot = stop?.spot && typeof stop.spot === 'object' ? stop.spot : null;
+  const geometry =
+    parseGeometryValue(stop?.geom_json) ||
+    parseGeometryValue(stop?.geom) ||
+    parseGeometryValue(spot?.geom_json) ||
+    spot?.geojson ||
+    null;
+
+  return {
+    ...stop,
+    ...spot,
+    point_id: stop?.point_id || stop?.spot_id || spot?.id || stop?.id || null,
+    spot_id: stop?.spot_id || spot?.id || stop?.point_id || stop?.id || null,
+    name_vi:
+      stop?.title_vi || stop?.spot_name_vi || stop?.spot_name || spot?.name_vi || spot?.name || '',
+    name_en:
+      stop?.title_en || stop?.spot_name_en || stop?.spot_name || spot?.name_en || spot?.name || '',
+    address_vi: stop?.description_vi || spot?.address_vi || spot?.address || '',
+    address_en: stop?.description_en || spot?.address_en || spot?.address || '',
+    geometry_data: geometry || undefined,
+    longitude: spot?.longitude ?? stop?.longitude ?? null,
+    latitude: spot?.latitude ?? stop?.latitude ?? null,
+    stop_order: stop?.stop_order ?? stop?.order_index ?? index + 1,
+    day_number: stop?.day_number ?? 1,
+  };
+}
+
+function buildFallbackGeometryFromPoints(points) {
+  const coordinates = (Array.isArray(points) ? points : [])
+    .map((point) => point?.data?.geometry?.coordinates)
+    .filter((coords) => Array.isArray(coords) && coords.length >= 2);
+
+  if (coordinates.length < 2) return null;
+
+  return {
+    type: 'LineString',
+    coordinates,
+  };
+}
 
 function getTicketDisplay(tour, t) {
   const price = Number(tour?.price_from_vnd ?? 0);
@@ -20,6 +84,7 @@ export function useTourDetailPageModel(t) {
   const navigate = useNavigate();
   const location = useLocation();
   const lang = useLanguageStore((state) => state.lang);
+  const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
 
   const { data: tour, isLoading, isError } = useGetTourBySlug(slug);
   const { data: tourStopsResp } = useGetTourStops(tour?.id);
@@ -159,7 +224,73 @@ export function useTourDetailPageModel(t) {
     handleResetReviewForm();
   };
 
-  const handleOpenMap = () => navigate('/map');
+  const handleOpenMap = async () => {
+    if (!tour?.id) {
+      navigate('/map');
+      return;
+    }
+
+    const sortedStops = sortStops(tourStops);
+    const panelPayload = {
+      tourId: tour.id,
+      tourName,
+      stops: sortedStops,
+      selectedTour: {
+        ...tour,
+        cover_image_url: tour?.cover_image_url || null,
+      },
+    };
+    const routePoints = sortedStops
+      .map((stop, index) => normalizeTourRoutePoint(resolveStopCandidate(stop, index), index, lang))
+      .filter(Boolean);
+
+    setSelectedTour(panelPayload.selectedTour);
+
+    if (routePoints.length < 2) {
+      navigate('/map', {
+        state: {
+          prefillTourPanel: panelPayload,
+        },
+      });
+      return;
+    }
+
+    let routeResult = null;
+    try {
+      routeResult = await createRouteFromPoints(routePoints, 'driving', lang === 'en' ? 'en' : 'vi');
+    } catch {
+      routeResult = null;
+    }
+
+    const fallbackGeometry = buildFallbackGeometryFromPoints(routePoints);
+    const routeGeometry = routeResult?.geometry || fallbackGeometry;
+
+    navigate('/map', {
+      state: {
+        highlightedRoute: {
+          type: 'tour',
+          tourId: tour.id,
+          tourSlug: tour.slug,
+          tourName,
+          vehicle: 'driving',
+          points: routeResult?.points?.length ? routeResult.points : routePoints,
+          geometry: routeGeometry,
+          routeProperties: routeResult?.properties || {
+            tour_name: tourName,
+            total_stops: routePoints.length,
+          },
+          fullRoute: routeResult?.fullRoute || null,
+          meta: {
+            tour_name: tourName,
+            total_stops: routePoints.length,
+          },
+        },
+        prefillTourPanel: {
+          ...panelPayload,
+        },
+      },
+    });
+  };
 
   const handleContact = () => {
     const name = tour?.business_name;

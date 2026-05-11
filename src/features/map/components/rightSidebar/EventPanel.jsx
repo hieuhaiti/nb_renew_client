@@ -54,22 +54,24 @@ export default function EventPanel() {
   const selectedFestival = useFestivalStore((state) => state.selectedFestival);
   const setFestivalFilters = useFestivalStore((state) => state.setFestivalFilters);
   const setSelectedFestival = useFestivalStore((state) => state.setSelectedFestival);
-  const resetFestivalFilters = useFestivalStore((state) => state.resetFestivalFilters);
   const [openingFestivalId, setOpeningFestivalId] = useState(null);
 
   const [debouncedSearch] = useDebounce(filters.search, 350);
 
-  const getFestivalTypeLabel = useCallback((value, fallbackLabel = '') => {
-    const normalizedKey = String(value || 'other')
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '_');
+  const getFestivalTypeLabel = useCallback(
+    (value, fallbackLabel = '') => {
+      const normalizedKey = String(value || 'other')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_');
 
-    return t(`mapPage.eventPanel.festivalTypes.${normalizedKey}`, {
-      defaultValue:
-        fallbackLabel || t('mapPage.eventPanel.festivalTypes.other', { defaultValue: 'Other' }),
-    });
-  }, [t]);
+      return t(`mapPage.eventPanel.festivalTypes.${normalizedKey}`, {
+        defaultValue:
+          fallbackLabel || t('mapPage.eventPanel.festivalTypes.other', { defaultValue: 'Other' }),
+      });
+    },
+    [t]
+  );
 
   const { data: festivalTypesData } = useFestivalTypesQuery();
   const {
@@ -81,17 +83,6 @@ export default function EventPanel() {
     ...filters,
     search: debouncedSearch,
   });
-
-  const typeOptions = useMemo(() => {
-    const apiTypes = normalizeFestivalTypesPayload(festivalTypesData);
-    return [
-      { value: 'all', label: t('common.all', { defaultValue: 'All' }) },
-      ...apiTypes.map((item) => ({
-        ...item,
-        label: getFestivalTypeLabel(item.value, item.label),
-      })),
-    ];
-  }, [festivalTypesData, getFestivalTypeLabel, t]);
 
   const festivals = useMemo(
     () => normalizeFestivalListPayload(festivalsData, { lang }),
@@ -179,26 +170,17 @@ export default function EventPanel() {
       <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
           <p className="typo-section-title text-foreground">
-            {t('mapPage.eventPanel.title', { defaultValue: 'Lễ hội & Sự kiện' })}
+            {t('mapPage.eventPanel.title', { defaultValue: 'Lễ hội' })}
           </p>
           <p className="typo-meta text-muted-foreground">
             {isFetching
               ? t('mapPage.eventPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
               : t('mapPage.eventPanel.count', {
-                  defaultValue: '{{count}} sự kiện',
+                  defaultValue: '{{count}} lễ hội',
                   count: festivals.length,
                 })}
           </p>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          className="typo-meta text-primary-soft-foreground h-7 hover:bg-primary-soft"
-          onClick={resetFestivalFilters}
-        >
-          {t('mapPage.eventPanel.reset', { defaultValue: 'Đặt lại' })}
-        </Button>
       </div>
 
       <div className="space-y-2">
@@ -212,35 +194,6 @@ export default function EventPanel() {
             })}
             className="h-9 border-[var(--event-panel-border)] bg-[var(--event-panel-control-bg)] pr-2 pl-8 text-sm"
           />
-        </div>
-
-        <div className="grid grid-cols-[1fr_auto] gap-2">
-          <Select
-            value={filters.festival_type}
-            onValueChange={(value) => setFestivalFilters({ festival_type: value, page: 1 })}
-          >
-            <SelectTrigger className="h-9 w-full border-[var(--event-panel-border)] bg-[var(--event-panel-control-bg)] text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {typeOptions.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Button
-            type="button"
-            size="sm"
-            variant={filters.upcoming ? 'default' : 'outline'}
-            className="h-9 border-[var(--event-panel-border)]"
-            onClick={() => setFestivalFilters({ upcoming: !filters.upcoming, page: 1 })}
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            {t('mapPage.eventPanel.upcoming', { defaultValue: 'Sắp diễn ra' })}
-          </Button>
         </div>
       </div>
 
@@ -301,7 +254,7 @@ export default function EventPanel() {
                     {festival.festival_type && (
                       <Badge
                         variant="outline"
-                        className="border-[var(--event-panel-chip-border)] bg-[var(--event-panel-chip-bg)] text-[var(--event-panel-chip-fg)] shrink-0"
+                        className="shrink-0 border-[var(--event-panel-chip-border)] bg-[var(--event-panel-chip-bg)] text-[var(--event-panel-chip-fg)]"
                       >
                         {getFestivalTypeLabel(festival.festival_type, festival.festival_type)}
                       </Badge>

@@ -59,6 +59,7 @@ export function normalizeTourModel(item, { lang = 'vi', fallbackId } = {}) {
     excludes: Array.isArray(rawExcludes)
       ? rawExcludes.map((entry) => normalizeTextValue(entry, lang))
       : [],
+    cover_image_url: item?.cover_image_url || item?.main_image_url || null,
     main_image_url: item?.cover_image_url || item?.main_image_url || null,
     is_featured: Boolean(item?.is_featured),
     is_active: item?.is_active ?? true,

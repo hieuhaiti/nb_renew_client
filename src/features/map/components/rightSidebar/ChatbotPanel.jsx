@@ -79,7 +79,7 @@ export default function ChatbotPanel() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-4 text-center">
+      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-4 text-center">
         <div className="bg-primary/10 text-primary ring-primary/20 flex h-14 w-14 items-center justify-center rounded-2xl ring-1">
           <Bot className="size-7" />
         </div>
@@ -102,9 +102,9 @@ export default function ChatbotPanel() {
   }
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col gap-3 overflow-hidden">
+    <div className="relative flex h-full min-h-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
       {/* Header */}
-      <div className="bg-card shrink-0 rounded-2xl border p-3 shadow-sm">
+      <div className="shrink-0 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div className="flex items-start gap-3">
           <div className="bg-primary/10 text-primary ring-primary/20 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1">
             <Bot className="size-5" />

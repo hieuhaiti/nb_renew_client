@@ -7,7 +7,23 @@ export default function DirectionDetails({ className }) {
   const { directions, formatDuration, formatDistance } = useDirectionsStore();
 
   return (
-    <div className={cn('flex h-full flex-col space-y-3 overflow-hidden', className)}>
+    <div
+      className={cn(
+        'flex h-full flex-col space-y-3 overflow-hidden rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3',
+        className
+      )}
+    >
+      {/* Header */}
+      <div className="rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+        <p className="typo-section-title text-foreground">
+          {t('mapPage.direction.title', { defaultValue: 'Chỉ đường' })}
+        </p>
+        <p className="typo-meta text-muted-foreground">
+          {directions
+            ? t('mapPage.direction.subtitle', { defaultValue: 'Chi tiết lộ trình' })
+            : t('mapPage.direction.empty', { defaultValue: 'Chọn 2 điểm để xem chỉ đường' })}
+        </p>
+      </div>
       {directions ? (
         <div className="flex h-full flex-col space-y-2">
           <div className="bg-muted/40 grid flex-shrink-0 grid-cols-2 gap-2 rounded-lg border p-2.5">

@@ -30,6 +30,7 @@ import { useCategoriesStore } from '@/features/categories/store/useCategoriesSto
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
+import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
 import {
   normalizeSpotsSearchResults,
   useSearchSpotsQuery,
@@ -87,6 +88,7 @@ export default function MapPage() {
   const directions = useDirectionsStore((state) => state.directions);
   const setEndLocation = useDirectionsStore((state) => state.setEndLocation);
   const clearDirections = useDirectionsStore((state) => state.clearDirections);
+  const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
   const dataLayerCategoryId = useDataLayerStore((state) => state.categoryId);
   const dataLayerSubcategories = useDataLayerStore((state) => state.subcategories);
   const setSelectedSubcategoryIds = useDataLayerStore((state) => state.setSelectedSubcategoryIds);
@@ -427,9 +429,9 @@ export default function MapPage() {
 
     const prefillKeyword = location.state?.prefillKeyword?.trim?.() || '';
     const prefillResult = location.state?.selectedSearchResult;
-
+    const prefillTourPanel = location.state?.prefillTourPanel;
     const prefillRoute = location.state?.highlightedRoute;
-    if (!prefillKeyword && !prefillResult && !prefillRoute) return;
+    if (!prefillKeyword && !prefillResult && !prefillRoute && !prefillTourPanel) return;
 
     prefillHandledRef.current = true;
     if (prefillKeyword) setKeyword(prefillKeyword);
@@ -437,8 +439,19 @@ export default function MapPage() {
       setHighlightedRoute(prefillRoute);
       setShowOnlyHighlightedRoute(Boolean(prefillRoute));
     }
+    if (prefillTourPanel) {
+      const { tourId, tourName, stops, selectedTour } = prefillTourPanel;
+      if (selectedTour) {
+        setSelectedTour(selectedTour);
+      }
+      useMapPanelStore.getState().openTourPanel({
+        tourId: tourId ?? prefillRoute?.tourId ?? null,
+        tourName: tourName ?? prefillRoute?.tourName ?? '',
+        stops: Array.isArray(stops) ? stops : [],
+      });
+    }
     if (prefillResult) handleSelectSearchResult(prefillResult);
-  }, [location.state]);
+  }, [location.state, setHighlightedRoute, setShowOnlyHighlightedRoute, setSelectedTour]);
 
   const handleSearch = () => {
     if (searchResults.length > 0) {
@@ -566,7 +579,7 @@ export default function MapPage() {
   }
 
   const showLeftPanelRail = activePanel === 'direction' || activePanel === 'tour';
-  const mapPanelWidthClass = 'w-[22vw]';
+  const mapPanelWidthClass = 'w-[18vw]';
 
   return (
     <MapLayout>

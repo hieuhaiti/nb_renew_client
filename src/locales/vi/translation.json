@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "app_name": "Travel Ninh Bình",
     "home": "Trang chủ",
@@ -579,6 +579,7 @@
       "error": "Không thể tải danh sách tour.",
       "empty": "Không có tour phù hợp với bộ lọc.",
       "openRoute": "Mở chỉ đường",
+      "openTourOnMap": "Mở tour trên bản đồ",
       "loadingRoute": "Đang mở...",
       "routeSummary": "{{from}} → {{to}}",
       "hideOtherPoints": "Ẩn điểm khác",
@@ -587,10 +588,24 @@
       "routeReady": "Đã hiển thị tuyến tour trên bản đồ.",
       "routeFailed": "Không thể hiển thị tuyến tour lúc này.",
       "routeCleared": "Đã xóa tuyến tour khỏi bản đồ.",
-      "routeInsufficientStops": "Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường."
+      "routeInsufficientStops": "Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.",
+      "dayStopLabel": "Ngày {{day}} - Điểm dừng {{order}}",
+      "noStopsAvailable": "Chưa có điểm dừng cho tour này.",
+      "noStopResults": "Không tìm thấy điểm dừng phù hợp.",
+      "statsDays": "Ngày",
+      "statsStops": "Điểm dừng",
+      "statsDuration": "Thời lượng",
+      "dayLabel": "Ngày {{day}}",
+      "stopCount": "{{count}} điểm dừng",
+      "itineraryTitle": "Chi tiết lịch trình",
+      "filteredStopCount": "{{filtered}}/{{total}} điểm dừng",
+      "totalStopCount": "{{count}} điểm dừng trong lịch trình",
+      "stopSearchPlaceholder": "Tìm theo tên điểm, mô tả, danh mục...",
+      "coverAlt": "Ảnh bìa {{tourName}}",
+      "stopFallbackLabel": "Điểm dừng {{index}}"
     },
     "eventPanel": {
-      "title": "Lễ hội & Sự kiện",
+      "title": "Lễ hội",
       "syncing": "Đang đồng bộ...",
       "count": "{{count}} sự kiện",
       "reset": "Đặt lại",

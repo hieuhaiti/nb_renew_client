@@ -10,7 +10,7 @@ const accentBorders = [
 
 export function TourismDetailQuickStats({ stats }) {
   return (
-    <section className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {stats.map((stat, index) => (
         <article
           key={stat.key}

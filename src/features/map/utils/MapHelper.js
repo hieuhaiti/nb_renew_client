@@ -113,6 +113,10 @@ function isObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function getScaledRadiusByZoomExpression(scale = 1) {
+  return ['interpolate', ['linear'], ['zoom'], 8, 0.9 * scale, 12, 1 * scale, 16, 1.12 * scale];
+}
+
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
@@ -608,10 +612,12 @@ export function mapFeatureToDestination(feature) {
   const lat = toNumber(coordinates?.[1]);
 
   const normalizedCoordinates = lng != null && lat != null ? [lng, lat] : null;
+  const resolvedId = properties.spot_id ?? properties.point_id ?? properties.id ?? feature.id ?? null;
+  const resolvedSlug = properties.slug || properties.spot_slug || null;
 
   return {
-    id: properties.id ?? feature.id ?? null,
-    slug: properties.slug || null,
+    id: resolvedId,
+    slug: resolvedSlug,
     name:
       toDisplayText(properties.name_vi) ||
       toDisplayText(properties.name_en) ||
@@ -858,6 +864,8 @@ function createPin({ color, num = null, glyph = null }) {
   const wrap = document.createElement('div');
   wrap.className = 'pin-wrap';
   wrap.dataset.routeMarker = 'true';
+  // Let map click events pass through to route point layers beneath the marker.
+  wrap.style.pointerEvents = 'none';
   const pin = document.createElement('div');
   pin.className = 'pin';
   pin.style.setProperty('--pin-color', color);
@@ -1356,11 +1364,11 @@ function startHighlightPulseAnimation(map) {
       HIGHLIGHT_PULSE_MIN_SCALE + (HIGHLIGHT_PULSE_MAX_SCALE - HIGHLIGHT_PULSE_MIN_SCALE) * phase;
     const pulseOpacity = 0.12 + (1 - phase) * 0.28;
 
-    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-radius', [
-      '*',
-      HIGHLIGHT_POINT_RADIUS_BASE * pulseScale,
-      POINT_ICON_SIZE_BY_ZOOM,
-    ]);
+    map.setPaintProperty(
+      HIGHLIGHT_POINT_PULSE_LAYER_ID,
+      'circle-radius',
+      getScaledRadiusByZoomExpression(HIGHLIGHT_POINT_RADIUS_BASE * pulseScale)
+    );
     map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-opacity', pulseOpacity);
 
     const nextRafId = window.requestAnimationFrame(tick);
@@ -1411,11 +1419,9 @@ export function highlightPointOnMap(map, point) {
         type: 'circle',
         source: HIGHLIGHT_POINT_SOURCE_ID,
         paint: {
-          'circle-radius': [
-            '*',
-            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_GLOW_SCALE,
-            POINT_ICON_SIZE_BY_ZOOM,
-          ],
+          'circle-radius': getScaledRadiusByZoomExpression(
+            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_GLOW_SCALE
+          ),
           'circle-color': '#FF6B6B',
           'circle-opacity': 0.25,
           'circle-blur': 0.35,
@@ -1434,11 +1440,9 @@ export function highlightPointOnMap(map, point) {
         type: 'circle',
         source: HIGHLIGHT_POINT_SOURCE_ID,
         paint: {
-          'circle-radius': [
-            '*',
-            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_PULSE_MIN_SCALE,
-            POINT_ICON_SIZE_BY_ZOOM,
-          ],
+          'circle-radius': getScaledRadiusByZoomExpression(
+            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_PULSE_MIN_SCALE
+          ),
           'circle-color': '#FF6B6B',
           'circle-opacity': 0.26,
           'circle-translate': [0, HIGHLIGHT_POINT_Y_OFFSET_PX],
@@ -1447,20 +1451,28 @@ export function highlightPointOnMap(map, point) {
       });
     }
 
-    map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate', [
-      0,
-      HIGHLIGHT_POINT_Y_OFFSET_PX,
-    ]);
-    map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate-anchor', 'viewport');
-    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate', [
-      0,
-      HIGHLIGHT_POINT_Y_OFFSET_PX,
-    ]);
-    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate-anchor', 'viewport');
+    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
+      map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate', [
+        0,
+        HIGHLIGHT_POINT_Y_OFFSET_PX,
+      ]);
+      map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate-anchor', 'viewport');
+    }
+    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
+      map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate', [
+        0,
+        HIGHLIGHT_POINT_Y_OFFSET_PX,
+      ]);
+      map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate-anchor', 'viewport');
+    }
 
     // Keep highlight on top so it is not hidden by point symbol layers.
-    map.moveLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID);
-    map.moveLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID);
+    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
+      map.moveLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID);
+    }
+    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
+      map.moveLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID);
+    }
     startHighlightPulseAnimation(map);
     upsertHighlightPointMarker(map, coordinates);
     bindAutoClearHighlightOnUserInteraction(map);

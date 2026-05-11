@@ -392,7 +392,7 @@ export default function TourismDetailPage() {
   if (isLoading) {
     return (
       <RootLayout>
-        <div className="min-h-screen">
+        <div className="bg-background min-h-screen">
           <LoadingOverlay />
         </div>
       </RootLayout>
@@ -401,7 +401,7 @@ export default function TourismDetailPage() {
   if (!attraction || isError) {
     return (
       <RootLayout>
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="bg-background flex min-h-screen items-center justify-center px-4">
           <div className="text-center">
             <h2 className="text-foreground mb-4 text-2xl font-bold">
               {t('tourism.not_found', 'Tourism point not found')}
@@ -630,8 +630,8 @@ export default function TourismDetailPage() {
 
   return (
     <RootLayout>
-      <div className="min-h-screen pb-10">
-        <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
+      <div className="bg-background min-h-screen pb-8">
+        <div className="mx-auto max-w-7xl px-3 py-4 md:px-4">
           <TourismDetailTopBar
             onBack={() => navigate('/tourism-point')}
             isLiked={isLiked}
@@ -641,8 +641,8 @@ export default function TourismDetailPage() {
             shareStatus={shareStatus}
           />
 
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
-            <main>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+            <main className="space-y-3">
               <TourismDetailHero
                 imageSrc={safeImagesMapped[currentImageIndex]}
                 title={attractionName}

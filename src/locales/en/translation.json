@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "app_name": "Travel Ninh Binh",
     "home": "Home",
@@ -584,10 +584,24 @@
       "routeReady": "Tour route is now displayed on the map.",
       "routeFailed": "Cannot display this tour route right now.",
       "routeCleared": "Tour route was removed from the map.",
-      "routeInsufficientStops": "A tour needs at least 2 stops to draw a route."
+      "routeInsufficientStops": "A tour needs at least 2 stops to draw a route.",
+      "dayStopLabel": "Day {{day}} ? Stop {{order}}",
+      "noStopsAvailable": "No stops available for this tour.",
+      "noStopResults": "No matching stops found.",
+      "statsDays": "Days",
+      "statsStops": "Stops",
+      "statsDuration": "Duration",
+      "dayLabel": "Day {{day}}",
+      "stopCount": "{{count}} stops",
+      "itineraryTitle": "Itinerary details",
+      "filteredStopCount": "{{filtered}}/{{total}} stops",
+      "totalStopCount": "{{count}} stops in this itinerary",
+      "stopSearchPlaceholder": "Search stop name, description, category...",
+      "coverAlt": "{{tourName}} cover image",
+      "stopFallbackLabel": "Stop {{index}}"
     },
     "eventPanel": {
-      "title": "Festivals & Events",
+      "title": "Festivals",
       "syncing": "Syncing...",
       "count": "{{count}} events",
       "reset": "Reset",

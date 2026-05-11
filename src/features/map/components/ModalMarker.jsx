@@ -17,6 +17,7 @@ import placeholderImg from '@/assets/images/placeholder.png';
 import { useSpotDetailModalStore, useModalCarouselStore } from '@/features/map/store/useModalStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import {
+  useGetDataPointById,
   useGetDataPointBySlug,
   useGetSpotMedia,
 } from '@/services/api/tourism-points/tourismPointsApi';
@@ -50,7 +51,15 @@ export default function ModalMarker() {
   const { openCarouselModal } = useModalCarouselStore();
   const { setEndLocation, triggerFocusStart } = useDirectionsStore();
 
-  const { data: spotData, isLoading } = useGetDataPointBySlug({ slug: spotSlug });
+  const hasSpotSlug = Boolean(spotSlug);
+  const { data: spotDataBySlug, isLoading: isLoadingBySlug } = useGetDataPointBySlug({
+    slug: spotSlug,
+  });
+  const { data: spotDataById, isLoading: isLoadingById } = useGetDataPointById({
+    point_id: hasSpotSlug ? null : spotId,
+  });
+  const spotData = hasSpotSlug ? spotDataBySlug : spotDataById;
+  const isLoading = hasSpotSlug ? isLoadingBySlug : isLoadingById;
   const spot = spotData?.data?.spot ?? spotData?.data ?? null;
 
   const { data: mediaData } = useGetSpotMedia({

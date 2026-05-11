@@ -36,7 +36,7 @@ export default function MapNameOverlay({
           borderWidth: borderColor ? '2px' : undefined,
         }}
       >
-        <p className="font-base typo-overline text-foreground flex flex-wrap items-center gap-1">
+        <p className="text-foreground flex flex-wrap items-center gap-1 text-base font-bold">
           <span>{t('common.map', { defaultValue: 'Map' })}</span>
           <span>{categoriesStoreName}</span>
           <span>{t('tourismPointPage.ninh_binh', { defaultValue: 'Ninh Binh' })}</span>

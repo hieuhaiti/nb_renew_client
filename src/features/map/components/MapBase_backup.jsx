@@ -5,11 +5,10 @@ import { useSubcategoryLayerQuery } from '@/services/api/map/mapDataLayerService
 import { useMapStore } from '../store/useMapStore';
 import { defaultLatLong, defaultZoom, mapDelta, pitchDefault } from '../constant/mapConstant';
 import { useMapStyleStore } from '../store/useMapStyleStore';
-import { getMapColorById } from '../constant/mapColor';
 import ResetControl from './control/ToolResetControl';
 import ToolBaseMap from './control/ToolBaseMap';
 import ToolLocateControl from './control/ToolLocateControl';
-import ToolViewModeControl from './control/ToolViewModeControl.jsx';
+import ToolViewModeControl from './control/ToolViewModeControl';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import {
@@ -93,12 +92,9 @@ export default function MapBaseArea() {
 
   const colorBySubcategoryId = useMemo(() => {
     const map = new Map();
-
     subcategories.forEach((item) => {
       if (item?.id == null) return;
-      const parentId = item?.parent_id;
-      const color = getMapColorById(parentId) || '#3b82f6';
-      map.set(String(item.id), color);
+      map.set(String(item.id), item.color_hex || item.color_code || '#3b82f6');
     });
     return map;
   }, [subcategories]);
@@ -393,26 +389,12 @@ export default function MapBaseArea() {
     const map = mapRef.current.single;
     if (!map || !mapsReady.single) return;
 
-    const routeInteractiveLayerIds = [
-      'highlight-route-points-bg',
-      'highlight-route-points-shadow',
-      'highlight-route-points-inner',
-      'highlight-route-points-label',
-      'highlight-route-points-name',
-    ];
-
     const getInteractiveLayerIds = () => {
       const sourceIds = Array.from(prevRenderedSourceIdsRef.current);
 
-      const subcategoryPointLayerIds = sourceIds
+      return sourceIds
         .map((sourceId) => `${sourceId}-point`)
         .filter((layerId) => Boolean(map.getLayer(layerId)));
-
-      const routePointLayerIds = routeInteractiveLayerIds.filter((layerId) =>
-        Boolean(map.getLayer(layerId))
-      );
-
-      return [...subcategoryPointLayerIds, ...routePointLayerIds];
     };
 
     const handleMapClick = (event) => {

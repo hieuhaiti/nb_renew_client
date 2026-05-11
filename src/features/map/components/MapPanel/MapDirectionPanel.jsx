@@ -55,7 +55,7 @@ export default function MapDirectionPanel({
     return (
       <div className={className}>
         <div
-          className={`bg-background/95 border-border/80 relative flex h-full min-h-0 ${resolvedPanelWidthClass} flex-col rounded-xl border shadow-sm backdrop-blur-sm transition-all duration-300`}
+          className={`bg-background/95 border-border/80 relative flex h-fit max-h-full min-h-0 ${resolvedPanelWidthClass} flex-col rounded-xl border shadow-sm backdrop-blur-sm transition-all duration-300`}
         >
           <header className="border-border/60 flex shrink-0 items-center justify-between border-b px-3 py-2">
             <p className="typo-section-title">
@@ -84,7 +84,7 @@ export default function MapDirectionPanel({
   return (
     <div className="absolute top-4 bottom-4 left-4 z-20 flex items-center">
       <div
-        className={`bg-background/95 border-border/80 relative flex h-full ${resolvedPanelWidthClass} flex-col rounded-xl border shadow-sm backdrop-blur-sm transition-all duration-300`}
+        className={`bg-background/95 border-border/80 relative flex h-fit max-h-full ${resolvedPanelWidthClass} flex-col rounded-xl border shadow-sm backdrop-blur-sm transition-all duration-300`}
       >
         <header className="border-border/60 flex shrink-0 items-center justify-between border-b px-3 py-2">
           <p className="typo-section-title">
