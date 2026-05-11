@@ -15,7 +15,6 @@ import {
   mapBasemapOptions,
   mapDestinations,
   mapLayerToggles,
-  mapSatelliteCompareBlocks,
   mapTourSuggestions,
 } from '@/features/map/constant/mapPageMockData';
 import DataLayer from '@/features/map/components/leftSidebar/DataLayer';
@@ -84,6 +83,7 @@ export default function MapPage() {
   const setHighlightedRoute = useMapStore((state) => state.setHighlightedRoute);
   const setShowOnlyHighlightedRoute = useMapStore((state) => state.setShowOnlyHighlightedRoute);
   const clearHighlightedRoute = useMapStore((state) => state.clearHighlightedRoute);
+  const setIsSplitMode = useMapStore((state) => state.setIsSplitMode);
   const setMapStyle = useMapStyleStore((state) => state.setMapStyle);
   const directions = useDirectionsStore((state) => state.directions);
   const setEndLocation = useDirectionsStore((state) => state.setEndLocation);
@@ -594,6 +594,26 @@ export default function MapPage() {
     }
   }
 
+  const handleSidebarTabChange = (nextTab) => {
+    if (import.meta.env.DEV) {
+      console.log('[MapPage] handleSidebarTabChange', { nextTab, prevTab: activeTab });
+      console.trace('[MapPage] handleSidebarTabChange trace');
+    }
+    setActiveTab(nextTab);
+  };
+
+  useEffect(() => {
+    const shouldSplitMode = activeTab === 'compareSatellite';
+    if (import.meta.env.DEV) {
+      console.log('[MapPage] activeTab effect -> setIsSplitMode', {
+        activeTab,
+        shouldSplitMode,
+      });
+      console.trace('[MapPage] activeTab effect trace');
+    }
+    setIsSplitMode(shouldSplitMode);
+  }, [activeTab, setIsSplitMode]);
+
   const showLeftPanelRail = activePanel === 'direction' || activePanel === 'tour';
   const mapPanelWidthClass = 'w-[17vw]';
 
@@ -713,13 +733,12 @@ export default function MapPage() {
               <MapRightSidebar
                 activeSidebar={activeSidebar}
                 tab={activeTab}
-                onTabChange={setActiveTab}
+                onTabChange={handleSidebarTabChange}
                 destinations={mapDestinations}
                 selectedPlace={selectedPlace}
                 onSelectPlace={handleSelectPlace}
                 monitoringItems={monitoringItems}
                 tourSuggestions={mapTourSuggestions}
-                satelliteCompare={mapSatelliteCompareBlocks}
                 onOpenRoute={handleOpenRoute}
                 onOpenVr={handleOpenVr}
                 onOpenSuggestTab={() => setActiveTab('tour')}

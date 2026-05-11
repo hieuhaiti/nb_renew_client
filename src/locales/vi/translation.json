@@ -721,5 +721,89 @@
       "directions": "Chỉ đường",
       "vrTour": "Tour VR 360°"
     }
+  },
+  "satellite": {
+    "title": "Ảnh vệ tinh",
+    "subtitle": "Phân tích ảnh vệ tinh khu vực bảo tồn",
+    "tabs": {
+      "single": "Đơn kỳ",
+      "compare": "So sánh"
+    },
+    "actions": {
+      "load_image": "Tải ảnh",
+      "reset": "Đặt lại",
+      "retry": "Thử lại",
+      "hide": "Ẩn lớp",
+      "show": "Hiện lớp",
+      "download_raster": "Tải ảnh raster",
+      "confirm_download": "Xác nhận tải xuống",
+      "download_note": "Ảnh sẽ được cắt theo vùng nghiên cứu.",
+      "download": "Tải xuống",
+      "cancel": "Đóng",
+      "close_panel": "Đóng bảng điều khiển",
+      "open_panel": "Mở bảng điều khiển"
+    },
+    "fields": {
+      "config": "Cấu hình",
+      "config_compare": "Cấu hình so sánh",
+      "time_range": "Thời gian",
+      "compare_periods": "Kỳ so sánh",
+      "from": "Từ",
+      "to": "Đến",
+      "period1": "Kỳ hiện tại",
+      "period2": "Kỳ tham chiếu",
+      "layer_types": "Loại ảnh",
+      "settings": "Cài đặt",
+      "collection": "Nguồn dữ liệu",
+      "cloud_cover": "Mức mây tối đa",
+      "opacity": "Độ trong suốt",
+      "auto_detect_change": "Tự động phát hiện thay đổi",
+      "auto_detect_change_desc": "Phát hiện thay đổi thảm thực vật, tăng rừng và dấu hiệu mở đường/xây dựng giữa 2 kỳ.",
+      "auto_detect_change_single_desc": "So sánh kỳ hiện tại với cùng kỳ 1 năm trước để phát hiện thay đổi."
+    },
+    "layers": {
+      "rgb": "Ảnh Màu",
+      "rgb_desc": "Ảnh tổng hợp màu gốc (RGB)",
+      "ndvi": "Ảnh NDVI",
+      "ndvi_desc": "Chỉ số thực vật NDVI",
+      "heatmap": "Ảnh Nhiệt",
+      "heatmap_desc": "Nhiệt độ bề mặt (LST)",
+      "classified": "Ảnh Phân Loại",
+      "classified_desc": "Phân loại lớp phủ (7 lớp)",
+      "change": "Thay Đổi",
+      "change_desc": "Phát hiện thay đổi thảm thực vật, mở đường/xây dựng"
+    },
+    "legend": {
+      "title": "Chú giải ảnh vệ tinh",
+      "period_current": "Kỳ hiện tại",
+      "period_reference": "Kỳ tham chiếu"
+    },
+    "stats": {
+      "title": "Thống kê diện tích",
+      "total_area": "Tổng diện tích"
+    },
+    "map": {
+      "layer_manager": "Quản lý Layer",
+      "boundary_layer": "Ranh giới khu vực"
+    },
+    "loading": {
+      "title": "Đang phân tích...",
+      "downloading": "Đang tải..."
+    },
+    "empty": {
+      "title": "Chưa có ảnh vệ tinh",
+      "description": "Chọn thời gian và loại ảnh, sau đó nhấn Tải ảnh để bắt đầu phân tích."
+    },
+    "errors": {
+      "title": "Đã xảy ra lỗi",
+      "generic": "Có lỗi xảy ra. Vui lòng thử lại.",
+      "no_roi": "Không tải được dữ liệu vùng nghiên cứu.",
+      "no_layer": "Vui lòng chọn ít nhất 1 loại ảnh.",
+      "invalid_date": "Ngày không hợp lệ. Vui lòng chọn lại.",
+      "date_order": "Ngày bắt đầu phải trước ngày kết thúc."
+    },
+    "success": {
+      "loaded": "Tải ảnh vệ tinh thành công."
+    }
   }
 }

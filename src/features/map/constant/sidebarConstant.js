@@ -12,6 +12,7 @@ import ChatbotPanel from '@/features/map/components/rightSidebar/ChatbotPanel';
 import TourPanel from '@/features/map/components/rightSidebar/TourPanel';
 import CapacityPanel from '@/features/map/components/rightSidebar/CapacityPanel';
 import TrafficPanel from '@/features/map/components/rightSidebar/TrafficPanel';
+import { CompareSatellitePlaceholder, SatelliteImagePlaceholder } from '@/features/satellite';
 
 export const headerSidebar = [
   {
@@ -46,16 +47,17 @@ export const headerSidebar = [
     icon: Satellite,
     label: 'headerAside.satellite',
     value: 'satellite',
-    component: 'SatelliteImage Placeholder',
+    component: SatelliteImagePlaceholder,
     authen: true,
   },
-  {
-    icon: AlignHorizontalJustifyCenter,
-    label: 'headerAside.compareSatellite',
-    value: 'compareSatellite',
-    component: 'compareSatellite Placeholder',
-    authen: true,
-  },
+  // TODO: Add compare satellite feature when backend is ready
+  // {
+  //   icon: AlignHorizontalJustifyCenter,
+  //   label: 'headerAside.compareSatellite',
+  //   value: 'compareSatellite',
+  //   component: CompareSatellitePlaceholder,
+  //   authen: true,
+  // },
   {
     icon: Bot,
     label: 'headerAside.chatbot',

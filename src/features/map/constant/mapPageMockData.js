@@ -97,7 +97,3 @@ export const mapTourSuggestions = [
   },
 ];
 
-export const mapSatelliteCompareBlocks = {
-  from: '2024 baseline',
-  to: '2026 latest',
-};

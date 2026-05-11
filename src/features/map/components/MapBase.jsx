@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
+import MapboxCompare from 'mapbox-gl-compare';
 import { useTranslation } from 'react-i18next';
 import { useSubcategoryLayerQuery } from '@/services/api/map/mapDataLayerService';
 import { useMapStore } from '../store/useMapStore';
@@ -37,10 +38,16 @@ import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
 import { useTrafficStore } from '@/features/map/store/useTrafficStore';
 import { useCapacityWebSocket } from '@/services/api/capacity/capacityService';
+import { SatelliteMapOverlayControls } from '@/features/satellite';
 
 mapboxgl.accessToken = env.mapboxToken;
+const MapboxCompareCtor = MapboxCompare?.default ?? MapboxCompare;
+if (typeof mapboxgl.Compare !== 'function' && typeof MapboxCompareCtor === 'function') {
+  mapboxgl.Compare = MapboxCompareCtor;
+}
 
 const SUBCATEGORY_LAYER_SUFFIXES = ['fill', 'line', 'point', 'cluster', 'cluster-count'];
+const COMPARE_TEARDOWN_DELAY_MS = 300;
 
 export default function MapBaseArea() {
   const DIRECTION_ROUTE_SOURCE_ID = 'direction-route-source';
@@ -50,6 +57,9 @@ export default function MapBaseArea() {
   const mapContainer = useRef(null);
   const singleMapContainerRef = useRef(null);
   const splitMapContainerRef = useRef(null);
+  const compareRef = useRef(null);
+  const compareInitTimerRef = useRef(null);
+  const compareTeardownTimerRef = useRef(null);
   const { setMapRef } = useMapStore();
 
   const mapRef = useRef({
@@ -74,6 +84,7 @@ export default function MapBaseArea() {
   const highlightedRoute = useMapStore((state) => state.highlightedRoute);
   const highlightedRouteAt = useMapStore((state) => state.highlightedRouteAt);
   const showOnlyHighlightedRoute = useMapStore((state) => state.showOnlyHighlightedRoute);
+  const isSplitMode = useMapStore((state) => state.isSplitMode);
   const directions = useDirectionsStore((state) => state.directions);
   const startLocation = useDirectionsStore((state) => state.startLocation);
   const endLocation = useDirectionsStore((state) => state.endLocation);
@@ -206,6 +217,9 @@ export default function MapBaseArea() {
     mapRef.current.split.on('load', handleSplitLoad);
 
     const handleMove = () => {
+      // mapbox-gl-compare already syncs both maps; avoid double jumpTo on every move.
+      if (mapRef.current.compare) return;
+
       if (
         useMapStore.getState().isSplitMode &&
         mapRef.current.split &&
@@ -233,9 +247,22 @@ export default function MapBaseArea() {
       map.off('move', handleMove);
       map.off('moveend', handleMoveEnd);
 
+      if (compareInitTimerRef.current) {
+        window.clearTimeout(compareInitTimerRef.current);
+        compareInitTimerRef.current = null;
+      }
+      if (compareTeardownTimerRef.current) {
+        window.clearTimeout(compareTeardownTimerRef.current);
+        compareTeardownTimerRef.current = null;
+      }
+
       if (mapRef.current.single) {
         mapRef.current.single.remove();
         mapRef.current.single = null;
+      }
+      if (compareRef.current) {
+        compareRef.current.remove();
+        compareRef.current = null;
       }
       if (mapRef.current.split) {
         mapRef.current.split.remove();
@@ -245,6 +272,184 @@ export default function MapBaseArea() {
       setMapsReady({ single: false, split: false });
     };
   }, []);
+
+  useEffect(() => {
+    if (!mapsReady.single || !mapsReady.split) return;
+
+    const { single, split } = mapRef.current;
+    if (!single || !split) return;
+
+    console.log('[CompareDebug] effect trigger', {
+      isSplitMode,
+      singleReady: mapsReady.single,
+      splitReady: mapsReady.split,
+      hasCompareInstance: Boolean(mapRef.current.compare),
+    });
+
+    if (isSplitMode) {
+      if (compareTeardownTimerRef.current) {
+        window.clearTimeout(compareTeardownTimerRef.current);
+        compareTeardownTimerRef.current = null;
+      }
+
+      // Show split map
+      split.getContainer().style.display = 'block';
+
+      // Wait a bit for DOM to update, then resize
+      if (compareInitTimerRef.current) {
+        window.clearTimeout(compareInitTimerRef.current);
+      }
+
+      compareInitTimerRef.current = window.setTimeout(() => {
+        const singleContainer = single.getContainer();
+        const splitContainer = split.getContainer();
+        const compareNodeBeforeInit = mapContainer.current?.querySelector('.mapboxgl-compare');
+        console.log('[CompareDebug] before init', {
+          mapContainerSize: mapContainer.current
+            ? {
+                width: mapContainer.current.clientWidth,
+                height: mapContainer.current.clientHeight,
+              }
+            : null,
+          singleSize: singleContainer
+            ? { width: singleContainer.clientWidth, height: singleContainer.clientHeight }
+            : null,
+          splitSize: splitContainer
+            ? { width: splitContainer.clientWidth, height: splitContainer.clientHeight }
+            : null,
+          splitDisplay: splitContainer?.style?.display,
+          hasCompareDom: Boolean(compareNodeBeforeInit),
+        });
+
+        split.resize();
+
+        // Sync camera with single map
+        const camera = {
+          center: single.getCenter(),
+          zoom: single.getZoom(),
+          pitch: single.getPitch(),
+          bearing: single.getBearing(),
+        };
+        split.jumpTo(camera);
+
+        // Create Compare slider if not exists
+        if (!mapRef.current.compare && mapContainer.current) {
+          try {
+            const CompareClass =
+              typeof mapboxgl?.Compare === 'function' ? mapboxgl.Compare : MapboxCompareCtor;
+
+            if (typeof CompareClass !== 'function') {
+              throw new Error('mapbox-gl-compare constructor is not available');
+            }
+
+            mapRef.current.compare = new CompareClass(single, split, mapContainer.current, {
+              orientation: 'vertical',
+            });
+            compareRef.current = mapRef.current.compare;
+            console.log('[MapBase] Compare initialized', {
+              compareDomExists: Boolean(mapContainer.current?.querySelector('.mapboxgl-compare')),
+              singleClip: single.getContainer()?.style?.clip,
+              splitClip: split.getContainer()?.style?.clip,
+            });
+          } catch (error) {
+            console.error('[MapBase] Failed to initialize map compare:', error);
+          }
+        }
+      }, 100);
+    } else {
+      if (compareInitTimerRef.current) {
+        window.clearTimeout(compareInitTimerRef.current);
+        compareInitTimerRef.current = null;
+      }
+      if (compareTeardownTimerRef.current) {
+        window.clearTimeout(compareTeardownTimerRef.current);
+      }
+
+      // Delay teardown to absorb transient true->false->true split mode flips.
+      compareTeardownTimerRef.current = window.setTimeout(() => {
+        const stillSplitOff = !useMapStore.getState().isSplitMode;
+        if (!stillSplitOff) return;
+
+        split.getContainer().style.display = 'none';
+
+        if (mapRef.current.compare) {
+          try {
+            mapRef.current.compare.remove();
+          } catch (error) {
+            console.error('[MapBase] Failed to remove map compare:', error);
+          }
+          mapRef.current.compare = null;
+          compareRef.current = null;
+        }
+      }, COMPARE_TEARDOWN_DELAY_MS);
+    }
+
+    return () => {
+      if (compareInitTimerRef.current) {
+        window.clearTimeout(compareInitTimerRef.current);
+        compareInitTimerRef.current = null;
+      }
+      if (compareTeardownTimerRef.current) {
+        window.clearTimeout(compareTeardownTimerRef.current);
+        compareTeardownTimerRef.current = null;
+      }
+    };
+  }, [isSplitMode, mapsReady.single, mapsReady.split]);
+
+  useEffect(() => {
+    if (!isSplitMode || !mapContainer.current) return;
+
+    const debugTimer = window.setTimeout(() => {
+      const compareDom = mapContainer.current?.querySelector('.mapboxgl-compare');
+      const swiperDom =
+        mapContainer.current?.querySelector('.compare-swiper-vertical') ||
+        mapContainer.current?.querySelector('.compare-swiper-horizontal');
+      const splitDisplay = mapRef.current.split?.getContainer()?.style?.display;
+      const swiperRect = swiperDom?.getBoundingClientRect?.();
+      const sampleX = swiperRect ? Math.round(swiperRect.left + swiperRect.width / 2) : null;
+      const sampleY = swiperRect ? Math.round(swiperRect.top + swiperRect.height / 2) : null;
+      const topElementAtSwiper =
+        sampleX != null && sampleY != null
+          ? document.elementFromPoint(sampleX, sampleY)
+          : null;
+      const swiperStyle = swiperDom ? window.getComputedStyle(swiperDom) : null;
+
+      console.log('[CompareDebug] post-render snapshot', {
+        hasCompareDom: Boolean(compareDom),
+        hasSwiperDom: Boolean(swiperDom),
+        splitDisplay,
+        compareTransform: compareDom?.style?.transform || null,
+        swiperRect: swiperRect
+          ? {
+              left: Math.round(swiperRect.left),
+              top: Math.round(swiperRect.top),
+              width: Math.round(swiperRect.width),
+              height: Math.round(swiperRect.height),
+            }
+          : null,
+        swiperComputed: swiperStyle
+          ? {
+              display: swiperStyle.display,
+              visibility: swiperStyle.visibility,
+              opacity: swiperStyle.opacity,
+              zIndex: swiperStyle.zIndex,
+              pointerEvents: swiperStyle.pointerEvents,
+              backgroundColor: swiperStyle.backgroundColor,
+              borderLeft: swiperStyle.borderLeft,
+              borderRight: swiperStyle.borderRight,
+            }
+          : null,
+        topElementAtSwiper: topElementAtSwiper
+          ? {
+              tag: topElementAtSwiper.tagName,
+              className: topElementAtSwiper.className,
+            }
+          : null,
+      });
+    }, 260);
+
+    return () => window.clearTimeout(debugTimer);
+  }, [isSplitMode, mapsReady.single, mapsReady.split]);
 
   useEffect(() => {
     const map = mapRef.current.single;
@@ -313,7 +518,12 @@ export default function MapBaseArea() {
 
     const drawHighlightedRoute = async () => {
       const points = Array.isArray(highlightedRoute?.points) ? highlightedRoute.points : [];
-      console.log('[MapBase drawHighlightedRoute] called. points:', points.length, '| highlightedRoute:', highlightedRoute);
+      console.log(
+        '[MapBase drawHighlightedRoute] called. points:',
+        points.length,
+        '| highlightedRoute:',
+        highlightedRoute
+      );
 
       if (points.length < 2) {
         console.warn('[MapBase drawHighlightedRoute] points.length < 2 → clearing layers');
@@ -323,7 +533,12 @@ export default function MapBaseArea() {
 
       try {
         const hasPrecomputedGeometry = Boolean(highlightedRoute?.geometry?.coordinates?.length);
-        console.log('[MapBase drawHighlightedRoute] hasPrecomputedGeometry:', hasPrecomputedGeometry, '| coords count:', highlightedRoute?.geometry?.coordinates?.length);
+        console.log(
+          '[MapBase drawHighlightedRoute] hasPrecomputedGeometry:',
+          hasPrecomputedGeometry,
+          '| coords count:',
+          highlightedRoute?.geometry?.coordinates?.length
+        );
 
         const routeResult = hasPrecomputedGeometry
           ? {
@@ -339,7 +554,10 @@ export default function MapBaseArea() {
             );
 
         if (didCancel) return;
-        console.log('[MapBase drawHighlightedRoute] routeResult geometry coords:', routeResult?.geometry?.coordinates?.length);
+        console.log(
+          '[MapBase drawHighlightedRoute] routeResult geometry coords:',
+          routeResult?.geometry?.coordinates?.length
+        );
 
         if (!routeResult?.geometry?.coordinates?.length) {
           console.warn('[MapBase drawHighlightedRoute] no geometry → clearing layers');
@@ -372,7 +590,12 @@ export default function MapBaseArea() {
           new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
         );
 
-        console.log('[MapBase drawHighlightedRoute] fitBounds to:', bounds.toArray(), '| maxBounds:', map.getMaxBounds()?.toArray());
+        console.log(
+          '[MapBase drawHighlightedRoute] fitBounds to:',
+          bounds.toArray(),
+          '| maxBounds:',
+          map.getMaxBounds()?.toArray()
+        );
         map.fitBounds(bounds, {
           padding: 88,
           duration: 850,
@@ -387,7 +610,14 @@ export default function MapBaseArea() {
     };
 
     const isStyleReady = map.isStyleLoaded();
-    console.log('[MapBase useEffect route] mapsReady:', mapsReady.single, '| isStyleLoaded:', isStyleReady, '| highlightedRoute:', Boolean(highlightedRoute));
+    console.log(
+      '[MapBase useEffect route] mapsReady:',
+      mapsReady.single,
+      '| isStyleLoaded:',
+      isStyleReady,
+      '| highlightedRoute:',
+      Boolean(highlightedRoute)
+    );
 
     // Khi mapsReady.single = true, 'load' event đã fire → 'style.load' đã fire trước đó.
     // isStyleLoaded() có thể false vì tiles vẫn đang load, nhưng addSource/addLayer vẫn hoạt động.
@@ -803,6 +1033,7 @@ export default function MapBaseArea() {
         <div ref={splitMapContainerRef} className="absolute inset-0 size-full" />
         <div ref={singleMapContainerRef} className="absolute inset-0 size-full" />
       </div>
+      <SatelliteMapOverlayControls />
     </div>
   );
 }

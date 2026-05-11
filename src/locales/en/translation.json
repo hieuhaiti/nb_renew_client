@@ -717,5 +717,89 @@
       "directions": "Get directions",
       "vrTour": "VR Tour 360°"
     }
+  },
+  "satellite": {
+    "title": "Satellite Imagery",
+    "subtitle": "Analyze satellite imagery of protected areas",
+    "tabs": {
+      "single": "Single Period",
+      "compare": "Compare"
+    },
+    "actions": {
+      "load_image": "Load Image",
+      "reset": "Reset",
+      "retry": "Retry",
+      "hide": "Hide layer",
+      "show": "Show layer",
+      "download_raster": "Download raster",
+      "confirm_download": "Confirm download",
+      "download_note": "Image will be clipped to the study area.",
+      "download": "Download",
+      "cancel": "Close",
+      "close_panel": "Close panel",
+      "open_panel": "Open panel"
+    },
+    "fields": {
+      "config": "Configuration",
+      "config_compare": "Compare configuration",
+      "time_range": "Time range",
+      "compare_periods": "Comparison periods",
+      "from": "From",
+      "to": "To",
+      "period1": "Current period",
+      "period2": "Reference period",
+      "layer_types": "Layer types",
+      "settings": "Settings",
+      "collection": "Data source",
+      "cloud_cover": "Max cloud cover",
+      "opacity": "Opacity",
+      "auto_detect_change": "Auto-detect change",
+      "auto_detect_change_desc": "Detect vegetation change, forest gain and road/construction between 2 periods.",
+      "auto_detect_change_single_desc": "Compare current period with the same period one year ago."
+    },
+    "layers": {
+      "rgb": "True Color",
+      "rgb_desc": "RGB composite image",
+      "ndvi": "NDVI",
+      "ndvi_desc": "Normalized Difference Vegetation Index",
+      "heatmap": "Heat Map",
+      "heatmap_desc": "Land Surface Temperature (LST)",
+      "classified": "Classification",
+      "classified_desc": "Land cover classification (7 classes)",
+      "change": "Change Detection",
+      "change_desc": "Detect vegetation loss/gain and road/construction"
+    },
+    "legend": {
+      "title": "Satellite legend",
+      "period_current": "Current period",
+      "period_reference": "Reference period"
+    },
+    "stats": {
+      "title": "Area statistics",
+      "total_area": "Total area"
+    },
+    "map": {
+      "layer_manager": "Layer Manager",
+      "boundary_layer": "Study area boundary"
+    },
+    "loading": {
+      "title": "Analyzing...",
+      "downloading": "Downloading..."
+    },
+    "empty": {
+      "title": "No satellite imagery",
+      "description": "Select a date range and layer type, then click Load Image to start analysis."
+    },
+    "errors": {
+      "title": "An error occurred",
+      "generic": "Something went wrong. Please try again.",
+      "no_roi": "Could not load study area geometry.",
+      "no_layer": "Please select at least one layer type.",
+      "invalid_date": "Invalid date. Please select again.",
+      "date_order": "Start date must be before end date."
+    },
+    "success": {
+      "loaded": "Satellite imagery loaded successfully."
+    }
   }
 }

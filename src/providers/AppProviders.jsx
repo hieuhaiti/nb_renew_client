@@ -34,10 +34,10 @@ export function AppProviders() {
         closeOnClick
         pauseOnHover
       />
-      <ReactQueryDevtools
+      {/* <ReactQueryDevtools
         initialIsOpen={false}
         toggleButtonProps={{ style: { display: 'none' } }}
-      />
+      /> */}
     </QueryClientProvider>
   );
 }

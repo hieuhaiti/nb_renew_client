@@ -13,7 +13,17 @@ export const useMapStore = create((set) => ({
 
   setMapRef: (mapRef) => set({ mapRef }),
   setMapRefObj: (mapRefObj) => set({ mapRefObj }),
-  setIsSplitMode: (isSplitMode) => set({ isSplitMode }),
+  setIsSplitMode: (isSplitMode) =>
+    set((state) => {
+      if (import.meta.env.DEV && state.isSplitMode !== isSplitMode) {
+        console.log('[MapStore] setIsSplitMode', {
+          from: state.isSplitMode,
+          to: isSplitMode,
+        });
+        console.trace('[MapStore] setIsSplitMode trace');
+      }
+      return { isSplitMode };
+    }),
 
   setHighlightedPoint: (point) =>
     set({

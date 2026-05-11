@@ -43,6 +43,12 @@ export function hasHtmlMarkup(value) {
   return /<\/?[a-z][\s\S]*>/i.test(value);
 }
 
+export function fmtKm2(km2) {
+  if (km2 == null || isNaN(km2)) return '';
+  if (km2 >= 1000) return `${(km2 / 1000).toFixed(1)}k km²`;
+  return `${Number(km2).toFixed(2)} km²`;
+}
+
 export function formatStopDuration(minutes) {
   if (!minutes) return null;
   const h = Math.floor(minutes / 60);
