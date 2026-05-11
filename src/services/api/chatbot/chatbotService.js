@@ -37,6 +37,15 @@ export async function deleteChatSession(sessionId) {
 }
 
 /**
+ * Extract map_actions array from the send-message response.
+ * Returns null if absent or empty.
+ */
+export function extractMapActions(data) {
+  const actions = data?.map_actions;
+  return Array.isArray(actions) && actions.length > 0 ? actions : null;
+}
+
+/**
  * Extract the bot reply string from the send-message response.
  * Handles multiple common API shapes.
  */

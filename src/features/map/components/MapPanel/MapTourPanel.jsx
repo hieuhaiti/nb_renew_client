@@ -391,7 +391,7 @@ function TourPanelBody({ tourName, stops, selectedTour, onClose, onFocusRoute })
           </div>
 
           <p
-            className="typo-section-title text-foreground line-clamp-2"
+            className="text-foreground line-clamp-2 text-base font-bold"
             title={tourName ?? undefined}
           >
             {tourName ||

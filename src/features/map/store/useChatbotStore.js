@@ -6,6 +6,7 @@ import {
   sendMessage as apiSendMessage,
   deleteChatSession,
   extractBotReply,
+  extractMapActions,
 } from '@/services/api/chatbot/chatbotService';
 
 const useChatbotStore = create((set, get) => ({
@@ -103,6 +104,7 @@ const useChatbotStore = create((set, get) => ({
         role: 'assistant',
         content: msgData?.content ?? extractBotReply(data) ?? '…',
         createdAt: msgData?.created_at ?? new Date().toISOString(),
+        mapActions: extractMapActions(data),
       };
       set((s) => ({ messages: [...s.messages, botMsg], isSending: false }));
     } catch (_err) {

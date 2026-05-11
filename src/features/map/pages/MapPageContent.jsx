@@ -602,7 +602,7 @@ export default function MapPage() {
       <ModalMarker />
       <ModalCarousel />
       <section className="bg-background h-full overflow-hidden p-3">
-        <div className="mx-auto grid h-full min-h-0 w-full max-w-437.5 grid-rows-[auto_1fr] gap-3">
+        <div className="mx-auto grid h-full min-h-0 w-full max-w-full grid-rows-[auto_1fr] gap-3">
           <MapToolbarCard
             keyword={keyword}
             onKeywordChange={setKeyword}

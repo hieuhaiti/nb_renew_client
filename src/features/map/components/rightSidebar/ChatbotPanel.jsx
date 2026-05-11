@@ -7,6 +7,29 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import useAuthStore from '@/stores/useAuthStore';
 import useChatbotStore from '@/features/map/store/useChatbotStore';
+import { useMapStore } from '@/features/map/store/useMapStore';
+import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
+import { useGetDataPointById } from '@/services/api/tourism-points/tourismPointsApi';
+
+function MapActionTrigger({ item, mapRef, flyTo }) {
+  const { data, isSuccess } = useGetDataPointById({ point_id: item.id });
+
+  useEffect(() => {
+    if (!isSuccess || !mapRef || !flyTo) return;
+    const point = data?.data ?? data ?? {};
+    const lat = point.lat ?? item.lat;
+    const lng = point.lng ?? item.lng;
+    if (lat == null || lng == null) return;
+    highlightPointOnMap(mapRef, {
+      id: item.id,
+      coordinates: [lng, lat],
+      properties: { ...item, ...point },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess]);
+
+  return null;
+}
 
 export default function ChatbotPanel() {
   const { t, i18n } = useTranslation();
@@ -14,6 +37,7 @@ export default function ChatbotPanel() {
   const language = i18n.language?.startsWith('vi') ? 'vi' : 'en';
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const mapRef = useMapStore((s) => s.mapRef);
   const {
     sessions,
     messages,
@@ -32,6 +56,16 @@ export default function ChatbotPanel() {
   const [input, setInput] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const bottomRef = useRef(null);
+  const lastMapActionMsgRef = useRef(null);
+  const [mapActionItems, setMapActionItems] = useState([]);
+
+  useEffect(() => {
+    const lastBotMsg = [...messages].reverse().find((m) => m.role === 'assistant' && m.mapActions);
+    if (!lastBotMsg || lastBotMsg.id === lastMapActionMsgRef.current) return;
+    lastMapActionMsgRef.current = lastBotMsg.id;
+    const attachAction = lastBotMsg.mapActions.find((a) => a.action === 'attach_items');
+    setMapActionItems(attachAction?.items ?? []);
+  }, [messages]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -74,8 +108,13 @@ export default function ChatbotPanel() {
   };
 
   const quickPrompts = [
-    t('mapPage.chatbot.quickPrompts.dayTour', { defaultValue: 'Gợi ý tour 1 ngày' }),
-    t('mapPage.chatbot.quickPrompts.lessCrowded', { defaultValue: 'Điểm nào ít đông?' }),
+    t('mapPage.chatbot.quickPrompts.randomSpot', {
+      defaultValue:
+        language === 'vi' ? 'Gợi ý 1 điểm du lịch ngẫu nhiên' : 'Suggest one random tourist spot',
+    }),
+    t('mapPage.chatbot.quickPrompts.tamChucIntro', {
+      defaultValue: language === 'vi' ? 'Giới thiệu về chùa Tam Chúc' : 'Introduce Tam Chuc Temple',
+    }),
   ];
 
   if (!isAuthenticated) {
@@ -179,7 +218,7 @@ export default function ChatbotPanel() {
                     <div
                       className={
                         msg.role === 'user'
-                          ? 'typo-caption text-right text-primary'
+                          ? 'typo-caption text-primary text-right'
                           : 'typo-caption text-muted-foreground'
                       }
                     >
@@ -200,9 +239,15 @@ export default function ChatbotPanel() {
                         <ReactMarkdown
                           components={{
                             p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
-                            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                            ul: ({ children }) => <ul className="my-1 ml-4 list-disc space-y-0.5">{children}</ul>,
-                            ol: ({ children }) => <ol className="my-1 ml-4 list-decimal space-y-0.5">{children}</ol>,
+                            strong: ({ children }) => (
+                              <strong className="font-semibold">{children}</strong>
+                            ),
+                            ul: ({ children }) => (
+                              <ul className="my-1 ml-4 list-disc space-y-0.5">{children}</ul>
+                            ),
+                            ol: ({ children }) => (
+                              <ol className="my-1 ml-4 list-decimal space-y-0.5">{children}</ol>
+                            ),
                             li: ({ children }) => <li>{children}</li>,
                           }}
                         >
@@ -222,9 +267,15 @@ export default function ChatbotPanel() {
                     </div>
                     <div className="typo-body bg-card text-muted-foreground rounded-2xl border px-3 py-2">
                       <span className="inline-flex items-center gap-0.5">
-                        <span className="animate-bounce" style={{ animationDelay: '0ms' }}>•</span>
-                        <span className="animate-bounce" style={{ animationDelay: '150ms' }}>•</span>
-                        <span className="animate-bounce" style={{ animationDelay: '300ms' }}>•</span>
+                        <span className="animate-bounce" style={{ animationDelay: '0ms' }}>
+                          •
+                        </span>
+                        <span className="animate-bounce" style={{ animationDelay: '150ms' }}>
+                          •
+                        </span>
+                        <span className="animate-bounce" style={{ animationDelay: '300ms' }}>
+                          •
+                        </span>
                       </span>
                     </div>
                   </div>
@@ -277,9 +328,13 @@ export default function ChatbotPanel() {
         </div>
       </div>
 
+      {mapActionItems.map((item, i) => (
+        <MapActionTrigger key={item.id} item={item} mapRef={mapRef} flyTo={i === 0} />
+      ))}
+
       {/* History Overlay */}
       {showHistory && (
-        <div className="absolute inset-0 z-10 flex flex-col overflow-hidden rounded-2xl border bg-card shadow-xl">
+        <div className="bg-card absolute inset-0 z-10 flex flex-col overflow-hidden rounded-2xl border shadow-xl">
           {/* Overlay header */}
           <div className="flex shrink-0 items-center justify-between border-b px-4 py-3">
             <h4 className="typo-section-title text-foreground">

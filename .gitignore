@@ -38,3 +38,5 @@ package-lock.json
 # promt
 prompts/
 .shared
+
+satellite-frontend-migration/
