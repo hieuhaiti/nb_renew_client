@@ -2,6 +2,7 @@
 import mapboxgl from 'mapbox-gl';
 import { env } from '@/config/env';
 import { defaultLatLong, defaultZoom } from '@/features/map/constant/mapConstant';
+import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { useFovStore } from '../store/useFovStore';
 import { normalizeBearing } from '../utils/fovHelpers';
 import FOVControls from './FOVControls';
@@ -17,7 +18,6 @@ const LAYER_FOV_OUTLINE = 'fov-outline';
 const SOURCE_POINTS = 'allTourismPoints';
 const LAYER_POINTS = 'allTourismPoints-marker';
 const LAYER_LABELS = 'allTourismPoints-label';
-const FLY_DURATION = 320;
 
 function parseGeometryValue(value) {
   if (!value) return null;
@@ -347,8 +347,14 @@ export default function MiniMap({
     const map = mapRef.current;
     if (!map || !currentCenter) return;
 
-    map.flyTo({ center: currentCenter, zoom: Math.max(13, map.getZoom()), duration: FLY_DURATION });
+    highlightPointOnMap(map, {
+      coordinates: currentCenter,
+      properties: { name: 'Current Scene' },
+    });
+  }, [currentCenter]);
 
+  useEffect(() => {
+    if (!currentCenter) return;
     updateFovPolygon(currentCenter, heading, fovAngle, fovRadius);
   }, [currentCenter, heading, fovAngle, fovRadius, updateFovPolygon]);
 

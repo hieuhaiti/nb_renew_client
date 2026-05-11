@@ -140,8 +140,8 @@ export default function Header() {
             <Button
               key={item.path}
               type="button"
-              variant={isActive(item.path) ? 'default' : 'ghost'}
-              className={`font-bold ${isActive(item.path) ? 'from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90 bg-gradient-to-r' : ''}`}
+              variant={isActive(item.path) ? 'gradient_primary' : 'ghost'}
+              className={`text-base font-bold ${isActive(item.path)}`}
               onClick={() => navigate(item.path)}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >

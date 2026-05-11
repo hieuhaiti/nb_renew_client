@@ -31,6 +31,15 @@ const MARKER_RADIUS = 20;
 const MARKER_STROKE_WIDTH = 4;
 const MARKER_ICON_SIZE = 24;
 const DEFAULT_MARKER_DOT_RADIUS = 6;
+const HIGHLIGHT_POINT_RADIUS_BASE = MARKER_RADIUS + MARKER_STROKE_WIDTH / 2;
+const HIGHLIGHT_GLOW_SCALE = 1.12;
+const HIGHLIGHT_PULSE_MIN_SCALE = 1.08;
+const HIGHLIGHT_PULSE_MAX_SCALE = 1.46;
+const HIGHLIGHT_PULSE_SPEED = 4.2;
+const HIGHLIGHT_POINT_Y_OFFSET_PX = -4;
+const HIGHLIGHT_MARKER_CLASS = 'map-highlight-point-marker';
+const HIGHLIGHT_MARKER_RING_CLASS = 'map-highlight-point-ring';
+const HIGHLIGHT_MARKER_STYLE_ID = 'map-highlight-point-style';
 
 const MARKER_PROGRESS_CURRENT = 50;
 const MARKER_PROGRESS_TOTAL = 100;
@@ -91,8 +100,14 @@ export const HIGHLIGHT_ROUTE_LAYER_IDS = [
   'route-labels',
   'route-arrow',
 ];
+const HIGHLIGHT_POINT_SOURCE_ID = 'highlight-point';
+const HIGHLIGHT_POINT_GLOW_LAYER_ID = 'highlight-point-glow';
+const HIGHLIGHT_POINT_PULSE_LAYER_ID = 'highlight-point-pulse';
 
 const routePinMarkersByMap = new WeakMap();
+const highlightPulseRafByMap = new WeakMap();
+const highlightPointMarkerByMap = new WeakMap();
+const highlightInteractionCleanupByMap = new WeakMap();
 
 function isObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
@@ -1152,5 +1167,313 @@ export function removeSubcategoryLayer(map, sourceId) {
 
   if (map.getSource(sourceId)) {
     map.removeSource(sourceId);
+  }
+}
+
+function ensureHighlightMarkerStyles() {
+  if (typeof document === 'undefined') return;
+  const cssText = `
+    .${HIGHLIGHT_MARKER_CLASS} {
+      width: ${MARKER_SIZE}px;
+      height: ${MARKER_SIZE}px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 20;
+      transform: translateY(${HIGHLIGHT_POINT_Y_OFFSET_PX}px);
+    }
+    .${HIGHLIGHT_MARKER_RING_CLASS} {
+      width: ${MARKER_SIZE}px;
+      height: ${MARKER_SIZE}px;
+      border-radius: 9999px;
+      border: 3px solid #ff6b6b;
+      box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.45);
+      animation: map-highlight-point-pulse 1.2s ease-out infinite;
+      will-change: transform, opacity, box-shadow;
+    }
+    @keyframes map-highlight-point-pulse {
+      0% {
+        transform: scale(0.95);
+        opacity: 0.95;
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.45);
+      }
+      70% {
+        transform: scale(1.4);
+        opacity: 0.25;
+        box-shadow: 0 0 0 14px rgba(255, 107, 107, 0);
+      }
+      100% {
+        transform: scale(1.55);
+        opacity: 0;
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+      }
+    }
+  `;
+  const existingStyle = document.getElementById(HIGHLIGHT_MARKER_STYLE_ID);
+  if (existingStyle) {
+    existingStyle.textContent = cssText;
+    return;
+  }
+
+  const style = document.createElement('style');
+  style.id = HIGHLIGHT_MARKER_STYLE_ID;
+  style.textContent = cssText;
+  document.head.appendChild(style);
+}
+
+function upsertHighlightPointMarker(map, coordinates) {
+  if (!map || !Array.isArray(coordinates)) return;
+  if (typeof document === 'undefined') return;
+
+  ensureHighlightMarkerStyles();
+
+  let marker = highlightPointMarkerByMap.get(map);
+  if (!marker) {
+    const el = document.createElement('div');
+    el.className = HIGHLIGHT_MARKER_CLASS;
+    const ring = document.createElement('div');
+    ring.className = HIGHLIGHT_MARKER_RING_CLASS;
+    el.appendChild(ring);
+
+    marker = new mapboxgl.Marker({
+      element: el,
+      anchor: 'center',
+      offset: [0, HIGHLIGHT_POINT_Y_OFFSET_PX],
+    }).setLngLat(coordinates);
+
+    marker.addTo(map);
+    highlightPointMarkerByMap.set(map, marker);
+    return;
+  }
+
+  marker.setOffset([0, HIGHLIGHT_POINT_Y_OFFSET_PX]);
+  marker.setLngLat(coordinates);
+}
+
+function bindAutoClearHighlightOnUserInteraction(map) {
+  if (!map) return;
+
+  const prevCleanup = highlightInteractionCleanupByMap.get(map);
+  if (typeof prevCleanup === 'function') {
+    prevCleanup();
+  }
+
+  const interactionEvents = ['dragstart', 'wheel', 'touchmove'];
+  let cleared = false;
+
+  const clearByInteraction = () => {
+    if (cleared) return;
+    cleared = true;
+    clearHighlightFromMap(map);
+  };
+
+  interactionEvents.forEach((eventName) => {
+    map.on(eventName, clearByInteraction);
+  });
+
+  const cleanup = () => {
+    interactionEvents.forEach((eventName) => {
+      map.off(eventName, clearByInteraction);
+    });
+  };
+
+  highlightInteractionCleanupByMap.set(map, cleanup);
+}
+
+function getHighlightCoordinates(point) {
+  if (Array.isArray(point?.coordinates) && point.coordinates.length >= 2) {
+    const lng = Number(point.coordinates[0]);
+    const lat = Number(point.coordinates[1]);
+    if (Number.isFinite(lng) && Number.isFinite(lat)) return [lng, lat];
+  }
+
+  if (Array.isArray(point?.geometry?.coordinates) && point.geometry.coordinates.length >= 2) {
+    const lng = Number(point.geometry.coordinates[0]);
+    const lat = Number(point.geometry.coordinates[1]);
+    if (Number.isFinite(lng) && Number.isFinite(lat)) return [lng, lat];
+  }
+
+  return null;
+}
+
+export function clearHighlightFromMap(map) {
+  if (!map) return;
+
+  try {
+    const cleanupInteractions = highlightInteractionCleanupByMap.get(map);
+    if (typeof cleanupInteractions === 'function') {
+      cleanupInteractions();
+    }
+    highlightInteractionCleanupByMap.delete(map);
+
+    const pulseRafId = highlightPulseRafByMap.get(map);
+    if (pulseRafId && typeof window !== 'undefined') {
+      window.cancelAnimationFrame(pulseRafId);
+    }
+    highlightPulseRafByMap.delete(map);
+    const pointMarker = highlightPointMarkerByMap.get(map);
+    if (pointMarker) {
+      pointMarker.remove();
+      highlightPointMarkerByMap.delete(map);
+    }
+
+    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
+      map.removeLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID);
+    }
+    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
+      map.removeLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID);
+    }
+
+    if (map.getSource(HIGHLIGHT_POINT_SOURCE_ID)) {
+      map.removeSource(HIGHLIGHT_POINT_SOURCE_ID);
+    }
+  } catch (error) {
+    console.error('Error clearing highlight from map:', error);
+  }
+}
+
+function startHighlightPulseAnimation(map) {
+  if (!map || typeof window === 'undefined') return;
+
+  const existingRafId = highlightPulseRafByMap.get(map);
+  if (existingRafId) {
+    window.cancelAnimationFrame(existingRafId);
+    highlightPulseRafByMap.delete(map);
+  }
+
+  const startedAt = performance.now();
+
+  const tick = (now) => {
+    if (!map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
+      highlightPulseRafByMap.delete(map);
+      return;
+    }
+
+    const elapsedSeconds = (now - startedAt) / 1000;
+    const phase = (Math.sin(elapsedSeconds * HIGHLIGHT_PULSE_SPEED) + 1) / 2;
+    const pulseScale =
+      HIGHLIGHT_PULSE_MIN_SCALE + (HIGHLIGHT_PULSE_MAX_SCALE - HIGHLIGHT_PULSE_MIN_SCALE) * phase;
+    const pulseOpacity = 0.12 + (1 - phase) * 0.28;
+
+    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-radius', [
+      '*',
+      HIGHLIGHT_POINT_RADIUS_BASE * pulseScale,
+      POINT_ICON_SIZE_BY_ZOOM,
+    ]);
+    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-opacity', pulseOpacity);
+
+    const nextRafId = window.requestAnimationFrame(tick);
+    highlightPulseRafByMap.set(map, nextRafId);
+  };
+
+  const rafId = window.requestAnimationFrame(tick);
+  highlightPulseRafByMap.set(map, rafId);
+}
+
+export function highlightPointOnMap(map, point) {
+  if (!map || !point) return;
+  if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) {
+    map.once('style.load', () => highlightPointOnMap(map, point));
+    return;
+  }
+
+  const coordinates = getHighlightCoordinates(point);
+  if (!coordinates) {
+    console.warn('Invalid coordinates provided for highlight');
+    return;
+  }
+
+  try {
+    const sourceData = {
+      type: 'Feature',
+      properties: point?.properties || {},
+      geometry: {
+        type: 'Point',
+        coordinates,
+      },
+    };
+
+    const source = map.getSource(HIGHLIGHT_POINT_SOURCE_ID);
+    if (source && typeof source.setData === 'function') {
+      source.setData(sourceData);
+    } else {
+      clearHighlightFromMap(map);
+      map.addSource(HIGHLIGHT_POINT_SOURCE_ID, {
+        type: 'geojson',
+        data: sourceData,
+      });
+    }
+
+    if (!map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
+      map.addLayer({
+        id: HIGHLIGHT_POINT_GLOW_LAYER_ID,
+        type: 'circle',
+        source: HIGHLIGHT_POINT_SOURCE_ID,
+        paint: {
+          'circle-radius': [
+            '*',
+            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_GLOW_SCALE,
+            POINT_ICON_SIZE_BY_ZOOM,
+          ],
+          'circle-color': '#FF6B6B',
+          'circle-opacity': 0.25,
+          'circle-blur': 0.35,
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#FF6B6B',
+          'circle-stroke-opacity': 0.8,
+          'circle-translate': [0, HIGHLIGHT_POINT_Y_OFFSET_PX],
+          'circle-translate-anchor': 'viewport',
+        },
+      });
+    }
+
+    if (!map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
+      map.addLayer({
+        id: HIGHLIGHT_POINT_PULSE_LAYER_ID,
+        type: 'circle',
+        source: HIGHLIGHT_POINT_SOURCE_ID,
+        paint: {
+          'circle-radius': [
+            '*',
+            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_PULSE_MIN_SCALE,
+            POINT_ICON_SIZE_BY_ZOOM,
+          ],
+          'circle-color': '#FF6B6B',
+          'circle-opacity': 0.26,
+          'circle-translate': [0, HIGHLIGHT_POINT_Y_OFFSET_PX],
+          'circle-translate-anchor': 'viewport',
+        },
+      });
+    }
+
+    map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate', [
+      0,
+      HIGHLIGHT_POINT_Y_OFFSET_PX,
+    ]);
+    map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate-anchor', 'viewport');
+    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate', [
+      0,
+      HIGHLIGHT_POINT_Y_OFFSET_PX,
+    ]);
+    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate-anchor', 'viewport');
+
+    // Keep highlight on top so it is not hidden by point symbol layers.
+    map.moveLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID);
+    map.moveLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID);
+    startHighlightPulseAnimation(map);
+    upsertHighlightPointMarker(map, coordinates);
+    bindAutoClearHighlightOnUserInteraction(map);
+
+    map.flyTo({
+      center: coordinates,
+      zoom: Math.max(map.getZoom(), 15),
+      pitch: 45,
+      bearing: 0,
+      essential: true,
+      duration: 2000,
+    });
+  } catch (error) {
+    console.error('Error highlighting point on map:', error);
   }
 }

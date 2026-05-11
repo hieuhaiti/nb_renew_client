@@ -8,7 +8,7 @@ function Input({ className, size = 'default', type, ...props }) {
       type={type}
       data-slot="input"
       className={cn(
-        'border-input selection:bg-primary selection:text-primary-foreground file:text-foreground placeholder:text-muted-foreground dark:bg-input/30 w-full min-w-0 border bg-transparent shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+        'border-input selection:bg-primary selection:text-primary-foreground file:text-foreground placeholder:text-foreground dark:bg-input/30 w-full min-w-0 border bg-transparent shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
         size === 'default' && 'h-9 rounded-md px-3 py-1 text-base md:text-sm',
         size === 'toolbar' && 'h-10 rounded-md px-3 text-sm',
         'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',

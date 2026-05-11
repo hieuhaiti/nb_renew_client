@@ -506,9 +506,9 @@ export default function HomePageContent() {
               </div>
 
               {/* Sidebar */}
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
                 {/* Weather card */}
-                <div className={`${card} p-5`}>
+                <div className={`${card} p-4`}>
                   <SectionLabel>Thời tiết nhanh</SectionLabel>
                   <div className="mt-3 flex items-start justify-between gap-4">
                     <div>
@@ -555,7 +555,7 @@ export default function HomePageContent() {
                 </div>
 
                 {/* Events card */}
-                <div className={`${card} relative overflow-hidden p-5`}>
+                <div className={`${card} relative overflow-hidden p-4`}>
                   <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full opacity-40 blur-2xl" />
                   <div className="relative">
                     <div className="flex items-center gap-2">
@@ -570,7 +570,7 @@ export default function HomePageContent() {
                       Sự kiện và lễ hội sắp diễn ra
                     </h2>
                     <div className="mt-4 grid gap-2">
-                      {heroEvents.map((event, i) => (
+                      {heroEvents.slice(0, 2).map((event, i) => (
                         <div
                           key={`${event.title}-${i}`}
                           className={`${eventColors[i % eventColors.length]} flex flex-col gap-1 rounded-[16px] px-3.5 py-2.5`}
@@ -593,13 +593,13 @@ export default function HomePageContent() {
                 </div>
 
                 {/* Quick suggestions */}
-                <div className={`${card} p-5`}>
+                <div className={`${card} p-4`}>
                   <SectionLabel>Gợi ý nhanh</SectionLabel>
                   <h2 className="text-foreground mt-1 text-2xl font-bold">
                     Điểm nên xem trước khi đi
                   </h2>
                   <div className="mt-4 grid gap-2">
-                    {featuredSpots.slice(0, 3).map((item, i) => {
+                    {featuredSpots.slice(0, 2).map((item, i) => {
                       const colors = ['text-primary', 'text-secondary', 'text-tertiary'];
                       return (
                         <button

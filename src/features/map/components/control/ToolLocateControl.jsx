@@ -1,5 +1,6 @@
 import mapboxgl from 'mapbox-gl';
 import i18n from '@/i18n';
+import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 
 export default class ToolLocateControl {
   onAdd(map) {
@@ -41,10 +42,8 @@ export default class ToolLocateControl {
 
           this._marker = new mapboxgl.Marker({ element: el }).setLngLat(center).addTo(map);
 
-          map.flyTo({
-            center,
-            zoom: 12.8,
-            essential: true,
+          highlightPointOnMap(map, {
+            coordinates: center,
           });
 
           this._btn.disabled = false;

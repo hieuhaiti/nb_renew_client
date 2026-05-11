@@ -177,19 +177,19 @@ export default function MapBaseArea() {
       ];
       map.setMaxBounds(mapBounds);
 
+      map.addControl(new ToolViewModeControl(), 'right');
+      map.addControl(new ToolBaseMap(), 'right');
+      map.addControl(new ResetControl(), 'right');
+      map.addControl(new ToolLocateControl(), 'right');
+      map.addControl(new mapboxgl.FullscreenControl(), 'right');
       map.addControl(
         new mapboxgl.NavigationControl({
           showCompass: true,
           showZoom: true,
           visualizePitch: true,
         }),
-        'bottom-right'
+        'right'
       );
-      map.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
-      map.addControl(new ToolLocateControl(), 'bottom-right');
-      map.addControl(new ResetControl(), 'bottom-right');
-      map.addControl(new ToolBaseMap(), 'bottom-right');
-      map.addControl(new ToolViewModeControl(), 'bottom-right');
 
       setMapsReady((prev) => ({ ...prev, single: true }));
     };
@@ -743,7 +743,10 @@ export default function MapBaseArea() {
       const coords = feature.geometry.coordinates.slice();
       map.getCanvas().style.cursor = 'pointer';
       const currentLang = useLanguageStore.getState().lang;
-      popup.setLngLat(coords).setHTML(buildIncidentPopupHTML(feature.properties, currentLang)).addTo(map);
+      popup
+        .setLngLat(coords)
+        .setHTML(buildIncidentPopupHTML(feature.properties, currentLang))
+        .addTo(map);
     };
 
     const onLeave = () => {

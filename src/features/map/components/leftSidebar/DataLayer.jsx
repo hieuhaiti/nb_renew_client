@@ -239,13 +239,13 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                       <span className="truncate text-sm font-medium">{itemName}</span>
 
                       {/* Active indicator dot */}
-                      {checked && (
+                      {/* {checked && (
                         <span
                           aria-hidden="true"
                           className="ml-auto h-2 w-2 shrink-0 rounded-full"
                           style={{ backgroundColor: colorCode }}
                         />
-                      )}
+                      )} */}
                     </label>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-45 text-sm">

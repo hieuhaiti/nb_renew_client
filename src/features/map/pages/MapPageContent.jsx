@@ -5,8 +5,10 @@ import { useDebounce } from 'use-debounce';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import MapLayout from '@/features/map/layout/MapLayout';
-import MapDirectionPanel from '@/features/map/components/MapPanel/MapDirectionPanel';
-import MapTourPanel from '@/features/map/components/MapPanel/MapTourPanel';
+import MapDirectionPanel from '@/features/map/components/mapPanel/MapDirectionPanel';
+import MapTourPanel from '@/features/map/components/mapPanel/MapTourPanel';
+import MapNameOverlay from '@/features/map/components/mapPanel/MapNameOverlay';
+import MapCategoryOverlay from '@/features/map/components/mapPanel/MapCategoryOverlay';
 import { categoriesService } from '@/services/api/categories/categoriesService';
 import { env } from '@/config/env';
 import {
@@ -37,7 +39,8 @@ import MapBaseArea from '../components/MapBase';
 import ModalMarker from '@/features/map/components/ModalMarker';
 import ModalCarousel from '@/features/map/components/ModalCarousel';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
-import { clearHighlightedRouteLayers } from '@/features/map/utils/MapHelper';
+import { clearHighlightedRouteLayers, highlightPointOnMap } from '@/features/map/utils/MapHelper';
+import { getMapColorById } from '@/features/map/constant/mapColor';
 
 export default function MapPage() {
   const { t } = useTranslation();
@@ -65,8 +68,10 @@ export default function MapPage() {
   });
 
   const categoriesStoreID = useCategoriesStore((state) => state.categoriesStoreID);
+  const categoriesStoreName = useCategoriesStore((state) => state.categoriesStoreName);
   const setCategory = useCategoriesStore((state) => state.setCategory);
   const setCategoryID = useCategoriesStore((state) => state.setCategoryID);
+  const setCategoryName = useCategoriesStore((state) => state.setCategoryName);
   const lang = useLanguageStore((state) => state.lang);
   const setCurrentTourismPointSettings = useTourismPointSettingStore(
     (state) => state.setCurrentSettings
@@ -147,6 +152,50 @@ export default function MapPage() {
     return categoryDropdown.find((cat) => String(cat.id) === String(activeChip)) || null;
   }, [activeChip, categoryDropdown]);
 
+  const resolveCategoryColor = (input) => {
+    if (!input) return null;
+    if (typeof input === 'string') return input;
+    if (typeof input === 'object') {
+      return input.color || input.hex || input.value || null;
+    }
+    return null;
+  };
+
+  const selectedCategoryColor = useMemo(() => {
+    if (activeChip === 'all') return getMapColorById('all');
+    if (!categoriesStoreID) return null;
+    const selectedCat = categoryDropdown.find(
+      (cat) => String(cat.id) === String(categoriesStoreID)
+    );
+    return (
+      resolveCategoryColor(selectedCat?.raw?.color || selectedCat?.raw?.category_color) ||
+      getMapColorById(categoriesStoreID)
+    );
+  }, [activeChip, categoriesStoreID, categoryDropdown]);
+
+  const categoriesListForOverlay = useMemo(() => {
+    return [
+      {
+        id: 'all',
+        label: t('common.map_all_point', { defaultValue: 'All' }),
+        color: getMapColorById('all'),
+      },
+      ...categoryDropdown.map((cat) => ({
+        id: cat.id,
+        label: cat.label,
+        color:
+          resolveCategoryColor(cat.raw?.color || cat.raw?.category_color) ||
+          getMapColorById(cat.id),
+      })),
+    ];
+  }, [categoryDropdown, t]);
+
+  const mapOverlayCategoryId = activeChip === 'all' ? 'all' : categoriesStoreID;
+  const mapOverlayCategoryName =
+    activeChip === 'all'
+      ? t('common.map_all', { defaultValue: 'All destinations' })
+      : categoriesStoreName;
+
   const mapStyleById = {
     outdoor: env.mapboxStyle_Outdoor,
     street: env.mapboxStyle_Street,
@@ -203,6 +252,20 @@ export default function MapPage() {
   const hasDirectionDetails = Boolean(directions?.legs?.[0]?.steps?.length || directions);
 
   useEffect(() => {
+    if (categoriesStoreID == null || categoriesStoreName) return;
+
+    const matchedCategory = categoryDropdown.find(
+      (cat) => String(cat.id) === String(categoriesStoreID)
+    );
+    if (!matchedCategory) return;
+
+    if (matchedCategory.raw) {
+      setCategory(matchedCategory.raw);
+    }
+    setCategoryName(matchedCategory.label);
+  }, [categoriesStoreID, categoriesStoreName, categoryDropdown, setCategory, setCategoryName]);
+
+  useEffect(() => {
     const {
       activePanel: panel,
       clearPanel: clear,
@@ -223,11 +286,10 @@ export default function MapPage() {
 
   const flyToPlace = (place) => {
     if (!place || !mapRef) return;
-    mapRef.flyTo({
-      center: place.coords,
-      zoom: 12.5,
-      speed: 0.8,
-      essential: true,
+    highlightPointOnMap(mapRef, {
+      id: place.id,
+      coordinates: place.coords,
+      properties: place,
     });
   };
 
@@ -284,8 +346,15 @@ export default function MapPage() {
 
       if (isValidTopLevelCategory) {
         const chipValue = String(normalizedCategoryId);
+        const matchedCategory = categoryDropdown.find((cat) => String(cat.id) === chipValue);
         setActiveChip(chipValue);
         setCategoryID(normalizedCategoryId);
+        if (matchedCategory?.raw) {
+          setCategory(matchedCategory.raw);
+        }
+        if (matchedCategory?.label) {
+          setCategoryName(matchedCategory.label);
+        }
         setCurrentTourismPointSettings({
           selectedCategory: normalizedCategoryId,
           selectedSubcategory: normalizedSubcategoryId ?? 0,
@@ -303,11 +372,10 @@ export default function MapPage() {
     }
 
     if (Array.isArray(result.coordinates) && result.coordinates.length >= 2 && mapRef) {
-      mapRef.flyTo({
-        center: result.coordinates,
-        zoom: 14,
-        speed: 0.85,
-        essential: true,
+      highlightPointOnMap(mapRef, {
+        id: result.id,
+        coordinates: result.coordinates,
+        properties: result.raw?.properties || result.raw || result,
       });
     } else if (Array.isArray(result.coordinates) && result.coordinates.length >= 2) {
       setPendingFlyCoordinates(result.coordinates);
@@ -348,11 +416,8 @@ export default function MapPage() {
     if (!mapRef || !Array.isArray(pendingFlyCoordinates) || pendingFlyCoordinates.length < 2)
       return;
 
-    mapRef.flyTo({
-      center: pendingFlyCoordinates,
-      zoom: 14,
-      speed: 0.85,
-      essential: true,
+    highlightPointOnMap(mapRef, {
+      coordinates: pendingFlyCoordinates,
     });
     setPendingFlyCoordinates(null);
   }, [mapRef, pendingFlyCoordinates]);
@@ -362,7 +427,6 @@ export default function MapPage() {
 
     const prefillKeyword = location.state?.prefillKeyword?.trim?.() || '';
     const prefillResult = location.state?.selectedSearchResult;
-    console.log(prefillResult);
 
     const prefillRoute = location.state?.highlightedRoute;
     if (!prefillKeyword && !prefillResult && !prefillRoute) return;
@@ -396,11 +460,17 @@ export default function MapPage() {
     flyToPlace(first);
   };
 
-  const handleChipChange = async (value) => {
+  const handleChipChange = (value, label) => {
+    const matchedCategory = categoryDropdown.find((cat) => String(cat.id) === String(value));
+    const resolvedLabel =
+      label ||
+      (value === 'all' ? t('common.all', { defaultValue: 'All' }) : matchedCategory?.label || '');
+
     setActiveChip(value);
 
     if (value === 'all') {
       setCategoryID(null);
+      setCategoryName(resolvedLabel);
       setCurrentTourismPointSettings({
         selectedCategory: 0,
         selectedSubcategory: 0,
@@ -408,8 +478,8 @@ export default function MapPage() {
       });
       return;
     }
+    setCategoryName(resolvedLabel);
 
-    const matchedCategory = categoryDropdown.find((cat) => String(cat.id) === String(value));
     if (matchedCategory?.raw) {
       setCategory(matchedCategory.raw);
     }
@@ -495,6 +565,9 @@ export default function MapPage() {
     }
   }
 
+  const showLeftPanelRail = activePanel === 'direction' || activePanel === 'tour';
+  const mapPanelWidthClass = 'w-[22vw]';
+
   return (
     <MapLayout>
       <ModalMarker />
@@ -525,22 +598,83 @@ export default function MapPage() {
                 </CardContent>
               </Card>
             </div>
+
             <div className="border-border relative h-full min-h-0 overflow-hidden rounded-3xl p-0 shadow-sm">
-              {activePanel === 'direction' && (
-                <MapDirectionPanel
-                  isOpen={isPanelOpen}
-                  onOpen={() => setPanelOpen(true)}
-                  onClose={() => setPanelOpen(false)}
-                />
-              )}
-              {activePanel === 'tour' && (
-                <MapTourPanel
-                  isOpen={isPanelOpen}
-                  onOpen={() => setPanelOpen(true)}
-                  onClose={() => setPanelOpen(false)}
-                />
-              )}
               <MapBaseArea />
+              <div className="pointer-events-none absolute top-3 left-3 z-30 xl:hidden">
+                <MapNameOverlay
+                  compact
+                  className="pointer-events-auto h-auto"
+                  categoriesStoreID={mapOverlayCategoryId}
+                  categoriesStoreName={mapOverlayCategoryName}
+                  categoryColor={selectedCategoryColor}
+                />
+              </div>
+              {showLeftPanelRail && activePanel === 'direction' && (
+                <div className="xl:hidden">
+                  <MapDirectionPanel
+                    isOpen={isPanelOpen}
+                    onOpen={() => setPanelOpen(true)}
+                    onClose={() => setPanelOpen(false)}
+                    panelWidthClass={mapPanelWidthClass}
+                  />
+                </div>
+              )}
+              {showLeftPanelRail && activePanel === 'tour' && (
+                <div className="xl:hidden">
+                  <MapTourPanel
+                    isOpen={isPanelOpen}
+                    onOpen={() => setPanelOpen(true)}
+                    onClose={() => setPanelOpen(false)}
+                    panelWidthClass={mapPanelWidthClass}
+                  />
+                </div>
+              )}
+              <div className="pointer-events-none absolute bottom-3 left-3 z-30 xl:hidden">
+                <MapCategoryOverlay
+                  compact
+                  className="pointer-events-auto h-auto"
+                  categories={categoriesListForOverlay}
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-y-3 left-3 z-30 hidden xl:flex xl:flex-col xl:items-start xl:justify-between">
+                <MapNameOverlay
+                  compact
+                  className="pointer-events-auto h-auto"
+                  categoriesStoreID={mapOverlayCategoryId}
+                  categoriesStoreName={mapOverlayCategoryName}
+                  categoryColor={selectedCategoryColor}
+                />
+
+                <div className="pointer-events-auto my-3 min-h-0 flex-1">
+                  {showLeftPanelRail && activePanel === 'direction' && (
+                    <MapDirectionPanel
+                      embedded
+                      className="h-full min-h-0"
+                      isOpen={isPanelOpen}
+                      onOpen={() => setPanelOpen(true)}
+                      onClose={() => setPanelOpen(false)}
+                      panelWidthClass={mapPanelWidthClass}
+                    />
+                  )}
+                  {showLeftPanelRail && activePanel === 'tour' && (
+                    <MapTourPanel
+                      embedded
+                      className="h-full min-h-0"
+                      isOpen={isPanelOpen}
+                      onOpen={() => setPanelOpen(true)}
+                      onClose={() => setPanelOpen(false)}
+                      panelWidthClass={mapPanelWidthClass}
+                    />
+                  )}
+                </div>
+
+                <MapCategoryOverlay
+                  compact
+                  className="pointer-events-auto h-auto"
+                  categories={categoriesListForOverlay}
+                />
+              </div>
               <div className="w-22vw pointer-events-none absolute top-3 right-3 z-40">
                 <MapWeatherCard compact className="pointer-events-auto h-auto" />
               </div>

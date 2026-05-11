@@ -10,6 +10,7 @@ import {
   useCapacityWebSocket,
 } from '@/services/api/capacity/capacityService';
 import { useMapStore } from '@/features/map/store/useMapStore';
+import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { cn } from '@/lib/utils';
 
 const STATUS_META = {
@@ -218,7 +219,11 @@ export default function CapacityPanel() {
 
   const handleFlyTo = (item) => {
     if (!mapRef || typeof item.lat !== 'number' || typeof item.lng !== 'number') return;
-    mapRef.flyTo({ center: [item.lng, item.lat], zoom: 14, speed: 0.9, essential: true });
+    highlightPointOnMap(mapRef, {
+      id: item.id ?? item.spot_id,
+      coordinates: [item.lng, item.lat],
+      properties: item,
+    });
   };
 
   const latestRecordedAt = useMemo(() => {

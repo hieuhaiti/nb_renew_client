@@ -18,6 +18,7 @@ import {
   useFeaturedSpotsQuery,
 } from '@/services/api/map/mapSearchService';
 import { categoriesService } from '@/services/api/categories/categoriesService';
+import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 
 function normalizePointDetailPayload(payload) {
   const root = payload?.data || payload;
@@ -291,11 +292,10 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
     }
 
     if (Array.isArray(item.coordinates) && item.coordinates.length >= 2 && mapRef) {
-      mapRef.flyTo({
-        center: item.coordinates,
-        zoom: 14,
-        speed: 0.85,
-        essential: true,
+      highlightPointOnMap(mapRef, {
+        id: item.id,
+        coordinates: item.coordinates,
+        properties: item.raw?.properties || item.raw || item,
       });
     }
   };

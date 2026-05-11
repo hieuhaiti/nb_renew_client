@@ -8,7 +8,6 @@ import {
   formatTemperature,
   formatWindSpeedKph,
   getAqiLevelMeta,
-  getWeatherIconMeta,
 } from '@/features/weather/helpers/weatherLevelHelpers';
 import { cn } from '@/lib/utils';
 import { useLanguageStore } from '@/stores/useLanguageStore';
@@ -29,11 +28,7 @@ export default function MapWeatherCard({ className, compact = false }) {
   const weather = data?.weather;
   const aqiValue = data?.aqiValue;
   const aqiMeta = getAqiLevelMeta(aqiValue);
-  const weatherIconMeta = getWeatherIconMeta({
-    conditionId: weather?.weather?.[0]?.id,
-    iconCode: weather?.weather?.[0]?.icon,
-  });
-  const WeatherIcon = weatherIconMeta.icon;
+  const tempUnit = `${String.fromCharCode(176)}C`;
 
   const cityName = weather?.name || t('mapPage.layout.weatherUnknownLocation');
   const conditionLabel = weather?.weather?.[0]?.description || t('mapPage.layout.weatherUnknown');
@@ -56,52 +51,52 @@ export default function MapWeatherCard({ className, compact = false }) {
     <section aria-label={t('mapPage.layout.floatWeather')} className={cn('h-auto', className)}>
       <div
         className={cn(
-          'border-border bg-card/90 border shadow-md backdrop-blur-sm',
+          'border-border bg-card/95 border shadow-md backdrop-blur-sm',
           compact ? 'rounded-lg' : 'rounded-xl'
         )}
       >
-        <div className={cn('min-w-[11.25rem] px-3 py-2', compact ? 'text-xs' : 'text-sm')}>
-          <div className="flex flex-col gap-1.5">
+        <div className={cn('min-w-[16.5rem] px-2.5 py-2', compact ? 'text-sm' : 'text-base')}>
+          <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <MapPin className="text-primary h-3.5 w-3.5 shrink-0" />
-              <span className="text-foreground truncate font-medium">{cityName}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <img
-                src={aqiMeta.iconSrc}
-                className="h-3.5 w-3.5 shrink-0 rounded-full object-cover"
-                alt="AQI"
-              />
-              <span className={cn('truncate font-medium', aqiMeta.toneClass)}>
-                AQI: {t(aqiMeta.labelKey)}
+              <span className="border-primary/35 bg-primary/5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border">
+                <MapPin className="text-primary h-2.5 w-2.5" />
+              </span>
+              <span className="min-w-0 flex-1 truncate">
+                <span className="text-foreground font-semibold">{cityName}</span>
+                <span className="text-muted-foreground ml-1 truncate">{conditionLabel}</span>
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <WeatherIcon className={cn('h-3.5 w-3.5 shrink-0', weatherIconMeta.toneClass)} />
-              <span className="text-foreground truncate capitalize">{conditionLabel}</span>
-            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-1 rounded-full bg-[var(--weather-temp)]/15 px-2.5 py-1 font-semibold text-[var(--weather-temp)]">
+                <Thermometer className="h-3 w-3 shrink-0" />
+                <span>{formatTemperature(weather?.main?.temp, tempUnit)}</span>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <Thermometer className="h-3.5 w-3.5 shrink-0 text-[var(--weather-temp)]" />
-              <span className="text-foreground truncate">
-                {formatTemperature(weather?.main?.temp)}
-              </span>
-            </div>
+              <div className="inline-flex items-center gap-1 rounded-full bg-[var(--weather-humidity)]/15 px-2.5 py-1 font-semibold text-[var(--weather-humidity)]">
+                <Droplets className="h-3 w-3 shrink-0" />
+                <span>{formatHumidity(weather?.main?.humidity)}</span>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <Droplets className="h-3.5 w-3.5 shrink-0 text-[var(--weather-humidity)]" />
-              <span className="text-foreground truncate">
-                {formatHumidity(weather?.main?.humidity)}
-              </span>
-            </div>
+              <div className="inline-flex items-center gap-1 rounded-full bg-[var(--weather-wind)]/15 px-2.5 py-1 font-semibold text-[var(--weather-wind)]">
+                <Wind className="h-3 w-3 shrink-0" />
+                <span>{formatWindSpeedKph(weather?.wind?.speed)}</span>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <Wind className="h-3.5 w-3.5 shrink-0 text-[var(--weather-wind)]" />
-              <span className="text-foreground truncate">
-                {formatWindSpeedKph(weather?.wind?.speed)}
-              </span>
+              <div
+                className={cn(
+                  'inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold',
+                  aqiMeta.bgClass,
+                  aqiMeta.toneClass
+                )}
+              >
+                <img
+                  src={aqiMeta.iconSrc}
+                  className="h-3 w-3 shrink-0 rounded-full object-cover"
+                  alt="AQI"
+                />
+                <span>{t(aqiMeta.labelKey)}</span>
+              </div>
             </div>
           </div>
         </div>

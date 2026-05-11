@@ -29,6 +29,7 @@ import {
 } from '@/features/map/utils/festivalUtils';
 import { useFestivalStore } from '@/features/map/store/useFestivalStore';
 import { useMapStore } from '@/features/map/store/useMapStore';
+import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { cn, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
 
@@ -103,11 +104,10 @@ export default function EventPanel() {
     const coordinates = getFestivalCoordinates(festival);
 
     if (coordinates && mapRef) {
-      mapRef.flyTo({
-        center: coordinates,
-        zoom: 13.5,
-        speed: 0.85,
-        essential: true,
+      highlightPointOnMap(mapRef, {
+        id: festival?.id,
+        coordinates,
+        properties: festival || {},
       });
       return true;
     }

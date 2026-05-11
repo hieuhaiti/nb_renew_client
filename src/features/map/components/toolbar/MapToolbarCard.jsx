@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { ArrowUpRight, Bike, Car, MapPin, PersonStanding, Search, Trash2, X } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Bike,
+  Car,
+  MapPin,
+  Navigation,
+  PersonStanding,
+  Search,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import LoadingInline from '@/components/common/LoadingInline';
@@ -171,17 +181,17 @@ export default function MapToolbarCard({
       {
         id: 'driving',
         icon: Car,
-        label: t('mapPage.direction.driving', { defaultValue: 'Driving' }),
+        label: `🚗 ${t('mapPage.direction.driving', { defaultValue: 'Driving' })}`,
       },
       {
         id: 'walking',
         icon: PersonStanding,
-        label: t('mapPage.direction.walking', { defaultValue: 'Walking' }),
+        label: `🚶 ${t('mapPage.direction.walking', { defaultValue: 'Walking' })}`,
       },
       {
         id: 'cycling',
         icon: Bike,
-        label: t('mapPage.direction.cycling', { defaultValue: 'Cycling' }),
+        label: `🚲 ${t('mapPage.direction.cycling', { defaultValue: 'Cycling' })}`,
       },
     ],
     [t]
@@ -492,7 +502,13 @@ export default function MapToolbarCard({
               </div>
 
               <div className="w-full min-w-0">
-                <Select value={activeChip ?? ''} onValueChange={onChipChange}>
+                <Select
+                  value={activeChip ?? ''}
+                  onValueChange={(v) => {
+                    const matched = filterChips.find((c) => String(c.value) === String(v));
+                    onChipChange?.(v, matched?.label ?? '');
+                  }}
+                >
                   <SelectTrigger size="toolbar" className="w-full">
                     <SelectValue
                       placeholder={t('mapPage.toolbar.category', { defaultValue: 'Category' })}
@@ -500,9 +516,9 @@ export default function MapToolbarCard({
                   </SelectTrigger>
                   <SelectContent>
                     {filterChips.map((chip) => (
-                      <SelectItem key={chip.value} value={chip.value}>
+                      <SelectItem key={chip.value} value={chip.value} label={chip.label}>
                         {chip.value === 'all'
-                          ? t('common.all', { defaultValue: 'All' })
+                          ? t('common.map_all', { defaultValue: 'All' })
                           : chip.label}
                       </SelectItem>
                     ))}
@@ -655,12 +671,12 @@ export default function MapToolbarCard({
                   </SelectTrigger>
                   <SelectContent>
                     {travelModes.map((mode) => {
-                      const ModeIcon = mode.icon;
+                      // const ModeIcon = mode.icon;
 
                       return (
                         <SelectItem key={mode.id} value={mode.id}>
                           <span className="inline-flex items-center gap-2">
-                            <ModeIcon className="size-3.5" />
+                            {/* <ModeIcon className="size-3.5" /> */}
                             <span>{mode.label}</span>
                           </span>
                         </SelectItem>
@@ -675,7 +691,7 @@ export default function MapToolbarCard({
                   <span className="w-full min-w-0">
                     <Button
                       type="button"
-                      variant={canCalculateRoute ? 'default' : 'outline'}
+                      variant={canCalculateRoute ? 'gradient_primary' : 'outline'}
                       disabled={!canCalculateRoute}
                       className="h-10 w-full min-w-0 gap-1.5 rounded-xl px-2.5 text-sm font-semibold"
                       onClick={handleCalculateRoute}
@@ -697,7 +713,7 @@ export default function MapToolbarCard({
                   <span className="w-full min-w-0">
                     <Button
                       type="button"
-                      variant={hasDirections ? 'destructive' : 'outline'}
+                      variant={hasDirections ? 'gradient_destructive' : 'outline'}
                       disabled={!hasDirections}
                       className="h-10 w-full min-w-0 gap-1.5 rounded-xl px-2.5 text-sm font-semibold"
                       onClick={handleClearRoute}
