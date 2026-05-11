@@ -39,12 +39,12 @@ export function getPointCoordinates(input) {
   if (geometry?.type === 'Point' && Array.isArray(geometry?.coordinates)) {
     const lng = toNumber(geometry.coordinates[0]);
     const lat = toNumber(geometry.coordinates[1]);
-    if (lng != null && lat != null) return [lng, lat];
+    if (lng != null && lat != null && !(lng === 0 && lat === 0)) return [lng, lat];
   }
 
   const lng = toNumber(input?.longitude ?? input?.lng ?? input?.lon);
   const lat = toNumber(input?.latitude ?? input?.lat);
-  if (lng != null && lat != null) return [lng, lat];
+  if (lng != null && lat != null && !(lng === 0 && lat === 0)) return [lng, lat];
 
   return null;
 }

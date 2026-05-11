@@ -313,14 +313,18 @@ export default function MapBaseArea() {
 
     const drawHighlightedRoute = async () => {
       const points = Array.isArray(highlightedRoute?.points) ? highlightedRoute.points : [];
+      console.log('[MapBase drawHighlightedRoute] called. points:', points.length, '| highlightedRoute:', highlightedRoute);
 
       if (points.length < 2) {
+        console.warn('[MapBase drawHighlightedRoute] points.length < 2 → clearing layers');
         clearHighlightedRouteLayers(map);
         return;
       }
 
       try {
         const hasPrecomputedGeometry = Boolean(highlightedRoute?.geometry?.coordinates?.length);
+        console.log('[MapBase drawHighlightedRoute] hasPrecomputedGeometry:', hasPrecomputedGeometry, '| coords count:', highlightedRoute?.geometry?.coordinates?.length);
+
         const routeResult = hasPrecomputedGeometry
           ? {
               geometry: highlightedRoute.geometry,
@@ -335,7 +339,10 @@ export default function MapBaseArea() {
             );
 
         if (didCancel) return;
+        console.log('[MapBase drawHighlightedRoute] routeResult geometry coords:', routeResult?.geometry?.coordinates?.length);
+
         if (!routeResult?.geometry?.coordinates?.length) {
+          console.warn('[MapBase drawHighlightedRoute] no geometry → clearing layers');
           clearHighlightedRouteLayers(map);
           return;
         }
@@ -365,22 +372,29 @@ export default function MapBaseArea() {
           new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
         );
 
+        console.log('[MapBase drawHighlightedRoute] fitBounds to:', bounds.toArray(), '| maxBounds:', map.getMaxBounds()?.toArray());
         map.fitBounds(bounds, {
           padding: 88,
           duration: 850,
         });
+        console.log('[MapBase drawHighlightedRoute] ✓ route drawn successfully');
       } catch (error) {
         if (!didCancel) {
-          console.error('Error rendering highlighted route:', error);
+          console.error('[MapBase drawHighlightedRoute] error:', error);
           clearHighlightedRouteLayers(map);
         }
       }
     };
 
-    if (map.isStyleLoaded()) {
-      drawHighlightedRoute();
-    }
+    const isStyleReady = map.isStyleLoaded();
+    console.log('[MapBase useEffect route] mapsReady:', mapsReady.single, '| isStyleLoaded:', isStyleReady, '| highlightedRoute:', Boolean(highlightedRoute));
 
+    // Khi mapsReady.single = true, 'load' event đã fire → 'style.load' đã fire trước đó.
+    // isStyleLoaded() có thể false vì tiles vẫn đang load, nhưng addSource/addLayer vẫn hoạt động.
+    // Luôn gọi ngay thay vì đợi style.load (vì style.load đã qua, sẽ không fire lại).
+    drawHighlightedRoute();
+
+    // Đăng ký lại cho khi style bị thay đổi sau này (ví dụ: setStyle).
     map.on('style.load', drawHighlightedRoute);
 
     return () => {

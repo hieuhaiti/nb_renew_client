@@ -22,13 +22,9 @@
             "url": {
               "raw": "http://localhost:3004/health",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "3004",
-              "path": [
-                "health"
-              ]
+              "path": ["health"]
             }
           },
           "response": []
@@ -57,13 +53,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
             }
           },
           "response": []
@@ -87,13 +78,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -117,13 +103,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/refresh",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "refresh"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
             }
           },
           "response": []
@@ -144,13 +125,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/logout",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "logout"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
             }
           },
           "response": []
@@ -162,13 +138,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
             }
           },
           "response": []
@@ -225,13 +196,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
             }
           },
           "response": []
@@ -252,13 +218,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/change-password",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "change-password"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
             }
           },
           "response": []
@@ -282,13 +243,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/forgot-password",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "forgot-password"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "forgot-password"]
             }
           },
           "response": []
@@ -312,13 +268,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/reset-password",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "reset-password"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
             }
           },
           "response": []
@@ -330,14 +281,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/verify-email/send",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "verify-email",
-                "send"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "verify-email", "send"]
             }
           },
           "response": []
@@ -352,14 +297,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/verify-email/:token",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "verify-email",
-                ":token"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "verify-email", ":token"],
               "variable": [
                 {
                   "key": "token"
@@ -379,13 +318,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/google",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "google"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "google"]
             }
           },
           "response": []
@@ -400,14 +334,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/google/callback",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "google",
-                "callback"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "google", "callback"]
             }
           },
           "response": []
@@ -419,14 +347,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/2fa/status",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "2fa",
-                "status"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "2fa", "status"]
             }
           },
           "response": []
@@ -438,14 +360,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/2fa/setup",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "2fa",
-                "setup"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "2fa", "setup"]
             }
           },
           "response": []
@@ -466,14 +382,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/2fa/enable",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "2fa",
-                "enable"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "2fa", "enable"]
             }
           },
           "response": []
@@ -494,14 +404,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/2fa/disable",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "2fa",
-                "disable"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "2fa", "disable"]
             }
           },
           "response": []
@@ -525,14 +429,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/2fa/verify-login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "2fa",
-                "verify-login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "2fa", "verify-login"]
             }
           },
           "response": []
@@ -549,12 +447,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users?page=1&limit=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
               "query": [
                 {
                   "key": "page",
@@ -601,13 +495,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/{{userId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "{{userId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
             }
           },
           "response": []
@@ -659,12 +548,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/users",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
             }
           },
           "response": []
@@ -691,13 +576,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/users/{{userId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "{{userId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
             }
           },
           "response": []
@@ -709,14 +589,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/{{userId}}/lock",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "{{userId}}",
-                "lock"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "lock"]
             }
           },
           "response": []
@@ -728,14 +602,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/{{userId}}/lock",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "{{userId}}",
-                "lock"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "lock"]
             }
           },
           "response": []
@@ -756,13 +624,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/users/batch",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "batch"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "batch"]
             }
           },
           "response": []
@@ -783,14 +646,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/users/{{userId}}/role",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "{{userId}}",
-                "role"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "role"]
             }
           },
           "response": []
@@ -802,13 +659,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/{{userId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "{{userId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
             }
           },
           "response": []
@@ -825,12 +677,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/roles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "roles"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["roles"]
             }
           },
           "response": []
@@ -842,13 +690,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/roles/{{roleId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "roles",
-                "{{roleId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["roles", "{{roleId}}"]
             }
           },
           "response": []
@@ -869,12 +712,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/roles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "roles"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["roles"]
             }
           },
           "response": []
@@ -895,13 +734,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/roles/{{roleId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "roles",
-                "{{roleId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["roles", "{{roleId}}"]
             }
           },
           "response": []
@@ -913,13 +747,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/roles/{{roleId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "roles",
-                "{{roleId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["roles", "{{roleId}}"]
             }
           },
           "response": []
@@ -936,12 +765,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/audit-logs?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "audit-logs"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["audit-logs"],
               "query": [
                 {
                   "key": "page",
@@ -993,13 +818,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/audit-logs/visitor-statistics?group_by=day",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "audit-logs",
-                "visitor-statistics"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["audit-logs", "visitor-statistics"],
               "query": [
                 {
                   "key": "from_date",
@@ -1035,13 +855,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/geography/provinces",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geography",
-                "provinces"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["geography", "provinces"]
             }
           },
           "response": []
@@ -1056,14 +871,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/geography/provinces/search?q=ninh",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geography",
-                "provinces",
-                "search"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["geography", "provinces", "search"],
               "query": [
                 {
                   "key": "q",
@@ -1084,14 +893,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/geography/provinces/NB",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geography",
-                "provinces",
-                "NB"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["geography", "provinces", "NB"]
             }
           },
           "response": []
@@ -1106,15 +909,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/geography/provinces/NB/wards",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geography",
-                "provinces",
-                "NB",
-                "wards"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["geography", "provinces", "NB", "wards"]
             }
           },
           "response": []
@@ -1129,13 +925,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/geography/wards",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geography",
-                "wards"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["geography", "wards"]
             }
           },
           "response": []
@@ -1150,14 +941,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/geography/wards/search?q=hoa",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geography",
-                "wards",
-                "search"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["geography", "wards", "search"],
               "query": [
                 {
                   "key": "q",
@@ -1188,13 +973,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spot-categories/tree",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spot-categories",
-                "tree"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spot-categories", "tree"]
             }
           },
           "response": []
@@ -1216,12 +996,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spot-categories?page=1&limit=50",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spot-categories"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spot-categories"],
               "query": [
                 {
                   "key": "page",
@@ -1268,13 +1044,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spot-categories/{{categoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spot-categories",
-                "{{categoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spot-categories", "{{categoryId}}"]
             }
           },
           "response": []
@@ -1295,12 +1066,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spot-categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spot-categories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spot-categories"]
             }
           },
           "response": []
@@ -1321,13 +1088,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spot-categories/{{categoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spot-categories",
-                "{{categoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spot-categories", "{{categoryId}}"]
             }
           },
           "response": []
@@ -1339,14 +1101,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spot-categories/{{categoryId}}/toggle",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spot-categories",
-                "{{categoryId}}",
-                "toggle"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spot-categories", "{{categoryId}}", "toggle"]
             }
           },
           "response": []
@@ -1358,13 +1114,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spot-categories/{{categoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spot-categories",
-                "{{categoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spot-categories", "{{categoryId}}"]
             }
           },
           "response": []
@@ -1384,12 +1135,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots?page=1&category_id=50&lang=en&capacity=true",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots"],
               "query": [
                 {
                   "key": "page",
@@ -1457,13 +1204,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/map?page=1&lng=105.97&radius_km=10&limit=10&lat=20.25&capacity=true",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "map"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "map"],
               "query": [
                 {
                   "key": "page",
@@ -1544,13 +1286,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/nearby?lat=20.25&lng=105.97&radius_km=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "nearby"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "nearby"],
               "query": [
                 {
                   "key": "lat",
@@ -1584,13 +1321,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/bbox?min_lat=20.0&max_lat=20.5&min_lng=105.5&max_lng=106.0&bbox=105.95,20.20,106.05,20.35",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "bbox"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "bbox"],
               "query": [
                 {
                   "key": "min_lat",
@@ -1628,13 +1360,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/geojson",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "geojson"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "geojson"]
             }
           },
           "response": []
@@ -1649,13 +1376,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/featured?limit=10&category_ids=[1,2,3]",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "featured"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "featured"],
               "query": [
                 {
                   "key": "limit",
@@ -1677,14 +1399,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/id/:id?lang=vi",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "id",
-                ":id"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "id", ":id"],
               "query": [
                 {
                   "key": "lang",
@@ -1711,13 +1427,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/:slug",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                ":slug"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", ":slug"],
               "variable": [
                 {
                   "key": "slug",
@@ -1738,14 +1449,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media"],
               "query": [
                 {
                   "key": "media_type",
@@ -1767,14 +1472,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/audio-guide?lang=vi",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "audio-guide"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "audio-guide"],
               "query": [
                 {
                   "key": "lang",
@@ -1801,12 +1500,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots"]
             }
           },
           "response": []
@@ -1827,13 +1522,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}"]
             }
           },
           "response": []
@@ -1845,13 +1535,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}"]
             }
           },
           "response": []
@@ -1863,14 +1548,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/featured",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "featured"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "featured"]
             }
           },
           "response": []
@@ -1902,14 +1581,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media"]
             }
           },
           "response": []
@@ -1931,15 +1604,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media/batch",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media",
-                "batch"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media", "batch"]
             }
           },
           "response": []
@@ -1951,15 +1617,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media/{{mediaId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media",
-                "{{mediaId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media", "{{mediaId}}"]
             }
           },
           "response": []
@@ -1971,16 +1630,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media/{{mediaId}}/primary",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media",
-                "{{mediaId}}",
-                "primary"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media", "{{mediaId}}", "primary"]
             }
           },
           "response": []
@@ -2001,15 +1652,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media/{{mediaId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media",
-                "{{mediaId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media", "{{mediaId}}"]
             }
           },
           "response": []
@@ -2029,14 +1673,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes"],
               "query": [
                 {
                   "key": "include_inactive",
@@ -2058,15 +1696,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}"]
             }
           },
           "response": []
@@ -2081,16 +1712,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/preload",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}",
-                "preload"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}", "preload"]
             }
           },
           "response": []
@@ -2111,14 +1734,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes"]
             }
           },
           "response": []
@@ -2139,15 +1756,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}"]
             }
           },
           "response": []
@@ -2159,16 +1769,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/set-main",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}",
-                "set-main"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}", "set-main"]
             }
           },
           "response": []
@@ -2180,16 +1782,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/activate",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}",
-                "activate"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}", "activate"]
             }
           },
           "response": []
@@ -2201,16 +1795,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/deactivate",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}",
-                "deactivate"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}", "deactivate"]
             }
           },
           "response": []
@@ -2222,15 +1808,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}"]
             }
           },
           "response": []
@@ -2245,16 +1824,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/hotspots",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}",
-                "hotspots"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}", "hotspots"],
               "query": [
                 {
                   "key": "include_inactive",
@@ -2282,16 +1853,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/hotspots",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "aframe-scenes",
-                "{{sceneId}}",
-                "hotspots"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "aframe-scenes", "{{sceneId}}", "hotspots"]
             }
           },
           "response": []
@@ -2312,9 +1875,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/hotspots/{{hotspotId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "spots",
                 "{{spotId}}",
@@ -2334,9 +1895,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/hotspots/{{hotspotId}}/activate",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "spots",
                 "{{spotId}}",
@@ -2357,9 +1916,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/hotspots/{{hotspotId}}/deactivate",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "spots",
                 "{{spotId}}",
@@ -2380,9 +1937,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/aframe-scenes/{{sceneId}}/hotspots/{{hotspotId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "spots",
                 "{{spotId}}",
@@ -2410,16 +1965,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media/{{mediaId}}/hotspots",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media",
-                "{{mediaId}}",
-                "hotspots"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media", "{{mediaId}}", "hotspots"]
             }
           },
           "response": []
@@ -2440,16 +1987,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media/{{mediaId}}/hotspots",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media",
-                "{{mediaId}}",
-                "hotspots"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media", "{{mediaId}}", "hotspots"]
             }
           },
           "response": []
@@ -2470,17 +2009,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media/{{mediaId}}/hotspots/{{hotspotId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media",
-                "{{mediaId}}",
-                "hotspots",
-                "{{hotspotId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media", "{{mediaId}}", "hotspots", "{{hotspotId}}"]
             }
           },
           "response": []
@@ -2492,17 +2022,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/spots/{{spotId}}/media/{{mediaId}}/hotspots/{{hotspotId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "spots",
-                "{{spotId}}",
-                "media",
-                "{{mediaId}}",
-                "hotspots",
-                "{{hotspotId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["spots", "{{spotId}}", "media", "{{mediaId}}", "hotspots", "{{hotspotId}}"]
             }
           },
           "response": []
@@ -2522,13 +2043,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/capacity/current",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "current"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "current"]
             }
           },
           "response": []
@@ -2543,14 +2059,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/capacity/current/geojson",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "current",
-                "geojson"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "current", "geojson"]
             }
           },
           "response": []
@@ -2565,13 +2075,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/capacity/stream",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "stream"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "stream"]
             }
           },
           "response": []
@@ -2583,15 +2088,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/capacity/spots/{{spotId}}/history",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "spots",
-                "{{spotId}}",
-                "history"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "spots", "{{spotId}}", "history"]
             }
           },
           "response": []
@@ -2603,15 +2101,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/capacity/spots/{{spotId}}/stats",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "spots",
-                "{{spotId}}",
-                "stats"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "spots", "{{spotId}}", "stats"]
             }
           },
           "response": []
@@ -2626,15 +2117,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/capacity/spots/{{spotId}}/alternatives",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "spots",
-                "{{spotId}}",
-                "alternatives"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "spots", "{{spotId}}", "alternatives"]
             }
           },
           "response": []
@@ -2658,15 +2142,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/capacity/spots/:spotId/settings",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "spots",
-                ":spotId",
-                "settings"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "spots", ":spotId", "settings"],
               "variable": [
                 {
                   "key": "spotId",
@@ -2693,15 +2170,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/capacity/spots/{{spotId}}/log",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "spots",
-                "{{spotId}}",
-                "log"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "spots", "{{spotId}}", "log"]
             }
           },
           "response": []
@@ -2713,13 +2183,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/capacity/configs",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "configs"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "configs"]
             }
           },
           "response": []
@@ -2740,13 +2205,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/capacity/configs",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "capacity",
-                "configs"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["capacity", "configs"]
             }
           },
           "response": []
@@ -2766,12 +2226,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/tours?page=1&limit=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["tours"],
               "query": [
                 {
                   "key": "page",
@@ -2831,14 +2287,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/tours/slug/:slug",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours",
-                "slug",
-                ":slug"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["tours", "slug", ":slug"],
               "variable": [
                 {
                   "key": "slug"
@@ -2858,13 +2308,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/tours/{{tourId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours",
-                "{{tourId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["tours", "{{tourId}}"]
             }
           },
           "response": []
@@ -2879,14 +2324,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/tours/{{tourId}}/stops",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours",
-                "{{tourId}}",
-                "stops"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["tours", "{{tourId}}", "stops"]
             }
           },
           "response": []
@@ -2907,12 +2346,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tours",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["tours"]
             }
           },
           "response": []
@@ -2933,13 +2368,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tours/{{tourId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours",
-                "{{tourId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["tours", "{{tourId}}"]
             }
           },
           "response": []
@@ -2951,13 +2381,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/tours/{{tourId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours",
-                "{{tourId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["tours", "{{tourId}}"]
             }
           },
           "response": []
@@ -2978,14 +2403,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tours/{{tourId}}/stops",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours",
-                "{{tourId}}",
-                "stops"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["tours", "{{tourId}}", "stops"]
             }
           },
           "response": []
@@ -3006,15 +2425,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tours/{{tourId}}/stops/{{stopId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours",
-                "{{tourId}}",
-                "stops",
-                "{{stopId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["tours", "{{tourId}}", "stops", "{{stopId}}"]
             }
           },
           "response": []
@@ -3026,15 +2438,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/tours/{{tourId}}/stops/{{stopId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tours",
-                "{{tourId}}",
-                "stops",
-                "{{stopId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["tours", "{{tourId}}", "stops", "{{stopId}}"]
             }
           },
           "response": []
@@ -3054,14 +2459,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/shared/:token",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "shared",
-                ":token"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "shared", ":token"],
               "variable": [
                 {
                   "key": "token"
@@ -3087,13 +2486,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/itineraries/ai-generate",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "ai-generate"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "ai-generate"]
             }
           },
           "response": []
@@ -3105,12 +2499,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries?page=1&limit=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries"],
               "query": [
                 {
                   "key": "page",
@@ -3146,12 +2536,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/itineraries",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries"]
             }
           },
           "response": []
@@ -3166,13 +2552,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}"]
             }
           },
           "response": []
@@ -3193,13 +2574,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}"]
             }
           },
           "response": []
@@ -3211,13 +2587,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}"]
             }
           },
           "response": []
@@ -3229,14 +2600,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/share",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "share"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "share"]
             }
           },
           "response": []
@@ -3248,14 +2613,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/share",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "share"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "share"]
             }
           },
           "response": []
@@ -3270,15 +2629,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/export/pdf",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "export",
-                "pdf"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "export", "pdf"]
             }
           },
           "response": []
@@ -3293,14 +2645,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/days",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "days"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "days"]
             }
           },
           "response": []
@@ -3321,14 +2667,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/days",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "days"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "days"]
             }
           },
           "response": []
@@ -3349,15 +2689,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/days/{{dayId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "days",
-                "{{dayId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "days", "{{dayId}}"]
             }
           },
           "response": []
@@ -3369,15 +2702,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/days/{{dayId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "days",
-                "{{dayId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "days", "{{dayId}}"]
             }
           },
           "response": []
@@ -3398,16 +2724,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/days/{{dayId}}/stops",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "days",
-                "{{dayId}}",
-                "stops"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "days", "{{dayId}}", "stops"]
             }
           },
           "response": []
@@ -3428,15 +2746,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/stops/{{stopId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "stops",
-                "{{stopId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "stops", "{{stopId}}"]
             }
           },
           "response": []
@@ -3448,15 +2759,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/itineraries/{{itineraryId}}/stops/{{stopId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "itineraries",
-                "{{itineraryId}}",
-                "stops",
-                "{{stopId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["itineraries", "{{itineraryId}}", "stops", "{{stopId}}"]
             }
           },
           "response": []
@@ -3476,13 +2780,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/festivals/calendar?from=2026-01-01&to=2026-12-31&lang=en",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "festivals",
-                "calendar"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["festivals", "calendar"],
               "query": [
                 {
                   "key": "from",
@@ -3522,13 +2821,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/festivals/types",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "festivals",
-                "types"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["festivals", "types"]
             }
           },
           "response": []
@@ -3543,12 +2837,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/festivals?page=1&limit=12",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "festivals"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["festivals"],
               "query": [
                 {
                   "key": "page",
@@ -3588,13 +2878,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/festivals/{{festivalId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "festivals",
-                "{{festivalId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["festivals", "{{festivalId}}"]
             }
           },
           "response": []
@@ -3615,12 +2900,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/festivals",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "festivals"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["festivals"]
             }
           },
           "response": []
@@ -3641,13 +2922,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/festivals/{{festivalId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "festivals",
-                "{{festivalId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["festivals", "{{festivalId}}"]
             }
           },
           "response": []
@@ -3659,13 +2935,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/festivals/{{festivalId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "festivals",
-                "{{festivalId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["festivals", "{{festivalId}}"]
             }
           },
           "response": []
@@ -3685,12 +2956,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/culinary?page=1&limit=12",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "culinary"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["culinary"],
               "query": [
                 {
                   "key": "page",
@@ -3730,13 +2997,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/culinary/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "culinary",
-                "categories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["culinary", "categories"]
             }
           },
           "response": []
@@ -3751,13 +3013,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/culinary/{{culinaryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "culinary",
-                "{{culinaryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["culinary", "{{culinaryId}}"]
             }
           },
           "response": []
@@ -3778,12 +3035,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/culinary",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "culinary"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["culinary"]
             }
           },
           "response": []
@@ -3804,13 +3057,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/culinary/{{culinaryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "culinary",
-                "{{culinaryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["culinary", "{{culinaryId}}"]
             }
           },
           "response": []
@@ -3822,13 +3070,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/culinary/{{culinaryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "culinary",
-                "{{culinaryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["culinary", "{{culinaryId}}"]
             }
           },
           "response": []
@@ -3848,12 +3091,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ocop?page=1&limit=12&lang=en",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ocop"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["ocop"],
               "query": [
                 {
                   "key": "page",
@@ -3893,13 +3132,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ocop/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ocop",
-                "me"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["ocop", "me"],
               "query": [
                 {
                   "key": "search",
@@ -3926,13 +3160,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ocop/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ocop",
-                "categories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ocop", "categories"]
             }
           },
           "response": []
@@ -3947,13 +3176,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ocop/{{ocopId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ocop",
-                "{{ocopId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ocop", "{{ocopId}}"]
             }
           },
           "response": []
@@ -3974,12 +3198,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ocop",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ocop"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ocop"]
             }
           },
           "response": []
@@ -4000,13 +3220,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ocop/{{ocopId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ocop",
-                "{{ocopId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ocop", "{{ocopId}}"]
             }
           },
           "response": []
@@ -4018,13 +3233,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ocop/{{ocopId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ocop",
-                "{{ocopId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ocop", "{{ocopId}}"]
             }
           },
           "response": []
@@ -4039,12 +3249,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ocop?page=1&limit=12",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ocop"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["ocop"],
               "query": [
                 {
                   "key": "page",
@@ -4084,12 +3290,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/news?page=1&limit=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["news"],
               "query": [
                 {
                   "key": "page",
@@ -4134,13 +3336,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/news/:slug",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                ":slug"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["news", ":slug"],
               "variable": [
                 {
                   "key": "slug"
@@ -4160,14 +3357,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/news/{{newsId}}/comments",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "{{newsId}}",
-                "comments"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "{{newsId}}", "comments"]
             }
           },
           "response": []
@@ -4179,14 +3370,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/news/admin/all",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "admin",
-                "all"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "admin", "all"]
             }
           },
           "response": []
@@ -4198,14 +3383,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/news/admin/{{newsId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "admin",
-                "{{newsId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "admin", "{{newsId}}"]
             }
           },
           "response": []
@@ -4226,15 +3405,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/news/admin/{{newsId}}/publish",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "admin",
-                "{{newsId}}",
-                "publish"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "admin", "{{newsId}}", "publish"]
             }
           },
           "response": []
@@ -4255,12 +3427,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/news",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news"]
             }
           },
           "response": []
@@ -4281,13 +3449,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/news/{{newsId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "{{newsId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "{{newsId}}"]
             }
           },
           "response": []
@@ -4299,13 +3462,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/news/{{newsId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "{{newsId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "{{newsId}}"]
             }
           },
           "response": []
@@ -4326,14 +3484,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/news/{{newsId}}/comments",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "{{newsId}}",
-                "comments"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "{{newsId}}", "comments"]
             }
           },
           "response": []
@@ -4354,15 +3506,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/news/{{newsId}}/comments/{{commentId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "{{newsId}}",
-                "comments",
-                "{{commentId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "{{newsId}}", "comments", "{{commentId}}"]
             }
           },
           "response": []
@@ -4374,15 +3519,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/news/{{newsId}}/comments/{{commentId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "{{newsId}}",
-                "comments",
-                "{{commentId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "{{newsId}}", "comments", "{{commentId}}"]
             }
           },
           "response": []
@@ -4403,16 +3541,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/news/{{newsId}}/comments/{{commentId}}/approval",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "news",
-                "{{newsId}}",
-                "comments",
-                "{{commentId}}",
-                "approval"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["news", "{{newsId}}", "comments", "{{commentId}}", "approval"]
             }
           },
           "response": []
@@ -4432,12 +3562,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs?page=1&limit=12",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs"],
               "query": [
                 {
                   "key": "page",
@@ -4477,13 +3603,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}"]
             }
           },
           "response": []
@@ -4498,14 +3619,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}/comments",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}",
-                "comments"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}", "comments"]
             }
           },
           "response": []
@@ -4517,14 +3632,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/admin/all",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "admin",
-                "all"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "admin", "all"]
             }
           },
           "response": []
@@ -4536,14 +3645,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/admin/{{vlogId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "admin",
-                "{{vlogId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "admin", "{{vlogId}}"]
             }
           },
           "response": []
@@ -4564,15 +3667,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/vlogs/admin/{{vlogId}}/moderate",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "admin",
-                "{{vlogId}}",
-                "moderate"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "admin", "{{vlogId}}", "moderate"]
             }
           },
           "response": []
@@ -4584,14 +3680,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/user/saved",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "user",
-                "saved"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "user", "saved"]
             }
           },
           "response": []
@@ -4603,14 +3693,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}/like",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}",
-                "like"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}", "like"]
             }
           },
           "response": []
@@ -4622,14 +3706,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}/like",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}",
-                "like"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}", "like"]
             }
           },
           "response": []
@@ -4641,14 +3719,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}/save",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}",
-                "save"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}", "save"]
             }
           },
           "response": []
@@ -4660,14 +3732,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}/save",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}",
-                "save"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}", "save"]
             }
           },
           "response": []
@@ -4739,12 +3805,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/vlogs",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs"]
             }
           },
           "response": []
@@ -4766,13 +3828,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}"]
             }
           },
           "response": []
@@ -4784,13 +3841,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}"]
             }
           },
           "response": []
@@ -4811,14 +3863,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}/comments",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}",
-                "comments"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}", "comments"]
             }
           },
           "response": []
@@ -4830,15 +3876,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/vlogs/{{vlogId}}/comments/{{commentId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vlogs",
-                "{{vlogId}}",
-                "comments",
-                "{{commentId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["vlogs", "{{vlogId}}", "comments", "{{commentId}}"]
             }
           },
           "response": []
@@ -4858,12 +3897,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ratings?page=1&limit=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ratings"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["ratings"],
               "query": [
                 {
                   "key": "page",
@@ -4905,14 +3940,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ratings/business/my",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ratings",
-                "business",
-                "my"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ratings", "business", "my"]
             }
           },
           "response": []
@@ -4933,12 +3962,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ratings",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ratings"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ratings"]
             }
           },
           "response": []
@@ -4959,13 +3984,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ratings/{{ratingId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ratings",
-                "{{ratingId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ratings", "{{ratingId}}"]
             }
           },
           "response": []
@@ -4977,13 +3997,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ratings/{{ratingId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ratings",
-                "{{ratingId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ratings", "{{ratingId}}"]
             }
           },
           "response": []
@@ -5004,14 +4019,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ratings/{{ratingId}}/reply",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ratings",
-                "{{ratingId}}",
-                "reply"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ratings", "{{ratingId}}", "reply"]
             }
           },
           "response": []
@@ -5023,14 +4032,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ratings/{{ratingId}}/helpful",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ratings",
-                "{{ratingId}}",
-                "helpful"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ratings", "{{ratingId}}", "helpful"]
             }
           },
           "response": []
@@ -5051,14 +4054,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ratings/{{ratingId}}/status",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ratings",
-                "{{ratingId}}",
-                "status"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ratings", "{{ratingId}}", "status"]
             }
           },
           "response": []
@@ -5078,13 +4075,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses/public?page=1&limit=10&lang=vi",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "public"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "public"],
               "query": [
                 {
                   "key": "page",
@@ -5134,14 +4126,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses/vouchers/nearby?lat=20.25&lng=105.97&radius_km=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "vouchers",
-                "nearby"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "vouchers", "nearby"],
               "query": [
                 {
                   "key": "lat",
@@ -5179,14 +4165,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/businesses/vouchers/validate",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "vouchers",
-                "validate"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "vouchers", "validate"]
             }
           },
           "response": []
@@ -5207,12 +4187,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/businesses",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses"]
             }
           },
           "response": []
@@ -5224,13 +4200,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "me"]
             }
           },
           "response": []
@@ -5242,12 +4213,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses"]
             }
           },
           "response": []
@@ -5262,13 +4229,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}"]
             }
           },
           "response": []
@@ -5289,13 +4251,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}"]
             }
           },
           "response": []
@@ -5316,14 +4273,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/status",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "status"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "status"]
             }
           },
           "response": []
@@ -5338,14 +4289,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/services",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "services"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "services"]
             }
           },
           "response": []
@@ -5366,14 +4311,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/services",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "services"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "services"]
             }
           },
           "response": []
@@ -5394,15 +4333,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/services/{{serviceId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "services",
-                "{{serviceId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "services", "{{serviceId}}"]
             }
           },
           "response": []
@@ -5414,15 +4346,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/services/{{serviceId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "services",
-                "{{serviceId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "services", "{{serviceId}}"]
             }
           },
           "response": []
@@ -5434,14 +4359,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/vouchers",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "vouchers"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "vouchers"]
             }
           },
           "response": []
@@ -5462,14 +4381,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/vouchers",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "vouchers"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "vouchers"]
             }
           },
           "response": []
@@ -5490,15 +4403,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/vouchers/{{voucherId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "vouchers",
-                "{{voucherId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "vouchers", "{{voucherId}}"]
             }
           },
           "response": []
@@ -5510,15 +4416,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/businesses/{{businessId}}/vouchers/{{voucherId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "businesses",
-                "{{businessId}}",
-                "vouchers",
-                "{{voucherId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["businesses", "{{businessId}}", "vouchers", "{{voucherId}}"]
             }
           },
           "response": []
@@ -5538,12 +4437,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/feedbacks?page=1&limit=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "feedbacks"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["feedbacks"],
               "query": [
                 {
                   "key": "page",
@@ -5575,14 +4470,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/feedbacks/admin/all",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "feedbacks",
-                "admin",
-                "all"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["feedbacks", "admin", "all"]
             }
           },
           "response": []
@@ -5597,13 +4486,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/feedbacks/{{feedbackId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "feedbacks",
-                "{{feedbackId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["feedbacks", "{{feedbackId}}"]
             }
           },
           "response": []
@@ -5624,12 +4508,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/feedbacks",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "feedbacks"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["feedbacks"]
             }
           },
           "response": []
@@ -5650,13 +4530,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/feedbacks/{{feedbackId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "feedbacks",
-                "{{feedbackId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["feedbacks", "{{feedbackId}}"]
             }
           },
           "response": []
@@ -5677,14 +4552,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/feedbacks/{{feedbackId}}/status",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "feedbacks",
-                "{{feedbackId}}",
-                "status"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["feedbacks", "{{feedbackId}}", "status"]
             }
           },
           "response": []
@@ -5705,14 +4574,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/feedbacks/{{feedbackId}}/moderation",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "feedbacks",
-                "{{feedbackId}}",
-                "moderation"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["feedbacks", "{{feedbackId}}", "moderation"]
             }
           },
           "response": []
@@ -5724,13 +4587,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/feedbacks/{{feedbackId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "feedbacks",
-                "{{feedbackId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["feedbacks", "{{feedbackId}}"]
             }
           },
           "response": []
@@ -5750,13 +4608,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/search/types",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "search",
-                "types"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "types"]
             }
           },
           "response": []
@@ -5771,12 +4624,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/search?q=trang an",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "search"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["search"],
               "query": [
                 {
                   "key": "q",
@@ -5802,13 +4651,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/search/spots?q=trang an",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "search",
-                "spots"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "spots"],
               "query": [
                 {
                   "key": "q",
@@ -5843,13 +4687,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/chatbot/sessions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "chatbot",
-                "sessions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["chatbot", "sessions"]
             }
           },
           "response": []
@@ -5861,13 +4700,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/chatbot/sessions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "chatbot",
-                "sessions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["chatbot", "sessions"]
             }
           },
           "response": []
@@ -5882,14 +4716,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/chatbot/sessions/{{sessionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "chatbot",
-                "sessions",
-                "{{sessionId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["chatbot", "sessions", "{{sessionId}}"]
             }
           },
           "response": []
@@ -5913,15 +4741,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/chatbot/sessions/{{sessionId}}/messages",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "chatbot",
-                "sessions",
-                "{{sessionId}}",
-                "messages"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["chatbot", "sessions", "{{sessionId}}", "messages"]
             }
           },
           "response": []
@@ -5933,14 +4754,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/chatbot/sessions/{{sessionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "chatbot",
-                "sessions",
-                "{{sessionId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["chatbot", "sessions", "{{sessionId}}"]
             }
           },
           "response": []
@@ -5966,12 +4781,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/notifications",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"]
             }
           },
           "response": []
@@ -5983,13 +4794,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/notifications/me?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications",
-                "me"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "me"],
               "query": [
                 {
                   "key": "page",
@@ -6016,13 +4822,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/notifications/unread-count",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications",
-                "unread-count"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "unread-count"]
             }
           },
           "response": []
@@ -6034,13 +4835,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/notifications/read-all",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications",
-                "read-all"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "read-all"]
             }
           },
           "response": []
@@ -6052,14 +4848,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/notifications/{{notificationId}}/read",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications",
-                "{{notificationId}}",
-                "read"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "{{notificationId}}", "read"]
             }
           },
           "response": []
@@ -6071,13 +4861,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/notifications/{{notificationId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications",
-                "{{notificationId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "{{notificationId}}"]
             }
           },
           "response": []
@@ -6089,12 +4874,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/notifications",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"]
             }
           },
           "response": []
@@ -6120,12 +4901,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ar-sessions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ar-sessions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ar-sessions"]
             }
           },
           "response": []
@@ -6137,13 +4914,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ar-sessions/my?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ar-sessions",
-                "my"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["ar-sessions", "my"],
               "query": [
                 {
                   "key": "page",
@@ -6170,13 +4942,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ar-sessions/stats",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ar-sessions",
-                "stats"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["ar-sessions", "stats"],
               "query": [
                 {
                   "key": "spot_id",
@@ -6195,14 +4962,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ar-sessions/spots/{{spotId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ar-sessions",
-                "spots",
-                "{{spotId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ar-sessions", "spots", "{{spotId}}"]
             }
           },
           "response": []
@@ -6214,13 +4975,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ar-sessions/{{arSessionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ar-sessions",
-                "{{arSessionId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ar-sessions", "{{arSessionId}}"]
             }
           },
           "response": []
@@ -6246,13 +5002,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/gps/start",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "gps",
-                "start"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["gps", "start"]
             }
           },
           "response": []
@@ -6273,14 +5024,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/gps/{{trackId}}/sync",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "gps",
-                "{{trackId}}",
-                "sync"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["gps", "{{trackId}}", "sync"]
             }
           },
           "response": []
@@ -6301,14 +5046,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/gps/{{trackId}}/end",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "gps",
-                "{{trackId}}",
-                "end"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["gps", "{{trackId}}", "end"]
             }
           },
           "response": []
@@ -6334,13 +5073,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/offline/download",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "offline",
-                "download"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["offline", "download"]
             }
           },
           "response": []
@@ -6352,12 +5086,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/offline",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "offline"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["offline"]
             }
           },
           "response": []
@@ -6369,13 +5099,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/offline/{{offlineMapId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "offline",
-                "{{offlineMapId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["offline", "{{offlineMapId}}"]
             }
           },
           "response": []
@@ -6387,13 +5112,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/offline/{{offlineMapId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "offline",
-                "{{offlineMapId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["offline", "{{offlineMapId}}"]
             }
           },
           "response": []
@@ -6422,14 +5142,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map/measure/distance",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map",
-                "measure",
-                "distance"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map", "measure", "distance"]
             }
           },
           "response": []
@@ -6453,14 +5167,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map/measure/area",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map",
-                "measure",
-                "area"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map", "measure", "area"]
             }
           },
           "response": []
@@ -6477,13 +5185,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "categories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "categories"]
             }
           },
           "response": []
@@ -6504,13 +5207,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map-admin/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "categories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "categories"]
             }
           },
           "response": []
@@ -6531,14 +5229,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map-admin/categories/{{mapCategoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "categories",
-                "{{mapCategoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "categories", "{{mapCategoryId}}"]
             }
           },
           "response": []
@@ -6550,14 +5242,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/categories/{{mapCategoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "categories",
-                "{{mapCategoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "categories", "{{mapCategoryId}}"]
             }
           },
           "response": []
@@ -6569,13 +5255,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/layers",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "layers"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "layers"]
             }
           },
           "response": []
@@ -6596,13 +5277,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map-admin/layers",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "layers"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "layers"]
             }
           },
           "response": []
@@ -6614,15 +5290,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/layers/{{mapLayerId}}/toggle",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "layers",
-                "{{mapLayerId}}",
-                "toggle"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "layers", "{{mapLayerId}}", "toggle"]
             }
           },
           "response": []
@@ -6643,14 +5312,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map-admin/layers/{{mapLayerId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "layers",
-                "{{mapLayerId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "layers", "{{mapLayerId}}"]
             }
           },
           "response": []
@@ -6662,14 +5325,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/layers/{{mapLayerId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "layers",
-                "{{mapLayerId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "layers", "{{mapLayerId}}"]
             }
           },
           "response": []
@@ -6681,13 +5338,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/apis",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "apis"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "apis"]
             }
           },
           "response": []
@@ -6708,13 +5360,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map-admin/apis",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "apis"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "apis"]
             }
           },
           "response": []
@@ -6735,14 +5382,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map-admin/apis/{{mapApiId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "apis",
-                "{{mapApiId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "apis", "{{mapApiId}}"]
             }
           },
           "response": []
@@ -6754,14 +5395,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/apis/{{mapApiId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "apis",
-                "{{mapApiId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "apis", "{{mapApiId}}"]
             }
           },
           "response": []
@@ -6773,15 +5408,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/apis/{{mapApiId}}/permissions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "apis",
-                "{{mapApiId}}",
-                "permissions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "apis", "{{mapApiId}}", "permissions"]
             }
           },
           "response": []
@@ -6802,15 +5430,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map-admin/apis/{{mapApiId}}/permissions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "apis",
-                "{{mapApiId}}",
-                "permissions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "apis", "{{mapApiId}}", "permissions"]
             }
           },
           "response": []
@@ -6822,16 +5443,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/apis/{{mapApiId}}/permissions/{{permissionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "apis",
-                "{{mapApiId}}",
-                "permissions",
-                "{{permissionId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "apis", "{{mapApiId}}", "permissions", "{{permissionId}}"]
             }
           },
           "response": []
@@ -6843,13 +5456,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/api-keys",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "api-keys"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "api-keys"]
             }
           },
           "response": []
@@ -6870,13 +5478,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/map-admin/api-keys",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "api-keys"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "api-keys"]
             }
           },
           "response": []
@@ -6888,15 +5491,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-admin/api-keys/{{apiKeyId}}/revoke",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-admin",
-                "api-keys",
-                "{{apiKeyId}}",
-                "revoke"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-admin", "api-keys", "{{apiKeyId}}", "revoke"]
             }
           },
           "response": []
@@ -6933,13 +5529,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-data/apis",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-data",
-                "apis"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-data", "apis"]
             }
           },
           "response": []
@@ -6971,13 +5562,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-data/layers",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-data",
-                "layers"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["map-data", "layers"]
             }
           },
           "response": []
@@ -7009,15 +5595,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/map-data/apis/:apiId/data",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "map-data",
-                "apis",
-                ":apiId",
-                "data"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["map-data", "apis", ":apiId", "data"],
               "variable": [
                 {
                   "key": "apiId"
@@ -7039,12 +5618,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/integrations?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "integrations"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["integrations"],
               "query": [
                 {
                   "key": "page",
@@ -7076,13 +5651,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/integrations/{{integrationId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "integrations",
-                "{{integrationId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["integrations", "{{integrationId}}"]
             }
           },
           "response": []
@@ -7103,12 +5673,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/integrations",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "integrations"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["integrations"]
             }
           },
           "response": []
@@ -7129,13 +5695,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/integrations/{{integrationId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "integrations",
-                "{{integrationId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["integrations", "{{integrationId}}"]
             }
           },
           "response": []
@@ -7147,13 +5708,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/integrations/{{integrationId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "integrations",
-                "{{integrationId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["integrations", "{{integrationId}}"]
             }
           },
           "response": []
@@ -7165,14 +5721,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/integrations/{{integrationId}}/sync",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "integrations",
-                "{{integrationId}}",
-                "sync"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["integrations", "{{integrationId}}", "sync"]
             }
           },
           "response": []
@@ -7184,14 +5734,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/integrations/{{integrationId}}/logs",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "integrations",
-                "{{integrationId}}",
-                "logs"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["integrations", "{{integrationId}}", "logs"]
             }
           },
           "response": []
@@ -7208,14 +5752,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/ministry/overview",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "ministry",
-                "overview"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "ministry", "overview"],
               "query": [
                 {
                   "key": "from_date",
@@ -7239,14 +5777,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/ministry/capacity-alerts?limit=50",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "ministry",
-                "capacity-alerts"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "ministry", "capacity-alerts"],
               "query": [
                 {
                   "key": "province_code",
@@ -7274,14 +5806,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/ministry/conservation-summary?days=30",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "ministry",
-                "conservation-summary"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "ministry", "conservation-summary"],
               "query": [
                 {
                   "key": "province_code",
@@ -7304,15 +5830,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/department/registrations/businesses",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "registrations",
-                "businesses"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "registrations", "businesses"]
             }
           },
           "response": []
@@ -7333,16 +5852,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/governance/department/registrations/businesses/{{businessId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "registrations",
-                "businesses",
-                "{{businessId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "registrations", "businesses", "{{businessId}}"]
             }
           },
           "response": []
@@ -7354,15 +5865,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/department/registrations/spots",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "registrations",
-                "spots"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "registrations", "spots"]
             }
           },
           "response": []
@@ -7383,16 +5887,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/governance/department/registrations/spots/{{spotId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "registrations",
-                "spots",
-                "{{spotId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "registrations", "spots", "{{spotId}}"]
             }
           },
           "response": []
@@ -7404,14 +5900,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/department/feedbacks",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "feedbacks"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "feedbacks"]
             }
           },
           "response": []
@@ -7432,14 +5922,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/governance/department/reports",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "reports"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "reports"]
             }
           },
           "response": []
@@ -7451,14 +5935,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/department/reports",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "reports"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "reports"]
             }
           },
           "response": []
@@ -7479,16 +5957,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/governance/department/reports/{{reportId}}/send",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "reports",
-                "{{reportId}}",
-                "send"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "reports", "{{reportId}}", "send"]
             }
           },
           "response": []
@@ -7500,14 +5970,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/department/capacity-alerts",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "capacity-alerts"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "capacity-alerts"]
             }
           },
           "response": []
@@ -7519,14 +5983,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/department/conservation-summary",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "department",
-                "conservation-summary"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "department", "conservation-summary"]
             }
           },
           "response": []
@@ -7547,14 +6005,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/governance/enterprise/reports",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "enterprise",
-                "reports"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "enterprise", "reports"]
             }
           },
           "response": []
@@ -7566,14 +6018,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/enterprise/reports",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "enterprise",
-                "reports"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "enterprise", "reports"]
             }
           },
           "response": []
@@ -7585,16 +6031,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/enterprise/businesses/{{businessId}}/dashboard?period=month&year=2026",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "enterprise",
-                "businesses",
-                "{{businessId}}",
-                "dashboard"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "enterprise", "businesses", "{{businessId}}", "dashboard"],
               "query": [
                 {
                   "key": "period",
@@ -7625,15 +6063,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/governance/enterprise/businesses/{{businessId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "enterprise",
-                "businesses",
-                "{{businessId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "enterprise", "businesses", "{{businessId}}"]
             }
           },
           "response": []
@@ -7645,16 +6076,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/enterprise/businesses/{{businessId}}/feedbacks?radius_km=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "enterprise",
-                "businesses",
-                "{{businessId}}",
-                "feedbacks"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "enterprise", "businesses", "{{businessId}}", "feedbacks"],
               "query": [
                 {
                   "key": "page",
@@ -7682,14 +6105,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/admin/dashboard",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "admin",
-                "dashboard"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "admin", "dashboard"]
             }
           },
           "response": []
@@ -7701,14 +6118,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/admin/traffic?days=30&group_by=day",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "admin",
-                "traffic"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "admin", "traffic"],
               "query": [
                 {
                   "key": "days",
@@ -7730,14 +6141,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/admin/permissions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "admin",
-                "permissions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "admin", "permissions"]
             }
           },
           "response": []
@@ -7758,14 +6163,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/governance/admin/permissions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "admin",
-                "permissions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "admin", "permissions"]
             }
           },
           "response": []
@@ -7777,16 +6176,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/governance/admin/roles/{{roleId}}/permissions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "admin",
-                "roles",
-                "{{roleId}}",
-                "permissions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "admin", "roles", "{{roleId}}", "permissions"]
             }
           },
           "response": []
@@ -7807,16 +6198,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/governance/admin/roles/{{roleId}}/permissions",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "governance",
-                "admin",
-                "roles",
-                "{{roleId}}",
-                "permissions"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["governance", "admin", "roles", "{{roleId}}", "permissions"]
             }
           },
           "response": []
@@ -7833,13 +6216,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/statistics/data-files",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "statistics",
-                "data-files"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["statistics", "data-files"]
             }
           },
           "response": []
@@ -7851,20 +6229,150 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/statistics/data-files/download/:filename",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "statistics",
-                "data-files",
-                "download",
-                ":filename"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["statistics", "data-files", "download", ":filename"],
               "variable": [
                 {
                   "key": "filename"
                 }
               ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "34. Ảnh vệ tinh (Satellite)",
+      "item": [
+        {
+          "name": "Ảnh RGB composite",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [[[107.0, 12.0], [108.0, 12.0], [108.0, 13.0], [107.0, 13.0], [107.0, 12.0]]]\n  },\n  \"startDate\": \"2023-01-01\",\n  \"endDate\": \"2023-03-31\",\n  \"collection\": \"S2\",\n  \"cloudCover\": 30\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/satellite/rgb",
+              "host": ["{{baseUrl}}"],
+              "path": ["satellite", "rgb"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ảnh NDVI",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [[[107.0, 12.0], [108.0, 12.0], [108.0, 13.0], [107.0, 13.0], [107.0, 12.0]]]\n  },\n  \"startDate\": \"2023-01-01\",\n  \"endDate\": \"2023-03-31\",\n  \"collection\": \"S2\",\n  \"cloudCover\": 30,\n  \"ndviMinThresh\": 0.2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/satellite/ndvi",
+              "host": ["{{baseUrl}}"],
+              "path": ["satellite", "ndvi"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bản đồ nhiệt LST",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [[[107.0, 12.0], [108.0, 12.0], [108.0, 13.0], [107.0, 13.0], [107.0, 12.0]]]\n  },\n  \"startDate\": \"2023-01-01\",\n  \"endDate\": \"2023-03-31\",\n  \"collection\": \"S2\",\n  \"cloudCover\": 30\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/satellite/heat-map",
+              "host": ["{{baseUrl}}"],
+              "path": ["satellite", "heat-map"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Phân loại lớp phủ",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [[[107.0, 12.0], [108.0, 12.0], [108.0, 13.0], [107.0, 13.0], [107.0, 12.0]]]\n  },\n  \"startDate\": \"2023-01-01\",\n  \"endDate\": \"2023-03-31\",\n  \"collection\": \"S2\",\n  \"cloudCover\": 30\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/satellite/classified",
+              "host": ["{{baseUrl}}"],
+              "path": ["satellite", "classified"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "So sánh RGB 2 thời điểm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [[[107.0, 12.0], [108.0, 12.0], [108.0, 13.0], [107.0, 13.0], [107.0, 12.0]]]\n  },\n  \"startDate1\": \"2020-01-01\",\n  \"endDate1\": \"2020-06-30\",\n  \"startDate2\": \"2023-01-01\",\n  \"endDate2\": \"2023-06-30\",\n  \"collection\": \"S2\",\n  \"cloudCover\": 30\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/satellite/compare",
+              "host": ["{{baseUrl}}"],
+              "path": ["satellite", "compare"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Phát hiện thay đổi rừng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\": [[[107.0, 12.0], [108.0, 12.0], [108.0, 13.0], [107.0, 13.0], [107.0, 12.0]]]\n  },\n  \"startDate1\": \"2020-01-01\",\n  \"endDate1\": \"2020-06-30\",\n  \"startDate2\": \"2023-01-01\",\n  \"endDate2\": \"2023-06-30\",\n  \"collection\": \"S2\",\n  \"cloudCover\": 30\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/satellite/change",
+              "host": ["{{baseUrl}}"],
+              "path": ["satellite", "change"]
             }
           },
           "response": []

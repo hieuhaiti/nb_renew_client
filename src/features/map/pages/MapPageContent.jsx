@@ -434,10 +434,24 @@ export default function MapPage() {
     if (!prefillKeyword && !prefillResult && !prefillRoute && !prefillTourPanel) return;
 
     prefillHandledRef.current = true;
+    console.log(
+      '[MapPage prefill] prefillRoute:',
+      prefillRoute,
+      '| prefillTourPanel:',
+      prefillTourPanel
+    );
     if (prefillKeyword) setKeyword(prefillKeyword);
     if (prefillRoute) {
+      console.log(
+        '[MapPage prefill] calling setHighlightedRoute with points:',
+        prefillRoute?.points?.length,
+        'geometry coords:',
+        prefillRoute?.geometry?.coordinates?.length
+      );
       setHighlightedRoute(prefillRoute);
       setShowOnlyHighlightedRoute(Boolean(prefillRoute));
+    } else {
+      console.warn('[MapPage prefill] NO prefillRoute in location.state → route will NOT be drawn');
     }
     if (prefillTourPanel) {
       const { tourId, tourName, stops, selectedTour } = prefillTourPanel;
@@ -449,6 +463,8 @@ export default function MapPage() {
         tourName: tourName ?? prefillRoute?.tourName ?? '',
         stops: Array.isArray(stops) ? stops : [],
       });
+      setActiveTab('tour');
+      setActiveSidebar('tour');
     }
     if (prefillResult) handleSelectSearchResult(prefillResult);
   }, [location.state, setHighlightedRoute, setShowOnlyHighlightedRoute, setSelectedTour]);
@@ -579,7 +595,7 @@ export default function MapPage() {
   }
 
   const showLeftPanelRail = activePanel === 'direction' || activePanel === 'tour';
-  const mapPanelWidthClass = 'w-[18vw]';
+  const mapPanelWidthClass = 'w-[17vw]';
 
   return (
     <MapLayout>

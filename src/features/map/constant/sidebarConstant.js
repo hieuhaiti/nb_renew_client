@@ -1,4 +1,12 @@
-import { Bot, Calendar, Car, MapPin, Satellite, Users } from 'lucide-react';
+import {
+  AlignHorizontalJustifyCenter,
+  Bot,
+  Calendar,
+  Car,
+  MapPin,
+  Satellite,
+  Users,
+} from 'lucide-react';
 import EventPanel from '@/features/map/components/rightSidebar/EventPanel';
 import ChatbotPanel from '@/features/map/components/rightSidebar/ChatbotPanel';
 import TourPanel from '@/features/map/components/rightSidebar/TourPanel';
@@ -39,6 +47,13 @@ export const headerSidebar = [
     label: 'headerAside.satellite',
     value: 'satellite',
     component: 'SatelliteImage Placeholder',
+    authen: true,
+  },
+  {
+    icon: AlignHorizontalJustifyCenter,
+    label: 'headerAside.compareSatellite',
+    value: 'compareSatellite',
+    component: 'compareSatellite Placeholder',
     authen: true,
   },
   {

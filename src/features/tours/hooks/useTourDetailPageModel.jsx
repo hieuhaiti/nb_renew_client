@@ -36,7 +36,9 @@ function parseGeometryValue(value) {
 }
 
 function resolveStopCandidate(stop, index = 0) {
-  const spot = stop?.spot && typeof stop.spot === 'object' ? stop.spot : null;
+  const spot =
+    (stop?.spot && typeof stop.spot === 'object' ? stop.spot : null) ||
+    (stop?.point && typeof stop.point === 'object' ? stop.point : null);
   const geometry =
     parseGeometryValue(stop?.geom_json) ||
     parseGeometryValue(stop?.geom) ||
@@ -232,6 +234,9 @@ export function useTourDetailPageModel(t) {
     }
 
     const sortedStops = sortStops(tourStops);
+    console.log('[handleOpenMap] tourStops raw:', tourStops);
+    console.log('[handleOpenMap] sortedStops:', sortedStops);
+
     const panelPayload = {
       tourId: tour.id,
       tourName,
@@ -241,13 +246,27 @@ export function useTourDetailPageModel(t) {
         cover_image_url: tour?.cover_image_url || null,
       },
     };
-    const routePoints = sortedStops
-      .map((stop, index) => normalizeTourRoutePoint(resolveStopCandidate(stop, index), index, lang))
+
+    const candidates = sortedStops.map((stop, index) => {
+      const candidate = resolveStopCandidate(stop, index);
+      console.log(`[handleOpenMap] stop[${index}] raw:`, stop, '→ candidate:', candidate);
+      return candidate;
+    });
+
+    const routePoints = candidates
+      .map((candidate, index) => {
+        const point = normalizeTourRoutePoint(candidate, index, lang);
+        console.log(`[handleOpenMap] candidate[${index}] → routePoint:`, point);
+        return point;
+      })
       .filter(Boolean);
+
+    console.log('[handleOpenMap] final routePoints:', routePoints);
 
     setSelectedTour(panelPayload.selectedTour);
 
     if (routePoints.length < 2) {
+      console.warn('[handleOpenMap] routePoints.length < 2 → navigating WITHOUT route. Stops without valid coords:', sortedStops.length);
       navigate('/map', {
         state: {
           prefillTourPanel: panelPayload,
@@ -263,12 +282,15 @@ export function useTourDetailPageModel(t) {
         'driving',
         lang === 'en' ? 'en' : 'vi'
       );
-    } catch {
+      console.log('[handleOpenMap] createRouteFromPoints success:', routeResult);
+    } catch (err) {
+      console.error('[handleOpenMap] createRouteFromPoints failed:', err);
       routeResult = null;
     }
 
     const fallbackGeometry = buildFallbackGeometryFromPoints(routePoints);
     const routeGeometry = routeResult?.geometry || fallbackGeometry;
+    console.log('[handleOpenMap] routeGeometry:', routeGeometry, '| fallback used:', !routeResult?.geometry);
 
     navigate('/map', {
       state: {

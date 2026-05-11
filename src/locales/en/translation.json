@@ -440,6 +440,7 @@
     "direction": "Directions",
     "destination": "Destination",
     "satellite": "Satellite",
+    "compareSatellite": "Compare Satellite",
     "event": "Events",
     "tour": "Tours",
     "chatbot": "Chatbot",
