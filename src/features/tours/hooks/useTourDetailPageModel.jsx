@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Star, Clock3, Ticket, Users } from 'lucide-react';
+import { Star, Clock3, Ticket, Users, MapPin, Flag, Building2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { formatVND, withBaseUrl } from '@/lib/utils';
@@ -9,7 +9,10 @@ import { useGetTourReviewByTourId, useCreateTourReview } from '@/services/api/to
 import { stripHtmlTags, getDurationLabel } from '@/features/tours/utils/tourDetail.utils';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
-import { createRouteFromPoints, normalizeTourRoutePoint } from '@/features/map/utils/highlightRouteUtils';
+import {
+  createRouteFromPoints,
+  normalizeTourRoutePoint,
+} from '@/features/map/utils/highlightRouteUtils';
 
 function sortStops(stops) {
   const list = Array.isArray(stops) ? stops : [];
@@ -91,7 +94,8 @@ export function useTourDetailPageModel(t) {
 
   const tourName = useMemo(
     () =>
-      tour?.name || (lang === 'en' ? tour?.name_en || tour?.name_vi || '' : tour?.name_vi || tour?.name_en || ''),
+      tour?.name ||
+      (lang === 'en' ? tour?.name_en || tour?.name_vi || '' : tour?.name_vi || tour?.name_en || ''),
     [tour, lang]
   );
 
@@ -198,10 +202,7 @@ export function useTourDetailPageModel(t) {
     if (!tour?.business_id) return;
     if (!cleanlinessRating || !serviceRating || !valueRating || !accessibilityRating) {
       toast.error(
-        t(
-          'tourPage.reviewErrorRatings',
-          'Vui lòng đánh giá tất cả tiêu chí: sạch sẽ, dịch vụ, giá trị và tiếp cận.'
-        )
+        t('tourPage.reviewErrorRatings', 'Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và tiếp cận.')
       );
       return;
     }
@@ -257,7 +258,11 @@ export function useTourDetailPageModel(t) {
 
     let routeResult = null;
     try {
-      routeResult = await createRouteFromPoints(routePoints, 'driving', lang === 'en' ? 'en' : 'vi');
+      routeResult = await createRouteFromPoints(
+        routePoints,
+        'driving',
+        lang === 'en' ? 'en' : 'vi'
+      );
     } catch {
       routeResult = null;
     }
@@ -296,7 +301,7 @@ export function useTourDetailPageModel(t) {
     const name = tour?.business_name;
     toast.info(
       name
-        ? t('tourPage.contactBusiness', `Liên hệ nhà cung cấp: ${name}`, { name })
+        ? t('tourPage.contactBusiness', 'Liên hệ nhà cung cấp: {{name}}', { name })
         : t('tourPage.contactNotAvailable', 'Chưa có thông tin liên hệ.')
     );
   };
@@ -399,31 +404,34 @@ export function useTourDetailPageModel(t) {
         ),
     },
   ];
-
   const sidebarRows = [
     {
       key: 'start_location',
       label: t('tourPage.startLocation', 'Địa điểm đi'),
       value: tour?.start_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
       dotClass: 'bg-primary',
+      icon: <MapPin className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'end_location',
       label: t('tourPage.endLocation', 'Địa điểm đến'),
       value: tour?.end_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
       dotClass: 'bg-primary',
+      icon: <Flag className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'duration',
       label: t('tourPage.duration', 'Thời lượng'),
       value: durationLabel,
       dotClass: 'bg-primary',
+      icon: <Clock3 className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'provider',
       label: t('tourPage.provider', 'Nhà cung cấp'),
       value: tour?.business_name || t('tourPage.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-warning',
+      dotClass: 'bg-primary',
+      icon: <Building2 className="text-primary h-3.5 w-3.5" />,
     },
   ];
 
@@ -487,3 +495,6 @@ export function useTourDetailPageModel(t) {
     handleContact,
   };
 }
+
+
+

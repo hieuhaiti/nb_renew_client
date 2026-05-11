@@ -469,7 +469,7 @@ export default function TourismDetailPage() {
 
   const openingHours =
     formatOpeningHoursDisplay(attraction?.opening_hours, lang) ||
-    t('tourism.unknown', 'Chua c?p nh?t');
+    t('tourism.unknown', 'Chưa cập nhật');
 
   const entranceFeeRaw =
     attraction?.ticket_price_adult ?? attraction?.entrance_fee ?? attraction?.ticket_price ?? 0;
@@ -477,21 +477,34 @@ export default function TourismDetailPage() {
   const ticketDisplay =
     Number.isFinite(entranceFeeNumber) && entranceFeeNumber > 0
       ? formatVND(entranceFeeNumber)
-      : t('tourism.free', 'Mi?n phí');
+      : t('tourism.free', 'Miễn phí');
 
-  const capacityPct =
-    attraction?.current_capacity_pct != null ? Number(attraction.current_capacity_pct) : null;
-  const capacityThreshold = Number(attraction?.alert_threshold_pct) || 75;
-  const isHighCrowd = capacityPct !== null && capacityPct > capacityThreshold;
-  const crowdDisplay =
-    capacityPct !== null ? `${Math.round(capacityPct)}%` : t('tourism.unknown', 'Chua c?p nh?t');
+  const durationTextCandidate =
+    attraction?.visit_duration_text ||
+    attraction?.recommended_duration_text ||
+    attraction?.visit_duration ||
+    attraction?.recommended_duration ||
+    null;
+  const durationHours = Number(attraction?.duration_hours ?? attraction?.visit_duration_hours);
+  const durationMinutes = Number(
+    attraction?.duration_minutes ?? attraction?.visit_duration_minutes
+  );
+  const visitDurationDisplay =
+    (typeof durationTextCandidate === 'string' && durationTextCandidate.trim()) ||
+    (Number.isFinite(durationHours) && durationHours > 0
+      ? `${durationHours} ${t('tourism.hours', 'giờ')}`
+      : null) ||
+    (Number.isFinite(durationMinutes) && durationMinutes > 0
+      ? `${durationMinutes} ${t('tourism.minutes', 'phút')}`
+      : null) ||
+    t('tourism.unknown', 'Chưa cập nhật');
 
   const ticketChildRaw = attraction?.ticket_price_child ?? 0;
   const ticketChildNumber = Number(ticketChildRaw);
   const ticketChildDisplay =
     Number.isFinite(ticketChildNumber) && ticketChildNumber > 0
       ? formatVND(ticketChildNumber)
-      : t('tourism.free', 'Mi?n phí');
+      : t('tourism.free', 'Miễn phí');
 
   const heroTags = (() => {
     const extracted = [attraction?.category_name, attraction?.province_name]
@@ -554,12 +567,12 @@ export default function TourismDetailPage() {
         item?.name_vi ||
         item?.name_en ||
         item?.name ||
-        t('tourism.nearby_point_name', `Ði?m ${index + 1}`),
+        t('tourism.nearby_point_name', `Điểm ${index + 1}`),
       distance:
         item?.distance_text ||
         (typeof item?.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : null) ||
         item?.distance ||
-        t('tourism.nearby_distance_unknown', 'Chua rõ kho?ng cách'),
+        t('tourism.nearby_distance_unknown', 'Chưa rõ khoảng cách'),
       image:
         item?.primary_image || item?.cover_image_url || item?.main_image_url || item?.image || '',
     }));
@@ -568,7 +581,7 @@ export default function TourismDetailPage() {
   const sidebarRows = [
     {
       key: 'location',
-      label: t('tourism.location', 'V? trí'),
+      label: t('tourism.location', 'Vị trí'),
       value: attractionAddress || t('tourism.unknown', 'Chưa cập nhật'),
       dotClass: 'bg-primary',
       icon: <MapPin className="text-primary h-3.5 w-3.5" />,
@@ -592,8 +605,8 @@ export default function TourismDetailPage() {
       key: 'type',
       label: t('tourism.type', 'Loại hình'),
       value: attraction?.category_name || t('tourism.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-warning',
-      icon: <Leaf className="text-warning h-3.5 w-3.5" />,
+      dotClass: 'bg-primary',
+      icon: <Leaf className="text-primary h-3.5 w-3.5" />,
     },
   ];
 
@@ -622,9 +635,9 @@ export default function TourismDetailPage() {
       value: <span className="text-foreground text-sm font-medium">{ticketDisplay}</span>,
     },
     {
-      key: 'crowd',
-      label: t('tourism.crowd_level', 'Lượng người'),
-      value: <span className="text-foreground text-sm font-medium">{crowdDisplay}</span>,
+      key: 'visit_duration',
+      label: t('tourism.visit_duration', 'Thời gian tham quan'),
+      value: <span className="text-foreground text-sm font-medium">{visitDurationDisplay}</span>,
     },
   ];
 
@@ -647,7 +660,7 @@ export default function TourismDetailPage() {
                 imageSrc={safeImagesMapped[currentImageIndex]}
                 title={attractionName}
                 subtitle={
-                  attractionAddress || t('tourism.location_pending', 'Ðang c?p nh?t v? trí')
+                  attractionAddress || t('tourism.location_pending', 'Đang cập nhật vị trí')
                 }
                 tags={heroTags}
                 totalImages={safeImagesMapped.length}

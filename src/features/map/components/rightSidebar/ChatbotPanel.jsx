@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Bot, LogIn, Menu, MessageSquare, Plus, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import useAuthStore from '@/stores/useAuthStore';
@@ -193,7 +194,21 @@ export default function ChatbotPanel() {
                           : 'typo-body bg-card text-foreground rounded-2xl border px-3 py-2'
                       }
                     >
-                      {msg.content}
+                      {msg.role === 'user' ? (
+                        msg.content
+                      ) : (
+                        <ReactMarkdown
+                          components={{
+                            p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
+                            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                            ul: ({ children }) => <ul className="my-1 ml-4 list-disc space-y-0.5">{children}</ul>,
+                            ol: ({ children }) => <ol className="my-1 ml-4 list-decimal space-y-0.5">{children}</ol>,
+                            li: ({ children }) => <li>{children}</li>,
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      )}
                     </div>
                   </div>
                 </div>

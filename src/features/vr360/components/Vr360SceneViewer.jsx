@@ -247,6 +247,7 @@ export default function Vr360SceneViewer({
   onNextScene,
   canGoPrevScene = false,
   canGoNextScene = false,
+  onHotspotClick,
   className,
 }) {
   const { t } = useTranslation();
@@ -269,6 +270,11 @@ export default function Vr360SceneViewer({
   const [isVolumeControlOpen, setIsVolumeControlOpen] = useState(false);
   const fovAngle = useFovStore((state) => state.fovAngle);
   const setFovAngle = useFovStore((state) => state.setFovAngle);
+
+  const onHotspotClickRef = useRef(onHotspotClick);
+  useEffect(() => {
+    onHotspotClickRef.current = onHotspotClick;
+  }, [onHotspotClick]);
 
   const narrationRawUrl = getNarrationRawUrl(scene);
   const narrationUrl = useMemo(
@@ -337,6 +343,8 @@ export default function Vr360SceneViewer({
 
     const aCamera = document.createElement('a-camera');
     aCamera.setAttribute('look-controls', 'enabled: true');
+    aCamera.setAttribute('cursor', 'rayOrigin: mouse');
+    aCamera.setAttribute('raycaster', 'objects: .hs-click-target; recursive: false');
     aScene.appendChild(aCamera);
 
     aSkyRef.current = aSky;
@@ -461,6 +469,47 @@ export default function Vr360SceneViewer({
         }
 
         labelEntity.setAttribute('look-at', '[camera]');
+
+        const isNavigate = hotspot.hotspot_type === 'navigate';
+        const targetSceneId = hotspot.target_scene_id || hotspot.linked_scene_id;
+        const targetSpotId = hotspot.target_spot_id;
+        const targetSpotSlug = hotspot.target_spot_slug;
+        const hasNavigation = isNavigate && Boolean(targetSceneId || targetSpotId || targetSpotSlug);
+
+        // eslint-disable-next-line no-console
+        console.debug('[VR360 hotspot]', {
+          id: hotspot.id,
+          name: hotspot.name,
+          hotspot_type: hotspot.hotspot_type,
+          target_scene_id: hotspot.target_scene_id,
+          target_spot_id: hotspot.target_spot_id,
+          hasNavigation,
+        });
+
+        if (hasNavigation) {
+          const dot = document.createElement('a-entity');
+          dot.setAttribute('geometry', 'primitive: sphere; radius: 0.1');
+          dot.setAttribute(
+            'material',
+            'color: #f59e0b; opacity: 0.9; transparent: true; depthTest: false'
+          );
+
+          const clickSphere = document.createElement('a-entity');
+          clickSphere.setAttribute('geometry', 'primitive: sphere; radius: 0.22');
+          clickSphere.setAttribute(
+            'material',
+            'transparent: true; opacity: 0; depthTest: false; depthWrite: false'
+          );
+          clickSphere.classList.add('hs-click-target');
+          clickSphere.addEventListener('click', () => {
+            // eslint-disable-next-line no-console
+            console.debug('[VR360 hotspot] click fired', { hotspot, targetSceneId, targetSpotId });
+            onHotspotClickRef.current?.(hotspot);
+          });
+
+          entity.appendChild(dot);
+          entity.appendChild(clickSphere);
+        }
 
         entity.appendChild(labelEntity);
         root.appendChild(entity);

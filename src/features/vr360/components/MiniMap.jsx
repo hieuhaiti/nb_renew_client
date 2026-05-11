@@ -18,6 +18,9 @@ const LAYER_FOV_OUTLINE = 'fov-outline';
 const SOURCE_POINTS = 'allTourismPoints';
 const LAYER_POINTS = 'allTourismPoints-marker';
 const LAYER_LABELS = 'allTourismPoints-label';
+const SOURCE_SPOTS = 'tourism-spots';
+const LAYER_SPOTS = 'tourism-spots-circles';
+const LAYER_SPOTS_LABELS = 'tourism-spots-labels';
 
 function parseGeometryValue(value) {
   if (!value) return null;
@@ -101,6 +104,76 @@ function ensureFovArtifacts(map, initialData) {
   }
 }
 
+function ensureSpotArtifacts(map, initialData) {
+  if (!map.getSource(SOURCE_SPOTS)) {
+    map.addSource(SOURCE_SPOTS, {
+      type: 'geojson',
+      data: initialData || emptyFeatureCollection(),
+    });
+  }
+
+  if (!map.getLayer(LAYER_SPOTS)) {
+    map.addLayer({
+      id: LAYER_SPOTS,
+      type: 'circle',
+      source: SOURCE_SPOTS,
+      paint: {
+        'circle-radius': ['case', ['boolean', ['get', 'isCurrent'], false], 8, 5],
+        'circle-color': ['case', ['boolean', ['get', 'isCurrent'], false], '#ef4444', '#7c3aed'],
+        'circle-stroke-width': ['case', ['boolean', ['get', 'isCurrent'], false], 2.5, 1.5],
+        'circle-stroke-color': '#ffffff',
+        'circle-opacity': 0.8,
+      },
+    });
+  }
+
+  if (!map.getLayer(LAYER_SPOTS_LABELS)) {
+    map.addLayer({
+      id: LAYER_SPOTS_LABELS,
+      type: 'symbol',
+      source: SOURCE_SPOTS,
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-size': 11,
+        'text-offset': [0, 1.2],
+        'text-anchor': 'top',
+        'text-allow-overlap': false,
+      },
+      paint: {
+        'text-color': '#4c1d95',
+        'text-halo-color': '#ffffff',
+        'text-halo-width': 1,
+      },
+    });
+  }
+}
+
+function buildSpotsGeoJson(spots, currentSpotIds = new Set()) {
+  const features = (Array.isArray(spots) ? spots : [])
+    .map((spot) => {
+      const coordinates = getSceneCoords(spot);
+      if (!coordinates) return null;
+      const resolvedId = spot?.id ?? spot?.spot_id ?? spot?.point_id ?? null;
+      const resolvedSlug = spot?.slug ?? spot?.spot_slug ?? null;
+      const isCurrent =
+        (resolvedId != null && currentSpotIds.has(String(resolvedId))) ||
+        (resolvedSlug != null && currentSpotIds.has(String(resolvedSlug)));
+
+      return {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates },
+        properties: {
+          id: resolvedId,
+          slug: resolvedSlug,
+          name: spot?.name || spot?.slug || 'Điểm du lịch',
+          isCurrent,
+        },
+      };
+    })
+    .filter(Boolean);
+  return { type: 'FeatureCollection', features };
+}
+
 function ensurePointArtifacts(map, initialData) {
   if (!map.getSource(SOURCE_POINTS)) {
     map.addSource(SOURCE_POINTS, {
@@ -174,8 +247,11 @@ function buildScenesGeoJson(scenes, currentSceneIndex) {
 
 export default function MiniMap({
   scenes = [],
+  spots = [],
+  currentSpot = null,
   currentSceneIndex = 0,
   onSelectScene,
+  onSelectSpot,
   className = '',
   mapStyle = MAP_STYLE,
   showFovControls = true,
@@ -185,12 +261,15 @@ export default function MiniMap({
   const popupRef = useRef(null);
 
   const onSelectSceneRef = useRef(onSelectScene);
+  const onSelectSpotRef = useRef(onSelectSpot);
   const scenesRef = useRef(scenes);
+  const spotsRef = useRef(spots);
   const currentCenterRef = useRef(null);
   const fovAngleRef = useRef(80);
   const fovRadiusRef = useRef(250);
   const fovPolygonRef = useRef(null);
   const scenesGeoJsonRef = useRef(null);
+  const spotsGeoJsonRef = useRef(null);
 
   const headingRafRef = useRef(null);
   const pendingHeadingRef = useRef(null);
@@ -214,6 +293,24 @@ export default function MiniMap({
     return getSceneCoords(scene);
   }, [scenes, currentSceneIndex]);
 
+  const currentSpotCenter = useMemo(() => {
+    return getSceneCoords(currentSpot);
+  }, [currentSpot]);
+
+  const currentSpotIds = useMemo(() => {
+    const ids = new Set();
+    const id = currentSpot?.id ?? currentSpot?.spot_id ?? currentSpot?.point_id;
+    const slug = currentSpot?.slug ?? currentSpot?.spot_slug;
+    if (id != null) ids.add(String(id));
+    if (slug != null) ids.add(String(slug));
+    return ids;
+  }, [currentSpot]);
+
+  const spotsGeoJson = useMemo(
+    () => buildSpotsGeoJson(spots, currentSpotIds),
+    [spots, currentSpotIds]
+  );
+
   const updateFovSourceData = useCallback((nextData) => {
     const map = mapRef.current;
     if (!map) return;
@@ -228,28 +325,44 @@ export default function MiniMap({
     if (source) source.setData(nextData || emptyFeatureCollection());
   }, []);
 
+  const updateSpotsSourceData = useCallback((nextData) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const source = map.getSource(SOURCE_SPOTS);
+    if (source) source.setData(nextData || emptyFeatureCollection());
+  }, []);
+
   useEffect(() => {
     onSelectSceneRef.current = onSelectScene;
   }, [onSelectScene]);
 
   useEffect(() => {
+    onSelectSpotRef.current = onSelectSpot;
+  }, [onSelectSpot]);
+
+  useEffect(() => {
     scenesRef.current = scenes;
-    currentCenterRef.current = currentCenter;
+    spotsRef.current = spots;
+    currentCenterRef.current = currentSpotCenter || currentCenter;
     fovAngleRef.current = fovAngle;
     fovRadiusRef.current = fovRadius;
     fovPolygonRef.current = fovPolygon;
     scenesGeoJsonRef.current = scenesGeoJson;
+    spotsGeoJsonRef.current = spotsGeoJson;
 
     setScenes(scenes);
     setCurrentSceneIndex(currentSceneIndex);
   }, [
     scenes,
+    spots,
     currentSceneIndex,
     currentCenter,
+    currentSpotCenter,
     fovAngle,
     fovRadius,
     fovPolygon,
     scenesGeoJson,
+    spotsGeoJson,
     setScenes,
     setCurrentSceneIndex,
   ]);
@@ -263,7 +376,7 @@ export default function MiniMap({
       container: containerRef.current,
       style: mapStyle,
       center: initialCenter,
-      zoom: currentCenterRef.current ? 12 : defaultZoom,
+      zoom: currentCenterRef.current ? 13 : defaultZoom,
       interactive: true,
       attributionControl: false,
     });
@@ -276,8 +389,10 @@ export default function MiniMap({
     });
 
     const initializeArtifacts = () => {
+      ensureSpotArtifacts(map, spotsGeoJsonRef.current);
       ensureFovArtifacts(map, fovPolygonRef.current);
       ensurePointArtifacts(map, scenesGeoJsonRef.current);
+      updateSpotsSourceData(spotsGeoJsonRef.current);
       updateFovSourceData(fovPolygonRef.current);
       updatePointsSourceData(scenesGeoJsonRef.current);
     };
@@ -294,6 +409,17 @@ export default function MiniMap({
       onSelectSceneRef.current?.(selectedScene, nextIndex);
     };
 
+    const handleSpotClick = (event) => {
+      const feature = event?.features?.[0];
+      if (!feature) return;
+      const spotId = feature.properties?.id;
+      const spot =
+        spotsRef.current?.find(
+          (s) => String(s?.id ?? s?.spot_id ?? s?.point_id) === String(spotId)
+        ) ?? null;
+      onSelectSpotRef.current?.(spot);
+    };
+
     const handlePointMouseEnter = (event) => {
       map.getCanvas().style.cursor = 'pointer';
       const feature = event?.features?.[0];
@@ -301,6 +427,15 @@ export default function MiniMap({
 
       const coordinates = [...feature.geometry.coordinates];
       const name = feature.properties?.name || 'Point';
+      popupRef.current?.setLngLat(coordinates).setText(name).addTo(map);
+    };
+
+    const handleSpotMouseEnter = (event) => {
+      map.getCanvas().style.cursor = 'pointer';
+      const feature = event?.features?.[0];
+      if (!feature) return;
+      const coordinates = [...feature.geometry.coordinates];
+      const name = feature.properties?.name || 'Điểm du lịch';
       popupRef.current?.setLngLat(coordinates).setText(name).addTo(map);
     };
 
@@ -312,15 +447,21 @@ export default function MiniMap({
     map.on('load', initializeArtifacts);
     map.on('style.load', initializeArtifacts);
     map.on('click', LAYER_POINTS, handlePointClick);
+    map.on('click', LAYER_SPOTS, handleSpotClick);
     map.on('mouseenter', LAYER_POINTS, handlePointMouseEnter);
+    map.on('mouseenter', LAYER_SPOTS, handleSpotMouseEnter);
     map.on('mouseleave', LAYER_POINTS, handlePointMouseLeave);
+    map.on('mouseleave', LAYER_SPOTS, handlePointMouseLeave);
 
     return () => {
       map.off('load', initializeArtifacts);
       map.off('style.load', initializeArtifacts);
       map.off('click', LAYER_POINTS, handlePointClick);
+      map.off('click', LAYER_SPOTS, handleSpotClick);
       map.off('mouseenter', LAYER_POINTS, handlePointMouseEnter);
+      map.off('mouseenter', LAYER_SPOTS, handleSpotMouseEnter);
       map.off('mouseleave', LAYER_POINTS, handlePointMouseLeave);
+      map.off('mouseleave', LAYER_SPOTS, handlePointMouseLeave);
 
       if (headingRafRef.current) {
         window.cancelAnimationFrame(headingRafRef.current);
@@ -344,14 +485,45 @@ export default function MiniMap({
   }, [scenesGeoJson, updatePointsSourceData]);
 
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !currentCenter) return;
+    updateSpotsSourceData(spotsGeoJson);
+  }, [spotsGeoJson, updateSpotsSourceData]);
 
-    highlightPointOnMap(map, {
-      coordinates: currentCenter,
-      properties: { name: 'Current Scene' },
-    });
-  }, [currentCenter]);
+  useEffect(() => {
+    const map = mapRef.current;
+    const targetCenter = currentSpotCenter || currentCenter;
+    if (!map || !targetCenter) return;
+
+    const runFlyTo = () => {
+      highlightPointOnMap(map, {
+        coordinates: targetCenter,
+        properties: { name: 'Current Scene' },
+      });
+      map.flyTo({
+        center: targetCenter,
+        zoom: Math.max(map.getZoom(), 13),
+        duration: 2000,
+        essential: true,
+      });
+    };
+
+    if (map.loaded()) {
+      runFlyTo();
+      return;
+    }
+
+    const handleMapReady = () => {
+      if (!mapRef.current) return;
+      runFlyTo();
+    };
+
+    map.once('load', handleMapReady);
+    map.once('style.load', handleMapReady);
+
+    return () => {
+      map.off('load', handleMapReady);
+      map.off('style.load', handleMapReady);
+    };
+  }, [currentCenter, currentSpotCenter]);
 
   useEffect(() => {
     if (!currentCenter) return;

@@ -413,7 +413,7 @@ export default function MapToolbarCard({
       <CardContent>
         <div className="flex flex-col gap-2 xl:flex-row xl:items-stretch xl:gap-3">
           <div className="min-w-0 flex-1">
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-[3fr_1.8fr_1.8fr_1.5fr_1.5fr_1.5fr_1.5fr_1fr]">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-[2.6fr_1.8fr_1.8fr_2fr_2fr_1fr_1.4fr_1fr]">
               <div className="relative w-full min-w-0 sm:col-span-2 xl:col-span-1">
                 <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input

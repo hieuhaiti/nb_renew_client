@@ -47,7 +47,7 @@ export function TourDetailSidebar({ ticketDisplay, subtitle, onOpenMap, onContac
               className={`bg-card border-border flex items-start gap-2.5 rounded-[8px] border border-l-[3px] px-3 py-2.5 ${accentBorders[index % accentBorders.length]}`}
             >
               <div className="bg-muted/60 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px]">
-                <span className={`h-2 w-2 rounded-full ${row.dotClass}`} />
+                {row.icon || <span className={`h-2 w-2 rounded-full ${row.dotClass}`} />}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-muted-foreground text-xs font-medium tracking-wide uppercase">

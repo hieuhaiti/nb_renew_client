@@ -2,7 +2,10 @@
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import RootLayout from '@/components/layout/RootLayout';
-import { useGetAllDataPoints } from '@/services/api/tourism-points/tourismPointsApi';
+import {
+  useGetAllDataPoints,
+  useGetDataPointById,
+} from '@/services/api/tourism-points/tourismPointsApi';
 import {
   useGetAframeScenes,
   useGetAframeSceneHotspots,
@@ -68,24 +71,39 @@ export default function Vr360PageContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const prefillHandledRef = useRef(false);
+  const entrySpotId = useMemo(
+    () => location.state?.spotId ?? location.state?.spot?.id ?? location.state?.spot?.spot_id,
+    [location.state]
+  );
 
   const [selectedSpotId, setSelectedSpotId] = useState(null);
   const [selectedSceneId, setSelectedSceneId] = useState(null);
+  const [isSceneListOpen, setIsSceneListOpen] = useState(true);
 
   const spotsQuery = useGetAllDataPoints({ limit: 100 });
   const spots = useMemo(() => normalizeList(spotsQuery.data), [spotsQuery.data]);
+  const entrySpotQuery = useGetDataPointById({ point_id: entrySpotId });
+  const entrySpot = useMemo(() => {
+    const payload = entrySpotQuery.data?.data ?? entrySpotQuery.data;
+    return payload?.spot ?? payload ?? null;
+  }, [entrySpotQuery.data]);
 
   useEffect(() => {
     if (prefillHandledRef.current) return;
-    const spotId = location.state?.spotId;
+    const spotId = entrySpotId;
+
     if (!spotId) return;
     prefillHandledRef.current = true;
-    setSelectedSpotId(spotId);
-  }, [location.state]);
+    setSelectedSpotId(String(spotId));
+  }, [entrySpotId]);
 
   const selectedSpot = useMemo(() => {
     if (selectedSpotId == null) return null;
-    return spots.find((spot) => String(spot?.id) === String(selectedSpotId)) ?? null;
+    return (
+      spots.find(
+        (spot) => String(spot?.id ?? spot?.spot_id ?? spot?.point_id) === String(selectedSpotId)
+      ) ?? null
+    );
   }, [spots, selectedSpotId]);
 
   const scenesQuery = useGetAframeScenes({ spotId: selectedSpotId });
@@ -122,6 +140,11 @@ export default function Vr360PageContent() {
       })),
     [scenes, spotCoordinates]
   );
+  const currentSpot = useMemo(() => {
+    if (entrySpot) return entrySpot;
+    if (selectedSpot) return selectedSpot;
+    return null;
+  }, [entrySpot, selectedSpot]);
 
   useEffect(() => {
     if (!scenes.length) return;
@@ -148,10 +171,38 @@ export default function Vr360PageContent() {
     setSelectedSceneId(scenes[selectedSceneIndex + 1]?.id ?? null);
   }, [canGoNextScene, scenes, selectedSceneIndex]);
 
+  const handleHotspotClick = useCallback(
+    (hotspot) => {
+      const targetSceneId = hotspot?.target_scene_id || hotspot?.linked_scene_id;
+      const targetSpotId = hotspot?.target_spot_id;
+      const targetSpotSlug = hotspot?.target_spot_slug;
+
+      if (targetSpotId) {
+        setSelectedSpotId(String(targetSpotId));
+        setSelectedSceneId(null);
+        return;
+      }
+
+      if (targetSpotSlug) {
+        const targetSpot = spots.find((s) => s.slug === targetSpotSlug);
+        if (targetSpot?.id) {
+          setSelectedSpotId(String(targetSpot.id));
+          setSelectedSceneId(null);
+          return;
+        }
+      }
+
+      if (targetSceneId) {
+        setSelectedSceneId(String(targetSceneId));
+      }
+    },
+    [spots]
+  );
+
   return (
     <RootLayout>
       <div className="h-full w-full px-4 py-4 xl:h-[calc(100vh-4.5rem)] xl:px-6 xl:py-4">
-        <div className="grid h-full grid-cols-1 gap-4 xl:min-h-0 xl:grid-cols-[320px_minmax(0,1fr)]">
+        <div className="grid h-full grid-cols-1 gap-4 xl:min-h-0 xl:grid-cols-[380px_minmax(0,1fr)]">
           <aside className="flex flex-col gap-4 xl:min-h-0 xl:overflow-hidden xl:pr-1">
             <div className="space-y-2">
               <Button
@@ -200,10 +251,17 @@ export default function Vr360PageContent() {
                 <div className="h-36 overflow-hidden rounded-lg xl:h-auto xl:min-h-0 xl:flex-1">
                   <MiniMap
                     scenes={miniMapScenes}
+                    spots={spots}
+                    currentSpot={currentSpot}
                     currentSceneIndex={Math.max(0, selectedSceneIndex)}
                     onSelectScene={(nextScene) => {
                       if (!nextScene?.id) return;
                       setSelectedSceneId(nextScene.id);
+                    }}
+                    onSelectSpot={(spot) => {
+                      if (!spot?.id) return;
+                      setSelectedSpotId(String(spot.id));
+                      setSelectedSceneId(null);
                     }}
                   />
                 </div>
@@ -211,8 +269,8 @@ export default function Vr360PageContent() {
             </Card>
           </aside>
 
-          <section className="flex min-h-0 flex-col gap-4">
-            <div className="bg-muted min-h-[320px] overflow-hidden rounded-xl border xl:min-h-0 xl:flex-1">
+          <section className="flex min-h-0 flex-col xl:relative">
+            <div className="bg-muted min-h-[480px] overflow-hidden rounded-xl border xl:min-h-0 xl:flex-1">
               <Vr360SceneViewer
                 scene={selectedScene}
                 hotspots={hotspots}
@@ -220,18 +278,36 @@ export default function Vr360PageContent() {
                 onNextScene={handleGoNextScene}
                 canGoPrevScene={canGoPrevScene}
                 canGoNextScene={canGoNextScene}
+                onHotspotClick={handleHotspotClick}
                 className="h-full w-full"
               />
             </div>
 
-            <Vr360SceneList
-              scenes={scenes}
-              selectedSceneId={selectedScene?.id}
-              loading={scenesQuery.isLoading}
-              error={scenesQuery.isError}
-              spotSelected={!!selectedSpotId}
-              onSceneSelect={setSelectedSceneId}
-            />
+            <div className="mt-4 xl:pointer-events-none xl:absolute xl:inset-y-0 xl:right-2 xl:z-10 xl:mt-0 xl:flex xl:items-center">
+              <div className="xl:pointer-events-auto">
+                {isSceneListOpen ? (
+                  <Vr360SceneList
+                    scenes={scenes}
+                    selectedSceneId={selectedScene?.id}
+                    loading={scenesQuery.isLoading}
+                    error={scenesQuery.isError}
+                    spotSelected={!!selectedSpotId}
+                    onSceneSelect={setSelectedSceneId}
+                    onClose={() => setIsSceneListOpen(false)}
+                  />
+                ) : (
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    className="h-9 w-9 rounded-full shadow-lg"
+                    onClick={() => setIsSceneListOpen(true)}
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </section>
         </div>
       </div>

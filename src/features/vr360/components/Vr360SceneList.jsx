@@ -1,105 +1,62 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import LoadingInline from '@/components/common/LoadingInline';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-} from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
-import { cn, withBaseUrl } from '@/lib/utils';
-import placeholderImg from '@/assets/images/placeholder.png';
-import { ImageOff, Video } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import { Layers, X } from 'lucide-react';
 
-function ScenePreviewImage({ sceneName, imageUrl }) {
-  const [isImageLoading, setIsImageLoading] = useState(Boolean(imageUrl));
-
-  useEffect(() => {
-    setIsImageLoading(Boolean(imageUrl));
-  }, [imageUrl]);
-
-  if (!imageUrl) {
-    return (
-      <div className="bg-muted flex h-20 w-full items-center justify-center rounded-md border">
-        <ImageOff className="text-muted-foreground/40 h-5 w-5" />
-      </div>
-    );
-  }
-
+function SceneItem({ scene, index, isSelected, onSelect, t }) {
   return (
-    <div className="relative h-20 w-full overflow-hidden rounded-md border">
-      {isImageLoading && (
-        <LoadingInline
-          position="center"
-          size="small"
-          color="muted"
-          className="bg-background/70 absolute inset-0 z-10 py-0"
-        />
-      )}
-      <img
-        src={imageUrl}
-        alt={sceneName || 'VR scene'}
-        loading="lazy"
-        decoding="async"
-        className={cn(
-          'h-full w-full object-cover transition-opacity duration-200',
-          isImageLoading ? 'opacity-0' : 'opacity-100'
-        )}
-        onLoad={() => setIsImageLoading(false)}
-        onError={(event) => {
-          event.target.onerror = null;
-          event.target.src = placeholderImg;
-          setIsImageLoading(false);
-        }}
-      />
-    </div>
-  );
-}
-
-function SceneCard({ scene, isSelected, onSelect, t }) {
-  const rawImageUrl = scene?.thumbnail_url || scene?.equirectangular_image_url || '';
-  const imageUrl = rawImageUrl ? withBaseUrl(rawImageUrl) || rawImageUrl : '';
-
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      onClick={() => onSelect(scene.id)}
-      className={cn(
-        'group h-auto w-full flex-col items-start justify-start rounded-xl border p-2 text-left whitespace-normal transition-all duration-200',
-        isSelected
-          ? 'border-primary/70 bg-primary/10 ring-primary/40 hover:bg-primary/15 shadow-sm ring-1'
-          : 'border-border bg-card hover:border-primary/35 hover:bg-accent/60 hover:shadow-sm'
-      )}
-    >
-      <ScenePreviewImage sceneName={scene?.name} imageUrl={imageUrl} />
-      <div className="mt-1.5 flex w-full items-start gap-1">
-        <p
-          className={cn(
-            'line-clamp-2 flex-1 text-sm leading-5 font-medium',
-            isSelected ? 'text-primary' : 'text-foreground'
-          )}
-        >
-          {scene.name}
-        </p>
-        {scene.is_main && (
-          <Badge
-            variant="outline"
+    <TooltipProvider delayDuration={400}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            onClick={() => onSelect(scene.id)}
             className={cn(
-              'typo-badge w-fit flex-shrink-0',
-              isSelected ? 'border-primary/50 text-primary' : 'text-muted-foreground'
+              'group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-150',
+              isSelected
+                ? 'from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90 bg-gradient-to-r shadow-md'
+                : 'text-foreground/75 hover:bg-accent/80 hover:text-foreground'
             )}
           >
-            {t('vr360.main_badge')}
-          </Badge>
-        )}
-      </div>
-    </Button>
+            <span
+              className={cn(
+                'flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-[10px] font-bold tabular-nums transition-colors',
+                isSelected
+                  ? 'bg-primary-foreground/20 text-primary-foreground'
+                  : 'bg-muted text-muted-foreground group-hover:bg-accent-foreground/10'
+              )}
+            >
+              {index + 1}
+            </span>
+
+            <span className="min-w-0 flex-1 truncate text-sm leading-5 font-medium">
+              {scene.name}
+            </span>
+
+            {scene.is_main && (
+              <Badge
+                variant={isSelected ? 'secondary' : 'outline'}
+                className={cn(
+                  'typo-badge flex-shrink-0 px-1.5',
+                  isSelected
+                    ? 'bg-primary-foreground/20 text-primary-foreground border-transparent'
+                    : 'text-muted-foreground'
+                )}
+              >
+                {t('vr360.main_badge')}
+              </Badge>
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="left" sideOffset={10} className="max-w-[200px]">
+          <p className="text-xs">{scene.name}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
@@ -110,65 +67,85 @@ export default function Vr360SceneList({
   error,
   spotSelected,
   onSceneSelect,
+  onClose,
 }) {
   const { t } = useTranslation();
-  const [carouselApi, setCarouselApi] = useState(null);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
-    if (!carouselApi || !Array.isArray(scenes) || scenes.length === 0) return;
+    if (!scrollRef.current || !Array.isArray(scenes) || scenes.length === 0) return;
     if (!selectedSceneId) return;
 
-    const selectedIndex = scenes.findIndex((scene) => String(scene.id) === String(selectedSceneId));
+    const selectedIndex = scenes.findIndex((s) => String(s.id) === String(selectedSceneId));
     if (selectedIndex < 0) return;
-    carouselApi.scrollTo(selectedIndex);
-  }, [carouselApi, scenes, selectedSceneId]);
+
+    const container = scrollRef.current;
+    const item = container.children[selectedIndex];
+    if (item) {
+      item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [scenes, selectedSceneId]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="typo-section-title flex items-center justify-between">
-          <span className="flex items-center gap-2">
-            <Video className="text-primary h-4 w-4" />
-            {t('vr360.scene_list_title')}
-          </span>
-          {scenes.length > 0 && <Badge variant="secondary">{scenes.length}</Badge>}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-3 pb-3">
+    <div className="bg-background/92 border-border/50 flex w-60 flex-col overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-md">
+      {/* Header */}
+      <div className="border-border/40 bg-muted/30 flex items-center gap-2 border-b px-3 py-2.5">
+        <div className="bg-primary/10 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md">
+          <Layers className="text-primary h-3.5 w-3.5" />
+        </div>
+        <span className="text-foreground flex-1 truncate text-xs font-semibold tracking-wide uppercase">
+          {t('vr360.scene_list_title')}
+        </span>
+        {scenes.length > 0 && (
+          <Badge variant="secondary" className="h-5 flex-shrink-0 px-1.5 text-[10px] tabular-nums">
+            {scenes.length}
+          </Badge>
+        )}
+        {typeof onClose === 'function' && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 flex-shrink-0"
+            onClick={onClose}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="p-1.5">
         {loading ? (
-          <div className="grid grid-cols-4 gap-3">
+          <div className="space-y-1.5 p-1">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="space-y-1">
-                <Skeleton className="h-20 w-full rounded-md" />
-                <Skeleton className="h-3.5 w-3/4 rounded" />
-              </div>
+              <Skeleton key={i} className="h-9 w-full rounded-lg" />
             ))}
           </div>
         ) : error ? (
-          <p className="text-destructive typo-body">{t('vr360.error_scenes')}</p>
+          <p className="text-destructive typo-body px-2 py-2">{t('vr360.error_scenes')}</p>
         ) : !spotSelected ? (
-          <p className="text-muted-foreground typo-body">{t('vr360.no_scenes_select')}</p>
+          <p className="text-muted-foreground typo-body px-2 py-2">{t('vr360.no_scenes_select')}</p>
         ) : scenes.length === 0 ? (
-          <p className="text-muted-foreground typo-body">{t('vr360.no_scenes')}</p>
+          <p className="text-muted-foreground typo-body px-2 py-2">{t('vr360.no_scenes')}</p>
         ) : (
-          <Carousel setApi={setCarouselApi} opts={{ align: 'center' }} className="w-full px-8">
-            <CarouselContent className="-ml-3">
-              {scenes.map((scene) => (
-                <CarouselItem key={scene.id} className="basis-1/4 pl-3">
-                  <SceneCard
-                    scene={scene}
-                    isSelected={String(selectedSceneId) === String(scene.id)}
-                    onSelect={onSceneSelect}
-                    t={t}
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-0" />
-            <CarouselNext className="right-0" />
-          </Carousel>
+          <div
+            ref={scrollRef}
+            className="flex max-h-[272px] flex-col gap-0.5 overflow-y-auto [scrollbar-width:thin]"
+          >
+            {scenes.map((scene, index) => (
+              <SceneItem
+                key={scene.id}
+                scene={scene}
+                index={index}
+                isSelected={String(selectedSceneId) === String(scene.id)}
+                onSelect={onSceneSelect}
+                t={t}
+              />
+            ))}
+          </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
