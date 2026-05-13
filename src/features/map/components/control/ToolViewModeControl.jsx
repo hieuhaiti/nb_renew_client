@@ -107,36 +107,35 @@ export default class ToolViewModeControl {
       return;
     }
 
+    const nextPitch = pitchDefault(enable3D);
+    try {
+      if (animate) {
+        mapInstance.easeTo({
+          pitch: nextPitch,
+          ...(enable3D ? {} : { bearing: 0 }),
+          duration: enable3D ? 550 : 450,
+          essential: true,
+        });
+      } else {
+        mapInstance.setPitch(nextPitch);
+        if (!enable3D) {
+          mapInstance.setBearing(0);
+        }
+      }
+    } catch (_cameraError) {
+      // Ignore camera timing errors and continue applying style state below.
+    }
+
     try {
       if (enable3D) {
         this._ensureTerrain(mapInstance);
         this._setBuildingLayerVisibility(mapInstance, true);
-        if (animate) {
-          mapInstance.easeTo({
-            pitch: pitchDefault(true),
-            duration: 550,
-            essential: true,
-          });
-        } else {
-          mapInstance.setPitch(pitchDefault(true));
-        }
       } else {
         mapInstance.setTerrain(null);
         this._setBuildingLayerVisibility(mapInstance, false);
-        if (animate) {
-          mapInstance.easeTo({
-            pitch: pitchDefault(false),
-            bearing: 0,
-            duration: 450,
-            essential: true,
-          });
-        } else {
-          mapInstance.setPitch(pitchDefault(false));
-          mapInstance.setBearing(0);
-        }
       }
-    } catch (_error) {
-      // Ignore map style timing errors and keep UI responsive.
+    } catch (_styleError) {
+      // Keep view-mode UX responsive even if terrain/building style operations fail.
     }
   }
 

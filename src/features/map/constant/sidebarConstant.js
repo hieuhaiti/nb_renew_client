@@ -50,14 +50,13 @@ export const headerSidebar = [
     component: SatelliteImagePlaceholder,
     authen: true,
   },
-  // TODO: Add compare satellite feature when backend is ready
-  // {
-  //   icon: AlignHorizontalJustifyCenter,
-  //   label: 'headerAside.compareSatellite',
-  //   value: 'compareSatellite',
-  //   component: CompareSatellitePlaceholder,
-  //   authen: true,
-  // },
+  {
+    icon: AlignHorizontalJustifyCenter,
+    label: 'headerAside.compareSatellite',
+    value: 'compareSatellite',
+    component: CompareSatellitePlaceholder,
+    authen: true,
+  },
   {
     icon: Bot,
     label: 'headerAside.chatbot',

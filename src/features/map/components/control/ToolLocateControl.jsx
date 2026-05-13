@@ -1,11 +1,12 @@
 import mapboxgl from 'mapbox-gl';
 import i18n from '@/i18n';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
+import { useMapStore } from '@/features/map/store/useMapStore';
 
 export default class ToolLocateControl {
   onAdd(map) {
     this._map = map;
-    this._marker = null;
+    this._markers = [];
 
     this._btn = document.createElement('button');
     this._btn.type = 'button';
@@ -29,21 +30,26 @@ export default class ToolLocateControl {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const center = [position.coords.longitude, position.coords.latitude];
+          const mapRefObj = useMapStore.getState().mapRefObj?.current;
+          const maps = [this._map, mapRefObj?.single, mapRefObj?.split].filter(
+            (instance, index, all) => instance && all.indexOf(instance) === index
+          );
 
-          if (this._marker) {
-            this._marker.remove();
-          }
+          this._markers.forEach((marker) => marker.remove());
+          this._markers = [];
 
-          const el = document.createElement('div');
-          el.className = 'mapboxgl-user-location';
-          const dot = document.createElement('div');
-          dot.className = 'mapboxgl-user-location-dot';
-          el.appendChild(dot);
+          maps.forEach((mapInstance) => {
+            const el = document.createElement('div');
+            el.className = 'mapboxgl-user-location';
+            const dot = document.createElement('div');
+            dot.className = 'mapboxgl-user-location-dot';
+            el.appendChild(dot);
 
-          this._marker = new mapboxgl.Marker({ element: el }).setLngLat(center).addTo(map);
-
-          highlightPointOnMap(map, {
-            coordinates: center,
+            const marker = new mapboxgl.Marker({ element: el }).setLngLat(center).addTo(mapInstance);
+            this._markers.push(marker);
+            highlightPointOnMap(mapInstance, {
+              coordinates: center,
+            });
           });
 
           this._btn.disabled = false;
@@ -76,10 +82,8 @@ export default class ToolLocateControl {
       this._btn.removeEventListener('click', this._onLocateClick);
     }
 
-    if (this._marker) {
-      this._marker.remove();
-      this._marker = null;
-    }
+    this._markers.forEach((marker) => marker.remove());
+    this._markers = [];
 
     if (this._container && this._container.parentNode) {
       this._container.parentNode.removeChild(this._container);

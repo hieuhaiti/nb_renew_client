@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 import { defaultLatLong, defaultZoom, pitchDefault } from '../../constant/mapConstant';
 import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
+import { useMapStore } from '@/features/map/store/useMapStore';
 
 export default class ResetControl {
   onAdd(map) {
@@ -31,11 +32,18 @@ export default class ResetControl {
         `;
 
     this._btn.onclick = () => {
-      map.flyTo({
-        center: defaultLatLong,
-        zoom: defaultZoom,
-        pitch: pitchDefault(useMapStyleStore.getState().terrainState),
-        bearing: 0,
+      const mapRefObj = useMapStore.getState().mapRefObj?.current;
+      const maps = [this._map, mapRefObj?.single, mapRefObj?.split].filter(
+        (instance, index, all) => instance && all.indexOf(instance) === index
+      );
+
+      maps.forEach((mapInstance) => {
+        mapInstance.flyTo({
+          center: defaultLatLong,
+          zoom: defaultZoom,
+          pitch: pitchDefault(useMapStyleStore.getState().terrainState),
+          bearing: 0,
+        });
       });
     };
 

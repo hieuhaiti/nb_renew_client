@@ -9,26 +9,27 @@ export function getDefaultSatelliteGeoJson() {
 }
 
 /**
- * Extract the first Polygon/MultiPolygon geometry from a GeoJSON.
- * Falls back to the first feature's geometry if no polygon is found.
+ * Normalize GeoJSON input for satellite API.
+ * Preserves FeatureCollection as-is so the server can dissolve all features.
+ * For single Feature/Geometry, wraps into a consistent shape.
+ *
  * @param {object} input - GeoJSON FeatureCollection, Feature, or Geometry
- * @returns {object|null} GeoJSON Geometry or null
+ * @returns {object|null} GeoJSON object ready to send to server, or null
  */
 export function getGeometryFromGeoJson(input) {
   if (!input) return null;
 
+  // Giữ nguyên FeatureCollection — server sẽ dissolve toàn bộ features
   if (input.type === 'FeatureCollection') {
-    const poly = input.features?.find(
-      (f) => f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon'
-    );
-    return poly?.geometry ?? input.features?.[0]?.geometry ?? null;
+    if (!Array.isArray(input.features) || input.features.length === 0) return null;
+    return input;
   }
 
   if (input.type === 'Feature') {
     return input.geometry ?? null;
   }
 
-  // Already a geometry
+  // Already a Geometry
   if (input.coordinates) return input;
 
   return null;
@@ -94,8 +95,7 @@ export function getGeoJsonBounds(geoJson) {
       geometry.coordinates.forEach((ring) => coords.push(...ring));
     else if (geometry.type === 'MultiPolygon')
       geometry.coordinates.forEach((poly) => poly.forEach((ring) => coords.push(...ring)));
-    else if (geometry.type === 'GeometryCollection')
-      geometry.geometries.forEach(collect);
+    else if (geometry.type === 'GeometryCollection') geometry.geometries.forEach(collect);
   };
 
   if (geoJson.type === 'FeatureCollection') geoJson.features.forEach((f) => collect(f.geometry));

@@ -135,6 +135,8 @@ export default function MapBaseArea() {
   const featureCollectionBySourceId = useRef(new Map());
 
   const { data: wsCapacityData } = useCapacityWebSocket();
+  const getMaps = () => [mapRef.current.single, mapRef.current.split].filter(Boolean);
+  const getStyleReadyMaps = () => getMaps().filter((map) => map.isStyleLoaded());
 
   const setSubcategoryLayersVisibility = (map, isVisible) => {
     if (!map) return;
@@ -409,9 +411,7 @@ export default function MapBaseArea() {
       const sampleX = swiperRect ? Math.round(swiperRect.left + swiperRect.width / 2) : null;
       const sampleY = swiperRect ? Math.round(swiperRect.top + swiperRect.height / 2) : null;
       const topElementAtSwiper =
-        sampleX != null && sampleY != null
-          ? document.elementFromPoint(sampleX, sampleY)
-          : null;
+        sampleX != null && sampleY != null ? document.elementFromPoint(sampleX, sampleY) : null;
       const swiperStyle = swiperDom ? window.getComputedStyle(swiperDom) : null;
 
       console.log('[CompareDebug] post-render snapshot', {
@@ -452,8 +452,8 @@ export default function MapBaseArea() {
   }, [isSplitMode, mapsReady.single, mapsReady.split]);
 
   useEffect(() => {
-    const map = mapRef.current.single;
-    if (!map || !mapsReady.single) return;
+    if (!mapsReady.single) return;
+    const maps = getMaps();
 
     const currentSourceIds = new Set();
     const query = subcategoryLayerQueries[0];
@@ -472,29 +472,30 @@ export default function MapBaseArea() {
         };
         const color = colorBySubcategoryId.get(String(subcategoryId));
         const icon = iconBySubcategoryId.get(String(subcategoryId));
-        addOrUpdateSubcategoryLayer(map, {
-          sourceId,
-          featureCollection,
-          color,
-          iconUrl: icon?.iconUrl,
-          iconImageId: icon?.iconImageId,
+        maps.forEach((map) => {
+          addOrUpdateSubcategoryLayer(map, {
+            sourceId,
+            featureCollection,
+            color,
+            iconUrl: icon?.iconUrl,
+            iconImageId: icon?.iconImageId,
+          });
+          const shouldShowLayer = !(showOnlyHighlightedRoute && highlightedRoute);
+          SUBCATEGORY_LAYER_SUFFIXES.forEach((suffix) => {
+            const layerId = `${sourceId}-${suffix}`;
+            if (map.getLayer(layerId)) {
+              map.setLayoutProperty(layerId, 'visibility', shouldShowLayer ? 'visible' : 'none');
+            }
+          });
         });
         featureCollectionBySourceId.current.set(sourceId, featureCollection);
-
-        const shouldShowLayer = !(showOnlyHighlightedRoute && highlightedRoute);
-        SUBCATEGORY_LAYER_SUFFIXES.forEach((suffix) => {
-          const layerId = `${sourceId}-${suffix}`;
-          if (map.getLayer(layerId)) {
-            map.setLayoutProperty(layerId, 'visibility', shouldShowLayer ? 'visible' : 'none');
-          }
-        });
         currentSourceIds.add(sourceId);
       });
     }
 
     prevRenderedSourceIdsRef.current.forEach((sourceId) => {
       if (!currentSourceIds.has(sourceId)) {
-        removeSubcategoryLayer(map, sourceId);
+        maps.forEach((map) => removeSubcategoryLayer(map, sourceId));
         featureCollectionBySourceId.current.delete(sourceId);
       }
     });
@@ -505,6 +506,7 @@ export default function MapBaseArea() {
     highlightedRoute,
     iconBySubcategoryId,
     mapsReady.single,
+    mapsReady.split,
     selectedSubcategoryIdsSafe,
     showOnlyHighlightedRoute,
     subcategoryLayerQueries[0]?.dataUpdatedAt,
@@ -634,8 +636,9 @@ export default function MapBaseArea() {
   }, [highlightedRouteAt, highlightedRoute, lang, mapsReady.single]);
 
   useEffect(() => {
-    const map = mapRef.current.single;
-    if (!map || !mapsReady.single) return;
+    if (!mapsReady.single) return;
+    const maps = getMaps();
+    if (maps.length === 0) return;
 
     const routeInteractiveLayerIds = [
       'highlight-route-points-bg',
@@ -645,7 +648,7 @@ export default function MapBaseArea() {
       'highlight-route-points-name',
     ];
 
-    const getInteractiveLayerIds = () => {
+    const getInteractiveLayerIds = (map) => {
       const sourceIds = Array.from(prevRenderedSourceIdsRef.current);
 
       const subcategoryPointLayerIds = sourceIds
@@ -659,90 +662,97 @@ export default function MapBaseArea() {
       return [...subcategoryPointLayerIds, ...routePointLayerIds];
     };
 
-    const handleMapClick = (event) => {
-      const layerIds = getInteractiveLayerIds();
-      if (layerIds.length === 0) return;
-
-      const features = map.queryRenderedFeatures(event.point, { layers: layerIds });
-      if (!features.length) return;
-
-      const clickedFeature = features[0];
-      const destination = mapFeatureToDestination(clickedFeature);
-      if (!destination) return;
-
-      const clickedLayerId = clickedFeature?.layer?.id || '';
-      const clickedLayerMatch = clickedLayerId.match(/^subcategory-(.+)-(point)$/);
-      const subcategoryFromLayer = clickedLayerMatch?.[1] ?? null;
-
-      let normalizedSubcategoryId = destination.subcategory_id;
-      if (normalizedSubcategoryId == null && subcategoryFromLayer != null) {
-        const parsed = Number(subcategoryFromLayer);
-        normalizedSubcategoryId = Number.isNaN(parsed) ? subcategoryFromLayer : parsed;
-      }
-
-      setHighlightedPoint({
-        ...destination,
-        subcategory_id: normalizedSubcategoryId,
-      });
-
-      if (destination.id) {
-        openSpotModal(destination.id, destination.slug ?? null);
-      }
-    };
-
-    const handleMouseMove = (event) => {
-      const layerIds = getInteractiveLayerIds();
-      const canvas = map?.getCanvas?.();
-      if (!canvas?.style) return;
-
-      if (layerIds.length === 0) {
-        canvas.style.cursor = '';
-        return;
-      }
-
-      const features = map.queryRenderedFeatures(event.point, { layers: layerIds });
-      canvas.style.cursor = features.length > 0 ? 'pointer' : '';
-    };
-
-    const clearCursor = () => {
+    const clearCursor = (map) => {
       const canvas = map?.getCanvas?.();
       if (!canvas?.style) return;
       canvas.style.cursor = '';
     };
 
-    map.on('click', handleMapClick);
-    map.on('mousemove', handleMouseMove);
-    map.on('mouseout', clearCursor);
+    const handlers = maps.map((map) => {
+      const handleMapClick = (event) => {
+        const layerIds = getInteractiveLayerIds(map);
+        if (layerIds.length === 0) return;
+
+        const features = map.queryRenderedFeatures(event.point, { layers: layerIds });
+        if (!features.length) return;
+
+        const clickedFeature = features[0];
+        const destination = mapFeatureToDestination(clickedFeature);
+        if (!destination) return;
+
+        const clickedLayerId = clickedFeature?.layer?.id || '';
+        const clickedLayerMatch = clickedLayerId.match(/^subcategory-(.+)-(point)$/);
+        const subcategoryFromLayer = clickedLayerMatch?.[1] ?? null;
+
+        let normalizedSubcategoryId = destination.subcategory_id;
+        if (normalizedSubcategoryId == null && subcategoryFromLayer != null) {
+          const parsed = Number(subcategoryFromLayer);
+          normalizedSubcategoryId = Number.isNaN(parsed) ? subcategoryFromLayer : parsed;
+        }
+
+        setHighlightedPoint({
+          ...destination,
+          subcategory_id: normalizedSubcategoryId,
+        });
+
+        if (destination.id) {
+          openSpotModal(destination.id, destination.slug ?? null);
+        }
+      };
+
+      const handleMouseMove = (event) => {
+        const layerIds = getInteractiveLayerIds(map);
+        const canvas = map?.getCanvas?.();
+        if (!canvas?.style) return;
+
+        if (layerIds.length === 0) {
+          canvas.style.cursor = '';
+          return;
+        }
+
+        const features = map.queryRenderedFeatures(event.point, { layers: layerIds });
+        canvas.style.cursor = features.length > 0 ? 'pointer' : '';
+      };
+
+      const clearMapCursor = () => clearCursor(map);
+
+      map.on('click', handleMapClick);
+      map.on('mousemove', handleMouseMove);
+      map.on('mouseout', clearMapCursor);
+
+      return { map, handleMapClick, handleMouseMove, clearMapCursor };
+    });
 
     return () => {
-      map.off('click', handleMapClick);
-      map.off('mousemove', handleMouseMove);
-      map.off('mouseout', clearCursor);
-      clearCursor();
+      handlers.forEach(({ map, handleMapClick, handleMouseMove, clearMapCursor }) => {
+        map.off('click', handleMapClick);
+        map.off('mousemove', handleMouseMove);
+        map.off('mouseout', clearMapCursor);
+        clearCursor(map);
+      });
     };
-  }, [mapsReady.single, setHighlightedPoint, openSpotModal]);
+  }, [mapsReady.single, mapsReady.split, setHighlightedPoint, openSpotModal]);
 
   useEffect(() => {
-    const map = mapRef.current.single;
-    if (!map || !mapsReady.single) return;
+    if (!mapsReady.single) return;
+    const maps = getStyleReadyMaps();
+    if (maps.length === 0) return;
 
     const shouldShowSubcategoryLayers = !(showOnlyHighlightedRoute && highlightedRoute);
-    setSubcategoryLayersVisibility(map, shouldShowSubcategoryLayers);
-  }, [highlightedRoute, mapsReady.single, showOnlyHighlightedRoute]);
+    maps.forEach((map) => setSubcategoryLayersVisibility(map, shouldShowSubcategoryLayers));
+  }, [highlightedRoute, mapsReady.single, mapsReady.split, showOnlyHighlightedRoute]);
 
   useEffect(() => {
-    const map = mapRef.current.single;
-    if (!map) return;
+    const maps = getMaps();
+    if (maps.length === 0) return;
 
-    const handleStyleLoad = () => {
+    const createStyleLoadHandler = (map) => () => {
       const currentSourceIds = new Set();
       const query = subcategoryLayerQueries[0];
       const data = query?.data;
-
       if (!data) return;
 
       const allFeatures = normalizePointsToFeatureCollection(data);
-
       selectedSubcategoryIdsSafe.forEach((subcategoryId) => {
         const sourceId = `subcategory-${subcategoryId}`;
         const featureCollection = {
@@ -776,15 +786,23 @@ export default function MapBaseArea() {
       prevRenderedSourceIdsRef.current = currentSourceIds;
     };
 
-    map.on('style.load', handleStyleLoad);
+    const subscriptions = maps.map((map) => {
+      const handleStyleLoad = createStyleLoadHandler(map);
+      map.on('style.load', handleStyleLoad);
+      return { map, handleStyleLoad };
+    });
+
     return () => {
-      map.off('style.load', handleStyleLoad);
+      subscriptions.forEach(({ map, handleStyleLoad }) => {
+        map.off('style.load', handleStyleLoad);
+      });
     };
   }, [
     colorBySubcategoryId,
     highlightedRoute,
     iconBySubcategoryId,
     mapsReady.single,
+    mapsReady.split,
     selectedSubcategoryIdsSafe,
     showOnlyHighlightedRoute,
     subcategoryLayerQueries[0]?.dataUpdatedAt,
@@ -792,8 +810,9 @@ export default function MapBaseArea() {
 
   useEffect(() => {
     if (!wsCapacityData?.spot_id) return;
-    const map = mapRef.current.single;
-    if (!map || !mapsReady.single) return;
+    if (!mapsReady.single) return;
+    const maps = getStyleReadyMaps();
+    if (maps.length === 0) return;
 
     const spotId = String(wsCapacityData.spot_id);
 
@@ -803,28 +822,32 @@ export default function MapBaseArea() {
       );
       if (!hasSpot) return;
 
-      const source = map.getSource(sourceId);
-      if (!source || typeof source.setData !== 'function') return;
-
       const updated = applyCapacityUpdateToCollection(fc, wsCapacityData);
       featureCollectionBySourceId.current.set(sourceId, updated);
-      source.setData(updated);
+
+      maps.forEach((map) => {
+        const source = map.getSource(sourceId);
+        if (!source || typeof source.setData !== 'function') return;
+        source.setData(updated);
+      });
     });
-  }, [wsCapacityData, mapsReady.single]);
+  }, [wsCapacityData, mapsReady.single, mapsReady.split]);
 
   useEffect(() => {
     return () => {
-      const map = mapRef.current.single;
-      if (!map) return;
+      const maps = getMaps();
+      if (maps.length === 0) return;
 
       prevRenderedSourceIdsRef.current.forEach((sourceId) => {
-        removeSubcategoryLayer(map, sourceId);
+        maps.forEach((map) => removeSubcategoryLayer(map, sourceId));
       });
       prevRenderedSourceIdsRef.current.clear();
       featureCollectionBySourceId.current.clear();
-      clearHighlightedRouteLayers(map);
-      removeTrafficFlowLayer(map);
-      removeTrafficIncidentLayer(map);
+      maps.forEach((map) => {
+        clearHighlightedRouteLayers(map);
+        removeTrafficFlowLayer(map);
+        removeTrafficIncidentLayer(map);
+      });
 
       if (routeMarkersRef.current.start) routeMarkersRef.current.start.remove();
       if (routeMarkersRef.current.end) routeMarkersRef.current.end.remove();
@@ -1030,8 +1053,14 @@ export default function MapBaseArea() {
   return (
     <div className="relative size-full">
       <div ref={mapContainer} className="relative size-full">
-        <div ref={splitMapContainerRef} className="absolute inset-0 size-full" />
-        <div ref={singleMapContainerRef} className="absolute inset-0 size-full" />
+        <div
+          ref={splitMapContainerRef}
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
+        />
+        <div
+          ref={singleMapContainerRef}
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
+        />
       </div>
       <SatelliteMapOverlayControls />
     </div>
