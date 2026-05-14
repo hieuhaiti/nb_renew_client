@@ -204,7 +204,10 @@ export function useTourDetailPageModel(t) {
     if (!tour?.business_id) return;
     if (!cleanlinessRating || !serviceRating || !valueRating || !accessibilityRating) {
       toast.error(
-        t('tourPage.reviewErrorRatings', 'Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và tiếp cận.')
+        t(
+          'tourPage.reviewErrorRatings',
+          'Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và tiếp cận.'
+        )
       );
       return;
     }
@@ -234,8 +237,6 @@ export function useTourDetailPageModel(t) {
     }
 
     const sortedStops = sortStops(tourStops);
-    console.log('[handleOpenMap] tourStops raw:', tourStops);
-    console.log('[handleOpenMap] sortedStops:', sortedStops);
 
     const panelPayload = {
       tourId: tour.id,
@@ -249,24 +250,23 @@ export function useTourDetailPageModel(t) {
 
     const candidates = sortedStops.map((stop, index) => {
       const candidate = resolveStopCandidate(stop, index);
-      console.log(`[handleOpenMap] stop[${index}] raw:`, stop, '→ candidate:', candidate);
       return candidate;
     });
 
     const routePoints = candidates
       .map((candidate, index) => {
         const point = normalizeTourRoutePoint(candidate, index, lang);
-        console.log(`[handleOpenMap] candidate[${index}] → routePoint:`, point);
         return point;
       })
       .filter(Boolean);
 
-    console.log('[handleOpenMap] final routePoints:', routePoints);
-
     setSelectedTour(panelPayload.selectedTour);
 
     if (routePoints.length < 2) {
-      console.warn('[handleOpenMap] routePoints.length < 2 → navigating WITHOUT route. Stops without valid coords:', sortedStops.length);
+      console.warn(
+        '[handleOpenMap] routePoints.length < 2 → navigating WITHOUT route. Stops without valid coords:',
+        sortedStops.length
+      );
       navigate('/map', {
         state: {
           prefillTourPanel: panelPayload,
@@ -282,7 +282,7 @@ export function useTourDetailPageModel(t) {
         'driving',
         lang === 'en' ? 'en' : 'vi'
       );
-      console.log('[handleOpenMap] createRouteFromPoints success:', routeResult);
+      // success
     } catch (err) {
       console.error('[handleOpenMap] createRouteFromPoints failed:', err);
       routeResult = null;
@@ -290,7 +290,6 @@ export function useTourDetailPageModel(t) {
 
     const fallbackGeometry = buildFallbackGeometryFromPoints(routePoints);
     const routeGeometry = routeResult?.geometry || fallbackGeometry;
-    console.log('[handleOpenMap] routeGeometry:', routeGeometry, '| fallback used:', !routeResult?.geometry);
 
     navigate('/map', {
       state: {
@@ -517,6 +516,3 @@ export function useTourDetailPageModel(t) {
     handleContact,
   };
 }
-
-
-

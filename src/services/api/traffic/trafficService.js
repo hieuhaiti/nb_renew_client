@@ -61,12 +61,7 @@ export const calculateBoundsFromGeoJSON = (geojson) => {
     throw new Error('Could not calculate valid bounds from GeoJSON');
   }
 
-  console.log('📐 Calculated bounds from GeoJSON:', {
-    minLat,
-    maxLat,
-    minLon,
-    maxLon,
-  });
+  // calculated bounds
 
   return { minLat, maxLat, minLon, maxLon };
 };
@@ -185,7 +180,7 @@ export const transformIncidentsToGeoJSON = (incidentData) => {
     };
   });
 
-  console.log(`✅ Transformed ${features.length} incidents to GeoJSON`);
+  // transformed incidents
 
   return {
     type: 'FeatureCollection',

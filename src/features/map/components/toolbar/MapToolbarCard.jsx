@@ -4,6 +4,8 @@ import {
   ArrowUpRight,
   Bike,
   Car,
+  Loader2,
+  LocateFixed,
   MapPin,
   Navigation,
   PersonStanding,
@@ -73,7 +75,40 @@ function normalizeSuggestionFromPoint(item, index = 0, t) {
   };
 }
 
+function normalizeSuggestionFromMapbox(item, index = 0) {
+  const lng = Number(item?.coordinates?.[0]);
+  const lat = Number(item?.coordinates?.[1]);
+
+  if (Number.isNaN(lng) || Number.isNaN(lat)) {
+    return null;
+  }
+
+  return {
+    id: item?.id ?? `mapbox-suggestion-${index}`,
+    placeName: item?.placeName || item?.text || '',
+    address: item?.address || '',
+    lat,
+    lng,
+  };
+}
+
+function getSuggestionKey(suggestion) {
+  const name = String(suggestion?.placeName || '')
+    .trim()
+    .toLowerCase();
+  const lat = Number(suggestion?.lat);
+  const lng = Number(suggestion?.lng);
+  const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
+
+  if (hasCoordinates) {
+    return `${lat.toFixed(6)}:${lng.toFixed(6)}`;
+  }
+
+  return name;
+}
+
 const RADIUS_OPTIONS = [0, 3, 5, 10, 20, 50];
+const SUGGESTIONS_LIMIT = 5;
 
 export default function MapToolbarCard({
   keyword,
@@ -109,6 +144,7 @@ export default function MapToolbarCard({
   const [showEndSuggestions, setShowEndSuggestions] = useState(false);
   const [isSearchingStart, setIsSearchingStart] = useState(false);
   const [isSearchingEnd, setIsSearchingEnd] = useState(false);
+  const [isLocatingStart, setIsLocatingStart] = useState(false);
   const [debouncedStartLocation] = useDebounce(startLocationInput.placeName, 350);
   const [debouncedEndLocation] = useDebounce(endLocationInput.placeName, 350);
 
@@ -218,29 +254,43 @@ export default function MapToolbarCard({
 
     (async () => {
       try {
-        const suggestions = await getLocationSuggestions(value, {
-          language: lang,
-          limit: 5,
-        });
+        const [systemPayload, mapboxSuggestions] = await Promise.all([
+          searchDataPointByName({
+            search: value,
+            lang,
+            page: 1,
+            limit: SUGGESTIONS_LIMIT,
+          }).catch(() => null),
+          getLocationSuggestions(value, {
+            language: lang,
+            limit: SUGGESTIONS_LIMIT,
+          }).catch(() => []),
+        ]);
 
         if (!isActive) return;
 
-        const normalized = suggestions
-          .map((item) => {
-            const lng = Number(item?.coordinates?.[0]);
-            const lat = Number(item?.coordinates?.[1]);
+        const root = systemPayload?.data || systemPayload;
+        const systemList =
+          root?.points || root?.spots || root?.features || root?.data?.points || root?.data || [];
+        const systemSuggestions = (Array.isArray(systemList) ? systemList : [])
+          .map((item, index) => normalizeSuggestionFromPoint(item, index, t))
+          .filter(Boolean)
+          .slice(0, SUGGESTIONS_LIMIT);
 
-            if (Number.isNaN(lng) || Number.isNaN(lat)) return null;
+        const usedKeys = new Set(systemSuggestions.map((item) => getSuggestionKey(item)));
+        const mapboxNormalized = (Array.isArray(mapboxSuggestions) ? mapboxSuggestions : [])
+          .map((item, index) => normalizeSuggestionFromMapbox(item, index))
+          .filter(Boolean)
+          .filter((item) => {
+            const key = getSuggestionKey(item);
+            if (usedKeys.has(key)) {
+              return false;
+            }
+            usedKeys.add(key);
+            return true;
+          });
 
-            return {
-              id: item.id,
-              placeName: item.placeName,
-              address: item.address,
-              lat,
-              lng,
-            };
-          })
-          .filter(Boolean);
+        const normalized = [...systemSuggestions, ...mapboxNormalized].slice(0, SUGGESTIONS_LIMIT);
 
         setStartSuggestions(normalized);
       } catch (_error) {
@@ -257,7 +307,7 @@ export default function MapToolbarCard({
     return () => {
       isActive = false;
     };
-  }, [debouncedStartLocation, getLocationSuggestions, lang, showStartSuggestions]);
+  }, [debouncedStartLocation, getLocationSuggestions, lang, showStartSuggestions, t]);
 
   useEffect(() => {
     if (!showEndSuggestions) return;
@@ -278,7 +328,7 @@ export default function MapToolbarCard({
           search: value,
           lang,
           page: 1,
-          limit: 5,
+          limit: SUGGESTIONS_LIMIT,
         });
 
         if (!isActive) return;
@@ -306,11 +356,58 @@ export default function MapToolbarCard({
     return () => {
       isActive = false;
     };
-  }, [debouncedEndLocation, lang, showEndSuggestions]);
+  }, [debouncedEndLocation, lang, showEndSuggestions, t]);
 
   const handleStartLocationChange = (value) => {
     setStartLocationInput({ placeName: value, lat: null, lng: null });
     setShowStartSuggestions(true);
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (isLocatingStart || !navigator.geolocation) {
+      if (!navigator.geolocation) {
+        toast.error(
+          t('mapPage.toolbar.locationError', {
+            defaultValue: 'Could not get your location. Please enable location access.',
+          })
+        );
+      }
+      return;
+    }
+
+    setIsLocatingStart(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = {
+          placeName: t('mapPage.direction.current_location', {
+            defaultValue: 'My location',
+          }),
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        clearDirections();
+        setStartLocationInput(location);
+        setStartSuggestions([]);
+        setShowStartSuggestions(false);
+        setStartLocation(location);
+        setIsLocatingStart(false);
+      },
+      () => {
+        toast.error(
+          t('mapPage.toolbar.locationError', {
+            defaultValue: 'Could not get your location. Please enable location access.',
+          })
+        );
+        setIsLocatingStart(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      }
+    );
   };
 
   const handleDestinationSearch = (value) => {
@@ -376,6 +473,9 @@ export default function MapToolbarCard({
 
   const handleRadiusChange = async (value) => {
     const radius_km = Number(value);
+    if (!Number.isFinite(radius_km)) {
+      return;
+    }
 
     if (radius_km === 0) {
       onRadiusChange?.({ radius_km: 0, lat: null, lng: null });
@@ -385,6 +485,10 @@ export default function MapToolbarCard({
     setIsGettingLocation(true);
 
     try {
+      if (!navigator?.geolocation) {
+        throw new Error('Geolocation API is not available in this browser/environment.');
+      }
+
       const position = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           timeout: 10000,
@@ -415,7 +519,7 @@ export default function MapToolbarCard({
           <div className="min-w-0 flex-1">
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-[2.6fr_1.8fr_1.8fr_2fr_2fr_1fr_1.4fr_1fr]">
               <div className="relative w-full min-w-0 sm:col-span-2 xl:col-span-1">
-                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                <Search className="text-quaternary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
                   size="toolbar"
                   value={keyword}
@@ -527,29 +631,37 @@ export default function MapToolbarCard({
               </div>
 
               <div className="w-full min-w-0">
-                <Select
-                  value={String(radiusKm ?? 0)}
-                  onValueChange={handleRadiusChange}
-                  disabled={isGettingLocation}
-                >
-                  <SelectTrigger size="toolbar" className="w-full">
-                    <SelectValue
-                      placeholder={t('mapPage.toolbar.radius', { defaultValue: 'Radius' })}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {RADIUS_OPTIONS.map((km) => (
-                      <SelectItem key={km} value={String(km)}>
-                        {km === 0
-                          ? t('mapPage.toolbar.radiusAll', { defaultValue: 'All' })
-                          : `${km} km`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  <Select
+                    value={String(radiusKm ?? 0)}
+                    onValueChange={handleRadiusChange}
+                    disabled={isGettingLocation}
+                  >
+                    <SelectTrigger size="toolbar" className="w-full">
+                      <SelectValue
+                        placeholder={t('mapPage.toolbar.radius', { defaultValue: 'Radius' })}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {RADIUS_OPTIONS.map((km) => (
+                        <SelectItem key={km} value={String(km)}>
+                          {km === 0
+                            ? t('mapPage.toolbar.radiusAll', { defaultValue: 'All' })
+                            : `${km} km`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {isGettingLocation ? (
+                    <span className="pointer-events-none absolute top-1/2 right-8 -translate-y-1/2">
+                      <LoadingInline size="small" color="muted" />
+                    </span>
+                  ) : null}
+                </div>
               </div>
 
               <div className="relative w-full min-w-0">
+                <Navigation className="text-secondary pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 fill-current" />
                 <Input
                   ref={startInputRef}
                   size="toolbar"
@@ -569,10 +681,30 @@ export default function MapToolbarCard({
                   placeholder={t('mapPage.direction.startPlaceholder', {
                     defaultValue: 'Enter start point',
                   })}
-                  className="text-sm"
+                  className="pr-9 pl-9 text-sm"
                 />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-muted-foreground absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={handleUseCurrentLocation}
+                  title={t('mapPage.direction.current_location', {
+                    defaultValue: 'My location',
+                  })}
+                  aria-label={t('mapPage.direction.current_location', {
+                    defaultValue: 'My location',
+                  })}
+                >
+                  {isLocatingStart ? (
+                    <Loader2 className="text-primary h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <LocateFixed className="text-primary h-3.5 w-3.5" />
+                  )}
+                </Button>
                 {showStartSuggestions && (startSuggestions.length > 0 || isSearchingStart) && (
-                  <div className="bg-popover absolute z-20 mt-1 w-full rounded-md border p-1 shadow-md">
+                  <div className="bg-popover absolute z-50 mt-1 w-full rounded-md border p-1 shadow-md">
                     {isSearchingStart ? (
                       <div className="flex items-center justify-center px-2 py-2">
                         <LoadingInline size="small" color="muted" />
@@ -601,6 +733,7 @@ export default function MapToolbarCard({
               </div>
 
               <div className="relative w-full min-w-0">
+                <MapPin className="text-destructive pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
                   size="toolbar"
                   value={endLocationInput.placeName}
@@ -619,17 +752,17 @@ export default function MapToolbarCard({
                   placeholder={t('mapPage.direction.endPlaceholder', {
                     defaultValue: 'Enter destination',
                   })}
-                  className="text-sm"
+                  className="pl-9 text-sm"
                 />
                 {showEndSuggestions && endLocationInput.placeName.trim().length >= 2 && (
-                  <div className="bg-popover absolute z-20 mt-1 w-full rounded-md border p-1 shadow-md">
+                  <div className="bg-popover absolute z-50 mt-1 w-full rounded-md border p-1 shadow-md">
                     {isSearchingEnd ||
                     endLocationInput.placeName.trim() !== debouncedEndLocation.trim() ? (
                       <div className="flex items-center justify-center px-2 py-2">
                         <LoadingInline size="small" color="muted" />
                       </div>
                     ) : endSuggestions.length === 0 ? (
-                      <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-4 text-sm">
+                      <div className="text-muted-foreground z-50 flex flex-col items-center gap-2 px-3 py-4 text-sm">
                         <MapPin className="h-4 w-4 opacity-70" />
                         <p>
                           {t('mapPage.toolbar.searchNoResult', {

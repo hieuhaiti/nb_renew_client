@@ -664,6 +664,7 @@
       "transportType": "Transport",
       "startPlaceholder": "Enter start location",
       "endPlaceholder": "Enter destination",
+      "current_location": "My location",
       "searching": "Searching...",
       "swap": "Swap",
       "calculate": "Calculate route",

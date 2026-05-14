@@ -1,11 +1,24 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
+import { useMapStore } from '@/features/map/store/useMapStore';
 import { cn } from '@/lib/utils';
 
 export default function DirectionDetails({ className }) {
   const { t } = useTranslation();
-  const { directions, formatDuration, formatDistance } = useDirectionsStore();
+  const { directions, formatDuration, formatDistance, setHoveredStepPoint } = useDirectionsStore();
+  const { mapRef } = useMapStore();
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const isDirectionActive = activeIndex !== null;
 
+  useEffect(() => {
+    if (!directions) {
+      setActiveIndex(null);
+      setHoveredIndex(null);
+      setHoveredStepPoint(null);
+    }
+  }, [directions, setHoveredStepPoint]);
   return (
     <div
       className={cn(
@@ -49,8 +62,33 @@ export default function DirectionDetails({ className }) {
               {(directions.legs?.[0]?.steps || []).map((step, index) => (
                 <div
                   key={`${step?.maneuver?.instruction || 'step'}-${index}`}
-                  className="bg-muted/40 rounded-md p-2 text-sm"
+                  className={cn(
+                    'rounded-md p-2 text-sm cursor-pointer transition-colors',
+                    hoveredIndex === index
+                      ? 'bg-primary/15'
+                      : activeIndex === index
+                        ? 'bg-muted ring-1 ring-border'
+                        : 'bg-muted/40'
+                  )}
                   title={step?.maneuver?.instruction || ''}
+                  onMouseEnter={() => {
+                    setHoveredIndex(index);
+                    if (isDirectionActive) {
+                      const [lng, lat] = step?.maneuver?.location || [];
+                      if (lng != null && lat != null) setHoveredStepPoint({ lng, lat });
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredIndex(null);
+                    setHoveredStepPoint(null);
+                  }}
+                  onClick={() => {
+                    setActiveIndex(index);
+                    const [lng, lat] = step?.maneuver?.location || [];
+                    if (lng != null && lat != null && mapRef?.flyTo) {
+                      mapRef.flyTo({ center: [lng, lat], zoom: 16, duration: 800 });
+                    }
+                  }}
                 >
                   <p className="line-clamp-3 font-medium">
                     {step?.maneuver?.instruction ||

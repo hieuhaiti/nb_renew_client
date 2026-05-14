@@ -668,6 +668,7 @@
       "transportType": "Phương tiện",
       "startPlaceholder": "Nhập điểm đi",
       "endPlaceholder": "Nhập điểm đến",
+      "current_location": "Vị trí của tôi",
       "searching": "Đang tìm...",
       "swap": "Đổi chiều",
       "calculate": "Tính chỉ đường",

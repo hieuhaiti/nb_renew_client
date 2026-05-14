@@ -458,7 +458,7 @@ export default function TourPanel() {
           {t('mapPage.tourPanel.empty', { defaultValue: 'Không có tour phù hợp với bộ lọc.' })}
         </div>
       ) : (
-        <div className="max-h-[58vh] space-y-2 overflow-y-auto pr-0.5">
+        <div className="space-y-2 pr-0.5">
           {tours.map((tour) => {
             const isSelected = selectedTour != null && String(selectedTour.id) === String(tour.id);
             const isRouteActive =
@@ -476,7 +476,7 @@ export default function TourPanel() {
                     ? 'border-primary/60 bg-primary/5'
                     : isSelected
                       ? 'border-border bg-muted/20'
-                      : 'bg-linear-to-b from-card to-muted/10 hover:bg-muted/40'
+                      : 'from-card to-muted/10 hover:bg-muted/40 bg-linear-to-b'
                 )}
               >
                 {imageUrl ? (
@@ -571,5 +571,3 @@ export default function TourPanel() {
     </div>
   );
 }
-
-

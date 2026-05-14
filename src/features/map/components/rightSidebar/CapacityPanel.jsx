@@ -244,7 +244,7 @@ export default function CapacityPanel() {
           <p className="typo-meta text-muted-foreground truncate">
             {wsStatus === 'open' ? (
               <span className="flex items-center gap-1 text-emerald-600">
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" />
                 {t('mapPage.capacityPanel.live', { defaultValue: 'Trực tiếp' })}
               </span>
             ) : wsStatus === 'connecting' ? (
@@ -350,7 +350,7 @@ export default function CapacityPanel() {
           {t('mapPage.capacityPanel.empty', { defaultValue: 'Không có điểm phù hợp.' })}
         </div>
       ) : (
-        <div className="max-h-[55vh] space-y-2 overflow-y-auto pr-0.5">
+        <div className="space-y-2 pr-0.5">
           {/* Result count */}
           <p className="typo-meta text-muted-foreground px-0.5">
             {filtered.length !== items.length

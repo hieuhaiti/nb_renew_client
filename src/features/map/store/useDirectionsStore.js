@@ -26,6 +26,7 @@ export const useDirectionsStore = create((set, get) => ({
   startLocation: null,
   endLocation: null,
   shouldFocusStart: false,
+  hoveredStepPoint: null,
 
   setDirections: (directionsData) => set({ directions: directionsData }),
   setVehicle: (vehicle) => set({ vehicle }),
@@ -33,6 +34,7 @@ export const useDirectionsStore = create((set, get) => ({
   setEndLocation: (location) => set({ endLocation: normalizeCoordinate(location) }),
   triggerFocusStart: () => set({ shouldFocusStart: true }),
   clearFocusStart: () => set({ shouldFocusStart: false }),
+  setHoveredStepPoint: (point) => set({ hoveredStepPoint: point || null }),
 
   geocodeLocation: async (locationString, options = {}) => {
     return geocodeLocation(locationString, options);
@@ -130,9 +132,10 @@ export const useDirectionsStore = create((set, get) => ({
       directions: null,
       startLocation: null,
       endLocation: null,
+      hoveredStepPoint: null,
     }),
 
-  clearDirections: () => set({ directions: null }),
+  clearDirections: () => set({ directions: null, hoveredStepPoint: null }),
 
   formatDuration: (durationInSeconds) => {
     const totalSeconds = Number(durationInSeconds) || 0;

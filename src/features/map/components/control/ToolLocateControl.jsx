@@ -1,12 +1,25 @@
 import mapboxgl from 'mapbox-gl';
 import i18n from '@/i18n';
-import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { useMapStore } from '@/features/map/store/useMapStore';
+import { defaultZoom, locateFlyBearing, locateFlyDuration } from '@/features/map/constant/mapConstant';
 
 export default class ToolLocateControl {
+  _getMaps() {
+    const mapRefObj = useMapStore.getState().mapRefObj?.current;
+    return [this._map, mapRefObj?.single, mapRefObj?.split].filter(
+      (instance, index, all) => instance && all.indexOf(instance) === index
+    );
+  }
+
+  _clearLocateVisuals() {
+    this._markers.forEach((marker) => marker.remove());
+    this._markers = [];
+  }
+
   onAdd(map) {
     this._map = map;
     this._markers = [];
+    this._isActive = false;
 
     this._btn = document.createElement('button');
     this._btn.type = 'button';
@@ -24,16 +37,22 @@ export default class ToolLocateControl {
         return;
       }
 
+      if (this._isActive) {
+        this._isActive = false;
+        this._clearLocateVisuals();
+        this._btn.classList.remove('mapboxgl-ctrl-geolocate-active');
+        this._btn.classList.remove('mapboxgl-ctrl-geolocate-waiting');
+        this._btn.disabled = false;
+        return;
+      }
+
       this._btn.disabled = true;
       this._btn.classList.add('mapboxgl-ctrl-geolocate-waiting');
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const center = [position.coords.longitude, position.coords.latitude];
-          const mapRefObj = useMapStore.getState().mapRefObj?.current;
-          const maps = [this._map, mapRefObj?.single, mapRefObj?.split].filter(
-            (instance, index, all) => instance && all.indexOf(instance) === index
-          );
+          const maps = this._getMaps();
 
           this._markers.forEach((marker) => marker.remove());
           this._markers = [];
@@ -45,20 +64,45 @@ export default class ToolLocateControl {
             dot.className = 'mapboxgl-user-location-dot';
             el.appendChild(dot);
 
-            const marker = new mapboxgl.Marker({ element: el }).setLngLat(center).addTo(mapInstance);
+            const marker = new mapboxgl.Marker({ element: el })
+              .setLngLat(center)
+              .addTo(mapInstance);
             this._markers.push(marker);
-            highlightPointOnMap(mapInstance, {
-              coordinates: center,
-            });
+
+            const currentZoom = Number(mapInstance.getZoom?.());
+            const currentPitch = Number(mapInstance.getPitch?.());
+            const zoom = Number.isFinite(currentZoom) ? Math.max(currentZoom, defaultZoom) : defaultZoom;
+            const pitch = Number.isFinite(currentPitch) ? currentPitch : 0;
+
+            try {
+              mapInstance.flyTo({
+                center,
+                zoom,
+                pitch,
+                bearing: locateFlyBearing,
+                essential: true,
+                duration: locateFlyDuration,
+              });
+            } catch (_error) {
+              mapInstance.jumpTo({
+                center,
+                zoom,
+                pitch,
+                bearing: locateFlyBearing,
+              });
+            }
           });
 
+          this._isActive = true;
           this._btn.disabled = false;
           this._btn.classList.remove('mapboxgl-ctrl-geolocate-waiting');
           this._btn.classList.add('mapboxgl-ctrl-geolocate-active');
         },
         () => {
+          this._isActive = false;
           this._btn.disabled = false;
           this._btn.classList.remove('mapboxgl-ctrl-geolocate-waiting');
+          this._btn.classList.remove('mapboxgl-ctrl-geolocate-active');
         },
         {
           enableHighAccuracy: true,
@@ -82,8 +126,8 @@ export default class ToolLocateControl {
       this._btn.removeEventListener('click', this._onLocateClick);
     }
 
-    this._markers.forEach((marker) => marker.remove());
-    this._markers = [];
+    this._isActive = false;
+    this._clearLocateVisuals();
 
     if (this._container && this._container.parentNode) {
       this._container.parentNode.removeChild(this._container);
@@ -92,5 +136,6 @@ export default class ToolLocateControl {
     this._map = undefined;
     this._btn = undefined;
     this._container = undefined;
+    this._isActive = undefined;
   }
 }

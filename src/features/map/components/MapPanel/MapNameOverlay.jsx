@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { getMapColorById } from '@/features/map/constant/mapColor';
+import { cn } from '../../../../lib/utils';
 
 /**
  * @param {{ categoriesStoreID?: number|null, categoriesStoreName?: string|null, categoryColor?: string|object|null, compact?: boolean, className?: string }} props
@@ -28,7 +29,7 @@ export default function MapNameOverlay({
   const borderColor = normalizedColor || fallbackColor;
 
   return (
-    <div className={className}>
+    <div className={cn(className, 'z-30')}>
       <div
         className="bg-background/95 border-border/60 rounded-lg border px-4 py-2.5 shadow-sm backdrop-blur-sm"
         style={{

@@ -48,7 +48,7 @@ export default function MapWeatherCard({ className, compact = false }) {
   if (isError || !weather) return null;
 
   return (
-    <section aria-label={t('mapPage.layout.floatWeather')} className={cn('h-auto', className)}>
+    <section aria-label={t('mapPage.layout.floatWeather')} className={cn('z-30 h-auto', className)}>
       <div
         className={cn(
           'border-border bg-card/95 border shadow-md backdrop-blur-sm',

@@ -53,6 +53,11 @@ export default function MapPage() {
   const [keyword, setKeyword] = useState('');
   const [activeChip, setActiveChip] = useState('all');
   const [activeBasemap, setActiveBasemap] = useState('outdoor');
+  const [radiusFilter, setRadiusFilter] = useState({
+    radius_km: 0,
+    lat: null,
+    lng: null,
+  });
   const [pendingFlyCoordinates, setPendingFlyCoordinates] = useState(null);
   const [pendingSearchSelection, setPendingSearchSelection] = useState(null);
   const activePanel = useMapPanelStore((s) => s.activePanel);
@@ -105,6 +110,9 @@ export default function MapPage() {
       page: 1,
       limit: 8,
       parent_category_id: activeChip !== 'all' ? activeChip : undefined,
+      radius_km: radiusFilter.radius_km,
+      lat: radiusFilter.lat,
+      lng: radiusFilter.lng,
       status: 'active',
       sortBy: 'created_at',
       sortOrder: 'DESC',
@@ -434,20 +442,8 @@ export default function MapPage() {
     if (!prefillKeyword && !prefillResult && !prefillRoute && !prefillTourPanel) return;
 
     prefillHandledRef.current = true;
-    console.log(
-      '[MapPage prefill] prefillRoute:',
-      prefillRoute,
-      '| prefillTourPanel:',
-      prefillTourPanel
-    );
     if (prefillKeyword) setKeyword(prefillKeyword);
     if (prefillRoute) {
-      console.log(
-        '[MapPage prefill] calling setHighlightedRoute with points:',
-        prefillRoute?.points?.length,
-        'geometry coords:',
-        prefillRoute?.geometry?.coordinates?.length
-      );
       setHighlightedRoute(prefillRoute);
       setShowOnlyHighlightedRoute(Boolean(prefillRoute));
     } else {
@@ -595,22 +591,26 @@ export default function MapPage() {
   }
 
   const handleSidebarTabChange = (nextTab) => {
-    if (import.meta.env.DEV) {
-      console.log('[MapPage] handleSidebarTabChange', { nextTab, prevTab: activeTab });
-      console.trace('[MapPage] handleSidebarTabChange trace');
-    }
     setActiveTab(nextTab);
+  };
+
+  const handleRadiusChange = (nextRadiusFilter) => {
+    setRadiusFilter({
+      radius_km: Number(nextRadiusFilter?.radius_km) || 0,
+      lat:
+        typeof nextRadiusFilter?.lat === 'number' && Number.isFinite(nextRadiusFilter.lat)
+          ? nextRadiusFilter.lat
+          : null,
+      lng:
+        typeof nextRadiusFilter?.lng === 'number' && Number.isFinite(nextRadiusFilter.lng)
+          ? nextRadiusFilter.lng
+          : null,
+    });
+    console.log('[MapPageContent] radius filter updated', nextRadiusFilter);
   };
 
   useEffect(() => {
     const shouldSplitMode = activeTab === 'compareSatellite';
-    if (import.meta.env.DEV) {
-      console.log('[MapPage] activeTab effect -> setIsSplitMode', {
-        activeTab,
-        shouldSplitMode,
-      });
-      console.trace('[MapPage] activeTab effect trace');
-    }
     setIsSplitMode(shouldSplitMode);
   }, [activeTab, setIsSplitMode]);
 
@@ -633,6 +633,8 @@ export default function MapPage() {
             activeChip={activeChip}
             onChipChange={handleChipChange}
             onSearch={handleSearch}
+            radiusKm={radiusFilter.radius_km}
+            onRadiusChange={handleRadiusChange}
           />
 
           <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[300px_minmax(0,1fr)_340px] 2xl:grid-cols-[320px_minmax(0,1fr)_380px]">

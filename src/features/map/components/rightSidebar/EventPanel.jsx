@@ -216,7 +216,7 @@ export default function EventPanel() {
           })}
         </div>
       ) : (
-        <div className="max-h-[58vh] space-y-2 overflow-y-auto pr-0.5">
+        <div className="space-y-2 pr-0.5">
           {festivals.map((festival) => {
             const isActive =
               selectedFestival != null && String(selectedFestival.id) === String(festival.id);

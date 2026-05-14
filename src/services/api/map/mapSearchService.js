@@ -6,6 +6,9 @@ function buildPointsSearchEndpoint({
   limit = 8,
   category_id,
   parent_category_id,
+  radius_km,
+  lat,
+  lng,
   is_featured,
   status = 'active',
   sortBy = 'created_at',
@@ -18,6 +21,11 @@ function buildPointsSearchEndpoint({
   if (search) query.set('search', String(search));
   if (category_id != null) query.set('category_id', String(category_id));
   if (parent_category_id != null) query.set('parent_category_id', String(parent_category_id));
+  if (radius_km != null && Number.isFinite(Number(radius_km)) && Number(radius_km) > 0) {
+    query.set('radius_km', String(Number(radius_km)));
+  }
+  if (lat != null && Number.isFinite(Number(lat))) query.set('lat', String(Number(lat)));
+  if (lng != null && Number.isFinite(Number(lng))) query.set('lng', String(Number(lng)));
   if (typeof is_featured === 'boolean') query.set('is_featured', String(is_featured));
   if (status) query.set('status', String(status));
   if (sortBy) query.set('sortBy', String(sortBy));
@@ -39,6 +47,9 @@ export function useSearchSpotsQuery(params = {}, options = {}) {
       params?.limit || 8,
       params?.category_id || null,
       params?.parent_category_id || null,
+      params?.radius_km || 0,
+      params?.lat || null,
+      params?.lng || null,
       params?.status || 'active',
       params?.sortBy || 'created_at',
       params?.sortOrder || 'DESC',
