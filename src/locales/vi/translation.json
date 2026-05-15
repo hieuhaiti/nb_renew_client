@@ -43,8 +43,13 @@
   },
   "home": {
     "hero": {
+      "badge": "Cổng thông tin du lịch Ninh Bình",
       "title": "Khám phá vẻ đẹp Ninh Bình",
       "subtitle": "Bản đồ du lịch thông minh, điểm đến hấp dẫn và trải nghiệm không quên",
+      "description": "Cổng thông tin du lịch tích hợp bản đồ GIS, thời tiết, VR360 và gợi ý hành trình",
+      "cta_gis": "Khám phá bản đồ GIS",
+      "cta_vr": "Tham quan VR 360°",
+      "cta_points": "Điểm du lịch nổi bật",
       "cta_map": "Khám phá bản đồ",
       "cta_discover": "Điểm du lịch nổi bật",
       "scroll_hint": "Cuộn để khám phá",
@@ -57,7 +62,114 @@
       "vlog_cta": "Truy cập trang vlog",
       "chatbot_title": "Chatbot đồng hành",
       "chatbot_desc": "Hỏi nhanh về tour, thời tiết, OCOP và nhận gợi ý lịch trình cá nhân hoá.",
-      "chatbot_cta": "Trò chuyện cùng chatbot"
+      "chatbot_cta": "Trò chuyện cùng chatbot",
+      "lead": "Trang chủ được thiết kế theo hướng sáng, rõ và giàu thông tin thực tế: điểm đến, sự kiện, tour, ẩm thực, OCOP, bản đồ số và nội dung cộng đồng."
+    },
+    "search": {
+      "label": "Tìm điểm đến",
+      "placeholder": "Khám phá điểm đến, tour, lễ hội..."
+    },
+    "weather_card": {
+      "label": "Thời tiết",
+      "title": "Thời tiết nhanh",
+      "humidity": "Độ ẩm",
+      "wind": "Gió",
+      "aqi": "Chất lượng không khí",
+      "view_map": "Xem trên bản đồ",
+      "unavailable": "Không thể tải dữ liệu thời tiết.",
+      "not_configured": "Chưa cấu hình OpenWeather API.",
+      "loading_text": "Đang cập nhật dữ liệu thời tiết...",
+      "ok": "Điều kiện thời tiết đã được cập nhật."
+    },
+    "festivals_card": {
+      "label": "Lễ hội theo mùa",
+      "title": "Lễ hội sắp diễn ra",
+      "cta": "Xem tất cả lễ hội",
+      "empty": "Chưa có lễ hội sắp diễn ra.",
+      "days_until": "Còn {{days}} ngày",
+      "today": "Hôm nay",
+      "recurring": "Hàng năm"
+    },
+    "suggestions_card": {
+      "label": "Gợi ý nhanh",
+      "title": "Gợi ý hành trình",
+      "detail_cta": "Xem chi tiết"
+    },
+    "quick_access": {
+      "label": "Truy cập nhanh",
+      "title": "Khám phá điểm đến đẹp hơn với công cụ tích hợp",
+      "description": "Sử dụng các tính năng nổi bật của nền tảng để lên kế hoạch hành trình nhanh chóng và trực quan."
+    },
+    "featured_destinations": {
+      "label": "Điểm đến nổi bật",
+      "title": "Điểm tham quan hàng đầu tại Ninh Bình",
+      "see_all": "Xem tất cả điểm du lịch",
+      "description": "Kết hợp hình ảnh lớn và nút hành động nhanh để đi từ trang chủ đến bản đồ hoặc trang chi tiết.",
+      "detail_cta": "Chi tiết"
+    },
+    "news_section": {
+      "label": "Tin tức & Khám phá",
+      "title": "Tin tức du lịch mới nhất",
+      "see_all": "Tất cả tin tức",
+      "read_more": "Đọc tiếp",
+      "hot": "Nổi bật",
+      "unknown_author": "Ban biên tập"
+    },
+    "tour_section": {
+      "label": "Tour gợi ý",
+      "title": "Khám phá tuyến du lịch hấp dẫn",
+      "see_all": "Xem tất cả tour",
+      "days": "ngày",
+      "from_price": "Từ",
+      "default_title": "Tour Tràng An Classic — Đi Thuyền Qua 3 Tuyến Hang Động",
+      "default_desc": "Khám phá Quần thể Di Tích Tràng An qua 3 tuyến du lịch nổi tiếng.",
+      "schedule": "lịch trình",
+      "per_person": "từ / khách",
+      "reviews": "đánh giá",
+      "contact": "Liên hệ",
+      "view_map": "Xem tuyến trên bản đồ"
+    },
+    "itinerary_section": {
+      "label": "Lịch trình gợi ý",
+      "title": "Hành trình Ninh Bình theo ngày",
+      "day_label": "Ngày {{day}}"
+    },
+    "food_section": {
+      "label": "Ẩm thực địa phương",
+      "title": "Đặc sản Ninh Bình không thể bỏ lỡ",
+      "description": "Món nổi bật, địa điểm ăn uống, từ khóa tìm nhanh và liên kết dịch vụ ngay trong trang chủ."
+    },
+    "vouchers_section": {
+      "label": "Doanh nghiệp du lịch",
+      "title": "Voucher đang có gần bạn",
+      "desc": "Voucher ưu đãi từ các doanh nghiệp du lịch trong khu vực.",
+      "cta": "Đến điểm du lịch để nhận voucher",
+      "partners": "Các doanh nghiệp hợp tác",
+      "empty": "Không có voucher nào trong khu vực hiện tại.",
+      "min_order": "Đơn tối thiểu",
+      "valid_until": "Hạn sử dụng",
+      "view_map": "Xem doanh nghiệp trên bản đồ"
+    },
+    "ocop_section": {
+      "label": "Sản phẩm OCOP",
+      "title": "Gian hàng địa phương tích hợp trên trang chủ",
+      "see_all": "Xem tất cả sản phẩm OCOP",
+      "description": "Giới thiệu sản phẩm, chứng nhận, địa phương và liên kết đặt hàng ngay trong trang chủ.",
+      "view_product": "Xem sản phẩm",
+      "contact": "Liên hệ"
+    },
+    "vlog_section": {
+      "label": "Vlog & Chia sẻ",
+      "title": "Câu chuyện du lịch từ cộng đồng",
+      "see_all": "Xem tất cả vlog",
+      "author_prefix": "Tác giả:",
+      "description": "Tăng chiều sâu nội dung cộng đồng với trải nghiệm thực tế, mẹo di chuyển và gợi ý lên lịch trình."
+    },
+    "footer_section": {
+      "brand": "Cổng thông tin du lịch Ninh Bình — Nền tảng tích hợp GIS, VR360, OCOP và lịch trình thông minh.",
+      "quick_links": "Liên kết nhanh",
+      "contact": "Liên hệ",
+      "follow": "Theo dõi"
     },
     "ad_carousel": {
       "subtitle": "Dịch vụ & Sự kiện",
@@ -151,6 +263,11 @@
     "states": {
       "error": "Không thể tải danh sách tin tức lúc này.",
       "empty": "Chưa có tin tức phù hợp."
+    },
+    "cta": {
+      "label": "Khám phá Ninh Bình",
+      "title": "Kết nối tin tức với bản đồ du lịch số",
+      "desc": "Xem tin tức mới nhất và tra cứu địa điểm, lịch trình, sự kiện trên cùng một nền tảng."
     },
     "detail": {
       "back": "Quay lại tin tức",
@@ -345,6 +462,14 @@
   "tourismPointPage": {
     "title": "Điểm du lịch",
     "subtitle": "Khám phá các điểm tham quan nổi bật tại Ninh Bình",
+    "hero_title": "Khám phá Điểm du lịch Ninh Bình",
+    "hero_desc": "Tìm kiếm, lọc theo loại hình, xem vị trí bản đồ, ảnh 360, thông tin mô tả và gợi ý chỉ đường đến các điểm du lịch nổi bật.",
+    "stat_spots": "Điểm tham quan",
+    "stat_categories": "Loại hình",
+    "stat_subcategories": "Danh mục con",
+    "is_featured_label": "Nổi bật",
+    "is_featured_all": "Tất cả",
+    "is_featured_yes": "Điểm nổi bật",
     "unknown_category": "Chưa phân loại",
     "47_points": "47 điểm tham quan",
     "ninh_binh": "Ninh Bình",
@@ -353,6 +478,7 @@
     "all": "Tất cả",
     "showing": "Hiển thị",
     "of": "/",
+    "per_page": "mỗi trang",
     "gridView": "Lưới",
     "listView": "Danh sách",
     "results": "kết quả",
@@ -362,6 +488,10 @@
     "filter": "Bộ lọc",
     "reviews": "đánh giá",
     "view_detail": "Xem chi tiết",
+    "category": "Danh mục",
+    "radius": "Bán kính",
+    "radiusAll": "Không giới hạn bán kính",
+    "all_subcategories": "Tất cả danh mục con",
     "free": "Miễn phí",
     "no_results": "Không tìm thấy kết quả",
     "errorLoading": "Không thể tải dữ liệu.",
@@ -425,7 +555,67 @@
     "startLocation": "Điểm xuất phát",
     "endLocation": "Điểm kết thúc",
     "provider": "Nhà cung cấp",
-    "reviewErrorRatings": "Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và khả năng tiếp cận."
+    "reviewErrorRatings": "Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và khả năng tiếp cận.",
+    "hero": {
+      "badge": "Tuyến du lịch Ninh Bình",
+      "title": "Khám phá tuyến du lịch hấp dẫn",
+      "description": "Lựa chọn tuyến tham quan phù hợp với thời gian và sở thích của bạn."
+    },
+    "duration_options": {
+      "all": "Tất cả thời lượng",
+      "1day": "1 ngày",
+      "2days": "2 ngày",
+      "3_4days": "3–4 ngày",
+      "5plus": "5 ngày trở lên"
+    },
+    "price_options": {
+      "all": "Tất cả mức giá",
+      "under500": "Dưới 500K",
+      "500_1000": "500K – 1 triệu",
+      "1000_2000": "1 – 2 triệu",
+      "above2000": "Trên 2 triệu"
+    },
+    "sort_options": {
+      "default": "Mặc định",
+      "price_asc": "Giá tăng dần",
+      "price_desc": "Giá giảm dần",
+      "rating_best": "Đánh giá cao nhất",
+      "newest": "Mới nhất"
+    },
+    "filters": {
+      "search_placeholder": "Tìm kiếm tuyến du lịch...",
+      "price": "Mức giá",
+      "sort": "Sắp xếp",
+      "search_btn": "Tìm kiếm"
+    },
+    "card": {
+      "from_price": "Từ",
+      "no_description": "Chưa có mô tả.",
+      "view_detail": "Xem chi tiết",
+      "max_guests": "khách",
+      "rating_count": "đánh giá"
+    },
+    "toolbar": {
+      "count": "{{total}} tour"
+    },
+    "states": {
+      "error": "Không thể tải danh sách tour lúc này.",
+      "empty_title": "Không tìm thấy tour phù hợp",
+      "empty_desc": "Thử thay đổi từ khóa hoặc bộ lọc."
+    },
+    "per_page": "{{size}}/trang",
+    "priceFrom": "Từ",
+    "filterTitle": "Bộ lọc nhanh",
+    "filterOpen": "Đang mở",
+    "budget": "Ngân sách",
+    "startLocationPlaceholder": "Vd: Bến thuyền Tràng An",
+    "applyFilters": "Áp dụng bộ lọc",
+    "featuredToday": "Tuyến nổi bật hôm nay",
+    "featuredSubtitle": "Phù hợp gia đình, nhóm bạn, khách lần đầu đến Ninh Bình.",
+    "viewTour": "Xem tuyến",
+    "filter": "Lọc tuyến",
+    "toursLabel": "tuyến phù hợp",
+    "viewDetail": "Xem chi tiết"
   },
   "mapStyle": {
     "toggle": "Chuyển nền bản đồ",
@@ -806,5 +996,241 @@
     "success": {
       "loaded": "Tải ảnh vệ tinh thành công."
     }
+  },
+  "festivalPage": {
+    "hero": {
+      "badge": "Lễ hội & Văn hóa Ninh Bình",
+      "title": "Lễ hội truyền thống Ninh Bình",
+      "description": "Khám phá các lễ hội văn hóa, tâm linh và truyền thống đặc sắc của vùng đất cố đô."
+    },
+    "stats": {
+      "total": "Lễ hội",
+      "upcoming": "Sắp diễn ra",
+      "page": "Trang"
+    },
+    "filters": {
+      "search_placeholder": "Tìm kiếm lễ hội, địa điểm, loại hình...",
+      "upcoming": "Sắp diễn ra",
+      "past": "Đã qua",
+      "all_time": "Tất cả",
+      "all_types": "Tất cả loại",
+      "search_btn": "Tìm kiếm"
+    },
+    "types": {
+      "religious": "Tôn giáo",
+      "traditional": "Truyền thống",
+      "cultural": "Văn hóa",
+      "folk": "Dân gian",
+      "modern": "Hiện đại",
+      "seasonal": "Theo mùa",
+      "historical": "Lịch sử",
+      "music": "Âm nhạc",
+      "food": "Ẩm thực",
+      "craft": "Làng nghề",
+      "sport": "Thể thao",
+      "other": "Khác"
+    },
+    "card": {
+      "recurring": "Hàng năm",
+      "no_description": "Chưa có mô tả.",
+      "view_detail": "Xem chi tiết",
+      "days_until": "Còn {{days}} ngày",
+      "today": "Hôm nay"
+    },
+    "toolbar": {
+      "count": "{{total}} lễ hội",
+      "refresh": "Làm mới"
+    },
+    "states": {
+      "error": "Không thể tải dữ liệu lễ hội lúc này.",
+      "empty_title": "Chưa có lễ hội phù hợp",
+      "empty_desc": "Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm."
+    },
+    "pagination": {
+      "prev": "Trước",
+      "next": "Sau",
+      "page": "{{current}} / {{total}}"
+    },
+    "cta_section": {
+      "badge": "Lên kế hoạch hành trình",
+      "title": "Kết hợp lễ hội vào lịch trình du lịch của bạn",
+      "description": "Sử dụng bản đồ GIS để tìm các điểm tham quan gần địa điểm tổ chức lễ hội và lên kế hoạch tối ưu.",
+      "cta_map": "Mở bản đồ",
+      "cta_points": "Xem điểm du lịch"
+    }
+  },
+  "festivalDetail": {
+    "back": "Quay lại lễ hội",
+    "not_found": "Không tìm thấy thông tin lễ hội",
+    "type_label": "Loại lễ hội",
+    "dates_label": "Thời gian",
+    "location_label": "Địa điểm",
+    "website_label": "Website",
+    "recurring_label": "Định kỳ",
+    "recurring_yes": "Hàng năm",
+    "recurring_no": "Không định kỳ",
+    "no_description": "Chưa có mô tả.",
+    "no_location": "Chưa cập nhật địa điểm.",
+    "view_map": "Xem trên bản đồ",
+    "types": {
+      "religious": "Tôn giáo",
+      "traditional": "Truyền thống",
+      "cultural": "Văn hóa",
+      "folk": "Dân gian",
+      "modern": "Hiện đại",
+      "seasonal": "Theo mùa",
+      "historical": "Lịch sử",
+      "music": "Âm nhạc",
+      "food": "Ẩm thực",
+      "craft": "Làng nghề",
+      "sport": "Thể thao",
+      "other": "Khác"
+    }
+  },
+  "ocopPage": {
+    "hero": {
+      "badge": "Sản phẩm OCOP Ninh Bình",
+      "title": "Đặc sản OCOP Ninh Bình",
+      "description": "Khám phá và mua sắm các sản phẩm OCOP chất lượng cao, đặc trưng văn hoá địa phương."
+    },
+    "stats": {
+      "total": "Sản phẩm",
+      "certified": "Đạt chuẩn",
+      "page": "Trang"
+    },
+    "filters": {
+      "search_placeholder": "Tìm kiếm sản phẩm, nhà cung cấp...",
+      "all_categories": "Tất cả danh mục",
+      "all_stars": "Tất cả sao",
+      "search_btn": "Tìm kiếm"
+    },
+    "categories": {
+      "food": "Thực phẩm",
+      "beverage": "Đồ uống",
+      "herbal": "Thảo dược",
+      "fabric": "Vải & May mặc",
+      "decoration": "Trang trí nội thất",
+      "service": "Dịch vụ du lịch",
+      "other": "Khác"
+    },
+    "stars": {
+      "3": "3 sao",
+      "4": "4 sao",
+      "5": "5 sao (Quốc gia)"
+    },
+    "card": {
+      "stars": "sao",
+      "no_description": "Chưa có mô tả.",
+      "view_detail": "Xem chi tiết",
+      "certified": "Đã chứng nhận"
+    },
+    "toolbar": {
+      "count": "{{total}} sản phẩm",
+      "refresh": "Làm mới"
+    },
+    "states": {
+      "error": "Không thể tải danh sách sản phẩm OCOP lúc này.",
+      "empty_title": "Không tìm thấy sản phẩm",
+      "empty_desc": "Thử thay đổi từ khóa hoặc bộ lọc."
+    },
+    "pagination": {
+      "prev": "Trước",
+      "next": "Sau",
+      "page": "{{current}} / {{total}}"
+    }
+  },
+  "ocopDetail": {
+    "back": "Quay lại OCOP",
+    "default_name": "Sản phẩm OCOP",
+    "no_description": "Chưa có mô tả.",
+    "labels": {
+      "province": "Tỉnh/Thành phố",
+      "unit": "Đơn vị sản xuất",
+      "category": "Danh mục",
+      "certification": "Chứng nhận",
+      "price": "Giá tham khảo",
+      "stars": "Hạng sao",
+      "year": "Năm chứng nhận"
+    },
+    "categories": {
+      "food": "Thực phẩm",
+      "beverage": "Đồ uống",
+      "herbal": "Thảo dược",
+      "fabric": "Vải & May mặc",
+      "decoration": "Trang trí nội thất",
+      "service": "Dịch vụ du lịch",
+      "other": "Khác"
+    },
+    "view_map": "Xem trên bản đồ"
+  },
+  "vlogPage": {
+    "hero": {
+      "badge": "Không gian cộng đồng du lịch Ninh Bình",
+      "title": "Vlog & Chia sẻ trải nghiệm",
+      "description": "Nơi du khách chia sẻ hành trình, cảm nhận và những khoảnh khắc đáng nhớ tại Ninh Bình.",
+      "cta_write": "Viết bài mới",
+      "cta_featured": "Xem bài nổi bật"
+    },
+    "stats": {
+      "posts": "Bài viết",
+      "authors": "Tác giả",
+      "views": "Lượt xem"
+    },
+    "composer": {
+      "title": "Đăng bài nhanh",
+      "title_label": "Tiêu đề bài viết",
+      "title_placeholder": "Nhập tiêu đề hấp dẫn...",
+      "content_label": "Nội dung",
+      "content_placeholder": "Chia sẻ hành trình, cảm nhận hoặc mẹo du lịch của bạn...",
+      "type_label": "Loại nội dung",
+      "topic_label": "Chủ đề",
+      "submit": "Đăng bài",
+      "toast_empty_title": "Vui lòng nhập tiêu đề bài viết.",
+      "toast_success": "Đăng bài thành công!"
+    },
+    "filters": {
+      "title": "Lọc nội dung",
+      "keyword_label": "Từ khóa",
+      "keyword_placeholder": "Tìm theo tiêu đề, tác giả...",
+      "type_label": "Loại nội dung",
+      "location_label": "Địa điểm",
+      "location_placeholder": "Lọc theo địa điểm...",
+      "refresh": "Làm mới"
+    },
+    "types": {
+      "all": "Tất cả",
+      "post": "Bài viết",
+      "video": "Video"
+    },
+    "topics": {
+      "all": "Tất cả chủ đề",
+      "experience": "Trải nghiệm",
+      "food": "Ẩm thực",
+      "tips": "Mẹo du lịch",
+      "photo": "Nhiếp ảnh",
+      "culture": "Văn hóa"
+    },
+    "post": {
+      "read_more": "Xem tiếp",
+      "author_default": "Bạn",
+      "type_default": "Bài viết",
+      "topic_default": "Trải nghiệm",
+      "views": "lượt xem",
+      "likes": "thích"
+    },
+    "trending": {
+      "title": "Đang được quan tâm"
+    },
+    "states": {
+      "empty_title": "Chưa có bài viết nào",
+      "empty_desc": "Hãy là người đầu tiên chia sẻ trải nghiệm của bạn!"
+    },
+    "attach": {
+      "photo": "📷 Ảnh",
+      "video": "🎥 Video",
+      "place": "📍 Địa điểm",
+      "hashtag": "🏷 Hashtag"
+    },
+    "just_now": "Vừa xong"
   }
 }

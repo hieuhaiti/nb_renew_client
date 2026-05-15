@@ -6,8 +6,16 @@ import { Select as SelectPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/utils';
 
-function Select({ ...props }) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />;
+const SelectIconContext = React.createContext(null);
+
+function Select({ startIcon, children, ...props }) {
+  return (
+    <SelectIconContext.Provider value={startIcon ?? null}>
+      <SelectPrimitive.Root data-slot="select" {...props}>
+        {children}
+      </SelectPrimitive.Root>
+    </SelectIconContext.Provider>
+  );
 }
 
 function SelectGroup({ ...props }) {
@@ -18,19 +26,25 @@ function SelectValue({ ...props }) {
   return <SelectPrimitive.Value data-slot="select-value" {...props} />;
 }
 
-function SelectTrigger({ className, size = 'default', children, ...props }) {
+function SelectTrigger({ className, size = 'default', startIcon, children, ...props }) {
+  const selectStartIcon = React.useContext(SelectIconContext);
+  const resolvedStartIcon = startIcon ?? selectStartIcon;
+
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-placeholder:text-foreground dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='text-'])]:text-foreground flex items-center justify-between border bg-transparent shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=default]:rounded-md data-[size=default]:px-3 data-[size=default]:text-sm data-[size=sm]:h-8 data-[size=sm]:rounded-md data-[size=sm]:px-3 data-[size=sm]:text-sm data-[size=toolbar]:h-10 data-[size=toolbar]:rounded-md data-[size=toolbar]:px-3 data-[size=toolbar]:text-sm *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-placeholder:text-foreground dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='text-'])]:text-foreground flex items-center justify-start gap-2 border bg-transparent shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=default]:rounded-md data-[size=default]:px-3 data-[size=default]:text-sm data-[size=sm]:h-8 data-[size=sm]:rounded-md data-[size=sm]:px-3 data-[size=sm]:text-sm data-[size=toolbar]:h-10 data-[size=toolbar]:rounded-md data-[size=toolbar]:px-3 data-[size=toolbar]:text-sm *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:flex-1 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate *:data-[slot=select-value]:text-left [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
     >
+      {resolvedStartIcon ? (
+        <span className="pointer-events-none shrink-0">{resolvedStartIcon}</span>
+      ) : null}
       {children}
-      <SelectPrimitive.Icon asChild>
+      <SelectPrimitive.Icon asChild className="ml-auto">
         <ChevronDownIcon className="size-4 opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
@@ -84,16 +98,21 @@ function SelectLabel({ className, ...props }) {
   );
 }
 
-function SelectItem({ className, children, ...props }) {
+function SelectItem({ className, children, startIcon, ...props }) {
+  const selectStartIcon = React.useContext(SelectIconContext);
+  const resolvedStartIcon = startIcon ?? selectStartIcon;
+
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        resolvedStartIcon ? 'pl-4' : 'pl-2',
         className
       )}
       {...props}
     >
+      {resolvedStartIcon ? <span className="shrink-0">{resolvedStartIcon}</span> : null}
       <span
         data-slot="select-item-indicator"
         className="absolute right-2 flex size-3.5 items-center justify-center"

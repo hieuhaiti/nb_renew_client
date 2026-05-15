@@ -213,7 +213,7 @@ export function TourismDetailSidebar({
       </section>
 
       <section className="bg-card border-border rounded-[10px] border px-4 py-3.5">
-        <h3 className="text-foreground mb-3 text-base font-bold">
+        <h3 className="text-foreground mb-3 text-sm font-bold 2xl:text-base">
           {t('tourism.nearby_points', 'Điểm lân cận')}
         </h3>
 

@@ -1,12 +1,17 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, RefreshCw, Inbox, ChevronLeft, ChevronRight, ArrowRight, Tag } from 'lucide-react';
+import { Search, RefreshCw, Inbox, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
 import { useTranslation } from 'react-i18next';
 import RootLayout from '@/components/layout/RootLayout';
 import { useGetNewsList } from '@/services/api/news/newsService';
 import { withBaseUrl, getLocaleFromLanguage } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+
+/* Missing data fields (not available in current API):
+ *  - item.views      — view count shown in some designs
+ *  - item.reading_time — estimated reading time
+ */
 
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 const HERO_BG = `linear-gradient(135deg,rgba(3,95,172,.90),rgba(37,99,235,.85),rgba(14,165,233,.75)), url("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80") center/cover`;
@@ -22,12 +27,12 @@ function tagLabel(slug) {
   return slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function NewsCard({ item, navigate, locale }) {
+function NewsCard({ item, navigate, locale, t }) {
   const slug = item?.slug || item?.id || '';
   const title = item?.title || '—';
   const summary = item?.summary || '';
   const imageSrc = withBaseUrl(item?.thumbnail_url || '') || placeholderImg;
-  const author = item?.author_name || 'Ban biên tập';
+  const author = item?.author_name || t('newsPage.list.unknown_author');
   const date = formatDate(item?.published_at || item?.created_at, locale);
   const tags = Array.isArray(item?.tags) ? item.tags.slice(0, 3) : [];
 
@@ -36,7 +41,7 @@ function NewsCard({ item, navigate, locale }) {
       onClick={() => slug && navigate(`/news/${encodeURIComponent(String(slug))}`)}
       className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
     >
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
         <img
           src={imageSrc}
           alt={title}
@@ -45,7 +50,7 @@ function NewsCard({ item, navigate, locale }) {
         />
         {item?.is_featured && (
           <span className="absolute top-3 left-3 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-0.5 text-xs font-bold text-[#b45309] backdrop-blur-sm">
-            Nổi bật
+            {t('newsPage.list.featured')}
           </span>
         )}
         {date && (
@@ -66,7 +71,7 @@ function NewsCard({ item, navigate, locale }) {
         </h3>
 
         <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-          {summary || 'Chưa có tóm tắt.'}
+          {summary || t('newsPage.list.no_summary')}
         </p>
 
         {tags.length > 0 && (
@@ -84,7 +89,7 @@ function NewsCard({ item, navigate, locale }) {
 
         <div className="mt-auto flex items-center justify-end pt-3">
           <span className="flex items-center gap-1 text-xs font-semibold text-[#0b66c3] group-hover:underline">
-            Đọc tiếp <ArrowRight size={11} />
+            {t('newsPage.actions.read_more')} <ArrowRight size={11} />
           </span>
         </div>
       </div>
@@ -95,12 +100,12 @@ function NewsCard({ item, navigate, locale }) {
 function NewsCardSkeleton() {
   return (
     <div className="animate-pulse overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white">
-      <div className="bg-muted h-52 w-full" />
+      <div className="h-48 w-full bg-muted" />
       <div className="space-y-2 p-4">
-        <div className="bg-muted h-3 w-1/3 rounded" />
-        <div className="bg-muted h-4 w-full rounded" />
-        <div className="bg-muted h-3 w-5/6 rounded" />
-        <div className="bg-muted h-3 w-2/3 rounded" />
+        <div className="h-3 w-1/3 rounded bg-muted" />
+        <div className="h-4 w-full rounded bg-muted" />
+        <div className="h-3 w-5/6 rounded bg-muted" />
+        <div className="h-3 w-2/3 rounded bg-muted" />
       </div>
     </div>
   );
@@ -108,7 +113,7 @@ function NewsCardSkeleton() {
 
 export default function NewsPageContent() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const locale = getLocaleFromLanguage(i18n.language);
 
   const [search, setSearch] = useState('');
@@ -122,7 +127,7 @@ export default function NewsPageContent() {
 
   const { data, isLoading, isError, isFetching, refetch } = useGetNewsList({
     page,
-    limit: 9,
+    limit: 12,
     search: debouncedSearch || undefined,
     is_published: true,
     is_featured: isFeaturedParam,
@@ -139,7 +144,6 @@ export default function NewsPageContent() {
   const totalPages = Math.max(1, Number(pagination?.totalPages || pagination?.pages || 1));
   const currentPage = Math.max(1, Number(pagination?.page || page));
 
-  /* Extract unique tags from loaded items for chips */
   const availableTags = useMemo(() => {
     const all = items.flatMap((item) => (Array.isArray(item?.tags) ? item.tags : []));
     return [...new Set(all)].slice(0, 12);
@@ -165,69 +169,71 @@ export default function NewsPageContent() {
           <div className="mx-auto max-w-7xl">
             <div className="mb-6 max-w-2xl">
               <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
-                Tin tức & Khám phá Ninh Bình
+                {t('newsPage.hero.badge')}
               </span>
-              <h1 className="mt-2 text-4xl font-black leading-tight tracking-tight">
-                Tin tức du lịch
+              <h1 className="mt-2 text-2xl font-black leading-tight tracking-tight md:text-3xl xl:text-4xl">
+                {t('newsPage.hero.title')}
               </h1>
               <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
-                Cập nhật tin tức, bài viết và câu chuyện về du lịch, văn hoá và con người Ninh Bình.
+                {t('newsPage.hero.description')}
               </p>
             </div>
 
-            {/* Stats */}
-            <div className="mb-6 flex flex-wrap gap-3">
-              {[
-                { value: total, label: 'Bài viết' },
-                { value: featuredCount, label: 'Nổi bật' },
-                { value: `${currentPage}/${totalPages}`, label: 'Trang' },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className="rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
-                >
-                  <div className="text-2xl font-black leading-none">{s.value}</div>
-                  <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Search bar */}
-            <div
-              className="flex flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
-              style={{
-                background: 'rgba(255,255,255,0.94)',
-                border: '1px solid rgba(255,255,255,0.75)',
-                boxShadow: '0 12px 28px rgba(0,0,0,.14)',
-              }}
-            >
-              <div className="relative min-w-0 flex-1">
-                <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm bài viết, địa danh, chủ đề..."
-                  value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                  className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
-                />
+            <div className="mb-6 flex flex-row items-stretch gap-4 max-[1023px]:flex-col">
+              {/* Stats */}
+              <div className="flex flex-wrap items-stretch gap-3 self-stretch">
+                {[
+                  { value: total, label: t('newsPage.stats.total') },
+                  { value: featuredCount, label: t('newsPage.stats.featured') },
+                  { value: `${currentPage}/${totalPages}`, label: t('newsPage.stats.page') },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="flex min-h-19 flex-col justify-center rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
+                  >
+                    <div className="text-lg font-black leading-none md:text-xl xl:text-2xl">{s.value}</div>
+                    <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
+                  </div>
+                ))}
               </div>
-              <select
-                value={featuredFilter}
-                onChange={(e) => { setFeaturedFilter(e.target.value); setPage(1); }}
-                className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+
+              {/* Search bar */}
+              <div
+                className="flex flex-1 flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
+                style={{
+                  background: 'rgba(255,255,255,0.94)',
+                  border: '1px solid rgba(255,255,255,0.75)',
+                  boxShadow: '0 12px 28px rgba(0,0,0,.14)',
+                }}
               >
-                <option value="all">Tất cả bài viết</option>
-                <option value="featured">Nổi bật</option>
-                <option value="normal">Thường</option>
-              </select>
-              <button
-                type="button"
-                onClick={() => { setPage(1); refetch?.(); }}
-                className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
-                style={BTN_GRADIENT}
-              >
-                Tìm kiếm
-              </button>
+                <div className="relative min-w-0 flex-1">
+                  <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
+                  <input
+                    type="text"
+                    placeholder={t('newsPage.filters.placeholder')}
+                    value={search}
+                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                    className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                  />
+                </div>
+                <select
+                  value={featuredFilter}
+                  onChange={(e) => { setFeaturedFilter(e.target.value); setPage(1); }}
+                  className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                >
+                  <option value="all">{t('newsPage.filters.options.all')}</option>
+                  <option value="featured">{t('newsPage.filters.options.featured')}</option>
+                  <option value="normal">{t('newsPage.filters.options.normal')}</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => { setPage(1); refetch?.(); }}
+                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
+                  style={BTN_GRADIENT}
+                >
+                  {t('newsPage.filters.keyword')}
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -236,26 +242,25 @@ export default function NewsPageContent() {
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
 
           {/* Tag chips + toolbar */}
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <Tag size={13} className="shrink-0 text-muted-foreground" />
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => { setTagFilter(''); setPage(1); }}
-                className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   !tagFilter
                     ? 'bg-[#0b66c3] text-white'
                     : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
                 }`}
               >
-                Tất cả
+                {t('common.all')}
               </button>
               {availableTags.map((tag) => (
                 <button
                   key={tag}
                   type="button"
                   onClick={() => { setTagFilter(tagFilter === tag ? '' : tag); setPage(1); }}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                  className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                     tagFilter === tag
                       ? 'bg-[#0b66c3] text-white'
                       : 'border border-[#cfe0f4] bg-[#f8fbff] text-[#52647a] hover:bg-[#eef7ff]'
@@ -266,9 +271,10 @@ export default function NewsPageContent() {
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <p className="text-sm text-muted-foreground">
-                <strong className="text-foreground">{total}</strong> bài viết
+                <strong className="text-foreground">{total}</strong>{' '}
+                {t('newsPage.list.title').toLowerCase()}
               </p>
               <button
                 type="button"
@@ -276,30 +282,30 @@ export default function NewsPageContent() {
                 className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
-                Làm mới
+                {t('newsPage.actions.refresh')}
               </button>
             </div>
           </div>
 
           {/* News grid */}
           {isLoading ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 9 }).map((_, i) => <NewsCardSkeleton key={i} />)}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 12 }).map((_, i) => <NewsCardSkeleton key={i} />)}
             </div>
           ) : isError ? (
             <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
-              Không thể tải danh sách bài viết lúc này.
+              {t('newsPage.states.error')}
             </div>
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
               <Inbox size={40} className="mb-3 opacity-30" />
-              <p className="text-base font-semibold text-foreground">Không tìm thấy bài viết</p>
-              <p className="mt-1 text-sm">Thử thay đổi từ khóa hoặc bộ lọc.</p>
+              <p className="text-sm 2xl:text-base font-semibold text-foreground">{t('newsPage.states.empty')}</p>
+              <p className="mt-1 text-sm">{t('newsPage.actions.reset')}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {items.map((item) => (
-                <NewsCard key={item?.id} item={item} navigate={navigate} locale={locale} />
+                <NewsCard key={item?.id} item={item} navigate={navigate} locale={locale} t={t} />
               ))}
             </div>
           )}
@@ -311,23 +317,52 @@ export default function NewsPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
               >
-                <ChevronLeft size={15} /> Trước
+                <ChevronLeft size={15} /> {t('common.prev')}
               </button>
               <span className="rounded-full border border-[#cfe0f4] bg-white px-4 py-1.5 text-sm font-semibold">
-                {currentPage} / {totalPages}
+                {t('newsPage.pagination.page', { page: currentPage, totalPages })}
               </span>
               <button
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold disabled:opacity-40 hover:bg-[#eef7ff]"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
               >
-                Sau <ChevronRight size={15} />
+                {t('common.next')} <ChevronRight size={15} />
               </button>
             </div>
           )}
+
+          {/* Bottom CTA */}
+          <div
+            className="mt-10 overflow-hidden rounded-[22px] px-7 py-7 text-white"
+            style={{ background: HERO_BG }}
+          >
+            <p className="mb-1 text-xs font-semibold text-white/75">{t('newsPage.cta.label')}</p>
+            <h3 className="text-lg font-black leading-tight md:text-xl xl:text-2xl">
+              {t('newsPage.cta.title')}
+            </h3>
+            <p className="mt-1.5 text-sm text-white/85">{t('newsPage.cta.desc')}</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                { path: '/map', label: t('common.map') },
+                { path: '/tour', label: t('common.tourist_route') },
+                { path: '/tourism-point', label: t('common.tourism_points') },
+                { path: '/festival', label: t('common.festival') },
+              ].map((item) => (
+                <button
+                  key={item.path}
+                  type="button"
+                  onClick={() => navigate(item.path)}
+                  className="h-9 rounded-[10px] border border-white/35 bg-white/15 px-4 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/25"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </RootLayout>

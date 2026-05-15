@@ -13,9 +13,7 @@ function StarsDisplay({ count, size = 12 }) {
           key={i}
           size={size}
           className={
-            i < count
-              ? 'fill-[#d99200] text-[#d99200]'
-              : 'fill-[#d99200] text-[#d99200] opacity-20'
+            i < count ? 'fill-[#d99200] text-[#d99200]' : 'fill-[#d99200] text-[#d99200] opacity-20'
           }
         />
       ))}
@@ -25,8 +23,7 @@ function StarsDisplay({ count, size = 12 }) {
 
 function TourReviewCard({ r, t }) {
   const stars = Number(r.stars || r.rating || 0);
-  const userName =
-    r.user_name || r.user?.name || r.author || t('tourPage.guest', 'Khách');
+  const userName = r.user_name || r.user?.name || r.author || t('tourPage.guest', 'Khách');
   const dateStr = r.created_at || r.createdAt || r.date;
 
   const subRatings = [
@@ -111,7 +108,7 @@ export function TourDetailReviewsSection({
 }) {
   return (
     <section className="bg-card border-border mb-3 rounded-[16px] border px-5 py-4">
-      <h2 className="text-foreground mb-4 text-base font-bold">
+      <h2 className="text-foreground mb-4 text-sm font-bold 2xl:text-base">
         {t('tourPage.reviews', 'Đánh giá')}
       </h2>
 
@@ -132,7 +129,7 @@ export function TourDetailReviewsSection({
       <div className="mb-4 rounded-[14px] border border-[#cfe0f4] bg-[#eef7ff] p-4">
         <div className="grid gap-4 md:grid-cols-[88px_minmax(0,1fr)]">
           <div className="flex flex-col items-center justify-center">
-            <div className="text-4xl font-black leading-none text-[#0b66c3]">
+            <div className="text-4xl leading-none font-black text-[#0b66c3]">
               {totalReviews > 0 && criteria.averageRating > 0
                 ? Number(criteria.averageRating).toFixed(1)
                 : '—'}
@@ -140,7 +137,7 @@ export function TourDetailReviewsSection({
             <div className="mt-1.5">
               <StarsDisplay count={Math.round(criteria.averageRating)} size={14} />
             </div>
-            <div className="text-muted-foreground mt-1 text-xs text-center">
+            <div className="text-muted-foreground mt-1 text-center text-xs">
               {totalReviews} {t('tourPage.reviewsCount', 'đánh giá')}
             </div>
           </div>
@@ -148,10 +145,9 @@ export function TourDetailReviewsSection({
           <div className="space-y-1.5">
             {[5, 4, 3, 2, 1].map((score) => {
               const count = Number(starCounts[score] ?? 0);
-              const ratio =
-                totalReviews > 0 ? (count / Math.max(1, totalReviews)) * 100 : 0;
+              const ratio = totalReviews > 0 ? (count / Math.max(1, totalReviews)) * 100 : 0;
               return (
-                <div key={score} className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div key={score} className="text-muted-foreground flex items-center gap-2 text-xs">
                   <span className="w-3 shrink-0 text-right font-medium">{score}</span>
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/70">
                     <div
@@ -179,7 +175,7 @@ export function TourDetailReviewsSection({
         ) : reviews.length > 0 ? (
           reviews.map((r) => <TourReviewCard key={r.id} r={r} t={t} />)
         ) : (
-          <div className="rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] px-4 py-6 text-center text-sm text-muted-foreground">
+          <div className="text-muted-foreground rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] px-4 py-6 text-center text-sm">
             {t('tourPage.noReviews', 'Chưa có đánh giá nào.')}
           </div>
         )}
@@ -196,7 +192,7 @@ export function TourDetailReviewsSection({
               type="button"
               disabled={reviewPage <= 1}
               onClick={onPrevPage}
-              className="flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold text-foreground disabled:opacity-40 hover:bg-[#eef7ff]"
+              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
             >
               <ChevronLeft size={13} />
               {t('common.prev', 'Trước')}
@@ -205,7 +201,7 @@ export function TourDetailReviewsSection({
               type="button"
               disabled={reviewPage >= pagesDisplay}
               onClick={onNextPage}
-              className="flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold text-foreground disabled:opacity-40 hover:bg-[#eef7ff]"
+              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
             >
               {t('common.next', 'Sau')}
               <ChevronRight size={13} />
@@ -222,7 +218,7 @@ export function TourDetailReviewsSection({
 
         {/* Criteria */}
         <div className="mb-4 space-y-2">
-          <p className="text-muted-foreground mb-2 text-xs font-semibold uppercase tracking-wide">
+          <p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
             {t('tourPage.rateCriteria', 'Đánh giá theo tiêu chí')}
           </p>
           {criteria.items.map((criterion) => (
@@ -291,7 +287,7 @@ export function TourDetailReviewsSection({
           <button
             type="button"
             onClick={onResetForm}
-            className="h-9 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold text-foreground hover:bg-[#eef7ff]"
+            className="text-foreground h-9 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff]"
           >
             {t('tourPage.cancel', 'Huỷ')}
           </button>

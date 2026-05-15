@@ -7,6 +7,7 @@ export const useTourismPointSettingStore = create((set) => ({
     viewMode: 'grid',
     selectedCategory: 0,
     selectedSubcategory: 0,
+    isFeatured: '',
   },
   setCurrentSettings: (newSettings) =>
     set((state) => ({

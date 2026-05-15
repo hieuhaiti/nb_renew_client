@@ -1,31 +1,18 @@
 import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CalendarDays, ExternalLink, MapPin, Repeat2, Tag } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import RootLayout from '@/components/layout/RootLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useFestivalDetailQuery } from '@/services/api/map/festivalService';
-import { withBaseUrl } from '@/lib/utils';
+import { withBaseUrl, getLocaleFromLanguage } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 
-const FESTIVAL_TYPE_LABELS = {
-  traditional: 'Truyền thống',
-  cultural: 'Văn hóa',
-  religious: 'Tôn giáo',
-  folk: 'Dân gian',
-  modern: 'Hiện đại',
-  seasonal: 'Theo mùa',
-};
-
-function getFestivalTypeLabel(type) {
-  if (!type) return '--';
-  return FESTIVAL_TYPE_LABELS[type] || type;
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '--';
+function formatDate(dateStr, locale) {
+  if (!dateStr) return '—';
   try {
-    return new Date(dateStr).toLocaleDateString('vi-VN', {
+    return new Date(dateStr).toLocaleDateString(locale, {
       weekday: 'long',
       day: '2-digit',
       month: '2-digit',
@@ -38,6 +25,8 @@ function formatDate(dateStr) {
 
 export default function FestivalDetailPageContent() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const locale = getLocaleFromLanguage(i18n.language);
   const { id } = useParams();
 
   const { data, isLoading, isError } = useFestivalDetailQuery(id);
@@ -54,14 +43,16 @@ export default function FestivalDetailPageContent() {
     );
   }, [data]);
 
-  const name = detail?.name_vi || detail?.name_en || detail?.name || 'Lễ hội';
+  const name = detail?.name_vi || detail?.name_en || detail?.name || '—';
   const description =
-    detail?.description_vi || detail?.description_en || detail?.description || 'Chưa có mô tả.';
+    detail?.description_vi || detail?.description_en || detail?.description || t('festivalDetail.no_description');
   const imageSrc = withBaseUrl(detail?.cover_image_url || '');
-  const typeLabel = getFestivalTypeLabel(detail?.festival_type);
-  const startDate = formatDate(detail?.start_date);
-  const endDate = formatDate(detail?.end_date);
-  const locationName = detail?.location_name || '--';
+  const typeLabel = detail?.festival_type
+    ? t(`festivalDetail.types.${detail.festival_type}`, { defaultValue: detail.festival_type })
+    : '—';
+  const startDate = formatDate(detail?.start_date, locale);
+  const endDate = formatDate(detail?.end_date, locale);
+  const locationName = detail?.location_name || t('festivalDetail.no_location');
   const isRecurring = Boolean(detail?.is_recurring);
   const recurrenceRule = detail?.recurrence_rule;
   const website = detail?.website;
@@ -70,7 +61,7 @@ export default function FestivalDetailPageContent() {
   if (isLoading) {
     return (
       <RootLayout>
-        <div className="bg-background min-h-screen px-4 py-8">
+        <div className="min-h-screen bg-background px-4 py-8">
           <div className="mx-auto max-w-6xl animate-pulse rounded-3xl border border-border/70 bg-card p-8" />
         </div>
       </RootLayout>
@@ -80,12 +71,12 @@ export default function FestivalDetailPageContent() {
   if (isError || !detail) {
     return (
       <RootLayout>
-        <div className="bg-background flex min-h-screen items-center justify-center px-4">
+        <div className="flex min-h-screen items-center justify-center bg-background px-4">
           <Card className="w-full max-w-xl rounded-3xl border-border/70">
             <CardContent className="space-y-4 px-6 py-6 text-center">
-              <h1 className="typo-card-title text-foreground">Không tìm thấy thông tin lễ hội</h1>
+              <h1 className="typo-card-title text-foreground">{t('festivalDetail.not_found')}</h1>
               <Button className="rounded-xl" onClick={() => navigate('/festival')}>
-                Quay lại danh sách lễ hội
+                {t('festivalDetail.back')}
               </Button>
             </CardContent>
           </Card>
@@ -96,14 +87,14 @@ export default function FestivalDetailPageContent() {
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen px-4 py-4 lg:py-6">
+      <div className="min-h-screen bg-background px-4 py-4 lg:py-6">
         <div className="mx-auto w-full lg:w-[88%]">
           <Button
             variant="outline"
             className="mb-4 rounded-xl"
             onClick={() => navigate('/festival')}
           >
-            Quay lại danh sách
+            {t('festivalDetail.back')}
           </Button>
 
           <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
@@ -121,11 +112,10 @@ export default function FestivalDetailPageContent() {
                 />
               </div>
 
-              {/* Map hint */}
               {detail?.lat && detail?.lng ? (
                 <CardContent className="px-5 py-4">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4 text-primary shrink-0" />
+                    <MapPin className="h-4 w-4 shrink-0 text-primary" />
                     <span>
                       {locationName}
                       {provinceCode ? ` · ${provinceCode}` : ''}
@@ -137,7 +127,7 @@ export default function FestivalDetailPageContent() {
                     onClick={() => navigate('/map')}
                   >
                     <MapPin className="mr-1.5 h-4 w-4" />
-                    Xem trên bản đồ
+                    {t('festivalDetail.view_map')}
                   </Button>
                 </CardContent>
               ) : null}
@@ -155,45 +145,46 @@ export default function FestivalDetailPageContent() {
                   {isRecurring && (
                     <span className="typo-badge flex items-center gap-1 rounded-full bg-secondary/15 px-3 py-1 text-secondary">
                       <Repeat2 className="h-3 w-3" />
-                      {recurrenceRule === 'yearly' ? 'Hàng năm' : recurrenceRule || 'Định kỳ'}
+                      {recurrenceRule === 'yearly'
+                        ? t('festivalDetail.recurring_yes')
+                        : recurrenceRule || t('festivalDetail.recurring_yes')}
                     </span>
                   )}
                 </div>
 
-                <p className="typo-body text-muted-foreground leading-relaxed">{description}</p>
+                <p className="typo-body leading-relaxed text-muted-foreground">{description}</p>
 
                 <div className="space-y-2.5 rounded-2xl border border-border/70 bg-card p-4">
-                  <p className="typo-body text-foreground flex items-start gap-2">
+                  <p className="typo-body flex items-start gap-2 text-foreground">
                     <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <span>
-                      <span className="font-medium">Bắt đầu: </span>
+                      <span className="font-medium">{t('festivalDetail.dates_label')}: </span>
                       {startDate}
                     </span>
                   </p>
 
                   {endDate && endDate !== startDate ? (
-                    <p className="typo-body text-foreground flex items-start gap-2">
+                    <p className="typo-body flex items-start gap-2 text-foreground">
                       <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span>
-                        <span className="font-medium">Kết thúc: </span>
-                        {endDate}
-                      </span>
+                      <span>{endDate}</span>
                     </p>
                   ) : null}
 
-                  <p className="typo-body text-foreground flex items-center gap-2">
+                  <p className="typo-body flex items-center gap-2 text-foreground">
                     <MapPin className="h-4 w-4 shrink-0 text-primary" />
                     <span>{locationName}</span>
                   </p>
 
-                  <p className="typo-body text-foreground flex items-center gap-2">
+                  <p className="typo-body flex items-center gap-2 text-foreground">
                     <Tag className="h-4 w-4 shrink-0 text-primary" />
-                    <span>Loại hình: {typeLabel}</span>
+                    <span>
+                      {t('festivalDetail.type_label')}: {typeLabel}
+                    </span>
                   </p>
 
                   {provinceCode ? (
                     <p className="typo-body text-foreground">
-                      Tỉnh / Thành: {provinceCode === 'NB' ? 'Ninh Bình' : provinceCode}
+                      {t('festivalDetail.location_label')}: {provinceCode === 'NB' ? 'Ninh Bình' : provinceCode}
                     </p>
                   ) : null}
                 </div>
@@ -203,7 +194,7 @@ export default function FestivalDetailPageContent() {
                     className="w-full rounded-xl"
                     onClick={() => window.open(website, '_blank', 'noopener,noreferrer')}
                   >
-                    Xem trang web chính thức
+                    {t('festivalDetail.website_label')}
                     <ExternalLink className="ml-1.5 h-4 w-4" />
                   </Button>
                 ) : null}
@@ -214,14 +205,14 @@ export default function FestivalDetailPageContent() {
                     className="flex-1 rounded-xl"
                     onClick={() => navigate('/map')}
                   >
-                    Bản đồ
+                    {t('common.map')}
                   </Button>
                   <Button
                     variant="outline"
                     className="flex-1 rounded-xl"
                     onClick={() => navigate('/tour')}
                   >
-                    Tour liên quan
+                    {t('common.tourist_route')}
                   </Button>
                 </div>
               </CardContent>

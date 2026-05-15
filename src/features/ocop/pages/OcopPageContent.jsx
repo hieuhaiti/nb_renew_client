@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
+import { useTranslation } from 'react-i18next';
 import RootLayout from '@/components/layout/RootLayout';
 import { useGetOcopProducts } from '@/services/api/ocop/ocopService';
 import { formatVND, withBaseUrl } from '@/lib/utils';
@@ -20,22 +21,6 @@ import placeholderImg from '@/assets/images/placeholder.png';
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 const HERO_BG = `linear-gradient(135deg,rgba(5,150,105,.92),rgba(3,95,172,.88),rgba(14,165,233,.78)), url("https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80") center/cover`;
 
-/* Category labels extracted from API data */
-const CATEGORY_LABELS = {
-  thuoc_và_cskh: 'Thuốc & CSKH',
-  thu_cong_my_nghe: 'Thủ công mỹ nghệ',
-  thuc_pham: 'Thực phẩm',
-  do_uong: 'Đồ uống',
-  du_lich_dich_vu: 'Du lịch & Dịch vụ',
-  my_pham: 'Mỹ phẩm',
-  trang_tri: 'Trang trí',
-  qua_tang: 'Quà tặng',
-  nong_san: 'Nông sản',
-  thao_duoc: 'Thảo dược',
-  chan_nuoi: 'Chăn nuôi',
-  may_mac: 'May mặc',
-};
-
 const CATEGORY_COLORS = {
   thuoc_và_cskh: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
   thu_cong_my_nghe: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
@@ -43,120 +28,107 @@ const CATEGORY_COLORS = {
   do_uong: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
   my_pham: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200' },
   nong_san: { bg: 'bg-lime-50', text: 'text-lime-700', border: 'border-lime-200' },
+  duoc_lieu: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+  vai_va_may_mac: { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
+  trang_tri: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+  qua_tang: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' },
 };
 
-function getCategoryLabel(key) {
-  if (!key) return '—';
-  return CATEGORY_LABELS[key] || key.replace(/_/g, ' ');
-}
+const DEFAULT_CAT_COLOR = { bg: 'bg-[#eef7ff]', text: 'text-[#0b66c3]', border: 'border-[#cfe0f4]' };
 
 function getCategoryColor(key) {
-  return (
-    CATEGORY_COLORS[key] || {
-      bg: 'bg-[#eef7ff]',
-      text: 'text-[#0b66c3]',
-      border: 'border-[#cfe0f4]',
-    }
-  );
+  return CATEGORY_COLORS[key] || DEFAULT_CAT_COLOR;
 }
 
 function getProductName(p) {
-  return p?.name_vi || p?.name_en || p?.name || 'Sản phẩm OCOP';
+  return p?.name_vi || p?.name_en || p?.name || '—';
 }
 
 function getProductStars(p) {
   return Math.min(5, Math.max(0, Number(p?.star_rating ?? 0)));
 }
 
-function OcopCard({ item, navigate }) {
+function OcopCard({ item, navigate, t }) {
   const name = getProductName(item);
   const stars = getProductStars(item);
   const imageSrc = withBaseUrl(item?.cover_image_url || '') || placeholderImg;
   const price = Number(item?.price_vnd);
   const priceLabel = Number.isFinite(price) && price > 0 ? formatVND(price) : null;
   const catConf = getCategoryColor(item?.category);
+  const catLabel = item?.category
+    ? t(`ocopPage.categories.${item.category}`, { defaultValue: item.category.replace(/_/g, ' ') })
+    : '—';
 
   return (
     <article
       onClick={() => item?.id && navigate(`/ocop/${item.id}`)}
       className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
     >
-      {/* Image */}
       <div className="relative h-48 overflow-hidden">
         <img
           src={imageSrc}
           alt={name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = placeholderImg;
-          }}
+          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
         />
-
-        {/* Star badge */}
         {stars > 0 && (
           <span className="absolute top-3 left-3 flex items-center gap-1 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-0.5 text-xs font-bold text-[#b45309] backdrop-blur-sm">
             <Star size={10} className="fill-[#d99200] text-[#d99200]" />
-            {stars} sao
+            {stars} {t('ocopPage.card.stars')}
           </span>
         )}
-
-        {/* Category badge */}
         <span
           className={`absolute top-3 right-3 rounded-full border px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm ${catConf.bg} ${catConf.text} ${catConf.border}`}
         >
-          {getCategoryLabel(item?.category)}
+          {catLabel}
         </span>
       </div>
 
-      {/* Body */}
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="text-foreground line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-[#0b66c3]"
+          className="line-clamp-2 text-sm font-black leading-snug text-foreground transition-colors group-hover:text-[#0b66c3]"
           title={name}
         >
           {name}
         </h3>
 
         {item?.producer_name && (
-          <p className="text-muted-foreground mt-1 line-clamp-1 text-xs">{item.producer_name}</p>
+          <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{item.producer_name}</p>
         )}
 
-        {item?.location_name || item?.province_name ? (
-          <div className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
+        {(item?.location_name || item?.province_name) && (
+          <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin size={10} className="shrink-0" />
             <span className="line-clamp-1">{item?.location_name || item?.province_name}</span>
           </div>
-        ) : null}
+        )}
 
-        <p className="text-muted-foreground mt-2 line-clamp-2 text-xs leading-relaxed">
-          {item?.description || 'Chưa có mô tả.'}
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+          {item?.description || t('ocopPage.card.no_description')}
         </p>
 
-        {/* Certification */}
         {item?.certification_no && (
-          <div className="text-muted-foreground mt-2 flex items-center gap-1 text-xs">
+          <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
             <ShieldCheck size={11} className="shrink-0 text-[#10b981]" />
             <span className="truncate">{item.certification_no}</span>
           </div>
         )}
 
-        {/* Price + CTA */}
         <div className="mt-auto flex items-end justify-between gap-2 pt-3">
           <div>
             {priceLabel ? (
               <>
-                <div className="text-base font-black text-[#0b66c3]">{priceLabel}</div>
+                <div className="text-sm 2xl:text-base font-black text-[#0b66c3]">{priceLabel}</div>
                 {item?.unit && (
-                  <div className="text-muted-foreground text-[10px]">/ {item.unit}</div>
+                  <div className="text-[10px] text-muted-foreground">/ {item.unit}</div>
                 )}
               </>
             ) : (
-              <div className="text-sm font-semibold text-[#10b981]">Liên hệ</div>
+              <div className="text-sm font-semibold text-[#10b981]">{t('ocopPage.card.view_detail')}</div>
             )}
           </div>
           <span className="flex items-center gap-1 text-xs font-semibold text-[#0b66c3] group-hover:underline">
-            Chi tiết <ArrowRight size={11} />
+            {t('ocopPage.card.view_detail')} <ArrowRight size={11} />
           </span>
         </div>
       </div>
@@ -167,12 +139,12 @@ function OcopCard({ item, navigate }) {
 function OcopCardSkeleton() {
   return (
     <div className="animate-pulse overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white">
-      <div className="bg-muted h-48 w-full" />
+      <div className="h-48 w-full bg-muted" />
       <div className="space-y-2 p-4">
-        <div className="bg-muted h-4 w-3/4 rounded" />
-        <div className="bg-muted h-3 w-1/2 rounded" />
-        <div className="bg-muted h-3 w-full rounded" />
-        <div className="bg-muted h-3 w-2/3 rounded" />
+        <div className="h-4 w-3/4 rounded bg-muted" />
+        <div className="h-3 w-1/2 rounded bg-muted" />
+        <div className="h-3 w-full rounded bg-muted" />
+        <div className="h-3 w-2/3 rounded bg-muted" />
       </div>
     </div>
   );
@@ -180,6 +152,7 @@ function OcopCardSkeleton() {
 
 export default function OcopPageContent() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -200,11 +173,10 @@ export default function OcopPageContent() {
   const total = pagination?.total ?? products.length;
   const totalPages = pagination?.totalPages ?? 1;
 
-  /* Extract unique categories from loaded products for chips */
-  const availableCategories = useMemo(() => {
-    const keys = [...new Set(products.map((p) => p?.category).filter(Boolean))];
-    return keys;
-  }, [products]);
+  const availableCategories = useMemo(
+    () => [...new Set(products.map((p) => p?.category).filter(Boolean))],
+    [products]
+  );
 
   const averageStars = useMemo(() => {
     const vals = products.map(getProductStars).filter(Boolean);
@@ -227,14 +199,13 @@ export default function OcopPageContent() {
           <div className="mx-auto max-w-7xl">
             <div className="mb-6 max-w-2xl">
               <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
-                Chương trình OCOP – Mỗi xã một sản phẩm
+                {t('ocopPage.hero.badge')}
               </span>
-              <h1 className="mt-2 text-4xl leading-tight font-black tracking-tight">
-                Sản phẩm OCOP Ninh Bình
+              <h1 className="mt-2 text-2xl font-black leading-tight tracking-tight md:text-3xl xl:text-4xl">
+                {t('ocopPage.hero.title')}
               </h1>
-              <p className="mt-2 text-sm leading-relaxed font-medium text-white/90">
-                Khám phá đặc sản địa phương được chứng nhận OCOP 3–5 sao, từ thực phẩm, thảo dược
-                đến thủ công mỹ nghệ.
+              <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
+                {t('ocopPage.hero.description')}
               </p>
             </div>
 
@@ -242,15 +213,15 @@ export default function OcopPageContent() {
               {/* Stats */}
               <div className="flex flex-wrap items-stretch gap-3 self-stretch">
                 {[
-                  { value: total, label: 'Sản phẩm' },
-                  { value: availableCategories.length || '—', label: 'Danh mục' },
-                  { value: averageStars ? `${averageStars} ★` : '—', label: 'Sao TB' },
+                  { value: total, label: t('ocopPage.stats.total') },
+                  { value: availableCategories.length || '—', label: t('ocopPage.filters.all_categories') },
+                  { value: averageStars ? `${averageStars} ★` : '—', label: t('ocopPage.stats.certified') },
                 ].map((s) => (
                   <div
                     key={s.label}
-                    className="flex min-h-[76px] flex-col justify-center rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
+                    className="flex min-h-19 flex-col justify-center rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
                   >
-                    <div className="text-2xl leading-none font-black">{s.value}</div>
+                    <div className="text-lg font-black leading-none md:text-xl xl:text-2xl">{s.value}</div>
                     <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
                   </div>
                 ))}
@@ -266,44 +237,32 @@ export default function OcopPageContent() {
                 }}
               >
                 <div className="relative min-w-0 flex-1">
-                  <Search
-                    size={16}
-                    className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]"
-                  />
+                  <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
                   <input
                     type="text"
-                    placeholder="Tìm sản phẩm, nhà sản xuất..."
+                    placeholder={t('ocopPage.filters.search_placeholder')}
                     value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      setPage(1);
-                    }}
-                    className="text-foreground h-11 w-full rounded-xl border border-[#a8bed4] bg-white pr-3 pl-9 text-sm outline-none focus:border-[#0b66c3]"
+                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                    className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
                   />
                 </div>
                 <select
                   value={starFilter}
-                  onChange={(e) => {
-                    setStarFilter(e.target.value);
-                    setPage(1);
-                  }}
-                  className="text-foreground h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm outline-none focus:border-[#0b66c3]"
+                  onChange={(e) => { setStarFilter(e.target.value); setPage(1); }}
+                  className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
                 >
-                  <option value="all">Tất cả hạng sao</option>
-                  <option value="5">5 sao ★★★★★</option>
-                  <option value="4">4 sao ★★★★</option>
-                  <option value="3">3 sao ★★★</option>
+                  <option value="all">{t('ocopPage.filters.all_stars')}</option>
+                  <option value="5">{t('ocopPage.stars.5')}</option>
+                  <option value="4">{t('ocopPage.stars.4')}</option>
+                  <option value="3">{t('ocopPage.stars.3')}</option>
                 </select>
                 <button
                   type="button"
-                  onClick={() => {
-                    setPage(1);
-                    refetch?.();
-                  }}
+                  onClick={() => { setPage(1); refetch?.(); }}
                   className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
                   style={BTN_GRADIENT}
                 >
-                  Tìm kiếm
+                  {t('ocopPage.filters.search_btn')}
                 </button>
               </div>
             </div>
@@ -317,51 +276,47 @@ export default function OcopPageContent() {
             <div className="flex flex-wrap items-center gap-1.5">
               <button
                 type="button"
-                onClick={() => {
-                  setCategoryFilter('all');
-                  setPage(1);
-                }}
+                onClick={() => { setCategoryFilter('all'); setPage(1); }}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   categoryFilter === 'all'
                     ? 'bg-[#0b66c3] text-white'
-                    : 'text-muted-foreground border border-[#cfe0f4] bg-white hover:bg-[#eef7ff]'
+                    : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
                 }`}
               >
-                Tất cả
+                {t('common.all')}
               </button>
               {availableCategories.map((key) => {
                 const conf = getCategoryColor(key);
+                const label = t(`ocopPage.categories.${key}`, { defaultValue: key.replace(/_/g, ' ') });
                 return (
                   <button
                     key={key}
                     type="button"
-                    onClick={() => {
-                      setCategoryFilter(key);
-                      setPage(1);
-                    }}
+                    onClick={() => { setCategoryFilter(key); setPage(1); }}
                     className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       categoryFilter === key
                         ? 'bg-[#0b66c3] text-white'
                         : `border ${conf.border} ${conf.bg} ${conf.text} hover:opacity-80`
                     }`}
                   >
-                    {getCategoryLabel(key)}
+                    {label}
                   </button>
                 );
               })}
             </div>
 
             <div className="flex items-center gap-2">
-              <p className="text-muted-foreground text-sm">
-                <strong className="text-foreground">{total}</strong> sản phẩm
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">{total}</strong>{' '}
+                {t('ocopPage.stats.total').toLowerCase()}
               </p>
               <button
                 type="button"
                 onClick={handleReset}
-                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold hover:bg-[#eef7ff]"
+                className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
-                Làm mới
+                {t('ocopPage.toolbar.refresh')}
               </button>
             </div>
           </div>
@@ -369,24 +324,22 @@ export default function OcopPageContent() {
           {/* Product grid */}
           {isLoading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <OcopCardSkeleton key={i} />
-              ))}
+              {Array.from({ length: 8 }).map((_, i) => <OcopCardSkeleton key={i} />)}
             </div>
           ) : isError ? (
-            <div className="text-muted-foreground rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center">
-              Không thể tải dữ liệu OCOP lúc này.
+            <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
+              {t('ocopPage.states.error')}
             </div>
           ) : products.length === 0 ? (
-            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20">
+            <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
               <Inbox size={40} className="mb-3 opacity-30" />
-              <p className="text-foreground text-base font-semibold">Chưa có sản phẩm phù hợp</p>
-              <p className="mt-1 text-sm">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
+              <p className="text-sm 2xl:text-base font-semibold text-foreground">{t('ocopPage.states.empty_title')}</p>
+              <p className="mt-1 text-sm">{t('ocopPage.states.empty_desc')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {products.map((item) => (
-                <OcopCard key={item?.id} item={item} navigate={navigate} />
+                <OcopCard key={item?.id} item={item} navigate={navigate} t={t} />
               ))}
             </div>
           )}
@@ -400,10 +353,10 @@ export default function OcopPageContent() {
                 disabled={page <= 1}
                 className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
               >
-                <ChevronLeft size={15} /> Trước
+                <ChevronLeft size={15} /> {t('ocopPage.pagination.prev')}
               </button>
               <span className="rounded-full border border-[#cfe0f4] bg-white px-4 py-1.5 text-sm font-semibold">
-                {page} / {totalPages}
+                {t('ocopPage.pagination.page', { current: page, total: totalPages })}
               </span>
               <button
                 type="button"
@@ -411,7 +364,7 @@ export default function OcopPageContent() {
                 disabled={page >= totalPages}
                 className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
               >
-                Sau <ChevronRight size={15} />
+                {t('ocopPage.pagination.next')} <ChevronRight size={15} />
               </button>
             </div>
           )}
@@ -421,18 +374,16 @@ export default function OcopPageContent() {
             className="mt-10 overflow-hidden rounded-[22px] px-7 py-7 text-white"
             style={{ background: HERO_BG }}
           >
-            <p className="mb-1 text-xs font-semibold text-white/75">Mua sắm trong hành trình</p>
-            <h3 className="text-2xl leading-tight font-black">
-              Kết hợp mua sản phẩm OCOP với hành trình du lịch Ninh Bình
+            <p className="mb-1 text-xs font-semibold text-white/75">{t('home.vouchers_section.label')}</p>
+            <h3 className="text-lg font-black leading-tight md:text-xl xl:text-2xl">
+              {t('home.vouchers_section.title')}
             </h3>
-            <p className="mt-1.5 text-sm text-white/85">
-              Tìm điểm mua hàng trên bản đồ, liên kết với tour và điểm tham quan gần nhất.
-            </p>
+            <p className="mt-1.5 text-sm text-white/85">{t('home.vouchers_section.desc')}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {[
-                { label: 'Mở bản đồ', path: '/map' },
-                { label: 'Xem tour', path: '/tour' },
-                { label: 'Điểm tham quan', path: '/tourism-point' },
+                { key: 'mapPage.toolbar.searchButton', path: '/map', label: t('common.map') },
+                { key: 'tourPage.hero.title', path: '/tour', label: t('common.tourist_route') },
+                { key: 'tourismPointPage.title', path: '/tourism-point', label: t('common.tourism_points') },
               ].map((item) => (
                 <button
                   key={item.path}

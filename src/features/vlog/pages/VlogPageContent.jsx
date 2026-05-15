@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { MessageCircle, Play, Search, Heart, Sparkles } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
+import { useTranslation } from 'react-i18next';
 import RootLayout from '@/components/layout/RootLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,14 +22,15 @@ import placeholderImg from '@/assets/images/placeholder.png';
 function SectionHeading({ title, description }) {
   return (
     <div className="mb-4">
-      <h2 className="text-foreground truncate text-2xl font-bold">{title}</h2>
-      {description ? <p className="text-muted-foreground mt-1 text-sm">{description}</p> : null}
+      <h2 className="truncate text-lg font-bold text-foreground md:text-xl xl:text-2xl">{title}</h2>
+      {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
     </div>
   );
 }
 
 export default function VlogPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [posts, setPosts] = useState(VLOG_INITIAL_POSTS);
   const [keyword, setKeyword] = useState('');
@@ -41,90 +43,83 @@ export default function VlogPage() {
   const [newPlace, setNewPlace] = useState('Tràng An');
   const [newDescription, setNewDescription] = useState('');
 
+  const TYPE_ALL_VALUE = 'all';
+  const typePost = t('vlogPage.types.post');
+  const typeVideo = t('vlogPage.types.video');
+
   const places = useMemo(() => [...new Set(posts.map((item) => item.place))], [posts]);
   const topics = useMemo(() => [...new Set(posts.map((item) => item.topic))], [posts]);
 
   const filteredPosts = useMemo(() => {
     const normalizedKeyword = debouncedKeyword.toLowerCase();
-
     return posts.filter((item) => {
-      const haystack = [
-        item.title,
-        item.place,
-        item.type,
-        item.topic,
-        item.description,
-        item.author,
-      ]
+      const haystack = [item.title, item.place, item.type, item.topic, item.description, item.author]
         .join(' ')
         .toLowerCase();
-
       const matchedKeyword = !normalizedKeyword || haystack.includes(normalizedKeyword);
-      const matchedType = typeFilter === 'all' || item.type === typeFilter;
-      const matchedPlace = placeFilter === 'all' || item.place === placeFilter;
-      const matchedTopic = topicFilter === 'all' || item.topic === topicFilter;
-
+      const matchedType =
+        typeFilter === TYPE_ALL_VALUE ||
+        item.type === typeFilter ||
+        item.type === typePost ||
+        item.type === typeVideo;
+      const matchedPlace = placeFilter === TYPE_ALL_VALUE || item.place === placeFilter;
+      const matchedTopic = topicFilter === TYPE_ALL_VALUE || item.topic === topicFilter;
       return matchedKeyword && matchedType && matchedPlace && matchedTopic;
     });
-  }, [posts, debouncedKeyword, typeFilter, placeFilter, topicFilter]);
+  }, [posts, debouncedKeyword, typeFilter, placeFilter, topicFilter, typePost, typeVideo]);
 
   const handleResetFilter = () => {
     setKeyword('');
-    setTypeFilter('all');
-    setPlaceFilter('all');
-    setTopicFilter('all');
+    setTypeFilter(TYPE_ALL_VALUE);
+    setPlaceFilter(TYPE_ALL_VALUE);
+    setTopicFilter(TYPE_ALL_VALUE);
   };
 
   const handlePublish = () => {
     const nextTitle = newTitle.trim();
     const nextDescription = newDescription.trim();
-
     if (!nextTitle || !nextDescription) {
-      toast.warn('Vui lòng nhập tiêu đề và nội dung ngắn.');
+      toast.warn(t('vlogPage.composer.toast_empty_title'));
       return;
     }
-
     const nextPost = {
       id: Date.now(),
       title: nextTitle,
       place: newPlace,
-      type: 'Bài viết',
-      topic: 'Trải nghiệm',
-      author: 'Bạn',
+      type: t('vlogPage.post.type_default'),
+      topic: t('vlogPage.post.topic_default'),
+      author: t('vlogPage.post.author_default'),
       likes: 0,
       comments: 0,
-      image:
-        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
       description: nextDescription,
-      dateLabel: 'Vừa xong',
+      dateLabel: t('vlogPage.just_now'),
     };
-
     setPosts((prev) => [nextPost, ...prev]);
     setNewTitle('');
     setNewDescription('');
-    setTopicFilter('all');
-    toast.success('Đăng bài mô phỏng thành công.');
+    setTopicFilter(TYPE_ALL_VALUE);
+    toast.success(t('vlogPage.composer.toast_success'));
   };
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen py-4 lg:py-6">
+      <div className="min-h-screen bg-background py-4 lg:py-6">
         <div className="mx-auto w-full px-4 sm:px-6 lg:w-[88%] lg:px-0">
+          {/* Hero + Composer */}
           <section className="grid gap-4 lg:grid-cols-5">
-            <Card className="border-border/70 relative gap-0 overflow-hidden rounded-3xl py-0 shadow-sm lg:col-span-3">
+            <Card className="relative gap-0 overflow-hidden rounded-3xl border-border/70 py-0 shadow-sm lg:col-span-3">
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center" />
               <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/85 to-white/75" />
               <CardContent className="relative px-6 py-8 sm:px-8 sm:py-9">
                 <span className="inline-flex rounded-full bg-pink-100 px-3 py-1 text-sm font-semibold text-pink-700">
-                  Không gian cộng đồng cho trải nghiệm du lịch, ảnh đẹp và chia sẻ hành trình
+                  {t('vlogPage.hero.badge')}
                 </span>
-                <h1 className="text-foreground mt-4 max-w-4xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
-                  Khám phá bài viết, video và câu chuyện du lịch sống động từ cộng đồng.
+                <h1 className="mt-4 max-w-4xl text-xl font-extrabold tracking-tight text-foreground md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl">
+                  {t('vlogPage.hero.title')}
                 </h1>
-                <p className="text-muted-foreground mt-3 max-w-3xl text-sm leading-relaxed sm:text-base">
-                  Trang Vlog mô phỏng khu vực chia sẻ kinh nghiệm trên hệ thống du lịch số, cho phép
-                  gắn thẻ địa điểm, lọc theo chủ đề, xem bài nổi bật, video ngắn và các gợi ý điểm
-                  đến liên quan.
+                <p className="mt-3 max-w-3xl text-sm 2xl:text-base leading-relaxed text-muted-foreground">
+                  {t('vlogPage.hero.description')}
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
@@ -134,7 +129,7 @@ export default function VlogPage() {
                       document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
                     }
                   >
-                    Viết bài mới
+                    {t('vlogPage.hero.cta_write')}
                   </Button>
                   <Button
                     variant="outline"
@@ -143,24 +138,23 @@ export default function VlogPage() {
                       document.getElementById('vlog-posts')?.scrollIntoView({ behavior: 'smooth' })
                     }
                   >
-                    Xem bài nổi bật
+                    {t('vlogPage.hero.cta_featured')}
                   </Button>
                 </div>
 
+                {/* Stats — values come from static data; these counts are mock/demo figures */}
                 <div className="mt-6 grid gap-2 sm:grid-cols-3">
-                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
-                    <p className="text-2xl font-bold">1.240</p>
-                    <p className="text-muted-foreground text-sm font-medium">Bài viết đã chia sẻ</p>
+                  <div className="rounded-2xl border border-border/60 bg-white/90 p-4">
+                    <p className="text-lg font-bold md:text-xl xl:text-2xl">1.240</p>
+                    <p className="text-sm font-medium text-muted-foreground">{t('vlogPage.stats.posts')}</p>
                   </div>
-                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
-                    <p className="text-2xl font-bold">286</p>
-                    <p className="text-muted-foreground text-sm font-medium">Video ngắn du lịch</p>
+                  <div className="rounded-2xl border border-border/60 bg-white/90 p-4">
+                    <p className="text-lg font-bold md:text-xl xl:text-2xl">286</p>
+                    <p className="text-sm font-medium text-muted-foreground">{t('vlogPage.stats.authors')}</p>
                   </div>
-                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
-                    <p className="text-2xl font-bold">18,5K</p>
-                    <p className="text-muted-foreground text-sm font-medium">
-                      Lượt tương tác tuần này
-                    </p>
+                  <div className="rounded-2xl border border-border/60 bg-white/90 p-4">
+                    <p className="text-lg font-bold md:text-xl xl:text-2xl">18,5K</p>
+                    <p className="text-sm font-medium text-muted-foreground">{t('vlogPage.stats.views')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -168,32 +162,31 @@ export default function VlogPage() {
 
             <Card
               id="composer"
-              className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm lg:col-span-2"
+              className="gap-0 rounded-3xl border-border/70 py-0 shadow-sm lg:col-span-2"
             >
-              <CardHeader className="px-5 pt-5 pb-0">
-                <CardTitle className="text-xl">Đăng bài nhanh</CardTitle>
-                <p className="text-muted-foreground text-sm">
-                  Tạo bài vlog mẫu trực tiếp trên giao diện
-                </p>
+              <CardHeader className="px-5 pb-0 pt-5">
+                <CardTitle className="text-xl">{t('vlogPage.composer.title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 px-5 py-5">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-sm font-semibold">Tiêu đề</label>
+                    <label className="text-sm font-semibold text-muted-foreground">
+                      {t('vlogPage.composer.title_label')}
+                    </label>
                     <Input
                       value={newTitle}
-                      onChange={(event) => setNewTitle(event.target.value)}
-                      placeholder="Ví dụ: Một ngày khám phá Tràng An"
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder={t('vlogPage.composer.title_placeholder')}
                       className="h-11"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-sm font-semibold">
-                      Gắn thẻ địa điểm
+                    <label className="text-sm font-semibold text-muted-foreground">
+                      {t('vlogPage.filters.location_label')}
                     </label>
                     <Select value={newPlace} onValueChange={setNewPlace}>
                       <SelectTrigger className="h-11 w-full">
-                        <SelectValue placeholder="Chọn địa điểm" />
+                        <SelectValue placeholder={t('vlogPage.filters.location_placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {places.map((item) => (
@@ -207,19 +200,24 @@ export default function VlogPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-muted-foreground text-sm font-semibold">
-                    Nội dung ngắn
+                  <label className="text-sm font-semibold text-muted-foreground">
+                    {t('vlogPage.composer.content_label')}
                   </label>
                   <Textarea
                     value={newDescription}
-                    onChange={(event) => setNewDescription(event.target.value)}
+                    onChange={(e) => setNewDescription(e.target.value)}
                     className="min-h-30"
-                    placeholder="Chia sẻ cảm nhận, mẹo lịch trình, món ăn ngon hoặc trải nghiệm nổi bật..."
+                    placeholder={t('vlogPage.composer.content_placeholder')}
                   />
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  {['📷 Ảnh', '🎥 Video', '📍 Địa điểm', '🏷 Hashtag'].map((chip) => (
+                  {[
+                    t('vlogPage.attach.photo'),
+                    t('vlogPage.attach.video'),
+                    t('vlogPage.attach.place'),
+                    t('vlogPage.attach.hashtag'),
+                  ].map((chip) => (
                     <span
                       key={chip}
                       className="rounded-full bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-700"
@@ -230,60 +228,60 @@ export default function VlogPage() {
                 </div>
 
                 <Button className="w-full rounded-xl" onClick={handlePublish}>
-                  Đăng bài mô phỏng
+                  {t('vlogPage.composer.submit')}
                 </Button>
               </CardContent>
             </Card>
           </section>
 
+          {/* Filters */}
           <section className="mt-4">
-            <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
+            <Card className="gap-0 rounded-3xl border-border/70 py-0 shadow-sm">
               <CardContent className="space-y-4 px-5 py-5">
-                <SectionHeading
-                  title="Lọc nội dung"
-                  description="Tìm theo tiêu đề, loại nội dung và chủ đề"
-                />
+                <SectionHeading title={t('vlogPage.filters.title')} />
 
                 <div className="grid gap-3 lg:grid-cols-[2fr_1fr_1fr_auto]">
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-sm font-semibold">Từ khóa</label>
+                    <label className="text-sm font-semibold text-muted-foreground">
+                      {t('vlogPage.filters.keyword_label')}
+                    </label>
                     <div className="relative">
-                      <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                      <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         value={keyword}
-                        onChange={(event) => setKeyword(event.target.value)}
-                        placeholder="Tìm bài viết, video, địa điểm..."
+                        onChange={(e) => setKeyword(e.target.value)}
+                        placeholder={t('vlogPage.filters.keyword_placeholder')}
                         className="h-11 pl-9"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-sm font-semibold">
-                      Loại nội dung
+                    <label className="text-sm font-semibold text-muted-foreground">
+                      {t('vlogPage.filters.type_label')}
                     </label>
                     <Select value={typeFilter} onValueChange={setTypeFilter}>
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {['all', 'Bài viết', 'Video'].map((item) => (
-                          <SelectItem key={item} value={item}>
-                            {item === 'all' ? 'Tất cả' : item}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value={TYPE_ALL_VALUE}>{t('vlogPage.types.all')}</SelectItem>
+                        <SelectItem value={typePost}>{typePost}</SelectItem>
+                        <SelectItem value={typeVideo}>{typeVideo}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-muted-foreground text-sm font-semibold">Địa điểm</label>
+                    <label className="text-sm font-semibold text-muted-foreground">
+                      {t('vlogPage.filters.location_label')}
+                    </label>
                     <Select value={placeFilter} onValueChange={setPlaceFilter}>
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Tất cả</SelectItem>
+                        <SelectItem value={TYPE_ALL_VALUE}>{t('common.all')}</SelectItem>
                         {places.map((item) => (
                           <SelectItem key={item} value={item}>
                             {item}
@@ -294,12 +292,8 @@ export default function VlogPage() {
                   </div>
 
                   <div className="flex items-end">
-                    <Button
-                      variant="outline"
-                      className="h-11 rounded-xl"
-                      onClick={handleResetFilter}
-                    >
-                      Làm mới
+                    <Button variant="outline" className="h-11 rounded-xl" onClick={handleResetFilter}>
+                      {t('vlogPage.filters.refresh')}
                     </Button>
                   </div>
                 </div>
@@ -307,11 +301,11 @@ export default function VlogPage() {
                 <div className="flex flex-wrap gap-2">
                   <Button
                     size="sm"
-                    variant={topicFilter === 'all' ? 'default' : 'outline'}
+                    variant={topicFilter === TYPE_ALL_VALUE ? 'default' : 'outline'}
                     className="rounded-full"
-                    onClick={() => setTopicFilter('all')}
+                    onClick={() => setTopicFilter(TYPE_ALL_VALUE)}
                   >
-                    Tất cả chủ đề
+                    {t('vlogPage.topics.all')}
                   </Button>
                   {topics.map((item) => (
                     <Button
@@ -329,89 +323,86 @@ export default function VlogPage() {
             </Card>
           </section>
 
+          {/* Posts + Trending */}
           <section id="vlog-posts" className="mt-6 grid gap-4 lg:grid-cols-[1.05fr_.95fr]">
             <div>
               <SectionHeading
-                title="Bài viết và video nổi bật"
-                description={`Đang hiển thị ${filteredPosts.length} nội dung phù hợp`}
+                title={t('vlogPage.trending.title')}
+                description={`${filteredPosts.length} ${t('vlogPage.stats.posts').toLowerCase()}`}
               />
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {filteredPosts.map((item) => (
-                  <Card
-                    key={item.id}
-                    className="border-border/70 gap-0 overflow-hidden rounded-2xl py-0 shadow-sm"
-                  >
-                    <div className="relative h-52">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = placeholderImg;
-                        }}
-                      />
-                      <span className="typo-badge absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1">
-                        {item.type} · {item.place}
-                      </span>
-                      <div className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90">
-                        {item.type === 'Video' ? (
-                          <Play className="h-4 w-4" />
-                        ) : (
-                          <Sparkles className="h-4 w-4" />
-                        )}
-                      </div>
-                    </div>
-                    <CardContent className="space-y-2 px-4 py-4">
-                      <div className="typo-meta text-muted-foreground flex items-center justify-between font-semibold">
-                        <span>{item.author}</span>
-                        <span>{item.dateLabel}</span>
-                      </div>
-                      <h3 className="typo-section-title truncate">{item.title}</h3>
-                      <p className="typo-body text-muted-foreground line-clamp-3">
-                        {item.description}
-                      </p>
-
-                      <div className="flex items-center justify-between">
-                        <div className="typo-meta text-muted-foreground flex items-center gap-3 font-semibold">
-                          <span className="inline-flex items-center gap-1">
-                            <Heart className="h-3.5 w-3.5" /> {item.likes}
-                          </span>
-                          <span className="inline-flex items-center gap-1">
-                            <MessageCircle className="h-3.5 w-3.5" /> {item.comments}
-                          </span>
+                {filteredPosts.length === 0 ? (
+                  <div className="col-span-full rounded-2xl border border-[#cfe0f4] bg-white py-16 text-center text-muted-foreground">
+                    <p className="text-sm 2xl:text-base font-semibold text-foreground">{t('vlogPage.states.empty_title')}</p>
+                    <p className="mt-1 text-sm">{t('vlogPage.states.empty_desc')}</p>
+                  </div>
+                ) : (
+                  filteredPosts.map((item) => (
+                    <Card
+                      key={item.id}
+                      className="gap-0 overflow-hidden rounded-2xl border-border/70 py-0 shadow-sm"
+                    >
+                      <div className="relative h-52">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="h-full w-full object-cover"
+                          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                        />
+                        <span className="typo-badge absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1">
+                          {item.type} · {item.place}
+                        </span>
+                        <div className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90">
+                          {item.type === 'Video' || item.type === typeVideo ? (
+                            <Play className="h-4 w-4" />
+                          ) : (
+                            <Sparkles className="h-4 w-4" />
+                          )}
                         </div>
-                        <Button variant="outline" size="sm" className="rounded-lg">
-                          Xem tiếp
-                        </Button>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      <CardContent className="space-y-2 px-4 py-4">
+                        <div className="typo-meta flex items-center justify-between font-semibold text-muted-foreground">
+                          <span>{item.author}</span>
+                          <span>{item.dateLabel}</span>
+                        </div>
+                        <h3 className="typo-section-title truncate">{item.title}</h3>
+                        <p className="typo-body line-clamp-3 text-muted-foreground">{item.description}</p>
+
+                        <div className="flex items-center justify-between">
+                          <div className="typo-meta flex items-center gap-3 font-semibold text-muted-foreground">
+                            <span className="inline-flex items-center gap-1">
+                              <Heart className="h-3.5 w-3.5" /> {item.likes}
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                              <MessageCircle className="h-3.5 w-3.5" /> {item.comments}
+                            </span>
+                          </div>
+                          <Button variant="outline" size="sm" className="rounded-lg">
+                            {t('vlogPage.post.read_more')}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
               </div>
             </div>
 
             <aside>
-              <SectionHeading
-                title="Đang được quan tâm"
-                description="Các chủ đề và tuyến trải nghiệm nhiều lượt xem"
-              />
+              <SectionHeading title={t('vlogPage.trending.title')} />
               <div className="grid gap-3">
                 {VLOG_TRENDING.map((item) => (
-                  <Card key={item.id} className="border-border/70 gap-0 rounded-2xl py-0 shadow-sm">
+                  <Card key={item.id} className="gap-0 rounded-2xl border-border/70 py-0 shadow-sm">
                     <CardContent className="flex gap-3 px-4 py-4">
                       <img
                         src={item.image}
                         alt={item.title}
                         className="h-20 w-28 rounded-xl object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = placeholderImg;
-                        }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
                       />
                       <div className="min-w-0">
                         <h4 className="typo-body truncate font-semibold">{item.title}</h4>
-                        <p className="typo-body text-muted-foreground line-clamp-3">{item.text}</p>
+                        <p className="typo-body line-clamp-3 text-muted-foreground">{item.text}</p>
                       </div>
                     </CardContent>
                   </Card>

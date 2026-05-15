@@ -8,6 +8,7 @@ import { tokenManager } from '@/lib/tokenManager';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { toast } from 'react-toastify';
+import WeatherAlertBell from '@/components/common/WeatherAlertBell';
 import {
   Home,
   MapPin,
@@ -141,7 +142,7 @@ export default function Header() {
               key={item.path}
               type="button"
               variant={isActive(item.path) ? 'gradient_primary' : 'ghost'}
-              className={`text-base font-bold ${isActive(item.path)}`}
+              className={`text-sm font-bold 2xl:text-base ${isActive(item.path)}`}
               onClick={() => navigate(item.path)}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
@@ -153,6 +154,7 @@ export default function Header() {
 
         {/* DESKTOP RIGHT: Lang, User */}
         <div className="hidden items-center gap-2 2xl:flex">
+          <WeatherAlertBell />
           <LanguageSwitch />
 
           {isAuthenticated ? (
@@ -368,8 +370,14 @@ export default function Header() {
                 </Button>
               )}
 
-              {/* Language */}
+              {/* Weather alert + Language */}
               <div className="bg-muted/50 border-border space-y-1 rounded-2xl border p-3">
+                <div className="flex items-center justify-between px-1 py-1.5">
+                  <span className="text-foreground text-sm font-medium">
+                    {t('mapPage.layout.weatherAlert')}
+                  </span>
+                  <WeatherAlertBell />
+                </div>
                 <div className="flex items-center justify-between px-1 py-1.5">
                   <span className="text-foreground text-sm font-medium">
                     {t('common.toggle_lang')}

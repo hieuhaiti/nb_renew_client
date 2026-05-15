@@ -55,11 +55,11 @@ export default function MapWeatherCard({ className, compact = false }) {
           compact ? 'rounded-lg' : 'rounded-xl'
         )}
       >
-        <div className={cn('min-w-[16.5rem] px-2.5 py-2', compact ? 'text-sm' : 'text-base')}>
+        <div className={cn('min-w-[16.5rem] px-2.5 py-2 text-sm 2xl:text-base')}>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <span className="min-w-0 flex-1 truncate">
-                <span className="text-foreground text-base font-bold">{cityName}</span>
+                <span className="text-foreground text-sm font-bold 2xl:text-base">{cityName}</span>
                 <span className="text-muted-foreground ml-1 truncate text-sm">
                   {conditionLabel}
                 </span>

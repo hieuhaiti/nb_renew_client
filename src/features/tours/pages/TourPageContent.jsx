@@ -28,16 +28,16 @@ const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' }
 const HERO_BG = `linear-gradient(315deg,rgba(3,95,172,.92),rgba(14,165,233,.86),rgba(16,185,129,.72)), url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80") center/cover`;
 
 const DURATION_OPTIONS = [
-  { value: '1', label: '1 ngày' },
-  { value: '2', label: '2 ngày' },
-  { value: '3', label: '3-4 ngày' },
+  { value: '1', key: 'tourPage.duration_options.1day' },
+  { value: '2', key: 'tourPage.duration_options.2days' },
+  { value: '3', key: 'tourPage.duration_options.3_4days' },
 ];
 
 const PRICE_OPTIONS = [
-  { value: '', label: 'Tất cả mức giá' },
-  { value: '500000', label: 'Dưới 500.000đ' },
-  { value: '1500000', label: 'Dưới 1.500.000đ' },
-  { value: '4000000', label: 'Dưới 4.000.000đ' },
+  { value: '', key: 'tourPage.price_options.all' },
+  { value: '500000', key: 'tourPage.price_options.under500' },
+  { value: '1500000', key: 'tourPage.price_options.500_1000' },
+  { value: '4000000', key: 'tourPage.price_options.1000_2000' },
 ];
 
 const PAGE_SIZE_OPTIONS = [8, 12, 16, 24];
@@ -290,7 +290,7 @@ function FilterSidebar({
                     : 'text-muted-foreground border border-[#cfe0f4] bg-[#f8fbff] hover:bg-[#eef7ff]'
                 }`}
               >
-                {o.label}
+                {t(o.key)}
               </button>
             ))}
           </div>
@@ -313,7 +313,7 @@ function FilterSidebar({
             >
               {PRICE_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
-                  {o.label}
+                  {t(o.key)}
                 </option>
               ))}
             </select>
@@ -445,7 +445,7 @@ export default function TourPageContent() {
         <section className="px-6 py-9 text-white" style={{ background: HERO_BG }}>
           <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-7 lg:grid-cols-[1fr_1.35fr]">
             <div>
-              <h1 className="text-4xl leading-tight font-black tracking-tight">
+              <h1 className="text-2xl md:text-3xl xl:text-4xl leading-tight font-black tracking-tight">
                 {t('tourPage.title', 'Tuyến du lịch')}
               </h1>
               <p className="mt-2 font-medium text-white/90">
@@ -547,7 +547,7 @@ export default function TourPageContent() {
               >
                 {PAGE_SIZE_OPTIONS.map((size) => (
                   <option key={size} value={size}>
-                    {size}/trang
+                    {t('tourPage.per_page', { size })}
                   </option>
                 ))}
               </select>
@@ -577,7 +577,7 @@ export default function TourPageContent() {
               ) : !visibleTours.length ? (
                 <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20">
                   <Inbox size={40} className="mb-3 opacity-30" />
-                  <p className="text-foreground text-base font-semibold">
+                  <p className="text-foreground text-sm 2xl:text-base font-semibold">
                     {t('tourPage.noTours', 'Không tìm thấy tuyến nào')}
                   </p>
                 </div>

@@ -94,7 +94,7 @@ export default function NewsDetailPageContent() {
       <RootLayout>
         <div className="flex min-h-screen items-center justify-center px-4">
           <div className="w-full max-w-sm rounded-[18px] border border-[#cfe0f4] bg-white p-8 text-center shadow-[0_4px_16px_rgba(13,74,130,0.07)]">
-            <p className="text-base font-bold text-foreground">
+            <p className="text-sm 2xl:text-base font-bold text-foreground">
               {t('newsPage.detail.not_found')}
             </p>
             <button

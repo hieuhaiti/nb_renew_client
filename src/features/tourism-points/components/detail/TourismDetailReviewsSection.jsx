@@ -1,5 +1,13 @@
 import React from 'react';
-import { Star, ThumbsUp, BadgeCheck, MessageSquare, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Star,
+  ThumbsUp,
+  BadgeCheck,
+  MessageSquare,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { withBaseUrl } from '@/lib/utils';
@@ -16,9 +24,7 @@ function StarsDisplay({ count, size = 12 }) {
           key={i}
           size={size}
           className={
-            i < count
-              ? 'fill-[#d99200] text-[#d99200]'
-              : 'fill-[#d99200] text-[#d99200] opacity-20'
+            i < count ? 'fill-[#d99200] text-[#d99200]' : 'fill-[#d99200] text-[#d99200] opacity-20'
           }
         />
       ))}
@@ -73,10 +79,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
           <div className="flex items-start justify-between gap-2">
             <div>
               <div className="flex items-center gap-1.5">
-                <span
-                  className="text-foreground text-sm font-semibold"
-                  title={userName}
-                >
+                <span className="text-foreground text-sm font-semibold" title={userName}>
                   {userName}
                 </span>
                 {r.is_verified_visit && (
@@ -97,9 +100,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
           </div>
 
           {/* Title */}
-          {r.title && (
-            <p className="text-foreground mt-2 text-sm font-semibold">{r.title}</p>
-          )}
+          {r.title && <p className="text-foreground mt-2 text-sm font-semibold">{r.title}</p>}
 
           {/* Content */}
           {(r.content || r.comment || r.body) && (
@@ -158,7 +159,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
               <button
                 type="button"
                 onClick={() => onDeleteReview(r.id)}
-                className="h-6 rounded-[6px] border border-[#cfe0f4] bg-white px-2 text-xs text-muted-foreground hover:bg-[#eef7ff]"
+                className="text-muted-foreground h-6 rounded-[6px] border border-[#cfe0f4] bg-white px-2 text-xs hover:bg-[#eef7ff]"
               >
                 {t('tourism.delete', 'Xoá')}
               </button>
@@ -218,7 +219,7 @@ export function TourismDetailReviewsSection({
 }) {
   return (
     <section className="border-border bg-card mb-3 rounded-[16px] border px-5 py-4">
-      <h2 className="text-foreground mb-4 text-base font-bold">
+      <h2 className="text-foreground mb-4 text-sm font-bold 2xl:text-base">
         {t('tourism.reviews', 'Đánh giá')}
       </h2>
 
@@ -226,7 +227,7 @@ export function TourismDetailReviewsSection({
       <div className="mb-4 rounded-[14px] border border-[#cfe0f4] bg-[#eef7ff] p-4">
         <div className="grid gap-4 md:grid-cols-[88px_minmax(0,1fr)]">
           <div className="flex flex-col items-center justify-center">
-            <div className="text-4xl font-black leading-none text-[#0b66c3]">
+            <div className="text-4xl leading-none font-black text-[#0b66c3]">
               {averageDisplayRating > 0 ? averageDisplayRating.toFixed(1) : '—'}
             </div>
             <div className="mt-1.5">
@@ -241,14 +242,9 @@ export function TourismDetailReviewsSection({
             {[5, 4, 3, 2, 1].map((score) => {
               const count = Number(starCounts[score] ?? 0);
               const ratio =
-                totalReviewCount > 0
-                  ? (count / Math.max(1, totalReviewCount)) * 100
-                  : 0;
+                totalReviewCount > 0 ? (count / Math.max(1, totalReviewCount)) * 100 : 0;
               return (
-                <div
-                  key={score}
-                  className="flex items-center gap-2 text-xs text-muted-foreground"
-                >
+                <div key={score} className="text-muted-foreground flex items-center gap-2 text-xs">
                   <span className="w-3 shrink-0 text-right font-medium">{score}</span>
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/70">
                     <div
@@ -284,7 +280,7 @@ export function TourismDetailReviewsSection({
             />
           ))
         ) : (
-          <div className="rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] px-4 py-6 text-center text-sm text-muted-foreground">
+          <div className="text-muted-foreground rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] px-4 py-6 text-center text-sm">
             {t('tourism.no_reviews', 'Chưa có đánh giá nào.')}
           </div>
         )}
@@ -301,7 +297,7 @@ export function TourismDetailReviewsSection({
               type="button"
               disabled={reviewPage <= 1}
               onClick={onPrevPage}
-              className="flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold text-foreground disabled:opacity-40 hover:bg-[#eef7ff]"
+              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
             >
               <ChevronLeft size={13} />
               {t('common.prev', 'Trước')}
@@ -310,7 +306,7 @@ export function TourismDetailReviewsSection({
               type="button"
               disabled={reviewPage >= pagesDisplay}
               onClick={onNextPage}
-              className="flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold text-foreground disabled:opacity-40 hover:bg-[#eef7ff]"
+              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
             >
               {t('common.next', 'Sau')}
               <ChevronRight size={13} />
@@ -328,8 +324,7 @@ export function TourismDetailReviewsSection({
         {/* Star picker */}
         <div className="mb-4 flex items-center justify-between rounded-[10px] border border-[#cfe0f4] bg-white px-3 py-2.5">
           <span className="text-foreground text-sm">
-            {t('tourism.your_rating', 'Số sao đánh giá')}{' '}
-            <span className="text-red-500">*</span>
+            {t('tourism.your_rating', 'Số sao đánh giá')} <span className="text-red-500">*</span>
           </span>
           <StarPicker
             value={newStars}
@@ -353,10 +348,7 @@ export function TourismDetailReviewsSection({
               id="review-title"
               value={newTitle}
               onChange={(e) => onTitleChange(e.target.value)}
-              placeholder={t(
-                'tourism.review_title_placeholder',
-                'Tóm tắt trải nghiệm của bạn...'
-              )}
+              placeholder={t('tourism.review_title_placeholder', 'Tóm tắt trải nghiệm của bạn...')}
               className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
             />
           </div>
@@ -441,7 +433,7 @@ export function TourismDetailReviewsSection({
             {t('tourism.upload_photos', 'Tải ảnh (tối đa 5 ảnh)')}
           </label>
           <div
-            className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-[#cfe0f4] bg-white text-sm text-muted-foreground transition hover:bg-[#eef7ff]"
+            className="text-muted-foreground flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-[#cfe0f4] bg-white text-sm transition hover:bg-[#eef7ff]"
             onClick={() => document.getElementById('review-file-input')?.click()}
             role="button"
             tabIndex={0}
@@ -487,7 +479,7 @@ export function TourismDetailReviewsSection({
           <button
             type="button"
             onClick={onReset}
-            className="h-9 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold text-foreground hover:bg-[#eef7ff]"
+            className="text-foreground h-9 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff]"
           >
             {t('tourism.cancel', 'Huỷ')}
           </button>

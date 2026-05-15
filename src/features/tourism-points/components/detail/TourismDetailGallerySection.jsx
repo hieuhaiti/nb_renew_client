@@ -14,7 +14,7 @@ export function TourismDetailGallerySection({
   return (
     <section className="bg-card mb-4 rounded-[18px] border border-[#cfe0f4] px-5 py-4">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-foreground text-base font-bold">
+        <h2 className="text-foreground text-sm font-bold 2xl:text-base">
           {t('tourism.gallery', 'Thư viện ảnh')}
         </h2>
         <Button

@@ -22,25 +22,27 @@ export default function ErrorPage({
   const navigate = useNavigate();
 
   return (
-    <main className="grid min-h-screen place-items-center bg-background px-6 py-24 sm:py-32 lg:px-8">
-      <div className="text-center max-w-lg mx-auto">
+    <main className="bg-background grid min-h-screen place-items-center px-6 py-24 sm:py-32 lg:px-8">
+      <div className="mx-auto max-w-lg text-center">
         {/* Icon */}
-        <div className={`flex justify-center mb-4 ${color}`}>
+        <div className={`mb-4 flex justify-center ${color}`}>
           {icon || <TriangleAlert size={80} strokeWidth={1.5} />}
         </div>
 
         {/* Error code */}
-        <p className={`text-7xl sm:text-9xl font-black tracking-tighter mb-4 drop-shadow-sm ${color}`}>
+        <p
+          className={`mb-4 text-7xl font-black tracking-tighter drop-shadow-sm sm:text-9xl ${color}`}
+        >
           {code}
         </p>
 
         {/* Title */}
-        <h1 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground">
+        <h1 className="text-foreground mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
           {t(titleKey)}
         </h1>
 
         {/* Message */}
-        <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">
+        <p className="text-muted-foreground mt-4 text-sm leading-relaxed sm:text-lg 2xl:text-base">
           {t(messageKey)}
         </p>
 

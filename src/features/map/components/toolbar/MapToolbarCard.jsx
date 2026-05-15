@@ -4,11 +4,13 @@ import {
   ArrowUpRight,
   Bike,
   Car,
+  Layers,
   Loader2,
   LocateFixed,
   MapPin,
   Navigation,
   PersonStanding,
+  Radius,
   Search,
   Trash2,
   X,
@@ -518,6 +520,7 @@ export default function MapToolbarCard({
         <div className="flex flex-col gap-2 xl:flex-row xl:items-stretch xl:gap-3">
           <div className="min-w-0 flex-1">
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-[2.6fr_1.8fr_1.8fr_2fr_2fr_1fr_1.4fr_1fr]">
+              {/* Search */}
               <div className="relative w-full min-w-0 sm:col-span-2 xl:col-span-1">
                 <Search className="text-quaternary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
@@ -605,13 +608,15 @@ export default function MapToolbarCard({
                 ) : null}
               </div>
 
-              <div className="w-full min-w-0">
+              {/* Category Select */}
+              <div className="relative w-full min-w-0">
                 <Select
                   value={activeChip ?? ''}
                   onValueChange={(v) => {
                     const matched = filterChips.find((c) => String(c.value) === String(v));
                     onChipChange?.(v, matched?.label ?? '');
                   }}
+                  startIcon={<Layers className="text-quaternary" />}
                 >
                   <SelectTrigger size="toolbar" className="w-full">
                     <SelectValue
@@ -630,34 +635,29 @@ export default function MapToolbarCard({
                 </Select>
               </div>
 
-              <div className="w-full min-w-0">
-                <div className="relative">
-                  <Select
-                    value={String(radiusKm ?? 0)}
-                    onValueChange={handleRadiusChange}
-                    disabled={isGettingLocation}
-                  >
-                    <SelectTrigger size="toolbar" className="w-full">
-                      <SelectValue
-                        placeholder={t('mapPage.toolbar.radius', { defaultValue: 'Radius' })}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {RADIUS_OPTIONS.map((km) => (
-                        <SelectItem key={km} value={String(km)}>
-                          {km === 0
-                            ? t('mapPage.toolbar.radiusAll', { defaultValue: 'All' })
-                            : `${km} km`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {isGettingLocation ? (
-                    <span className="pointer-events-none absolute top-1/2 right-8 -translate-y-1/2">
-                      <LoadingInline size="small" color="muted" />
-                    </span>
-                  ) : null}
-                </div>
+              {/* Radius Select */}
+              <div className="relative w-full min-w-0">
+                <Select
+                  value={String(radiusKm ?? 0)}
+                  onValueChange={handleRadiusChange}
+                  disabled={isGettingLocation}
+                  startIcon={<Radius className="text-tertiary" />}
+                >
+                  <SelectTrigger size="toolbar" className="w-full">
+                    <SelectValue
+                      placeholder={t('mapPage.toolbar.radius', { defaultValue: 'Radius' })}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RADIUS_OPTIONS.map((km) => (
+                      <SelectItem key={km} value={String(km)}>
+                        {km === 0
+                          ? t('mapPage.toolbar.radiusAll', { defaultValue: 'All' })
+                          : `${km} km`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="relative w-full min-w-0">
@@ -703,11 +703,21 @@ export default function MapToolbarCard({
                     <LocateFixed className="text-primary h-3.5 w-3.5" />
                   )}
                 </Button>
-                {showStartSuggestions && (startSuggestions.length > 0 || isSearchingStart) && (
+                {showStartSuggestions && startLocationInput.placeName.trim().length >= 2 && (
                   <div className="bg-popover absolute z-50 mt-1 w-full rounded-md border p-1 shadow-md">
-                    {isSearchingStart ? (
+                    {isSearchingStart ||
+                    startLocationInput.placeName.trim() !== debouncedStartLocation.trim() ? (
                       <div className="flex items-center justify-center px-2 py-2">
                         <LoadingInline size="small" color="muted" />
+                      </div>
+                    ) : startSuggestions.length === 0 ? (
+                      <div className="text-muted-foreground z-50 flex flex-col items-center gap-2 px-3 py-4 text-sm">
+                        <MapPin className="h-4 w-4 opacity-70" />
+                        <p>
+                          {t('mapPage.toolbar.searchNoResult', {
+                            defaultValue: 'No matching destination found for current filters.',
+                          })}
+                        </p>
                       </div>
                     ) : (
                       startSuggestions.map((suggestion) => (

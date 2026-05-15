@@ -40,8 +40,13 @@
   },
   "home": {
     "hero": {
+      "badge": "Ninh Binh Tourism Information Portal",
       "title": "Discover the Beauty of Ninh Binh",
       "subtitle": "Smart tourism map, fascinating destinations, and unforgettable experiences",
+      "description": "An integrated tourism portal with GIS maps, weather, VR360 and itinerary suggestions",
+      "cta_gis": "Explore GIS Map",
+      "cta_vr": "VR 360° Tour",
+      "cta_points": "Top Destinations",
       "cta_map": "Explore Map",
       "cta_discover": "Top Destinations",
       "scroll_hint": "Scroll to explore",
@@ -54,7 +59,114 @@
       "vlog_cta": "Visit vlog page",
       "chatbot_title": "AI Travel Companion",
       "chatbot_desc": "Ask about tours, weather, OCOP and get personalised itinerary suggestions.",
-      "chatbot_cta": "Chat with the assistant"
+      "chatbot_cta": "Chat with the assistant",
+      "lead": "The homepage is designed to be bright, clear, and rich in real information: destinations, events, tours, cuisine, OCOP, digital maps, and community content."
+    },
+    "search": {
+      "label": "Find a destination",
+      "placeholder": "Explore destinations, tours, festivals..."
+    },
+    "weather_card": {
+      "label": "Weather",
+      "title": "Quick Weather",
+      "humidity": "Humidity",
+      "wind": "Wind",
+      "aqi": "Air Quality",
+      "view_map": "View on map",
+      "unavailable": "Weather data unavailable.",
+      "not_configured": "OpenWeather API not configured.",
+      "loading_text": "Updating weather data...",
+      "ok": "Current weather conditions updated."
+    },
+    "festivals_card": {
+      "label": "Seasonal Festivals",
+      "title": "Upcoming Festivals",
+      "cta": "View all festivals",
+      "empty": "No upcoming festivals.",
+      "days_until": "{{days}} days left",
+      "today": "Today",
+      "recurring": "Annual"
+    },
+    "suggestions_card": {
+      "label": "Quick Suggestions",
+      "title": "Itinerary Suggestions",
+      "detail_cta": "View details"
+    },
+    "quick_access": {
+      "label": "Quick Access",
+      "title": "Explore destinations with integrated tools",
+      "description": "Use the platform's key features to plan your journey quickly and visually."
+    },
+    "featured_destinations": {
+      "label": "Featured Destinations",
+      "title": "Top attractions in Ninh Binh",
+      "see_all": "View all tourism points",
+      "description": "Large images and quick action buttons to navigate from the homepage to the map or detail page.",
+      "detail_cta": "Details"
+    },
+    "news_section": {
+      "label": "News & Discover",
+      "title": "Latest Tourism News",
+      "see_all": "All news",
+      "read_more": "Read more",
+      "hot": "Hot",
+      "unknown_author": "Editorial team"
+    },
+    "tour_section": {
+      "label": "Suggested Tour",
+      "title": "Discover Amazing Routes",
+      "see_all": "View all tours",
+      "days": "days",
+      "from_price": "From",
+      "default_title": "Trang An Classic Tour — Boat Trip Through 3 Cave Routes",
+      "default_desc": "Explore the Trang An Landscape Complex through 3 famous tourism routes.",
+      "schedule": "itinerary",
+      "per_person": "per guest",
+      "reviews": "reviews",
+      "contact": "Contact",
+      "view_map": "View route on map"
+    },
+    "itinerary_section": {
+      "label": "Suggested Itineraries",
+      "title": "Ninh Binh Day-by-Day Itinerary",
+      "day_label": "Day {{day}}"
+    },
+    "food_section": {
+      "label": "Local Cuisine",
+      "title": "Must-try Ninh Binh specialities",
+      "description": "Featured dishes, dining spots, quick search keywords, and service links right on the homepage."
+    },
+    "vouchers_section": {
+      "label": "Tourism Businesses",
+      "title": "Vouchers near you",
+      "desc": "Exclusive vouchers from local tourism businesses in your area.",
+      "cta": "Go to destinations for vouchers",
+      "partners": "Our Partners",
+      "empty": "No vouchers available in this area.",
+      "min_order": "Min. order",
+      "valid_until": "Valid until",
+      "view_map": "View business on map"
+    },
+    "ocop_section": {
+      "label": "OCOP Products",
+      "title": "Local products integrated on the homepage",
+      "see_all": "View all OCOP products",
+      "description": "Showcase products, certifications, localities, and order links right on the homepage.",
+      "view_product": "View product",
+      "contact": "Contact"
+    },
+    "vlog_section": {
+      "label": "Vlog & Stories",
+      "title": "Travel stories from the community",
+      "see_all": "View all vlogs",
+      "author_prefix": "Author:",
+      "description": "Enrich community content with real-life experiences, travel tips, and itinerary suggestions."
+    },
+    "footer_section": {
+      "brand": "Ninh Binh Tourism Information Portal — Integrated GIS, VR360, OCOP and smart itinerary platform.",
+      "quick_links": "Quick links",
+      "contact": "Contact",
+      "follow": "Follow us"
     },
     "ad_carousel": {
       "subtitle": "Services & Events",
@@ -148,6 +260,11 @@
     "states": {
       "error": "Unable to load news at the moment.",
       "empty": "No matching news found."
+    },
+    "cta": {
+      "label": "Explore Ninh Binh",
+      "title": "Connect news with the digital tourism map",
+      "desc": "View the latest news and look up destinations, itineraries, and events on one platform."
     },
     "detail": {
       "back": "Back to news",
@@ -342,6 +459,14 @@
   "tourismPointPage": {
     "title": "Tourism Points",
     "subtitle": "Discover outstanding attractions in Ninh Binh",
+    "hero_title": "Explore Tourism Spots in Ninh Binh",
+    "hero_desc": "Search, filter by type, view map locations, 360° photos, descriptions and directions to top attractions.",
+    "stat_spots": "Attractions",
+    "stat_categories": "Categories",
+    "stat_subcategories": "Subcategories",
+    "is_featured_label": "Featured",
+    "is_featured_all": "All",
+    "is_featured_yes": "Featured points",
     "unknown_category": "Unknown category",
     "47_points": "47 attractions",
     "ninh_binh": "Ninh Binh",
@@ -350,6 +475,7 @@
     "all": "All",
     "showing": "Showing",
     "of": "/",
+    "per_page": "per page",
     "gridView": "Grid View",
     "listView": "List View",
     "results": "results",
@@ -359,6 +485,10 @@
     "filter": "Filter",
     "reviews": "reviews",
     "view_detail": "View Details",
+    "category": "Category",
+    "radius": "Radius",
+    "radiusAll": "No radius limit",
+    "all_subcategories": "All subcategories",
     "free": "Free",
     "no_results": "No results found",
     "errorLoading": "Unable to load data.",
@@ -422,7 +552,67 @@
     "startLocation": "Start location",
     "endLocation": "Destination",
     "provider": "Provider",
-    "reviewErrorRatings": "Please provide ratings for all criteria: cleanliness, service, value, and accessibility."
+    "reviewErrorRatings": "Please provide ratings for all criteria: cleanliness, service, value, and accessibility.",
+    "hero": {
+      "badge": "Ninh Binh Tourist Routes",
+      "title": "Discover Amazing Tourist Routes",
+      "description": "Choose a tour that fits your schedule and preferences."
+    },
+    "duration_options": {
+      "all": "All durations",
+      "1day": "1 day",
+      "2days": "2 days",
+      "3_4days": "3–4 days",
+      "5plus": "5+ days"
+    },
+    "price_options": {
+      "all": "All price ranges",
+      "under500": "Under 500K",
+      "500_1000": "500K – 1M",
+      "1000_2000": "1M – 2M",
+      "above2000": "Above 2M"
+    },
+    "sort_options": {
+      "default": "Default",
+      "price_asc": "Price: low to high",
+      "price_desc": "Price: high to low",
+      "rating_best": "Highest rated",
+      "newest": "Newest"
+    },
+    "filters": {
+      "search_placeholder": "Search tourist routes...",
+      "price": "Price range",
+      "sort": "Sort by",
+      "search_btn": "Search"
+    },
+    "card": {
+      "from_price": "From",
+      "no_description": "No description available.",
+      "view_detail": "View details",
+      "max_guests": "guests",
+      "rating_count": "reviews"
+    },
+    "toolbar": {
+      "count": "{{total}} tours"
+    },
+    "states": {
+      "error": "Unable to load tours right now.",
+      "empty_title": "No matching tours found",
+      "empty_desc": "Try adjusting your search or filters."
+    },
+    "per_page": "{{size}}/page",
+    "priceFrom": "From",
+    "filterTitle": "Quick filters",
+    "filterOpen": "Open",
+    "budget": "Budget",
+    "startLocationPlaceholder": "E.g. Trang An boat dock",
+    "applyFilters": "Apply filters",
+    "featuredToday": "Featured tour today",
+    "featuredSubtitle": "Ideal for families, groups, and first-time visitors to Ninh Binh.",
+    "viewTour": "View route",
+    "filter": "Filter routes",
+    "toursLabel": "matching tours",
+    "viewDetail": "View details"
   },
   "mapStyle": {
     "toggle": "Switch base map",
@@ -802,5 +992,241 @@
     "success": {
       "loaded": "Satellite imagery loaded successfully."
     }
+  },
+  "festivalPage": {
+    "hero": {
+      "badge": "Festivals & Culture of Ninh Binh",
+      "title": "Traditional Festivals of Ninh Binh",
+      "description": "Discover the cultural, spiritual and traditional festivals of this ancient capital region."
+    },
+    "stats": {
+      "total": "Festivals",
+      "upcoming": "Upcoming",
+      "page": "Page"
+    },
+    "filters": {
+      "search_placeholder": "Search festivals, locations, types...",
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "all_time": "All time",
+      "all_types": "All types",
+      "search_btn": "Search"
+    },
+    "types": {
+      "religious": "Religious",
+      "traditional": "Traditional",
+      "cultural": "Cultural",
+      "folk": "Folk",
+      "modern": "Modern",
+      "seasonal": "Seasonal",
+      "historical": "Historical",
+      "music": "Music",
+      "food": "Food",
+      "craft": "Craft",
+      "sport": "Sport",
+      "other": "Other"
+    },
+    "card": {
+      "recurring": "Annual",
+      "no_description": "No description available.",
+      "view_detail": "View details",
+      "days_until": "{{days}} days left",
+      "today": "Today"
+    },
+    "toolbar": {
+      "count": "{{total}} festivals",
+      "refresh": "Refresh"
+    },
+    "states": {
+      "error": "Unable to load festival data right now.",
+      "empty_title": "No matching festivals",
+      "empty_desc": "Try adjusting your filters or search keyword."
+    },
+    "pagination": {
+      "prev": "Previous",
+      "next": "Next",
+      "page": "{{current}} / {{total}}"
+    },
+    "cta_section": {
+      "badge": "Plan your journey",
+      "title": "Combine festivals into your travel itinerary",
+      "description": "Use the GIS map to find nearby attractions and plan the perfect trip around festival dates.",
+      "cta_map": "Open map",
+      "cta_points": "View tourism points"
+    }
+  },
+  "festivalDetail": {
+    "back": "Back to festivals",
+    "not_found": "Festival information not found",
+    "type_label": "Festival type",
+    "dates_label": "Dates",
+    "location_label": "Location",
+    "website_label": "Website",
+    "recurring_label": "Frequency",
+    "recurring_yes": "Annual",
+    "recurring_no": "Non-recurring",
+    "no_description": "No description available.",
+    "no_location": "Location not yet updated.",
+    "view_map": "View on map",
+    "types": {
+      "religious": "Religious",
+      "traditional": "Traditional",
+      "cultural": "Cultural",
+      "folk": "Folk",
+      "modern": "Modern",
+      "seasonal": "Seasonal",
+      "historical": "Historical",
+      "music": "Music",
+      "food": "Food",
+      "craft": "Craft",
+      "sport": "Sport",
+      "other": "Other"
+    }
+  },
+  "ocopPage": {
+    "hero": {
+      "badge": "OCOP Products of Ninh Binh",
+      "title": "Ninh Binh OCOP Specialities",
+      "description": "Discover and shop high-quality OCOP products representing local cultural heritage."
+    },
+    "stats": {
+      "total": "Products",
+      "certified": "Certified",
+      "page": "Page"
+    },
+    "filters": {
+      "search_placeholder": "Search products, suppliers...",
+      "all_categories": "All categories",
+      "all_stars": "All star ratings",
+      "search_btn": "Search"
+    },
+    "categories": {
+      "food": "Food",
+      "beverage": "Beverage",
+      "herbal": "Herbal",
+      "fabric": "Fabric & Clothing",
+      "decoration": "Home Decoration",
+      "service": "Tourism Service",
+      "other": "Other"
+    },
+    "stars": {
+      "3": "3 stars",
+      "4": "4 stars",
+      "5": "5 stars (National)"
+    },
+    "card": {
+      "stars": "stars",
+      "no_description": "No description available.",
+      "view_detail": "View details",
+      "certified": "Certified"
+    },
+    "toolbar": {
+      "count": "{{total}} products",
+      "refresh": "Refresh"
+    },
+    "states": {
+      "error": "Unable to load OCOP products right now.",
+      "empty_title": "No products found",
+      "empty_desc": "Try adjusting your search or filters."
+    },
+    "pagination": {
+      "prev": "Previous",
+      "next": "Next",
+      "page": "{{current}} / {{total}}"
+    }
+  },
+  "ocopDetail": {
+    "back": "Back to OCOP",
+    "default_name": "OCOP Product",
+    "no_description": "No description available.",
+    "labels": {
+      "province": "Province / City",
+      "unit": "Producer",
+      "category": "Category",
+      "certification": "Certification",
+      "price": "Reference price",
+      "stars": "Star rating",
+      "year": "Certification year"
+    },
+    "categories": {
+      "food": "Food",
+      "beverage": "Beverage",
+      "herbal": "Herbal",
+      "fabric": "Fabric & Clothing",
+      "decoration": "Home Decoration",
+      "service": "Tourism Service",
+      "other": "Other"
+    },
+    "view_map": "View on map"
+  },
+  "vlogPage": {
+    "hero": {
+      "badge": "Ninh Binh travel community space",
+      "title": "Vlog & Travel Experiences",
+      "description": "A place for travellers to share journeys, impressions and memorable moments in Ninh Binh.",
+      "cta_write": "Write a post",
+      "cta_featured": "View featured posts"
+    },
+    "stats": {
+      "posts": "Posts",
+      "authors": "Authors",
+      "views": "Views"
+    },
+    "composer": {
+      "title": "Quick post",
+      "title_label": "Post title",
+      "title_placeholder": "Enter an engaging title...",
+      "content_label": "Content",
+      "content_placeholder": "Share your journey, impressions or travel tips...",
+      "type_label": "Content type",
+      "topic_label": "Topic",
+      "submit": "Publish",
+      "toast_empty_title": "Please enter a post title.",
+      "toast_success": "Post published successfully!"
+    },
+    "filters": {
+      "title": "Filter content",
+      "keyword_label": "Keyword",
+      "keyword_placeholder": "Search by title, author...",
+      "type_label": "Content type",
+      "location_label": "Location",
+      "location_placeholder": "Filter by location...",
+      "refresh": "Refresh"
+    },
+    "types": {
+      "all": "All",
+      "post": "Post",
+      "video": "Video"
+    },
+    "topics": {
+      "all": "All topics",
+      "experience": "Experience",
+      "food": "Food",
+      "tips": "Travel tips",
+      "photo": "Photography",
+      "culture": "Culture"
+    },
+    "post": {
+      "read_more": "Read more",
+      "author_default": "You",
+      "type_default": "Post",
+      "topic_default": "Experience",
+      "views": "views",
+      "likes": "likes"
+    },
+    "trending": {
+      "title": "Trending now"
+    },
+    "states": {
+      "empty_title": "No posts yet",
+      "empty_desc": "Be the first to share your experience!"
+    },
+    "attach": {
+      "photo": "📷 Photo",
+      "video": "🎥 Video",
+      "place": "📍 Location",
+      "hashtag": "🏷 Hashtag"
+    },
+    "just_now": "Just now"
   }
 }
