@@ -139,30 +139,39 @@ function HeroListSkeleton() {
 
 function TourSkeleton() {
   return (
-    <div aria-busy="true">
-      <div className="px-6 py-9">
-        <div className="grid gap-4 lg:grid-cols-[1fr_1.35fr]">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-16 w-full rounded-3xl" />
+    <div
+      className="min-h-screen overflow-x-hidden"
+      style={{ background: 'linear-gradient(180deg,#eaf7ff 0,#fff 42%,#f5fbff 100%)' }}
+      aria-busy="true"
+    >
+      {/* Hero */}
+      <div className="px-5 pt-6.5 pb-5 md:px-[5vw]">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_.95fr]">
+          <Skeleton className="min-h-[360px] rounded-[32px]" />
+          <div className="grid grid-cols-2 gap-[14px]">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex flex-col gap-3 rounded-[24px] border-border bg-card p-5">
+                <Skeleton className="h-11 w-11 rounded-[16px]" />
+                <Skeleton className="h-7 w-20 rounded-[8px]" />
+                <Skeleton className="h-3.5 w-24 rounded-[6px]" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <div className="mx-auto max-w-7xl px-4 py-5">
-        <div className="mb-4 flex items-center justify-between">
-          <Skeleton className="h-5 w-48" />
-          <div className="flex gap-1.5">
-            <Skeleton className="h-8 w-16 rounded" />
-            <Skeleton className="h-8 w-16 rounded" />
-            <Skeleton className="h-8 w-16 rounded" />
+
+      {/* Sidebar + main */}
+      <div className="px-5 pt-3 pb-10.5 md:px-[5vw]">
+        <div className="grid grid-cols-1 gap-[22px] xl:grid-cols-[305px_1fr]">
+          <Skeleton className="h-[420px] rounded-[28px]" />
+          <div className="flex flex-col gap-[18px]">
+            <Skeleton className="h-[70px] rounded-[24px]" />
+            <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-[370px] rounded-[28px]" />
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
-          <div className="flex flex-col gap-4">
-            <Skeleton className="h-44 w-full rounded-[18px]" />
-            <Skeleton className="h-44 w-full rounded-[18px]" />
-            <Skeleton className="h-44 w-full rounded-[18px]" />
-            <Skeleton className="h-44 w-full rounded-[18px]" />
-          </div>
-          <Skeleton className="h-72 w-full rounded-[18px]" />
         </div>
       </div>
     </div>
@@ -171,25 +180,57 @@ function TourSkeleton() {
 
 function TourismPointSkeleton() {
   return (
-    <div aria-busy="true">
-      <div className="px-6 py-9">
-        <div className="grid gap-4 lg:grid-cols-[1fr_1.35fr]">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-16 w-full rounded-3xl" />
+    <div
+      className="min-h-screen"
+      style={{ background: 'linear-gradient(180deg,#eef9ff 0%,#fff 42%,#f7fbff 100%)' }}
+      aria-busy="true"
+    >
+      {/* Hero */}
+      <div className="px-4 pt-5 pb-0 sm:px-6">
+        <div
+          className="grid min-h-[240px] w-full grid-cols-1 items-end gap-5 overflow-hidden rounded-[30px] p-6 sm:p-7 lg:min-h-[255px] lg:grid-cols-[1.1fr_0.9fr]"
+          style={{ background: 'linear-gradient(90deg,rgba(4,55,76,.5),rgba(12,169,158,.35))' }}
+        >
+          <div className="flex flex-col gap-4">
+            <Skeleton className="h-3 w-32 rounded bg-white/30" />
+            <Skeleton className="h-10 w-[72%] rounded-2xl bg-white/30" />
+            <div className="space-y-2">
+              <Skeleton className="h-[15px] w-[86%] rounded bg-white/20" />
+              <Skeleton className="h-[15px] w-[62%] rounded bg-white/20" />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="rounded-[20px] bg-white/[.92] p-4">
+                <Skeleton className="mb-2 h-7 w-10 rounded-lg" />
+                <Skeleton className="h-3 w-full rounded" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <Skeleton className="sticky top-0 h-14 w-full rounded-none" />
-      <div className="mx-auto max-w-290 px-6 pb-11 pt-6">
-        <Skeleton className="h-56 w-full rounded-[20px]" />
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Skeleton className="h-52 rounded-[18px]" />
-          <Skeleton className="h-52 rounded-[18px]" />
-          <Skeleton className="h-52 rounded-[18px]" />
-          <Skeleton className="h-52 rounded-[18px]" />
-          <Skeleton className="h-52 rounded-[18px]" />
-          <Skeleton className="h-52 rounded-[18px]" />
-          <Skeleton className="h-52 rounded-[18px]" />
-          <Skeleton className="h-52 rounded-[18px]" />
+
+      {/* Toolbar */}
+      <div className="sticky top-0 z-40 border-b px-4 py-3.5 sm:px-6"
+        style={{ background: 'linear-gradient(180deg,rgba(233,247,255,.96),rgba(223,242,255,.96))' }}
+      >
+        <Skeleton className="h-[52px] w-full rounded-[24px]" />
+      </div>
+
+      {/* Sidebar + content */}
+      <div className="w-full px-4 pt-5 pb-12 sm:px-6">
+        <div className="grid grid-cols-1 items-start gap-[18px] lg:grid-cols-[280px_1fr]">
+          <Skeleton className="h-[280px] rounded-[24px]" />
+          <div>
+            <Skeleton className="mb-4 h-[38px] w-full rounded-[24px]" />
+            <Skeleton className="mb-4 h-9 w-72 rounded-full" />
+            <Skeleton className="mb-5 h-[310px] w-full rounded-3xl" />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-[290px] rounded-[22px]" />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
