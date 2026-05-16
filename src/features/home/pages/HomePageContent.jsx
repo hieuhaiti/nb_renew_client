@@ -527,6 +527,7 @@ export default function HomePageContent() {
   // Card: bg-card border-border, radius and shadow mapped to theme
   const glassCard =
     'bg-card border border-border rounded-[28px] p-4.5 shadow-(--ambient-shadow)';
+  const sectionPad = { padding: '42px 5vw' };
   const sectionSmall = 'mb-1 text-xs font-black uppercase tracking-widest text-secondary';
   const sectionH2 = 'font-black tracking-tight leading-[1.15] text-foreground';
   const sectionHead = 'mb-5 flex flex-wrap items-end justify-between gap-4';
