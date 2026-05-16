@@ -141,7 +141,7 @@ export default function MapBaseArea() {
   const getStyleReadyMaps = () => getMaps().filter((map) => map.isStyleLoaded());
 
   const setSubcategoryLayersVisibility = (map, isVisible) => {
-    if (!map) return;
+    if (!map || !map.isStyleLoaded()) return;
 
     const visibility = isVisible ? 'visible' : 'none';
     prevRenderedSourceIdsRef.current.forEach((sourceId) => {
@@ -275,6 +275,7 @@ export default function MapBaseArea() {
         mapRef.current.split = null;
       }
       mapRef.current.compare = null;
+      setMapRef(null);
       setMapsReady({ single: false, split: false });
     };
   }, []);
@@ -570,6 +571,7 @@ export default function MapBaseArea() {
     ];
 
     const getInteractiveLayerIds = (map) => {
+      if (!map.isStyleLoaded()) return [];
       const sourceIds = Array.from(prevRenderedSourceIdsRef.current);
 
       const subcategoryPointLayerIds = sourceIds

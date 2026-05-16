@@ -51,7 +51,7 @@ export default function TourPageSkeleton() {
         {/* Hero */}
         <section className="px-5 pt-6.5 pb-5 md:px-[5vw]">
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_.95fr]">
-            <Skeleton className="min-h-[360px] rounded-[32px]" />
+            <Skeleton className="min-h-65 rounded-[32px] md:min-h-90" />
 
             <div className="grid grid-cols-2 gap-[14px]">
               {Array.from({ length: 4 }).map((_, i) => (

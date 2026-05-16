@@ -2,7 +2,6 @@
 import mapboxgl from 'mapbox-gl';
 import { env } from '@/config/env';
 import { defaultLatLong, defaultZoom } from '@/features/map/constant/mapConstant';
-import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { useFovStore } from '../store/useFovStore';
 import { normalizeBearing } from '../utils/fovHelpers';
 import FOVControls from './FOVControls';
@@ -494,10 +493,6 @@ export default function MiniMap({
     if (!map || !targetCenter) return;
 
     const runFlyTo = () => {
-      highlightPointOnMap(map, {
-        coordinates: targetCenter,
-        properties: { name: 'Current Scene' },
-      });
       map.flyTo({
         center: targetCenter,
         zoom: Math.max(map.getZoom(), 13),

@@ -32,12 +32,6 @@ const MARKER_RADIUS = 20;
 const MARKER_STROKE_WIDTH = 4;
 const MARKER_ICON_SIZE = 24;
 const DEFAULT_MARKER_DOT_RADIUS = 6;
-const HIGHLIGHT_POINT_RADIUS_BASE = MARKER_RADIUS + MARKER_STROKE_WIDTH / 2;
-const HIGHLIGHT_GLOW_SCALE = 1.12;
-const HIGHLIGHT_PULSE_MIN_SCALE = 1.08;
-const HIGHLIGHT_PULSE_MAX_SCALE = 1.46;
-const HIGHLIGHT_PULSE_SPEED = 4.2;
-const HIGHLIGHT_POINT_Y_OFFSET_PX = -4;
 const HIGHLIGHT_MARKER_CLASS = 'map-highlight-point-marker';
 const HIGHLIGHT_MARKER_RING_CLASS = 'map-highlight-point-ring';
 const HIGHLIGHT_MARKER_STYLE_ID = 'map-highlight-point-style';
@@ -48,6 +42,7 @@ const CAPACITY_ARROW_HEIGHT = 10;
 const CAPACITY_ARROW_GAP = 3;
 const CAPACITY_ARROW_TOP_PAD = CAPACITY_ARROW_HEIGHT + CAPACITY_ARROW_GAP;
 const CAPACITY_TOTAL_HEIGHT = CAPACITY_ARROW_TOP_PAD + MARKER_SIZE;
+const HIGHLIGHT_POINT_Y_OFFSET_PX = -26;
 
 const CAPACITY_STATUS_ARROW_COLOR = {
   overloaded: '#ef4444',
@@ -102,21 +97,12 @@ export const HIGHLIGHT_ROUTE_LAYER_IDS = [
   'route-labels',
   'route-arrow',
 ];
-const HIGHLIGHT_POINT_SOURCE_ID = 'highlight-point';
-const HIGHLIGHT_POINT_GLOW_LAYER_ID = 'highlight-point-glow';
-const HIGHLIGHT_POINT_PULSE_LAYER_ID = 'highlight-point-pulse';
-
 const routePinMarkersByMap = new WeakMap();
-const highlightPulseRafByMap = new WeakMap();
 const highlightPointMarkerByMap = new WeakMap();
 const highlightInteractionCleanupByMap = new WeakMap();
 
 function isObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function getScaledRadiusByZoomExpression(scale = 1) {
-  return ['interpolate', ['linear'], ['zoom'], 8, 0.9 * scale, 12, 1 * scale, 16, 1.12 * scale];
 }
 
 function toFiniteNumber(value) {
@@ -479,7 +465,8 @@ export function mapFeatureToDestination(feature) {
   const lat = toNumber(coordinates?.[1]);
 
   const normalizedCoordinates = lng != null && lat != null ? [lng, lat] : null;
-  const resolvedId = properties.spot_id ?? properties.point_id ?? properties.id ?? feature.id ?? null;
+  const resolvedId =
+    properties.spot_id ?? properties.point_id ?? properties.id ?? feature.id ?? null;
   const resolvedSlug = properties.slug || properties.spot_slug || null;
 
   return {
@@ -1031,7 +1018,6 @@ function ensureHighlightMarkerStyles() {
       justify-content: center;
       pointer-events: none;
       z-index: 20;
-      transform: translateY(${HIGHLIGHT_POINT_Y_OFFSET_PX}px);
     }
     .${HIGHLIGHT_MARKER_RING_CLASS} {
       width: ${MARKER_SIZE}px;
@@ -1157,76 +1143,18 @@ export function clearHighlightFromMap(map) {
     }
     highlightInteractionCleanupByMap.delete(map);
 
-    const pulseRafId = highlightPulseRafByMap.get(map);
-    if (pulseRafId && typeof window !== 'undefined') {
-      window.cancelAnimationFrame(pulseRafId);
-    }
-    highlightPulseRafByMap.delete(map);
     const pointMarker = highlightPointMarkerByMap.get(map);
     if (pointMarker) {
       pointMarker.remove();
       highlightPointMarkerByMap.delete(map);
-    }
-
-    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      map.removeLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID);
-    }
-    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
-      map.removeLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID);
-    }
-
-    if (map.getSource(HIGHLIGHT_POINT_SOURCE_ID)) {
-      map.removeSource(HIGHLIGHT_POINT_SOURCE_ID);
     }
   } catch (error) {
     console.error('Error clearing highlight from map:', error);
   }
 }
 
-function startHighlightPulseAnimation(map) {
-  if (!map || typeof window === 'undefined') return;
-
-  const existingRafId = highlightPulseRafByMap.get(map);
-  if (existingRafId) {
-    window.cancelAnimationFrame(existingRafId);
-    highlightPulseRafByMap.delete(map);
-  }
-
-  const startedAt = performance.now();
-
-  const tick = (now) => {
-    if (!map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      highlightPulseRafByMap.delete(map);
-      return;
-    }
-
-    const elapsedSeconds = (now - startedAt) / 1000;
-    const phase = (Math.sin(elapsedSeconds * HIGHLIGHT_PULSE_SPEED) + 1) / 2;
-    const pulseScale =
-      HIGHLIGHT_PULSE_MIN_SCALE + (HIGHLIGHT_PULSE_MAX_SCALE - HIGHLIGHT_PULSE_MIN_SCALE) * phase;
-    const pulseOpacity = 0.12 + (1 - phase) * 0.28;
-
-    map.setPaintProperty(
-      HIGHLIGHT_POINT_PULSE_LAYER_ID,
-      'circle-radius',
-      getScaledRadiusByZoomExpression(HIGHLIGHT_POINT_RADIUS_BASE * pulseScale)
-    );
-    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-opacity', pulseOpacity);
-
-    const nextRafId = window.requestAnimationFrame(tick);
-    highlightPulseRafByMap.set(map, nextRafId);
-  };
-
-  const rafId = window.requestAnimationFrame(tick);
-  highlightPulseRafByMap.set(map, rafId);
-}
-
 export function highlightPointOnMap(map, point) {
   if (!map || !point) return;
-  if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) {
-    map.once('style.load', () => highlightPointOnMap(map, point));
-    return;
-  }
 
   const coordinates = getHighlightCoordinates(point);
   if (!coordinates) {
@@ -1234,102 +1162,17 @@ export function highlightPointOnMap(map, point) {
     return;
   }
 
-  try {
-    const sourceData = {
-      type: 'Feature',
-      properties: point?.properties || {},
-      geometry: {
-        type: 'Point',
-        coordinates,
-      },
-    };
+  upsertHighlightPointMarker(map, coordinates);
+  bindAutoClearHighlightOnUserInteraction(map);
 
-    const source = map.getSource(HIGHLIGHT_POINT_SOURCE_ID);
-    if (source && typeof source.setData === 'function') {
-      source.setData(sourceData);
-    } else {
-      clearHighlightFromMap(map);
-      map.addSource(HIGHLIGHT_POINT_SOURCE_ID, {
-        type: 'geojson',
-        data: sourceData,
-      });
-    }
-
-    if (!map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
-      map.addLayer({
-        id: HIGHLIGHT_POINT_GLOW_LAYER_ID,
-        type: 'circle',
-        source: HIGHLIGHT_POINT_SOURCE_ID,
-        paint: {
-          'circle-radius': getScaledRadiusByZoomExpression(
-            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_GLOW_SCALE
-          ),
-          'circle-color': '#FF6B6B',
-          'circle-opacity': 0.25,
-          'circle-blur': 0.35,
-          'circle-stroke-width': 3,
-          'circle-stroke-color': '#FF6B6B',
-          'circle-stroke-opacity': 0.8,
-          'circle-translate': [0, HIGHLIGHT_POINT_Y_OFFSET_PX],
-          'circle-translate-anchor': 'viewport',
-        },
-      });
-    }
-
-    if (!map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      map.addLayer({
-        id: HIGHLIGHT_POINT_PULSE_LAYER_ID,
-        type: 'circle',
-        source: HIGHLIGHT_POINT_SOURCE_ID,
-        paint: {
-          'circle-radius': getScaledRadiusByZoomExpression(
-            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_PULSE_MIN_SCALE
-          ),
-          'circle-color': '#FF6B6B',
-          'circle-opacity': 0.26,
-          'circle-translate': [0, HIGHLIGHT_POINT_Y_OFFSET_PX],
-          'circle-translate-anchor': 'viewport',
-        },
-      });
-    }
-
-    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
-      map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate', [
-        0,
-        HIGHLIGHT_POINT_Y_OFFSET_PX,
-      ]);
-      map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate-anchor', 'viewport');
-    }
-    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate', [
-        0,
-        HIGHLIGHT_POINT_Y_OFFSET_PX,
-      ]);
-      map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate-anchor', 'viewport');
-    }
-
-    // Keep highlight on top so it is not hidden by point symbol layers.
-    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
-      map.moveLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID);
-    }
-    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      map.moveLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID);
-    }
-    startHighlightPulseAnimation(map);
-    upsertHighlightPointMarker(map, coordinates);
-    bindAutoClearHighlightOnUserInteraction(map);
-
-    map.flyTo({
-      center: coordinates,
-      zoom: Math.max(map.getZoom(), 15),
-      pitch: 45,
-      bearing: 0,
-      essential: true,
-      duration: 2000,
-    });
-  } catch (error) {
-    console.error('Error highlighting point on map:', error);
-  }
+  map.flyTo({
+    center: coordinates,
+    zoom: Math.max(map.getZoom(), 15),
+    pitch: 45,
+    bearing: 0,
+    essential: true,
+    duration: 2000,
+  });
 }
 
 const RADIUS_BUFFER_SOURCE = 'radius-buffer-source';

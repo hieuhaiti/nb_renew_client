@@ -538,8 +538,7 @@
     "featured_list": "Điểm tham quan nổi bật",
     "subcategory": "Danh mục con",
     "near_me": "Gần tôi",
-    "near_me_getting": "Đang lấy vị trí..",
-    "has_vr": "Có VR 360"
+    "near_me_getting": "Đang lấy vị trí.."
   },
   "tourPage": {
     "title": "Tuyến tour",
@@ -708,7 +707,7 @@
     "satellite": "Vệ tinh",
     "compareSatellite": "So sánh vệ tinh",
     "event": "Sự kiện",
-    "tour": "Tour",
+    "tour": "Tuyến du lịch",
     "chatbot": "Chatbot",
     "capacity": "Sức chứa",
     "traffic": "Giao thông"
@@ -759,6 +758,8 @@
     "mobile_vr_split": "Chế độ kính VR",
     "mobile_vr_split_on": "Chế độ kính VR đang bật",
     "mobile_vr_split_off": "Chế độ kính VR đã tắt",
+    "tab_scenes": "Cảnh 360",
+    "tab_info": "Thông tin",
     "minimap_title": "Vị trí trên bản đồ",
     "minimap_placeholder": "Bản đồ thu nhỏ sẽ hiện ở đây",
     "features": {

@@ -15,42 +15,42 @@ import { cn } from '@/lib/utils';
 
 const STATUS_META = {
   overloaded: {
-    badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
+    badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
     // red-400 → red-700
     barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
     labelVi: 'Quá tải',
     labelEn: 'Overloaded',
   },
   near_full: {
-    badgeClass: 'border-orange-500/30 bg-orange-500/10 text-orange-600',
+    badgeClass: 'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
     // tertiary-1 (amber) → quaternary (coral-red)
     barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
     labelVi: 'Gần đầy',
     labelEn: 'Near full',
   },
   busy: {
-    badgeClass: 'border-warning/40 bg-warning/10 text-warning',
+    badgeClass: 'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
     // gold → tertiary-2 (warm amber-orange)
     barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
     labelVi: 'Đông',
     labelEn: 'Busy',
   },
   moderate: {
-    badgeClass: 'border-sky-500/30 bg-sky-500/10 text-sky-600',
+    badgeClass: 'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
     // primary-1 (sky) → primary-2 (deep blue)
     barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
     labelVi: 'Vừa phải',
     labelEn: 'Moderate',
   },
   normal: {
-    badgeClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600',
+    badgeClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
     // secondary-1 (teal) → secondary-2 (forest green)
     barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
     labelVi: 'Bình thường',
     labelEn: 'Normal',
   },
   low: {
-    badgeClass: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-500',
+    badgeClass: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
     // lighter teal → secondary-1
     barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
     labelVi: 'Thưa thớt',
@@ -298,12 +298,13 @@ export default function CapacityPanel() {
       {!isLoading && items.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           <Button
+            variant="ghost"
             type="button"
             onClick={() => setStatusFilter('all')}
             className={cn(
-              'typo-badge inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
+              'typo-badge h-auto inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
               statusFilter === 'all'
-                ? 'border-primary/40 bg-primary/10 text-primary'
+                ? 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'
                 : 'border-border text-muted-foreground hover:bg-muted/50'
             )}
           >
@@ -316,11 +317,12 @@ export default function CapacityPanel() {
             const isActive = statusFilter === status;
             return (
               <Button
+                variant="ghost"
                 key={status}
                 type="button"
                 onClick={() => setStatusFilter(status)}
                 className={cn(
-                  'typo-badge inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
+                  'typo-badge h-auto inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
                   isActive
                     ? meta.badgeClass
                     : 'border-border text-muted-foreground hover:bg-muted/50'

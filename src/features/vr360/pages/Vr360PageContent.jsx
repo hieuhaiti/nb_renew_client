@@ -114,6 +114,7 @@ function SceneCard({ scene, index, isSelected, onClick }) {
   const { t } = useTranslation();
   return (
     <article
+      data-scene-id={scene.id}
       role="button"
       tabIndex={0}
       onClick={onClick}
@@ -175,7 +176,8 @@ function SceneCard({ scene, index, isSelected, onClick }) {
             marginBottom: '3px',
           }}
         >
-          {String(index + 1).padStart(2, '0')} · {isSelected ? t('vr360.current_scene') : t('vr360.scene_label')}
+          {String(index + 1).padStart(2, '0')} ·{' '}
+          {isSelected ? t('vr360.current_scene') : t('vr360.scene_label')}
         </span>
         <h4
           style={{
@@ -384,6 +386,8 @@ export default function Vr360PageContent() {
   const location = useLocation();
   const prefillHandledRef = useRef(false);
   const narrationToggleRef = useRef(null);
+  const [mobilePanelTab, setMobilePanelTab] = useState('scenes');
+  const sceneListScrollRef = useRef(null);
 
   const entrySpotId = useMemo(
     () => location.state?.spotId ?? location.state?.spot?.id ?? location.state?.spot?.spot_id,
@@ -476,6 +480,12 @@ export default function Vr360PageContent() {
 
   const currentSpot = spotInfo || selectedSpot;
 
+  useEffect(() => {
+    if (!selectedScene?.id || !sceneListScrollRef.current) return;
+    const card = sceneListScrollRef.current.querySelector(`[data-scene-id="${selectedScene.id}"]`);
+    card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [selectedScene?.id]);
+
   // ── prefetch adjacent scenes ─────────────────────────────────────────────
   useEffect(() => {
     if (!scenes.length) return;
@@ -546,7 +556,9 @@ export default function Vr360PageContent() {
       : '-';
   const maxCapacityDisplay =
     spotInfo?.max_capacity != null
-      ? Number(spotInfo.max_capacity).toLocaleString(i18n.language?.startsWith('vi') ? 'vi-VN' : 'en-US')
+      ? Number(spotInfo.max_capacity).toLocaleString(
+          i18n.language?.startsWith('vi') ? 'vi-VN' : 'en-US'
+        )
       : '-';
 
   // ── empty state ─────────────────────────────────────────────────────────────
@@ -576,17 +588,28 @@ export default function Vr360PageContent() {
 
         {/* We use a single grid that becomes 3-col on xl */}
         <style>{`
+          .vr360-center { min-height: min(56vw, 480px); }
+          @media (max-width: 1279px) {
+            .vr360-left  { order: 2; }
+            .vr360-center { order: 1; }
+            .vr360-mobile-tabs { order: 3; display: flex !important; }
+            .vr360-right { order: 4; }
+            .vr360-grid[data-tab="info"]   .vr360-left  { display: none !important; }
+            .vr360-grid[data-tab="scenes"] .vr360-right { display: none !important; }
+          }
           @media (min-width: 1280px) {
             .vr360-grid {
               grid-template-columns: 320px minmax(0,1fr) 360px !important;
               height: calc(100vh - 4.5rem) !important;
               overflow: hidden !important;
             }
+            .vr360-mobile-tabs { display: none !important; }
           }
         `}</style>
 
         <div
           className="vr360-grid"
+          data-tab={mobilePanelTab}
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
@@ -595,7 +618,7 @@ export default function Vr360PageContent() {
           }}
         >
           {/* ══ LEFT: scene list ══════════════════════════════════════════════ */}
-          <aside style={panelStyle}>
+          <aside className="vr360-left" style={panelStyle}>
             <div style={panelHeadStyle}>
               <h3
                 style={{
@@ -634,6 +657,7 @@ export default function Vr360PageContent() {
             </div>
 
             <div
+              ref={sceneListScrollRef}
               style={{
                 flex: 1,
                 overflowY: 'auto',
@@ -740,8 +764,7 @@ export default function Vr360PageContent() {
                       overflow: 'hidden',
                     }}
                   >
-                    {spotInfo?.description ??
-                      t('vr360.no_desc_fallback')}
+                    {spotInfo?.description ?? t('vr360.no_desc_fallback')}
                   </p>
                 </div>
               )}
@@ -778,6 +801,7 @@ export default function Vr360PageContent() {
 
           {/* ══ CENTER: viewer ═══════════════════════════════════════════════ */}
           <section
+            className="vr360-center"
             style={{
               borderRadius: '30px',
               overflow: 'hidden',
@@ -833,15 +857,69 @@ export default function Vr360PageContent() {
                   <MousePointer2 style={{ width: '14px', height: '14px', color: C.primary }} />
                   {t('vr360.drag_hint')}
                 </h3>
-                <p style={{ fontSize: '12px', color: C.muted }}>
-                  {t('vr360.hotspot_hint')}
-                </p>
+                <p style={{ fontSize: '12px', color: C.muted }}>{t('vr360.hotspot_hint')}</p>
               </div>
             </div>
           </section>
 
+          {/* ══ MOBILE TABS (hidden on xl) ════════════════════════════════════ */}
+          <div
+            className="vr360-mobile-tabs"
+            style={{
+              display: 'none',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              border: `1px solid ${C.border}`,
+              background: '#fff',
+              flexShrink: 0,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setMobilePanelTab('scenes')}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                fontWeight: 700,
+                fontSize: '13px',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'background 0.2s, color 0.2s',
+                background:
+                  mobilePanelTab === 'scenes'
+                    ? `linear-gradient(135deg,${C.primary},${C.blue})`
+                    : 'transparent',
+                color: mobilePanelTab === 'scenes' ? '#fff' : C.muted,
+              }}
+            >
+              {t('vr360.tab_scenes')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobilePanelTab('info')}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                fontWeight: 700,
+                fontSize: '13px',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'background 0.2s, color 0.2s',
+                background:
+                  mobilePanelTab === 'info'
+                    ? `linear-gradient(135deg,${C.primary},${C.blue})`
+                    : 'transparent',
+                color: mobilePanelTab === 'info' ? '#fff' : C.muted,
+              }}
+            >
+              {t('vr360.tab_info')}
+            </button>
+          </div>
+
           {/* ══ RIGHT: spot info ══════════════════════════════════════════════ */}
-          <aside style={panelStyle}>
+          <aside className="vr360-right" style={panelStyle}>
             <div style={panelHeadStyle}>
               <h3
                 style={{
@@ -1002,21 +1080,13 @@ export default function Vr360PageContent() {
               </div>
 
               {/* Action buttons */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '10px' }}>
-                <ActionBtn
-                  primary
-                  onClick={handleOpenMap}
-                  icon={<Map style={{ width: '15px', height: '15px' }} />}
-                >
-                  {t('vr360.open_map')}
-                </ActionBtn>
-                <ActionBtn
-                  onClick={() => narrationToggleRef.current?.()}
-                  icon={<Volume2 style={{ width: '15px', height: '15px' }} />}
-                >
-                  {t('vr360.narration')}
-                </ActionBtn>
-              </div>
+              <ActionBtn
+                primary
+                onClick={handleOpenMap}
+                icon={<Map style={{ width: '15px', height: '15px' }} />}
+              >
+                {t('vr360.open_map')}
+              </ActionBtn>
 
               {/* Address note */}
               {spotInfo?.address && (

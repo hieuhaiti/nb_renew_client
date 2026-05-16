@@ -51,6 +51,7 @@ export default class ToolLocateControl {
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          if (!this._btn) return;
           const center = [position.coords.longitude, position.coords.latitude];
           const maps = this._getMaps();
 
@@ -99,6 +100,7 @@ export default class ToolLocateControl {
           this._btn.classList.add('mapboxgl-ctrl-geolocate-active');
         },
         () => {
+          if (!this._btn) return;
           this._isActive = false;
           this._btn.disabled = false;
           this._btn.classList.remove('mapboxgl-ctrl-geolocate-waiting');

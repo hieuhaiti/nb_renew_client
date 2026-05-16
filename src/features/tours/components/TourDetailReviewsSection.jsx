@@ -296,7 +296,7 @@ export function TourDetailReviewsSection({
             type="button"
             onClick={onCreateReview}
             disabled={isSubmitting}
-            className="h-9 rounded-[10px] px-5 text-sm font-bold text-white disabled:opacity-60"
+            className="h-9 rounded-[10px] px-5 text-sm font-bold text-white hover:text-white disabled:opacity-60"
             style={BTN_GRADIENT}
           >
             {isSubmitting

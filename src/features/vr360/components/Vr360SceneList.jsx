@@ -12,7 +12,8 @@ function SceneItem({ scene, index, isSelected, onSelect, t }) {
     <TooltipProvider delayDuration={400}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost"
+          <Button
+            variant="ghost"
             type="button"
             onClick={() => onSelect(scene.id)}
             className={cn(
@@ -102,9 +103,9 @@ export default function Vr360SceneList({
           </Badge>
         )}
         {typeof onClose === 'function' && (
-          <Button variant="ghost"
-            type="button"
+          <Button
             variant="ghost"
+            type="button"
             size="icon"
             className="h-6 w-6 flex-shrink-0"
             onClick={onClose}
@@ -149,5 +150,3 @@ export default function Vr360SceneList({
     </div>
   );
 }
-
-

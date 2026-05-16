@@ -332,9 +332,9 @@ export default function ChatbotPanel() {
               className="typo-search bg-card rounded-full"
               disabled={isSending}
             />
-            <Button variant="ghost"
+            <Button variant="default"
               type="button"
-              className="bg-primary hover:bg-primary/90 rounded-full px-3"
+              className="rounded-full px-3"
               onClick={() => handleSend()}
               disabled={isSending || !input.trim()}
             >

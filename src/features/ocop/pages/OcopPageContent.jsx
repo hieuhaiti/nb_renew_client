@@ -295,7 +295,7 @@ export default function OcopPageContent() {
                     setPage(1);
                     refetch?.();
                   }}
-                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
+                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white hover:text-white"
                   style={BTN_GRADIENT}
                 >
                   {t('ocopPage.filters.search_btn')}
@@ -317,9 +317,9 @@ export default function OcopPageContent() {
                   setCategoryFilter('all');
                   setPage(1);
                 }}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                className={`h-auto rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   categoryFilter === 'all'
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
                     : 'text-muted-foreground border-border bg-card hover:bg-muted'
                 }`}
               >
@@ -339,9 +339,9 @@ export default function OcopPageContent() {
                       setCategoryFilter(key);
                       setPage(1);
                     }}
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                    className={`h-auto rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       categoryFilter === key
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
                         : `border ${conf.border} ${conf.bg} ${conf.text} hover:opacity-80`
                     }`}
                   >
@@ -449,7 +449,7 @@ export default function OcopPageContent() {
                   key={item.path}
                   type="button"
                   onClick={() => navigate(item.path)}
-                  className="h-9 rounded-[10px] border border-white/35 bg-white/15 px-4 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/25"
+                  className="h-9 rounded-[10px] border border-white/35 bg-white/15 px-4 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/25 hover:text-white"
                 >
                   {item.label}
                 </Button>

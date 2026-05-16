@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,7 +18,6 @@ import {
   Radius,
   SlidersHorizontal,
   Star,
-  Video,
   X,
 } from 'lucide-react';
 import LoadingInline from '@/components/common/LoadingInline';
@@ -73,6 +72,8 @@ export default function TourismPointPage() {
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const selectedCategoryId = Number(currentSettings.selectedCategory) || 0;
   const selectedSubcategoryId = Number(currentSettings.selectedSubcategory) || 0;
@@ -265,23 +266,16 @@ export default function TourismPointPage() {
   const quickBtnCls = (active) =>
     `flex items-center gap-1.5 rounded-full border px-[14px] py-[9px] text-[13px] font-extrabold transition-colors cursor-pointer ${
       active
-        ? 'bg-secondary border-transparent text-white'
+        ? 'bg-secondary border-transparent text-white hover:bg-secondary/90 hover:text-white'
         : 'bg-card border-border text-foreground hover:border-secondary hover:text-secondary'
     }`;
 
   const filterRowCls = (active) =>
     `flex w-full items-center justify-between rounded-[14px] px-3 py-[11px] text-[13px] font-extrabold transition-colors text-left ${
-      active ? 'bg-secondary/10 text-secondary' : 'bg-muted text-foreground hover:bg-muted/80'
+      active ? 'bg-secondary/10 text-secondary hover:bg-secondary/20 hover:text-secondary' : 'bg-muted text-foreground hover:bg-muted/80'
     }`;
 
   const selectedCat = categories.find((c) => Number(c.id) === selectedCategoryId);
-  const selectedSub = subcategories.find((s) => Number(s.id) === selectedSubcategoryId);
-
-  const isFeaturedLabel = () => {
-    if (currentSettings.isFeatured === 'true') return t('tourismPointPage.is_featured_yes');
-    if (currentSettings.isFeatured === 'false') return t('tourismPointPage.is_featured_no');
-    return t('tourismPointPage.is_featured_all');
-  };
 
   return (
     <RootLayout>
@@ -292,25 +286,25 @@ export default function TourismPointPage() {
         {/* ── Hero ── */}
         <section className="px-4 pt-5 pb-0 sm:px-6">
           <div
-            className="grid min-h-[240px] w-full grid-cols-1 items-end gap-5 overflow-hidden rounded-[30px] p-6 text-white shadow-[0_14px_35px_rgba(7,29,54,.18)] sm:p-7 lg:min-h-[255px] lg:grid-cols-[1.1fr_0.9fr]"
+            className="grid w-full grid-cols-1 items-end gap-4 overflow-hidden rounded-[24px] p-5 text-white shadow-[0_14px_35px_rgba(7,29,54,.18)] sm:min-h-60 sm:rounded-[30px] sm:p-7 lg:min-h-63.75 lg:grid-cols-[1.1fr_0.9fr]"
             style={{ background: HERO_BG }}
           >
             <div>
-              <div className="mb-[18px] flex items-center gap-2 text-[13px] font-extrabold opacity-92">
-                <Home size={13} />
+              <div className="mb-3 flex items-center gap-2 text-[12px] font-extrabold opacity-90 sm:mb-4.5 sm:text-[13px]">
+                <Home size={12} />
                 <span>{t('common.home')}</span>
-                <ChevronRight size={12} className="opacity-70" />
+                <ChevronRight size={11} className="opacity-70" />
                 <span>{t('tourismPointPage.title')}</span>
               </div>
-              <h1 className="mb-2.5 text-[28px] leading-[1.15] font-black tracking-tight sm:text-[34px] lg:text-[42px]">
+              <h1 className="mb-2 text-[22px] leading-[1.15] font-black tracking-tight sm:mb-2.5 sm:text-[34px] lg:text-[42px]">
                 {t('tourismPointPage.hero_title')}
               </h1>
-              <p className="max-w-[760px] text-[15px] leading-[1.7] text-[#e9fffb]">
+              <p className="max-w-[760px] text-[13px] leading-[1.7] text-[#e9fffb] sm:text-[15px]">
                 {t('tourismPointPage.hero_desc')}
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {[
                 { val: activeIsLoading ? '…' : total > 0 ? `${total}+` : '0', key: 'stat_spots' },
                 { val: categories.length || '…', key: 'stat_categories' },
@@ -319,9 +313,14 @@ export default function TourismPointPage() {
                   key: 'stat_subcategories',
                 },
               ].map(({ val, key }) => (
-                <div key={key} className="rounded-[20px] bg-white/[.92] p-4 backdrop-blur-md">
-                  <b className="text-secondary block text-[24px] font-black">{val}</b>
-                  <span className="text-muted-foreground text-[12px] font-extrabold">
+                <div
+                  key={key}
+                  className="rounded-[16px] bg-white/92 p-3 backdrop-blur-md sm:rounded-[20px] sm:p-4"
+                >
+                  <b className="text-secondary block text-[20px] font-black sm:text-[24px]">
+                    {val}
+                  </b>
+                  <span className="text-muted-foreground text-[11px] font-extrabold sm:text-[12px]">
                     {t(`tourismPointPage.${key}`)}
                   </span>
                 </div>
@@ -332,172 +331,246 @@ export default function TourismPointPage() {
 
         {/* ── Sticky toolbar ── */}
         <section
-          className="sticky top-0 z-40 border-b px-4 py-3.5 sm:px-6"
+          className="sticky top-0 z-40 border-b px-4 py-3 sm:px-6 sm:py-3.5"
           style={{
             background: 'linear-gradient(180deg,rgba(233,247,255,.96),rgba(223,242,255,.96))',
             backdropFilter: 'blur(14px)',
           }}
         >
           <div className="w-full">
-            <div className="border-border bg-card flex flex-wrap items-center gap-2 rounded-[24px] p-3.5 shadow-(--ambient-shadow) md:flex-nowrap">
-              {/* Search */}
-              <div className="relative min-w-0 flex-[1.5]">
-                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                <Input
-                  size="toolbar"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onFocus={() => setIsInputFocused(true)}
-                  onBlur={() => setTimeout(() => setIsInputFocused(false), 120)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleSearch();
-                  }}
-                  placeholder={t('tourismPointPage.search_placeholder')}
-                  className="pr-9 pl-9"
-                />
-                {query && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className="absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
-                    onClick={() => setQuery('')}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-                {shouldShowOverlay && (
-                  <div className="border-border bg-card absolute top-full right-0 left-0 z-50 mt-2 max-h-72 overflow-auto rounded-xl shadow-lg">
-                    {activeIsLoading ? (
-                      <div className="flex items-center justify-center px-3 py-6">
-                        <LoadingInline size="small" />
-                      </div>
-                    ) : searchResults.length === 0 ? (
-                      <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-sm">
-                        <MapPin className="h-5 w-5 opacity-70" />
-                        <p>{t('mapPage.toolbar.searchNoResult')}</p>
-                      </div>
-                    ) : (
-                      <div className="p-1.5">
-                        {searchResults.map((item) => (
-                          <Button
-                            key={item.id}
-                            type="button"
-                            variant="ghost"
-                            className="h-auto w-full justify-start gap-3 rounded-lg px-2.5 py-2"
-                            onClick={() => handleSelectResult(item)}
-                          >
-                            <MapPin className="text-secondary h-4 w-4 shrink-0" />
-                            <div className="min-w-0 flex-1 text-left">
-                              <p className="text-foreground truncate text-sm font-semibold">
-                                {getPointName(item)}
-                              </p>
-                              <p className="text-muted-foreground truncate text-sm">
-                                {getPointAddress(item) || t('mapPage.destination.noAddress')}
-                              </p>
-                            </div>
-                            <ArrowUpRight className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
-                          </Button>
+            <div className="border border-border bg-card rounded-[24px] p-3 shadow-(--ambient-shadow) sm:p-3.5">
+              {/* Always-visible row */}
+              <div className="flex items-center gap-2">
+                {/* Search */}
+                <div className="relative min-w-0 flex-1">
+                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                  <Input
+                    size="toolbar"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setIsInputFocused(true)}
+                    onBlur={() => setTimeout(() => setIsInputFocused(false), 120)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSearch();
+                    }}
+                    placeholder={t('tourismPointPage.search_placeholder')}
+                    className="pr-9 pl-9"
+                  />
+                  {query && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
+                      onClick={() => setQuery('')}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                  {shouldShowOverlay && (
+                    <div className="border border-border bg-card absolute top-full right-0 left-0 z-50 mt-2 max-h-72 overflow-auto rounded-xl shadow-lg">
+                      {activeIsLoading ? (
+                        <div className="flex items-center justify-center px-3 py-6">
+                          <LoadingInline size="small" />
+                        </div>
+                      ) : searchResults.length === 0 ? (
+                        <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-sm">
+                          <MapPin className="h-5 w-5 opacity-70" />
+                          <p>{t('mapPage.toolbar.searchNoResult')}</p>
+                        </div>
+                      ) : (
+                        <div className="p-1.5">
+                          {searchResults.map((item) => (
+                            <Button
+                              key={item.id}
+                              type="button"
+                              variant="ghost"
+                              className="h-auto w-full justify-start gap-3 rounded-lg px-2.5 py-2"
+                              onClick={() => handleSelectResult(item)}
+                            >
+                              <MapPin className="text-secondary h-4 w-4 shrink-0" />
+                              <div className="min-w-0 flex-1 text-left">
+                                <p className="text-foreground truncate text-sm font-semibold">
+                                  {getPointName(item)}
+                                </p>
+                                <p className="text-muted-foreground truncate text-sm">
+                                  {getPointAddress(item) || t('mapPage.destination.noAddress')}
+                                </p>
+                              </div>
+                              <ArrowUpRight className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
+                            </Button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Selects — hidden on mobile, inline on md+ */}
+                <div className="hidden md:flex md:items-center md:gap-2">
+                  <div className="w-32.5">
+                    <Select
+                      value={selectedCategoryId ? String(selectedCategoryId) : 'all'}
+                      onValueChange={handleCategoryChange}
+                      startIcon={<Layers className="text-quaternary" />}
+                    >
+                      <SelectTrigger size="toolbar" className="w-full">
+                        <SelectValue placeholder={t('tourismPointPage.category')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('common.map_all')}</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={String(cat.id)}>
+                            {catName(cat)}
+                          </SelectItem>
                         ))}
-                      </div>
-                    )}
+                      </SelectContent>
+                    </Select>
                   </div>
-                )}
-              </div>
+                  <div className="w-32.5">
+                    <Select
+                      value={currentSettings.isFeatured || 'all'}
+                      onValueChange={(v) =>
+                        setCurrentSettings({ isFeatured: v === 'all' ? '' : v, page: 1 })
+                      }
+                      startIcon={<Star className="text-amber-400" />}
+                    >
+                      <SelectTrigger size="toolbar" className="w-full">
+                        <SelectValue placeholder={t('tourismPointPage.is_featured_label')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('tourismPointPage.is_featured_all')}</SelectItem>
+                        <SelectItem value="true">
+                          {t('tourismPointPage.is_featured_yes')}
+                        </SelectItem>
+                        <SelectItem value="false">
+                          {t('tourismPointPage.is_featured_no')}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-27.5">
+                    <Select
+                      value={String(radiusKm)}
+                      onValueChange={handleRadiusChange}
+                      startIcon={<Radius className="text-tertiary" />}
+                    >
+                      <SelectTrigger size="toolbar" className="w-full">
+                        <SelectValue placeholder={t('tourismPointPage.radius')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {RADIUS_OPTIONS.map((km) => (
+                          <SelectItem key={km} value={String(km)}>
+                            {km === 0 ? t('tourismPointPage.radiusAll') : `${km} km`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-              {/* Category */}
-              <div className="min-w-0 flex-[0.8]">
-                <Select
-                  value={selectedCategoryId ? String(selectedCategoryId) : 'all'}
-                  onValueChange={handleCategoryChange}
-                  startIcon={<Layers className="text-quaternary" />}
+                {/* Mobile filter toggle */}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
+                  className={`md:hidden h-9 shrink-0 rounded-[13px] border px-3 text-sm font-bold transition-colors ${
+                    mobileFilterOpen
+                      ? 'border-secondary text-secondary bg-secondary/5 hover:text-secondary hover:bg-secondary/10'
+                      : 'border-border text-muted-foreground hover:border-secondary hover:text-secondary'
+                  }`}
                 >
-                  <SelectTrigger size="toolbar" className="w-full">
-                    <SelectValue placeholder={t('tourismPointPage.category')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('common.map_all')}</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={String(cat.id)}>
-                        {catName(cat)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <SlidersHorizontal size={14} />
+                </Button>
 
-              {/* is_featured */}
-              <div className="min-w-0 flex-[0.8]">
-                <Select
-                  value={currentSettings.isFeatured || 'all'}
-                  onValueChange={(v) =>
-                    setCurrentSettings({ isFeatured: v === 'all' ? '' : v, page: 1 })
-                  }
-                  startIcon={<Star className="text-amber-400" />}
+                {/* View switch */}
+                <div className="bg-muted flex shrink-0 items-center gap-1 rounded-[13px] p-1">
+                  {[
+                    { mode: 'grid', Icon: LayoutGrid },
+                    { mode: 'list', Icon: List },
+                  ].map(({ mode, Icon }) => (
+                    <Button
+                      variant="ghost"
+                      key={mode}
+                      onClick={() => setCurrentSettings({ viewMode: mode })}
+                      className={`flex h-8 w-8 items-center justify-center rounded-[10px] transition-colors ${
+                        currentSettings.viewMode === mode
+                          ? 'bg-secondary text-white shadow-sm hover:bg-secondary/90 hover:text-white'
+                          : 'text-muted-foreground hover:bg-card'
+                      }`}
+                    >
+                      <Icon size={15} />
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Map */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-muted-foreground hover:border-secondary hover:text-secondary h-8 shrink-0 rounded-[13px] border px-3"
+                  onClick={() => navigate('/map')}
                 >
-                  <SelectTrigger size="toolbar" className="w-full">
-                    <SelectValue placeholder={t('tourismPointPage.is_featured_label')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('tourismPointPage.is_featured_all')}</SelectItem>
-                    <SelectItem value="true">{t('tourismPointPage.is_featured_yes')}</SelectItem>
-                    <SelectItem value="false">{t('tourismPointPage.is_featured_no')}</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <MapIcon size={14} />
+                  <span className="hidden sm:inline">{t('common.map')}</span>
+                </Button>
               </div>
 
-              {/* Radius */}
-              <div className="min-w-0 flex-[0.8]">
-                <Select
-                  value={String(radiusKm)}
-                  onValueChange={handleRadiusChange}
-                  startIcon={<Radius className="text-tertiary" />}
-                >
-                  <SelectTrigger size="toolbar" className="w-full">
-                    <SelectValue placeholder={t('tourismPointPage.radius')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {RADIUS_OPTIONS.map((km) => (
-                      <SelectItem key={km} value={String(km)}>
-                        {km === 0 ? t('tourismPointPage.radiusAll') : `${km} km`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* View switch */}
-              <div className="bg-muted flex shrink-0 items-center gap-1 rounded-[13px] p-1">
-                {[
-                  { mode: 'grid', Icon: LayoutGrid },
-                  { mode: 'list', Icon: List },
-                ].map(({ mode, Icon }) => (
-                  <Button
-                    variant="ghost"
-                    key={mode}
-                    onClick={() => setCurrentSettings({ viewMode: mode })}
-                    className={`flex h-8 w-8 items-center justify-center rounded-[10px] transition-colors ${
-                      currentSettings.viewMode === mode
-                        ? 'bg-secondary text-white shadow-sm'
-                        : 'text-muted-foreground hover:bg-card'
-                    }`}
+              {/* Mobile filter panel — revealed by toggle */}
+              {mobileFilterOpen && (
+                <div className="mt-2.5 flex flex-col gap-2 border-t border-border pt-2.5 md:hidden">
+                  <Select
+                    value={selectedCategoryId ? String(selectedCategoryId) : 'all'}
+                    onValueChange={handleCategoryChange}
+                    startIcon={<Layers className="text-quaternary" />}
                   >
-                    <Icon size={15} />
-                  </Button>
-                ))}
-              </div>
-
-              {/* Map */}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="text-muted-foreground hover:border-secondary hover:text-secondary h-8 shrink-0 rounded-[13px] border px-3"
-                onClick={() => navigate('/map')}
-              >
-                <MapIcon size={14} />
-                {t('common.map')}
-              </Button>
+                    <SelectTrigger size="toolbar" className="w-full">
+                      <SelectValue placeholder={t('tourismPointPage.category')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('common.map_all')}</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={String(cat.id)}>
+                          {catName(cat)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={currentSettings.isFeatured || 'all'}
+                    onValueChange={(v) =>
+                      setCurrentSettings({ isFeatured: v === 'all' ? '' : v, page: 1 })
+                    }
+                    startIcon={<Star className="text-amber-400" />}
+                  >
+                    <SelectTrigger size="toolbar" className="w-full">
+                      <SelectValue placeholder={t('tourismPointPage.is_featured_label')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('tourismPointPage.is_featured_all')}</SelectItem>
+                      <SelectItem value="true">{t('tourismPointPage.is_featured_yes')}</SelectItem>
+                      <SelectItem value="false">{t('tourismPointPage.is_featured_no')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={String(radiusKm)}
+                    onValueChange={handleRadiusChange}
+                    startIcon={<Radius className="text-tertiary" />}
+                  >
+                    <SelectTrigger size="toolbar" className="w-full">
+                      <SelectValue placeholder={t('tourismPointPage.radius')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {RADIUS_OPTIONS.map((km) => (
+                        <SelectItem key={km} value={String(km)}>
+                          {km === 0 ? t('tourismPointPage.radiusAll') : `${km} km`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -506,91 +579,130 @@ export default function TourismPointPage() {
         <main className="w-full px-4 pt-5 pb-12 sm:px-6">
           <div className="grid grid-cols-1 items-start gap-[18px] lg:grid-cols-[280px_1fr]">
             {/* ── Sidebar ── */}
-            <aside className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-1">
-              {/* Quick filter card */}
-              <div className="border-border bg-card rounded-[24px] p-4.5 shadow-(--ambient-shadow)">
-                <h3 className="text-foreground mb-3.5 flex items-center gap-2 text-[17px] font-black">
-                  <SlidersHorizontal size={16} className="text-secondary" />
+            <div>
+              {/* Mobile toggle — hidden on lg+ */}
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className={`mb-3 flex w-full items-center justify-between rounded-[18px] border px-4 py-3 text-sm font-extrabold transition-colors lg:hidden ${
+                  sidebarOpen
+                    ? 'border-secondary bg-secondary/5 text-secondary'
+                    : 'border-border bg-card text-foreground'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <SlidersHorizontal size={14} className="text-secondary" />
                   {t('tourismPointPage.quick_filters')}
-                </h3>
-                <div className="flex flex-col gap-2.5">
-                  <Button
-                    variant="ghost"
-                    className={filterRowCls(!selectedCategoryId)}
-                    onClick={() =>
-                      setCurrentSettings({ selectedCategory: 0, selectedSubcategory: 0, page: 1 })
-                    }
-                  >
-                    <span className="flex items-center gap-2">
-                      <span className="bg-secondary inline-block h-2 w-2 rounded-full" />
-                      {t('tourismPointPage.all')}
+                  {selectedCat && (
+                    <span className="text-muted-foreground font-normal">
+                      — {catName(selectedCat)}
                     </span>
-                    {!isLoading && !selectedCategoryId && total > 0 && (
-                      <b className="text-secondary">{total}</b>
-                    )}
-                  </Button>
+                  )}
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${sidebarOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
 
-                  {categories.map((cat) => {
-                    const isActive = Number(currentSettings.selectedCategory) === Number(cat.id);
-                    return (
-                      <React.Fragment key={cat.id}>
-                        <Button
-                          variant="ghost"
-                          className={filterRowCls(isActive)}
-                          onClick={() => handleCategoryChange(String(cat.id))}
-                        >
-                          <span className="flex items-center gap-2">
-                            <span
-                              className="inline-block h-2 w-2 shrink-0 rounded-full"
-                              style={{ background: cat.color_hex || 'var(--muted-foreground)' }}
-                            />
-                            {catName(cat)}
-                          </span>
-                          {isActive && selectedCategoryTotal > 0 && (
-                            <b className="text-secondary">{selectedCategoryTotal}</b>
+              <aside className={`${sidebarOpen ? 'block' : 'hidden'} lg:block`}>
+                {/* Quick filter card */}
+                <div className="border-border bg-card rounded-[24px] p-4.5 shadow-(--ambient-shadow)">
+                  <h3 className="text-foreground mb-3.5 flex items-center gap-2 text-[17px] font-black">
+                    <SlidersHorizontal size={16} className="text-secondary" />
+                    {t('tourismPointPage.quick_filters')}
+                  </h3>
+                  <div className="flex flex-col gap-2.5">
+                    <Button
+                      variant="ghost"
+                      className={filterRowCls(!selectedCategoryId)}
+                      onClick={() =>
+                        setCurrentSettings({
+                          selectedCategory: 0,
+                          selectedSubcategory: 0,
+                          page: 1,
+                        })
+                      }
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="bg-secondary inline-block h-2 w-2 rounded-full" />
+                        {t('tourismPointPage.all')}
+                      </span>
+                      {!isLoading && !selectedCategoryId && total > 0 && (
+                        <b className="text-secondary">{total}</b>
+                      )}
+                    </Button>
+
+                    {categories.map((cat) => {
+                      const isActive =
+                        Number(currentSettings.selectedCategory) === Number(cat.id);
+                      return (
+                        <React.Fragment key={cat.id}>
+                          <Button
+                            variant="ghost"
+                            className={filterRowCls(isActive)}
+                            onClick={() => handleCategoryChange(String(cat.id))}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span
+                                className="inline-block h-2 w-2 shrink-0 rounded-full"
+                                style={{
+                                  background: cat.color_hex || 'var(--muted-foreground)',
+                                }}
+                              />
+                              {catName(cat)}
+                            </span>
+                            {isActive && selectedCategoryTotal > 0 && (
+                              <b className="text-secondary">{selectedCategoryTotal}</b>
+                            )}
+                          </Button>
+
+                          {isActive && subcategories.length > 0 && (
+                            <div className="flex flex-col gap-1 pl-3">
+                              {subcategories.map((sub) => {
+                                const isSubActive =
+                                  Number(selectedSubcategoryId) === Number(sub.id);
+                                const count =
+                                  subcategoryCountById.get(String(sub.id)) ?? 0;
+                                return (
+                                  <Button
+                                    variant="ghost"
+                                    key={sub.id}
+                                    className={`flex w-full items-center justify-between rounded-[12px] px-3 py-2 text-[12px] font-bold transition-colors ${
+                                      isSubActive
+                                        ? 'bg-secondary/10 text-secondary'
+                                        : 'text-foreground hover:bg-muted'
+                                    }`}
+                                    onClick={() =>
+                                      setCurrentSettings({
+                                        selectedSubcategory: sub.id,
+                                        page: 1,
+                                      })
+                                    }
+                                  >
+                                    <span className="flex items-center gap-2">
+                                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-current opacity-50" />
+                                      {catName(sub)}
+                                    </span>
+                                    {count > 0 && <b className="opacity-60">{count}</b>}
+                                  </Button>
+                                );
+                              })}
+                            </div>
                           )}
-                        </Button>
-
-                        {isActive && subcategories.length > 0 && (
-                          <div className="flex flex-col gap-1 pl-3">
-                            {subcategories.map((sub) => {
-                              const isSubActive = Number(selectedSubcategoryId) === Number(sub.id);
-                              const count = subcategoryCountById.get(String(sub.id)) ?? 0;
-                              return (
-                                <Button
-                                  variant="ghost"
-                                  key={sub.id}
-                                  className={`flex w-full items-center justify-between rounded-[12px] px-3 py-2 text-[12px] font-bold transition-colors ${
-                                    isSubActive
-                                      ? 'bg-secondary/10 text-secondary'
-                                      : 'text-foreground hover:bg-muted'
-                                  }`}
-                                  onClick={() =>
-                                    setCurrentSettings({ selectedSubcategory: sub.id, page: 1 })
-                                  }
-                                >
-                                  <span className="flex items-center gap-2">
-                                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-current opacity-50" />
-                                    {catName(sub)}
-                                  </span>
-                                  {count > 0 && <b className="opacity-60">{count}</b>}
-                                </Button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </aside>
+              </aside>
+            </div>
 
             {/* ── Content ── */}
             <section>
               {/* Content head */}
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3.5">
-                <h2 className="text-foreground text-[25px] font-black">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-foreground text-[20px] font-black sm:text-[25px]">
                   {selectedCat ? catName(selectedCat) : t('tourismPointPage.featured_list')}
                 </h2>
                 <div className="flex items-center gap-2">
@@ -675,28 +787,26 @@ export default function TourismPointPage() {
                   <p className="text-[13px]">{t('tourismPointPage.tryDifferentKeyword')}</p>
                 </div>
               ) : (
-                <>
-                  <div
-                    className={
-                      currentSettings.viewMode === 'grid'
-                        ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'
-                        : 'flex flex-col gap-3'
-                    }
-                  >
-                    {points.map((p) => (
-                      <TourismPointStandardCard
-                        key={p.id}
-                        point={p}
-                        onClick={() => handleOpenDetail(p)}
-                        viewMode={currentSettings.viewMode}
-                        t={t}
-                        categoryName={getCategoryName(p)}
-                        isLiked={favorites.has(String(p.id))}
-                        onToggleLike={(e) => toggleFavorite(p.id, e)}
-                      />
-                    ))}
-                  </div>
-                </>
+                <div
+                  className={
+                    currentSettings.viewMode === 'grid'
+                      ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'
+                      : 'flex flex-col gap-3'
+                  }
+                >
+                  {points.map((p) => (
+                    <TourismPointStandardCard
+                      key={p.id}
+                      point={p}
+                      onClick={() => handleOpenDetail(p)}
+                      viewMode={currentSettings.viewMode}
+                      t={t}
+                      categoryName={getCategoryName(p)}
+                      isLiked={favorites.has(String(p.id))}
+                      onToggleLike={(e) => toggleFavorite(p.id, e)}
+                    />
+                  ))}
+                </div>
               )}
 
               {/* Pagination (hidden in near-me mode) */}
@@ -708,10 +818,10 @@ export default function TourismPointPage() {
                     onClick={() =>
                       setCurrentSettings({ page: Math.max(1, currentSettings.page - 1) })
                     }
-                    className="text-secondary hover:bg-secondary border-border bg-card flex h-[38px] min-w-[90px] cursor-pointer items-center justify-center gap-1 rounded-full px-4 text-[13px] font-black transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    className="text-secondary hover:bg-secondary border-border bg-card flex h-[38px] cursor-pointer items-center justify-center gap-1 rounded-full px-3 text-[13px] font-black transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-22.5 sm:px-4"
                   >
                     <ChevronLeft size={14} />
-                    {t('common.prev')}
+                    <span className="hidden sm:inline">{t('common.prev')}</span>
                   </Button>
 
                   {Array.from({ length: Math.min(pages, 5) }, (_, i) => {
@@ -729,7 +839,7 @@ export default function TourismPointPage() {
                         onClick={() => setCurrentSettings({ page: p })}
                         className={`flex h-[38px] w-[38px] items-center justify-center rounded-[12px] border text-[13px] font-black transition-colors ${
                           p === currentSettings.page
-                            ? 'bg-secondary border-transparent text-white'
+                            ? 'bg-secondary border-transparent text-white hover:bg-secondary/90 hover:text-white'
                             : 'text-foreground hover:border-secondary hover:text-secondary bg-card'
                         }`}
                       >
@@ -744,9 +854,9 @@ export default function TourismPointPage() {
                     onClick={() =>
                       setCurrentSettings({ page: Math.min(pages, currentSettings.page + 1) })
                     }
-                    className="text-secondary hover:bg-secondary border-border bg-card flex h-[38px] min-w-[90px] cursor-pointer items-center justify-center gap-1 rounded-full px-4 text-[13px] font-black transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    className="text-secondary hover:bg-secondary border-border bg-card flex h-[38px] cursor-pointer items-center justify-center gap-1 rounded-full px-3 text-[13px] font-black transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-22.5 sm:px-4"
                   >
-                    {t('common.next')}
+                    <span className="hidden sm:inline">{t('common.next')}</span>
                     <ChevronRight size={14} />
                   </Button>
                 </div>

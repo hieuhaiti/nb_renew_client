@@ -270,7 +270,7 @@ export default function TourDetailPage() {
           <section className="grid grid-cols-1 items-stretch gap-[18px] xl:grid-cols-[1.15fr_.85fr]">
             {/* Hero main */}
             <div
-              className="relative flex min-h-[470px] flex-col justify-end overflow-hidden rounded-[32px] p-[30px] text-white shadow-(--ambient-shadow)"
+              className="relative flex min-h-75 flex-col justify-end overflow-hidden rounded-[32px] p-5 text-white shadow-(--ambient-shadow) md:min-h-117.5 md:p-7.5"
               style={{
                 background: `linear-gradient(135deg,rgba(6,32,60,.82),rgba(8,142,130,.62)),url('${coverImg}') center/cover no-repeat`,
               }}
@@ -294,7 +294,7 @@ export default function TourDetailPage() {
                 <Button
                   variant="ghost"
                   type="button"
-                  className="inline-flex items-center gap-2 rounded-full px-4.5 py-3 font-black text-white"
+                  className="inline-flex items-center gap-2 rounded-full px-4.5 py-3 font-black text-white hover:text-white"
                   style={{
                     background: PRIMARY_GRAD,
                     boxShadow: '0 12px 26px rgba(18,169,183,.25)',
@@ -314,7 +314,7 @@ export default function TourDetailPage() {
                   variant="ghost"
                   type="button"
                   onClick={shareLink}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/15 px-4.5 py-3 font-black text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/15 px-4.5 py-3 font-black text-white hover:text-white"
                 >
                   <Share2 size={14} />
                   {shareStatus === 'copied'
@@ -329,7 +329,7 @@ export default function TourDetailPage() {
             {/* Gallery */}
             <div className="grid grid-cols-2 gap-[14px]">
               <div
-                className="relative col-span-2 min-h-[220px] overflow-hidden rounded-[24px] bg-cover bg-center shadow-(--ambient-shadow)"
+                className="relative col-span-2 min-h-45 overflow-hidden rounded-[24px] bg-cover bg-center shadow-(--ambient-shadow) sm:min-h-55"
                 style={{ backgroundImage: `url('${coverImg}')` }}
               >
                 <span className="text-secondary absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-[11px] py-2 text-[12px] font-black">
@@ -339,7 +339,7 @@ export default function TourDetailPage() {
               {[startLocation, endLocation].map((label, i) => (
                 <div
                   key={i}
-                  className="relative min-h-[145px] overflow-hidden rounded-[24px] bg-cover bg-center shadow-(--ambient-shadow)"
+                  className="relative min-h-27.5 overflow-hidden rounded-[24px] bg-cover bg-center shadow-(--ambient-shadow) sm:min-h-36.25"
                   style={{
                     backgroundImage: `url('${coverImg}')`,
                     filter: i === 1 ? 'brightness(.85)' : 'none',
@@ -438,8 +438,7 @@ export default function TourDetailPage() {
                         {group.stops.map((stop, stopIdx) => (
                           <div
                             key={stop.id || stopIdx}
-                            className="grid items-start gap-3 border-t px-4 py-3.75"
-                            style={{ gridTemplateColumns: '86px 1fr auto' }}
+                            className="grid grid-cols-[72px_1fr_auto] items-start gap-3 border-t px-4 py-3.75 md:grid-cols-[86px_1fr_auto]"
                           >
                             <div className="bg-secondary/10 text-secondary rounded-[14px] p-2.5 text-center text-[12px] font-black">
                               {stop.displayTime}

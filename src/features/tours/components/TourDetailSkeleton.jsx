@@ -145,12 +145,12 @@ export default function TourDetailSkeleton() {
 
           {/* Hero */}
           <section className="grid grid-cols-1 items-stretch gap-[18px] xl:grid-cols-[1.15fr_.85fr]">
-            <Skeleton className="min-h-[470px] rounded-[32px]" />
+            <Skeleton className="min-h-75 rounded-[32px] md:min-h-117.5" />
 
             <div className="grid grid-cols-2 gap-[14px]">
-              <Skeleton className="col-span-2 min-h-[220px] rounded-[24px]" />
-              <Skeleton className="min-h-[145px] rounded-[24px]" />
-              <Skeleton className="min-h-[145px] rounded-[24px]" />
+              <Skeleton className="col-span-2 min-h-45 rounded-[24px] sm:min-h-55" />
+              <Skeleton className="min-h-27.5 rounded-[24px] sm:min-h-36.25" />
+              <Skeleton className="min-h-27.5 rounded-[24px] sm:min-h-36.25" />
             </div>
           </section>
 

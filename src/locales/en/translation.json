@@ -538,8 +538,7 @@
     "featured_list": "Featured Attractions",
     "subcategory": "Subcategory",
     "near_me": "Near Me",
-    "near_me_getting": "Getting location..",
-    "has_vr": "Has VR 360"
+    "near_me_getting": "Getting location.."
   },
   "tourPage": {
     "title": "Tour Routes",
@@ -759,6 +758,8 @@
     "mobile_vr_split": "VR glasses mode",
     "mobile_vr_split_on": "VR glasses mode is on",
     "mobile_vr_split_off": "VR glasses mode is off",
+    "tab_scenes": "Scenes",
+    "tab_info": "Info",
     "minimap_title": "Map location",
     "minimap_placeholder": "Minimap will appear here",
     "features": {

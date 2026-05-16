@@ -164,7 +164,7 @@ export function TourismPointFeaturedCard({
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost"
-              className="h-10.5 rounded-full px-4.5 text-sm font-bold text-white"
+              className="h-10.5 rounded-full px-4.5 text-sm font-bold text-white hover:text-white"
               style={BTN_GRADIENT}
             >
               {t('tourismPointPage.view_detail', 'Xem chi tiết')}
@@ -172,7 +172,7 @@ export function TourismPointFeaturedCard({
             <Button variant="ghost"
               type="button"
               onClick={onToggleLike}
-              className="flex h-10.5 w-10.5 items-center justify-center rounded-full border border-[#9db8d2] bg-white text-[#52647a]"
+              className="flex h-10.5 w-10.5 items-center justify-center rounded-full border border-[#9db8d2] bg-white text-[#52647a] hover:text-[#52647a]"
             >
               <Bookmark size={16} className={isLiked ? 'fill-destructive text-destructive' : ''} />
             </Button>

@@ -264,7 +264,7 @@ export default function TourismPointPage() {
   const quickBtnCls = (active) =>
     `flex items-center gap-1.5 rounded-full border px-[14px] py-[9px] text-[13px] font-extrabold transition-colors cursor-pointer ${
       active
-        ? 'bg-secondary border-transparent text-white'
+        ? 'bg-secondary border-transparent text-white hover:bg-secondary/90 hover:text-white'
         : 'bg-white border text-foreground hover:border-secondary hover:text-secondary'
     }`;
 
@@ -471,7 +471,7 @@ export default function TourismPointPage() {
                     onClick={() => setCurrentSettings({ viewMode: mode })}
                     className={`flex h-8 w-8 items-center justify-center rounded-[10px] transition-colors ${
                       currentSettings.viewMode === mode
-                        ? 'bg-secondary text-white shadow-sm'
+                        ? 'bg-secondary text-white shadow-sm hover:bg-secondary/90 hover:text-white'
                         : 'text-muted-foreground hover:bg-white'
                     }`}
                   >
@@ -840,7 +840,7 @@ export default function TourismPointPage() {
                         onClick={() => setCurrentSettings({ page: p })}
                         className={`flex h-[38px] w-[38px] items-center justify-center rounded-[12px] border text-[13px] font-black transition-colors ${
                           p === currentSettings.page
-                            ? 'border-transparent bg-secondary text-white'
+                            ? 'border-transparent bg-secondary text-white hover:bg-secondary/90 hover:text-white'
                             : 'bg-white text-foreground hover:border-secondary hover:text-secondary'
                         }`}
                       >

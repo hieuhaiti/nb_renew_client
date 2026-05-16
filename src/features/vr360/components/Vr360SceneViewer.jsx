@@ -486,6 +486,7 @@ export default function Vr360SceneViewer({
 
   const nearbyHotspotsRootRef = useRef(null);
   const cursorProgressRef = useRef(null);
+  const isVrModeRef = useRef(false);
   const onNearbySpotClickRef = useRef(onNearbySpotClick);
   const nearbySpotsPropRef = useRef(nearbySpots);
   const spotCoordinatesPropRef = useRef(spotCoordinates);
@@ -594,6 +595,15 @@ export default function Vr360SceneViewer({
     aCameraRef.current = aCamera;
     aSceneRef.current = aScene;
     container.appendChild(aScene);
+
+    aScene.addEventListener('enter-vr', () => {
+      isVrModeRef.current = true;
+      aCamera.setAttribute('look-controls', 'enabled: true; touchEnabled: false');
+    });
+    aScene.addEventListener('exit-vr', () => {
+      isVrModeRef.current = false;
+      aCamera.setAttribute('look-controls', 'enabled: true; touchEnabled: true');
+    });
 
     // Set ảnh ngay lập tức để tránh race condition với image loading effect
     const initRawUrl = scene?.equirectangular_image_url;
@@ -834,6 +844,10 @@ export default function Vr360SceneViewer({
 
     const emitHeading = () => {
       if (!isAlive) return;
+      if (isVrModeRef.current) {
+        headingRafRef.current = window.requestAnimationFrame(emitHeading);
+        return;
+      }
       const cameraEl = aCameraRef.current;
       if (!cameraEl) return;
 

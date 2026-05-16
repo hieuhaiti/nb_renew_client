@@ -47,7 +47,7 @@ export default function NewsDetailHero({ detail, t, locale, formatDate, onShare 
           type="button"
           onClick={onShare}
           title={t('newsPage.detail.share')}
-          className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur-sm hover:bg-black/50"
+          className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 hover:text-white"
         >
           <Share2 size={15} />
         </Button>

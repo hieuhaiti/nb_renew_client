@@ -204,7 +204,7 @@ export default function OcopDetailPageContent() {
                   detail?.shop_url && window.open(detail.shop_url, '_blank', 'noopener,noreferrer')
                 }
                 disabled={!detail?.shop_url}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-[10px] text-sm font-bold text-white disabled:opacity-40"
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-[10px] text-sm font-bold text-white hover:text-white disabled:opacity-40"
                 style={BTN_GRADIENT}
               >
                 {t('ocopDetail.view_map')}

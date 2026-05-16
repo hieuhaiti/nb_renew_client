@@ -16,6 +16,13 @@ import { CompareSatellitePlaceholder, SatelliteImagePlaceholder } from '@/featur
 
 export const headerSidebar = [
   {
+    icon: Bot,
+    label: 'headerAside.chatbot',
+    value: 'chatbot',
+    component: ChatbotPanel,
+    authen: true,
+  },
+  {
     icon: Calendar,
     label: 'headerAside.event',
     value: 'event',
@@ -55,13 +62,6 @@ export const headerSidebar = [
     label: 'headerAside.compareSatellite',
     value: 'compareSatellite',
     component: CompareSatellitePlaceholder,
-    authen: true,
-  },
-  {
-    icon: Bot,
-    label: 'headerAside.chatbot',
-    value: 'chatbot',
-    component: ChatbotPanel,
     authen: true,
   },
 ];

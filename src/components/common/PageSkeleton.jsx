@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import LoadingOverlay from '@/components/common/LoadingOverlay';
 
 function HomeSkeleton() {
   return (
@@ -237,20 +238,6 @@ function TourismPointSkeleton() {
   );
 }
 
-function MapSkeleton() {
-  return (
-    <div className="bg-background h-full p-3" aria-busy="true">
-      <div className="flex h-full flex-col gap-3">
-        <Skeleton className="h-16 w-full rounded-2xl" />
-        <div className="grid flex-1 gap-3 xl:grid-cols-[300px_1fr_340px] 2xl:grid-cols-[320px_1fr_380px]">
-          <Skeleton className="rounded-2xl" />
-          <Skeleton className="rounded-3xl" />
-          <Skeleton className="rounded-2xl" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function VlogSkeleton() {
   return (
@@ -351,8 +338,8 @@ function GenericSkeleton() {
 function PageSkeleton() {
   const path = window.location.pathname;
 
+  if (path === '/map') return <LoadingOverlay />;
   if (path === '/' || path === '/home') return <HomeSkeleton />;
-  if (path === '/map') return <MapSkeleton />;
   if (path === '/vr360') return <Vr360Skeleton />;
   if (path === '/vlog') return <VlogSkeleton />;
   if (path === '/tour') return <TourSkeleton />;

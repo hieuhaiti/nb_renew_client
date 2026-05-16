@@ -470,7 +470,7 @@ export function TourismDetailReviewsSection({
                     variant="ghost"
                     type="button"
                     onClick={() => onRemoveFile(i)}
-                    className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-xs text-white opacity-0 transition group-hover:opacity-100"
+                    className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-xs text-white opacity-0 transition hover:bg-black/70 hover:text-white group-hover:opacity-100"
                   >
                     ×
                   </Button>
@@ -495,7 +495,7 @@ export function TourismDetailReviewsSection({
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
-            className="h-9 rounded-[10px] px-5 text-sm font-bold text-white disabled:opacity-60"
+            className="h-9 rounded-[10px] px-5 text-sm font-bold text-white hover:text-white disabled:opacity-60"
             style={BTN_GRADIENT}
           >
             {isSubmitting

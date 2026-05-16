@@ -311,7 +311,7 @@ function CtaBtn({ onClick, icon, label, dark = false }) {
     <Button variant="ghost"
       onClick={onClick}
       className={`flex min-h-11 items-center justify-center gap-2 rounded-[15px] px-3 text-[13px] font-bold transition-opacity hover:opacity-90 ${
-        dark ? 'bg-foreground text-background' : 'bg-card text-secondary'
+        dark ? 'bg-foreground text-background hover:text-background' : 'bg-card text-secondary hover:text-secondary'
       }`}
     >
       {icon}

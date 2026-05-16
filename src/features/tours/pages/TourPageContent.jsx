@@ -126,7 +126,7 @@ function TourCard({ tour, onOpen, t, lang }) {
           </div>
           <Button variant="ghost"
             type="button"
-            className="rounded-[14px] px-[13px] py-2.5 text-[13px] font-black text-white"
+            className="rounded-[14px] px-[13px] py-2.5 text-[13px] font-black text-white hover:text-white hover:opacity-90"
             style={{ background: PRIMARY_GRAD }}
           >
             {t('tourPage.viewDetail')}
@@ -153,7 +153,7 @@ function FilterSidebar({
 }) {
   return (
     <aside
-      className="h-max rounded-[28px] border-border bg-card p-4.5 shadow-(--ambient-shadow) lg:sticky lg:top-21"
+      className="h-max rounded-[28px] border-border bg-card p-4.5 shadow-(--ambient-shadow) xl:sticky xl:top-[86px]"
     >
       <h3 className="mb-[14px] flex items-center gap-[9px] text-[16px] font-black text-foreground">
         <SlidersHorizontal size={16} className="text-secondary" />
@@ -264,7 +264,7 @@ function FilterSidebar({
       <Button variant="ghost"
         type="button"
         onClick={onApply}
-        className="mb-2 flex w-full items-center justify-center gap-2 rounded-full py-[12px] text-[14px] font-black text-white"
+        className="mb-2 flex w-full items-center justify-center gap-2 rounded-full py-[12px] text-[14px] font-black text-white hover:text-white hover:opacity-90"
         style={{ background: PRIMARY_GRAD }}
       >
         <Search size={14} /> {t('tourPage.applyFilters')}
@@ -409,7 +409,7 @@ export default function TourPageContent() {
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_.95fr]">
             {/* Hero left */}
             <div
-              className="relative flex min-h-[360px] flex-col justify-end overflow-hidden rounded-[32px] p-[34px] text-white shadow-(--ambient-shadow)"
+              className="relative flex min-h-65 flex-col justify-end overflow-hidden rounded-[32px] p-5 text-white shadow-(--ambient-shadow) md:min-h-90 md:p-8.5"
               style={{ background: HERO_LEFT_BG }}
             >
               <span className="mb-[18px] inline-flex w-max items-center gap-2 rounded-full border border-white/30 bg-white/20 px-[13px] py-[9px] text-[13px] font-black">
@@ -464,7 +464,7 @@ export default function TourPageContent() {
                   >
                     {item.icon}
                   </div>
-                  <strong className="block text-[28px] font-black text-foreground">{item.value}</strong>
+                  <strong className="block text-[22px] font-black text-foreground md:text-[28px]">{item.value}</strong>
                   <span className="text-[13px] font-bold text-muted-foreground">{item.label}</span>
                 </div>
               ))}

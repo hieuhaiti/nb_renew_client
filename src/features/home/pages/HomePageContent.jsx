@@ -150,14 +150,11 @@ const ROLE_CARDS = [
 
 /* ─── Skeleton ─────────────────────────────────────── */
 function HomePageSkeleton() {
-  const spad = { padding: '28px 5vw 22px' };
-  const spad2 = { padding: '42px 5vw' };
   return (
-    <div className="overflconsk-hidden" aria-busy="true">
+    <div className="overflow-hidden" aria-busy="true">
       {/* Hero */}
       <section
-        style={{ ...spad, minHeight: 'calc(100vh - 76px)' }}
-        className="grid items-center gap-7 lg:grid-cols-[1.05fr_.95fr]"
+        className="grid items-center gap-7 px-5 pt-7 pb-[22px] min-h-[calc(100vh-76px)] md:px-[5vw] lg:grid-cols-[1.05fr_.95fr]"
       >
         <div className="space-y-5">
           <Skeleton className="h-9 w-52 rounded-full" />
@@ -166,20 +163,20 @@ function HomePageSkeleton() {
             <Skeleton className="h-12 w-3/4 rounded-xl" />
           </div>
           <Skeleton className="h-5 w-4/5" />
-          <Skeleton className="h-[68px] rounded-[28px]" />
-          <div className="grid grid-cols-5 gap-2">
+          <Skeleton className="h-17 rounded-[28px]" />
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
             {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-[82px] rounded-[18px]" />
+              <Skeleton key={i} className="h-20.5 rounded-[18px]" />
             ))}
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-[72px] rounded-[20px]" />
+              <Skeleton key={i} className="h-18 rounded-[20px]" />
             ))}
           </div>
         </div>
         <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_.72fr]">
-          <Skeleton className="min-h-[460px] rounded-[34px] lg:min-h-[560px]" />
+          <Skeleton className="min-h-[300px] rounded-[34px] sm:min-h-[420px] lg:min-h-[560px]" />
           <div className="flex flex-col gap-4">
             <Skeleton className="h-52 rounded-[28px]" />
             <Skeleton className="h-44 rounded-[28px]" />
@@ -189,7 +186,7 @@ function HomePageSkeleton() {
       </section>
 
       {/* Features */}
-      <section style={spad2}>
+      <section className="px-5 py-[42px] md:px-[5vw]">
         <div className="mb-5 flex items-end justify-between gap-4">
           <div className="space-y-2">
             <Skeleton className="h-4 w-32" />
@@ -199,13 +196,13 @@ function HomePageSkeleton() {
         </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-[188px] rounded-[26px]" />
+            <Skeleton key={i} className="h-47 rounded-[26px]" />
           ))}
         </div>
       </section>
 
       {/* Destinations */}
-      <section style={spad2}>
+      <section className="px-5 py-[42px] md:px-[5vw]">
         <div className="mb-5 flex items-end justify-between gap-4">
           <div className="space-y-2">
             <Skeleton className="h-4 w-28" />
@@ -215,29 +212,29 @@ function HomePageSkeleton() {
         </div>
         <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Skeleton className="col-span-2 h-[290px] rounded-[26px] sm:col-span-2" />
+            <Skeleton className="col-span-2 h-72.5 rounded-[26px]" />
             <Skeleton className="h-52 rounded-[26px]" />
             <Skeleton className="h-52 rounded-[26px]" />
           </div>
-          <Skeleton className="min-h-[420px] rounded-[30px]" />
+          <Skeleton className="min-h-[300px] rounded-[30px] sm:min-h-105" />
         </div>
-        <Skeleton className="mt-5 h-[160px] rounded-[32px]" />
+        <Skeleton className="mt-5 h-40 rounded-[32px]" />
       </section>
 
       {/* Role */}
-      <section style={spad2}>
+      <section className="px-5 py-[42px] md:px-[5vw]">
         <div className="grid gap-4 lg:grid-cols-[.8fr_1.2fr]">
-          <Skeleton className="h-[280px] rounded-[32px]" />
+          <Skeleton className="h-70 rounded-[32px]" />
           <div className="grid grid-cols-2 gap-4">
             {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-[160px] rounded-[26px]" />
+              <Skeleton key={i} className="h-40 rounded-[26px]" />
             ))}
           </div>
         </div>
       </section>
 
       {/* News */}
-      <section style={spad2}>
+      <section className="px-5 py-[42px] md:px-[5vw]">
         <div className="mb-5 flex items-end justify-between gap-4">
           <div className="space-y-2">
             <Skeleton className="h-4 w-28" />
@@ -248,10 +245,10 @@ function HomePageSkeleton() {
         <div className="grid gap-4 lg:grid-cols-[1.3fr_.7fr]">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-[135px] rounded-[24px]" />
+              <Skeleton key={i} className="h-33.75 rounded-[24px]" />
             ))}
           </div>
-          <Skeleton className="min-h-[360px] rounded-[28px]" />
+          <Skeleton className="min-h-90 rounded-[28px]" />
         </div>
       </section>
     </div>
@@ -527,7 +524,7 @@ export default function HomePageContent() {
   // Card: bg-card border-border, radius and shadow mapped to theme
   const glassCard =
     'bg-card border border-border rounded-[28px] p-4.5 shadow-(--ambient-shadow)';
-  const sectionPad = { padding: '42px 5vw' };
+  const sectionPad = 'px-5 py-[42px] md:px-[5vw]';
   const sectionSmall = 'mb-1 text-xs font-black uppercase tracking-widest text-secondary';
   const sectionH2 = 'font-black tracking-tight leading-[1.15] text-foreground';
   const sectionHead = 'mb-5 flex flex-wrap items-end justify-between gap-4';
@@ -559,8 +556,7 @@ export default function HomePageContent() {
             HERO
         ══════════════════════════════════════════ */}
         <section
-          className="grid items-center gap-7 lg:grid-cols-[1.05fr_.95fr]"
-          style={{ padding: '28px 5vw 22px', minHeight: 'calc(100vh - 76px)' }}
+          className="grid items-center gap-7 px-5 pt-7 pb-[22px] min-h-[calc(100vh-76px)] md:px-[5vw] lg:grid-cols-[1.05fr_.95fr]"
         >
           {/* ── Left ── */}
           <div>
@@ -587,8 +583,7 @@ export default function HomePageContent() {
 
             {/* Search box */}
             <div
-              className="border-border bg-card relative mb-4 rounded-[28px] border shadow-[var(--ambient-shadow-strong)]"
-              style={{ padding: '14px' }}
+              className="border-border bg-card relative mb-4 rounded-[28px] border p-3.5 shadow-(--ambient-shadow-strong)"
             >
               <div className="grid grid-cols-[1fr_auto] gap-2.5 sm:grid-cols-[1.1fr_.82fr_.82fr_auto]">
                 {/* Keyword */}
@@ -714,7 +709,7 @@ export default function HomePageContent() {
             </div>
 
             {/* Quick actions */}
-            <div className="mb-4 grid grid-cols-5 gap-2">
+            <div className="mb-4 grid grid-cols-3 gap-2 sm:grid-cols-5">
               {QUICK_LINKS.map((item, i) => (
                 <Button
                   key={item.id}
@@ -760,7 +755,7 @@ export default function HomePageContent() {
               tabIndex={0}
               onClick={() => navigate('/map')}
               onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/map')}
-              className="focus-visible:ring-ring relative min-h-[420px] cursor-pointer overflow-hidden rounded-[34px] border border-white/80 shadow-[var(--ambient-shadow-strong)] focus-visible:ring-2 focus-visible:outline-none lg:min-h-[560px]"
+              className="focus-visible:ring-ring relative min-h-[300px] cursor-pointer overflow-hidden rounded-[34px] border border-white/80 shadow-(--ambient-shadow-strong) focus-visible:ring-2 focus-visible:outline-none sm:min-h-[420px] lg:min-h-[560px]"
               style={{
                 background:
                   'linear-gradient(135deg,rgba(10,68,88,.18),rgba(16,185,129,.15)),' +
@@ -959,7 +954,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════
             FEATURE GRID
         ══════════════════════════════════════════ */}
-        <section style={sectionPad}>
+        <section className={sectionPad}>
           <div className={sectionHead}>
             <div>
               <p className={sectionSmall}>{t('home.quick_access.label')}</p>
@@ -1004,7 +999,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════
             DESTINATIONS + ITINERARY
         ══════════════════════════════════════════ */}
-        <section style={sectionPad} id="destinations">
+        <section className={sectionPad} id="destinations">
           <div className={sectionHead}>
             <div>
               <p className={sectionSmall}>{t('home.featured_destinations.label')}</p>
@@ -1208,7 +1203,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════
             ROLE SECTION
         ══════════════════════════════════════════ */}
-        <section style={sectionPad}>
+        <section className={sectionPad}>
           <div className="grid gap-4 lg:grid-cols-[.8fr_1.2fr]">
             {/* Role intro */}
             <div
@@ -1258,7 +1253,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════
             NEWS + VLOG
         ══════════════════════════════════════════ */}
-        <section style={sectionPad} id="news">
+        <section className={sectionPad} id="news">
           <div className={sectionHead}>
             <div>
               <p className={sectionSmall}>{t('home.news_section.label')}</p>
@@ -1367,7 +1362,7 @@ export default function HomePageContent() {
             VOUCHERS
         ══════════════════════════════════════════ */}
         {nearbyVouchers.length > 0 && (
-          <section style={sectionPad} id="services">
+          <section className={sectionPad} id="services">
             <div className={sectionHead}>
               <div>
                 <p className={sectionSmall}>{t('home.vouchers_section.label')}</p>
@@ -1443,7 +1438,7 @@ export default function HomePageContent() {
             OCOP PRODUCTS
         ══════════════════════════════════════════ */}
         {ocopProducts.length > 0 && (
-          <section style={sectionPad} id="ocop">
+          <section className={sectionPad} id="ocop">
             <div className={sectionHead}>
               <div>
                 <p className={sectionSmall}>{t('home.ocop_section.label')}</p>
@@ -1525,10 +1520,9 @@ export default function HomePageContent() {
             FOOTER
         ══════════════════════════════════════════ */}
         <footer
-          className="mt-5 grid gap-6 text-[#d9f6f3]"
+          className="mt-5 grid gap-6 px-5 py-[34px] text-[#d9f6f3] md:px-[5vw]"
           style={{
             background: '#083d4d',
-            padding: '34px 5vw',
             gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))',
           }}
         >
