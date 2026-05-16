@@ -621,26 +621,6 @@ export default function TourismPointPage() {
                       ))}
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  <div className="border-border bg-card flex items-center gap-1 rounded-[14px] p-1">
-                    {[
-                      { mode: 'grid', Icon: LayoutGrid },
-                      { mode: 'list', Icon: List },
-                      { mode: 'map', Icon: MapIcon, action: () => navigate('/map') },
-                    ].map(({ mode, Icon, action }) => (
-                      <Button
-                        variant="ghost"
-                        key={mode}
-                        onClick={action ?? (() => setCurrentSettings({ viewMode: mode }))}
-                        className={`flex h-[34px] w-[34px] items-center justify-center rounded-[10px] transition-colors ${
-                          currentSettings.viewMode === mode && !action
-                            ? 'bg-secondary/10 text-secondary'
-                            : 'text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        <Icon size={15} />
-                      </Button>
-                    ))}
-                  </div>
                 </div>
               </div>
 
