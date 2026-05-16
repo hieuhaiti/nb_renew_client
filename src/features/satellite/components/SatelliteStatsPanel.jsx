@@ -33,7 +33,7 @@ export function SatelliteStatsPanel() {
           return (
             <div key={layer.id} className="space-y-2">
               <div className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full shrink-0 ${cfg?.color || 'bg-gray-400'}`} />
+                <div className={`w-2 h-2 rounded-full shrink-0 ${cfg?.color || 'bg-muted-foreground'}`} />
                 <span className="typo-meta font-semibold text-foreground/80">
                   {cfg ? t(cfg.labelKey) : layer.layerType}
                 </span>

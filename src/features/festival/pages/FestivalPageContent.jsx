@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
@@ -17,6 +17,15 @@ import RootLayout from '@/components/layout/RootLayout';
 import { useFestivalsQuery, useFestivalTypesQuery } from '@/services/api/map/festivalService';
 import { withBaseUrl, getLocaleFromLanguage } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 const HERO_BG = `linear-gradient(135deg,rgba(3,95,172,.90),rgba(14,165,233,.85),rgba(126,34,206,.72)), url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80") center/cover`;
@@ -24,7 +33,7 @@ const HERO_BG = `linear-gradient(135deg,rgba(3,95,172,.90),rgba(14,165,233,.85),
 const TYPE_STYLES = {
   religious: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
   traditional: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
-  cultural: { bg: 'bg-[#eef7ff]', text: 'text-[#0b66c3]', border: 'border-[#cfe0f4]' },
+  cultural: { bg: 'bg-muted', text: 'text-primary', border: 'border-border' },
   folk: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
   modern: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
   seasonal: { bg: 'bg-lime-50', text: 'text-lime-700', border: 'border-lime-200' },
@@ -35,7 +44,11 @@ const TYPE_STYLES = {
   sport: { bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-200' },
 };
 
-const DEFAULT_TYPE_STYLE = { bg: 'bg-[#f8fbff]', text: 'text-[#52647a]', border: 'border-[#cfe0f4]' };
+const DEFAULT_TYPE_STYLE = {
+  bg: 'bg-muted',
+  text: 'text-muted-foreground',
+  border: 'border-border',
+};
 
 function getTypeStyle(type) {
   return TYPE_STYLES[type] || DEFAULT_TYPE_STYLE;
@@ -87,14 +100,17 @@ function FestivalCard({ festival, navigate, locale, t }) {
   return (
     <article
       onClick={() => festival?.id && navigate(`/festival/${festival.id}`)}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border-border bg-card shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
     >
       <div className="relative h-52 overflow-hidden">
         <img
           src={imageSrc}
           alt={name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = placeholderImg;
+          }}
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
 
@@ -112,7 +128,7 @@ function FestivalCard({ festival, navigate, locale, t }) {
         )}
 
         {daysUntil && (
-          <span className="absolute right-3 bottom-3 rounded-full bg-[#f59e0b]/90 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
+          <span className="absolute right-3 bottom-3 rounded-full bg-tertiary/90 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
             {daysUntil}
           </span>
         )}
@@ -125,31 +141,31 @@ function FestivalCard({ festival, navigate, locale, t }) {
 
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="line-clamp-2 text-sm font-black leading-snug text-foreground transition-colors group-hover:text-[#0b66c3]"
+          className="text-foreground line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-primary"
           title={name}
         >
           {name}
         </h3>
 
         {location && (
-          <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-xs">
             <MapPin size={11} className="shrink-0" />
             <span className="line-clamp-1">{location}</span>
           </div>
         )}
 
-        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground mt-2 line-clamp-2 text-xs leading-relaxed">
           {description || t('festivalPage.card.no_description')}
         </p>
 
         <div className="mt-auto pt-3">
           <div className="flex items-center justify-between">
             {festival?.spot_name && (
-              <span className="line-clamp-1 max-w-[60%] text-xs text-muted-foreground">
+              <span className="text-muted-foreground line-clamp-1 max-w-[60%] text-xs">
                 {festival.spot_name}
               </span>
             )}
-            <span className="ml-auto flex items-center gap-1 text-xs font-semibold text-[#0b66c3] group-hover:underline">
+            <span className="ml-auto flex items-center gap-1 text-xs font-semibold text-primary group-hover:underline">
               {t('festivalPage.card.view_detail')} <ArrowRight size={11} />
             </span>
           </div>
@@ -161,13 +177,13 @@ function FestivalCard({ festival, navigate, locale, t }) {
 
 function FestivalCardSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white">
-      <div className="h-52 w-full bg-muted" />
+    <div className="animate-pulse overflow-hidden rounded-[18px] border-border bg-card">
+      <div className="bg-muted h-52 w-full" />
       <div className="space-y-2 p-4">
-        <div className="h-4 w-3/4 rounded bg-muted" />
-        <div className="h-3 w-1/2 rounded bg-muted" />
-        <div className="h-3 w-full rounded bg-muted" />
-        <div className="h-3 w-2/3 rounded bg-muted" />
+        <div className="bg-muted h-4 w-3/4 rounded" />
+        <div className="bg-muted h-3 w-1/2 rounded" />
+        <div className="bg-muted h-3 w-full rounded" />
+        <div className="bg-muted h-3 w-2/3 rounded" />
       </div>
     </div>
   );
@@ -246,10 +262,10 @@ export default function FestivalPageContent() {
               <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
                 {t('festivalPage.hero.badge')}
               </span>
-              <h1 className="mt-2 text-2xl font-black leading-tight tracking-tight md:text-3xl xl:text-4xl">
+              <h1 className="mt-2 text-2xl leading-tight font-black tracking-tight md:text-3xl xl:text-4xl">
                 {t('festivalPage.hero.title')}
               </h1>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
+              <p className="mt-2 text-sm leading-relaxed font-medium text-white/90">
                 {t('festivalPage.hero.description')}
               </p>
             </div>
@@ -266,48 +282,60 @@ export default function FestivalPageContent() {
                     key={s.label}
                     className="flex min-h-19 flex-col justify-center rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
                   >
-                    <div className="text-lg font-black leading-none md:text-xl xl:text-2xl">{s.value}</div>
+                    <div className="text-lg leading-none font-black md:text-xl xl:text-2xl">
+                      {s.value}
+                    </div>
                     <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
                   </div>
                 ))}
               </div>
 
               {/* Search bar */}
-              <div
-                className="flex flex-1 flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
-                style={{
-                  background: 'rgba(255,255,255,0.94)',
-                  border: '1px solid rgba(255,255,255,0.75)',
-                  boxShadow: '0 12px 28px rgba(0,0,0,.14)',
-                }}
-              >
+              <div className="flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 bg-card/95 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
-                  <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
-                  <input
+                  <Search
+                    size={16}
+                    className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <Input
                     type="text"
                     placeholder={t('festivalPage.filters.search_placeholder')}
                     value={keyword}
-                    onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
-                    className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                    onChange={(e) => {
+                      setKeyword(e.target.value);
+                      setPage(1);
+                    }}
+                    className="text-foreground h-11 w-full rounded-xl border-input bg-card pr-3 pl-9 text-sm outline-none focus:border-primary"
                   />
                 </div>
-                <select
+                <Select
                   value={upcomingFilter}
-                  onChange={(e) => { setUpcomingFilter(e.target.value); setPage(1); }}
-                  className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                  onValueChange={(value) => {
+                    setUpcomingFilter(value);
+                    setPage(1);
+                  }}
                 >
-                  <option value="upcoming">{t('festivalPage.filters.upcoming')}</option>
-                  <option value="past">{t('festivalPage.filters.past')}</option>
-                  <option value="all">{t('festivalPage.filters.all_time')}</option>
-                </select>
-                <button
+                  <SelectTrigger className="text-foreground h-11 shrink-0 rounded-xl border-input bg-card px-3 text-sm focus:border-primary">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="upcoming">{t('festivalPage.filters.upcoming')}</SelectItem>
+                    <SelectItem value="past">{t('festivalPage.filters.past')}</SelectItem>
+                    <SelectItem value="all">{t('festivalPage.filters.all_time')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="ghost"
                   type="button"
-                  onClick={() => { setPage(1); refetch?.(); }}
+                  onClick={() => {
+                    setPage(1);
+                    refetch?.();
+                  }}
                   className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
                   style={BTN_GRADIENT}
                 >
                   {t('festivalPage.filters.search_btn')}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -318,65 +346,78 @@ export default function FestivalPageContent() {
           {/* Type chips + toolbar */}
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-1.5">
-              <button
+              <Button
+                variant="ghost"
                 type="button"
-                onClick={() => { setTypeFilter('all'); setPage(1); }}
+                onClick={() => {
+                  setTypeFilter('all');
+                  setPage(1);
+                }}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   typeFilter === 'all'
-                    ? 'bg-[#0b66c3] text-white'
-                    : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground border-border bg-card hover:bg-muted'
                 }`}
               >
                 {t('common.all')}
-              </button>
+              </Button>
               {allTypeKeys.map((key) => {
                 const style = getTypeStyle(key);
                 return (
-                  <button
+                  <Button
+                    variant="ghost"
                     key={key}
                     type="button"
-                    onClick={() => { setTypeFilter(key); setPage(1); }}
+                    onClick={() => {
+                      setTypeFilter(key);
+                      setPage(1);
+                    }}
                     className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       typeFilter === key
-                        ? 'bg-[#0b66c3] text-white'
+                        ? 'bg-primary text-primary-foreground'
                         : `border ${style.border} ${style.bg} ${style.text} hover:opacity-80`
                     }`}
                   >
                     {t(`festivalPage.types.${key}`, { defaultValue: key })}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
 
             <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 <strong className="text-foreground">{total}</strong>{' '}
                 {t('festivalPage.stats.total').toLowerCase()}
               </p>
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={handleReset}
-                className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
+                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
                 {t('festivalPage.toolbar.refresh')}
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Festival grid */}
           {isLoading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, i) => <FestivalCardSkeleton key={i} />)}
+              {Array.from({ length: 6 }).map((_, i) => (
+                <FestivalCardSkeleton key={i} />
+              ))}
             </div>
           ) : isError ? (
-            <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
+            <div className="text-muted-foreground rounded-[18px] border-border bg-card py-20 text-center">
               {t('festivalPage.states.error')}
             </div>
           ) : festivals.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
+            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border-border bg-card py-20">
               <Inbox size={40} className="mb-3 opacity-30" />
-              <p className="text-sm 2xl:text-base font-semibold text-foreground">{t('festivalPage.states.empty_title')}</p>
+              <p className="text-foreground text-sm font-semibold 2xl:text-base">
+                {t('festivalPage.states.empty_title')}
+              </p>
               <p className="mt-1 text-sm">{t('festivalPage.states.empty_desc')}</p>
             </div>
           ) : (
@@ -396,25 +437,27 @@ export default function FestivalPageContent() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-8 flex items-center justify-between">
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
               >
                 <ChevronLeft size={15} /> {t('festivalPage.pagination.prev')}
-              </button>
-              <span className="rounded-full border border-[#cfe0f4] bg-white px-4 py-1.5 text-sm font-semibold">
+              </Button>
+              <span className="rounded-full border-border bg-card px-4 py-1.5 text-sm font-semibold">
                 {t('festivalPage.pagination.page', { current: page, total: totalPages })}
               </span>
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
               >
                 {t('festivalPage.pagination.next')} <ChevronRight size={15} />
-              </button>
+              </Button>
             </div>
           )}
 
@@ -426,7 +469,7 @@ export default function FestivalPageContent() {
             <p className="mb-1 text-xs font-semibold text-white/75">
               {t('festivalPage.cta_section.badge')}
             </p>
-            <h3 className="text-lg font-black leading-tight md:text-xl xl:text-2xl">
+            <h3 className="text-lg leading-tight font-black md:text-xl xl:text-2xl">
               {t('festivalPage.cta_section.title')}
             </h3>
             <p className="mt-1.5 text-sm text-white/85">
@@ -437,14 +480,15 @@ export default function FestivalPageContent() {
                 { key: 'festivalPage.cta_section.cta_map', path: '/map' },
                 { key: 'festivalPage.cta_section.cta_points', path: '/tourism-point' },
               ].map((item) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={item.path}
                   type="button"
                   onClick={() => navigate(item.path)}
                   className="h-9 rounded-[10px] border border-white/35 bg-white/15 px-4 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/25"
                 >
                   {t(item.key)}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

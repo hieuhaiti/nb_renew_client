@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Clock, LocateFixed, RefreshCw, Search, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -297,7 +297,7 @@ export default function CapacityPanel() {
       {/* Status filter chips */}
       {!isLoading && items.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          <button
+          <Button
             type="button"
             onClick={() => setStatusFilter('all')}
             className={cn(
@@ -309,13 +309,13 @@ export default function CapacityPanel() {
           >
             {t('mapPage.capacityPanel.all', { defaultValue: 'Tất cả' })}
             <span className="opacity-70">{items.length}</span>
-          </button>
+          </Button>
 
           {presentStatuses.map((status) => {
             const meta = getStatusMeta(status);
             const isActive = statusFilter === status;
             return (
-              <button
+              <Button
                 key={status}
                 type="button"
                 onClick={() => setStatusFilter(status)}
@@ -328,7 +328,7 @@ export default function CapacityPanel() {
               >
                 {getStatusLabel(status, isVi)}
                 <span className="opacity-70">{statusCounts[status]}</span>
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -426,3 +426,4 @@ export default function CapacityPanel() {
     </div>
   );
 }
+

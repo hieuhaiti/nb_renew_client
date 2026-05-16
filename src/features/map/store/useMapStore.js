@@ -4,6 +4,7 @@ export const useMapStore = create((set) => ({
   mapRef: null,
   mapRefObj: null,
   isSplitMode: false,
+  locateControl: null,
 
   highlightedPoint: null,
   highlightedPointAt: 0,
@@ -13,6 +14,7 @@ export const useMapStore = create((set) => ({
 
   setMapRef: (mapRef) => set({ mapRef }),
   setMapRefObj: (mapRefObj) => set({ mapRefObj }),
+  setLocateControl: (locateControl) => set({ locateControl }),
   setIsSplitMode: (isSplitMode) =>
     set((state) => {
       // debug logs removed

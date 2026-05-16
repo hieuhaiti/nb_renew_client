@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   Star,
   ThumbsUp,
@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { Button } from '@/components/ui/button';
 
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 const BAR_GRADIENT = 'linear-gradient(135deg, #0b66c3, #0ea5e9)';
@@ -36,7 +37,8 @@ function StarPicker({ value, hover, onValue, onHover, size = 'h-6 w-6' }) {
   return (
     <div className="flex items-center gap-1">
       {Array.from({ length: 5 }).map((_, idx) => (
-        <button
+        <Button
+          variant="ghost"
           key={idx}
           type="button"
           onMouseEnter={() => onHover(idx + 1)}
@@ -51,7 +53,7 @@ function StarPicker({ value, hover, onValue, onHover, size = 'h-6 w-6' }) {
                 : 'fill-[#d99200] text-[#d99200] opacity-20'
             }`}
           />
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -64,7 +66,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
   const dateStr = r.visit_date || r.created_at;
 
   return (
-    <article className="rounded-[14px] border border-[#cfe0f4] bg-white p-4">
+    <article className="rounded-[14px] border-border bg-card p-4">
       <div className="flex items-start gap-3">
         {/* Avatar */}
         <div
@@ -83,7 +85,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
                   {userName}
                 </span>
                 {r.is_verified_visit && (
-                  <BadgeCheck size={14} className="shrink-0 text-[#10b981]" />
+                  <BadgeCheck size={14} className="shrink-0 text-secondary" />
                 )}
               </div>
               {starCount > 0 && (
@@ -113,13 +115,13 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
           {(r.pros || r.cons) && (
             <div className="mt-2.5 grid gap-1.5 sm:grid-cols-2">
               {r.pros && (
-                <div className="rounded-[8px] bg-[#f0fdf4] px-3 py-2 text-xs text-[#059669]">
+                <div className="rounded-[8px] bg-secondary/10 px-3 py-2 text-xs text-secondary">
                   <span className="font-semibold">+ </span>
                   {r.pros}
                 </div>
               )}
               {r.cons && (
-                <div className="rounded-[8px] bg-[#fff7ed] px-3 py-2 text-xs text-[#d97706]">
+                <div className="rounded-[8px] bg-tertiary/10 px-3 py-2 text-xs text-tertiary">
                   <span className="font-semibold">- </span>
                   {r.cons}
                 </div>
@@ -156,20 +158,21 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
               <span />
             )}
             {r.can_delete && (
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => onDeleteReview(r.id)}
-                className="text-muted-foreground h-6 rounded-[6px] border border-[#cfe0f4] bg-white px-2 text-xs hover:bg-[#eef7ff]"
+                className="text-muted-foreground h-6 rounded-[6px] border-border bg-card px-2 text-xs hover:bg-muted"
               >
                 {t('tourism.delete', 'Xoá')}
-              </button>
+              </Button>
             )}
           </div>
 
           {/* Reply */}
           {r.reply_text && (
-            <div className="mt-2.5 rounded-[10px] border border-[#cfe0f4] bg-[#eef7ff] p-3">
-              <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-[#0b66c3]">
+            <div className="mt-2.5 rounded-[10px] border-border bg-primary-soft p-3">
+              <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-primary">
                 <MessageSquare size={11} />
                 {r.reply_by_name || t('tourism.operator_reply', 'Phản hồi từ đơn vị')}
               </div>
@@ -224,10 +227,10 @@ export function TourismDetailReviewsSection({
       </h2>
 
       {/* Summary */}
-      <div className="mb-4 rounded-[14px] border border-[#cfe0f4] bg-[#eef7ff] p-4">
+      <div className="mb-4 rounded-[14px] border-border bg-primary-soft p-4">
         <div className="grid gap-4 md:grid-cols-[88px_minmax(0,1fr)]">
           <div className="flex flex-col items-center justify-center">
-            <div className="text-4xl leading-none font-black text-[#0b66c3]">
+            <div className="text-4xl leading-none font-black text-primary">
               {averageDisplayRating > 0 ? averageDisplayRating.toFixed(1) : '—'}
             </div>
             <div className="mt-1.5">
@@ -266,7 +269,7 @@ export function TourismDetailReviewsSection({
           Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="h-28 animate-pulse rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff]"
+              className="h-28 animate-pulse rounded-[14px] border-border bg-muted"
             />
           ))
         ) : reviews.length > 0 ? (
@@ -280,7 +283,7 @@ export function TourismDetailReviewsSection({
             />
           ))
         ) : (
-          <div className="text-muted-foreground rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] px-4 py-6 text-center text-sm">
+          <div className="text-muted-foreground rounded-[14px] border-border bg-muted px-4 py-6 text-center text-sm">
             {t('tourism.no_reviews', 'Chưa có đánh giá nào.')}
           </div>
         )}
@@ -293,38 +296,40 @@ export function TourismDetailReviewsSection({
             {t('tourism.page', 'Trang')} {pageDisplay} / {pagesDisplay}
           </span>
           <div className="flex items-center gap-1.5">
-            <button
+            <Button
+              variant="ghost"
               type="button"
               disabled={reviewPage <= 1}
               onClick={onPrevPage}
-              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border-border bg-card px-2.5 text-xs font-semibold hover:bg-muted disabled:opacity-40"
             >
               <ChevronLeft size={13} />
               {t('common.prev', 'Trước')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
               type="button"
               disabled={reviewPage >= pagesDisplay}
               onClick={onNextPage}
-              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border-border bg-card px-2.5 text-xs font-semibold hover:bg-muted disabled:opacity-40"
             >
               {t('common.next', 'Sau')}
               <ChevronRight size={13} />
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       {/* Write review form */}
-      <div className="mt-4 rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] p-4">
+      <div className="mt-4 rounded-[14px] border-border bg-muted p-4">
         <h3 className="text-foreground mb-4 text-sm font-bold">
           {t('tourism.write_your_review', 'Viết đánh giá của bạn')}
         </h3>
 
         {/* Star picker */}
-        <div className="mb-4 flex items-center justify-between rounded-[10px] border border-[#cfe0f4] bg-white px-3 py-2.5">
+        <div className="mb-4 flex items-center justify-between rounded-[10px] border-border bg-card px-3 py-2.5">
           <span className="text-foreground text-sm">
-            {t('tourism.your_rating', 'Số sao đánh giá')} <span className="text-red-500">*</span>
+            {t('tourism.your_rating', 'Số sao đánh giá')} <span className="text-quinary">*</span>
           </span>
           <StarPicker
             value={newStars}
@@ -349,7 +354,7 @@ export function TourismDetailReviewsSection({
               value={newTitle}
               onChange={(e) => onTitleChange(e.target.value)}
               placeholder={t('tourism.review_title_placeholder', 'Tóm tắt trải nghiệm của bạn...')}
-              className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+              className="h-9 rounded-[8px] border-border bg-card text-sm focus:border-primary"
             />
           </div>
           <div>
@@ -364,7 +369,7 @@ export function TourismDetailReviewsSection({
               type="date"
               value={newVisitDate}
               onChange={(e) => onVisitDateChange(e.target.value)}
-              className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+              className="h-9 rounded-[8px] border-border bg-card text-sm focus:border-primary"
             />
           </div>
         </div>
@@ -386,7 +391,7 @@ export function TourismDetailReviewsSection({
               'tourism.leave_comment_placeholder',
               'Chia sẻ trải nghiệm của bạn về địa điểm này...'
             )}
-            className="min-h-20 resize-none rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+            className="min-h-20 resize-none rounded-[8px] border-border bg-card text-sm focus:border-primary"
           />
         </div>
 
@@ -404,7 +409,7 @@ export function TourismDetailReviewsSection({
               value={newPros}
               onChange={(e) => onProsChange(e.target.value)}
               placeholder={t('tourism.pros_placeholder', 'Điểm bạn thích...')}
-              className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+              className="h-9 rounded-[8px] border-border bg-card text-sm focus:border-primary"
             />
           </div>
           <div>
@@ -419,7 +424,7 @@ export function TourismDetailReviewsSection({
               value={newCons}
               onChange={(e) => onConsChange(e.target.value)}
               placeholder={t('tourism.cons_placeholder', 'Điểm chưa hài lòng...')}
-              className="h-9 rounded-[8px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+              className="h-9 rounded-[8px] border-border bg-card text-sm focus:border-primary"
             />
           </div>
         </div>
@@ -433,7 +438,7 @@ export function TourismDetailReviewsSection({
             {t('tourism.upload_photos', 'Tải ảnh (tối đa 5 ảnh)')}
           </label>
           <div
-            className="text-muted-foreground flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-[#cfe0f4] bg-white text-sm transition hover:bg-[#eef7ff]"
+            className="text-muted-foreground flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-border bg-card text-sm transition hover:bg-muted"
             onClick={() => document.getElementById('review-file-input')?.click()}
             role="button"
             tabIndex={0}
@@ -444,9 +449,9 @@ export function TourismDetailReviewsSection({
               }
             }}
           >
-            <Plus size={14} className="text-[#0b66c3]" />
+            <Plus size={14} className="text-primary" />
             {t('tourism.upload_hint', 'Nhấn để chọn ảnh')}
-            <input
+            <Input
               id="review-file-input"
               type="file"
               accept="image/*"
@@ -461,13 +466,14 @@ export function TourismDetailReviewsSection({
               {previews.map((u, i) => (
                 <div key={i} className="group relative h-16 w-20 overflow-hidden rounded-[8px]">
                   <img src={u} alt={`preview-${i}`} className="h-full w-full object-cover" />
-                  <button
+                  <Button
+                    variant="ghost"
                     type="button"
                     onClick={() => onRemoveFile(i)}
                     className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-xs text-white opacity-0 transition group-hover:opacity-100"
                   >
                     ×
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
@@ -476,14 +482,16 @@ export function TourismDetailReviewsSection({
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-2">
-          <button
+          <Button
+            variant="ghost"
             type="button"
             onClick={onReset}
-            className="text-foreground h-9 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff]"
+            className="text-foreground h-9 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted"
           >
             {t('tourism.cancel', 'Huỷ')}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
@@ -493,7 +501,7 @@ export function TourismDetailReviewsSection({
             {isSubmitting
               ? t('tourism.sending', 'Đang gửi...')
               : t('tourism.submit_review', 'Gửi đánh giá')}
-          </button>
+          </Button>
         </div>
       </div>
     </section>

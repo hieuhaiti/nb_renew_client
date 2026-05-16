@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ function SceneItem({ scene, index, isSelected, onSelect, t }) {
     <TooltipProvider delayDuration={400}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button
+          <Button variant="ghost"
             type="button"
             onClick={() => onSelect(scene.id)}
             className={cn(
@@ -50,7 +50,7 @@ function SceneItem({ scene, index, isSelected, onSelect, t }) {
                 {t('vr360.main_badge')}
               </Badge>
             )}
-          </button>
+          </Button>
         </TooltipTrigger>
         <TooltipContent side="left" sideOffset={10} className="max-w-[200px]">
           <p className="text-xs">{scene.name}</p>
@@ -102,7 +102,7 @@ export default function Vr360SceneList({
           </Badge>
         )}
         {typeof onClose === 'function' && (
-          <Button
+          <Button variant="ghost"
             type="button"
             variant="ghost"
             size="icon"
@@ -149,3 +149,5 @@ export default function Vr360SceneList({
     </div>
   );
 }
+
+

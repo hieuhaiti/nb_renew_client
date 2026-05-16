@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModalCarouselStore } from '@/features/map/store/useModalStore';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { withBaseUrl } from '@/lib/utils';
 import useEmblaCarousel from 'embla-carousel-react';
+import { Button } from '@/components/ui/button';
 
 export default function ModalCarousel() {
   const { t } = useTranslation();
@@ -83,7 +84,7 @@ export default function ModalCarousel() {
             </div>
           </div>
 
-          <button
+          <Button variant="ghost"
             className="bg-background hover:bg-accent absolute top-1/2 left-2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border transition-colors"
             onClick={() => emblaApi?.scrollPrev()}
           >
@@ -101,9 +102,9 @@ export default function ModalCarousel() {
             >
               <polyline points="15 18 9 12 15 6" />
             </svg>
-          </button>
+          </Button>
 
-          <button
+          <Button variant="ghost"
             className="bg-background hover:bg-accent absolute top-1/2 right-2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border transition-colors"
             onClick={() => emblaApi?.scrollNext()}
           >
@@ -121,7 +122,7 @@ export default function ModalCarousel() {
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-          </button>
+          </Button>
         </div>
       </DialogContent>
 
@@ -132,7 +133,7 @@ export default function ModalCarousel() {
           role="dialog"
           aria-label={t('zoomed_image', 'Ảnh phóng to')}
         >
-          <button
+          <Button variant="ghost"
             type="button"
             className="absolute top-4 right-4 rounded-full border border-white/35 bg-black/30 px-3 py-1 text-sm text-white hover:bg-black/50"
             onClick={(event) => {
@@ -141,7 +142,7 @@ export default function ModalCarousel() {
             }}
           >
             {t('close', 'Đóng')}
-          </button>
+          </Button>
           <img
             src={zoomImage}
             alt={t('zoomed_image', 'Ảnh phóng to')}
@@ -153,3 +154,5 @@ export default function ModalCarousel() {
     </Dialog>
   );
 }
+
+

@@ -1,6 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 const BAR_GRADIENT = 'linear-gradient(135deg, #0b66c3, #0ea5e9)';
@@ -34,7 +35,7 @@ function TourReviewCard({ r, t }) {
   ].filter((m) => m.value > 0);
 
   return (
-    <article className="rounded-[14px] border border-[#cfe0f4] bg-white p-4">
+    <article className="rounded-[14px] border-border bg-card p-4">
       <div className="flex items-start gap-3">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
@@ -71,7 +72,7 @@ function TourReviewCard({ r, t }) {
               {subRatings.map((m) => (
                 <div
                   key={m.label}
-                  className="flex items-center justify-between rounded-[8px] bg-[#f8fbff] px-2.5 py-1.5"
+                  className="flex items-center justify-between rounded-[8px] bg-muted px-2.5 py-1.5"
                 >
                   <span className="text-muted-foreground text-xs">{m.label}</span>
                   <StarsDisplay count={m.value} size={10} />
@@ -113,7 +114,7 @@ export function TourDetailReviewsSection({
       </h2>
 
       {reviewId && (
-        <div className="mb-4 rounded-[10px] border border-[#cfe0f4] bg-[#eef7ff] px-4 py-3">
+        <div className="mb-4 rounded-[10px] border-border bg-primary-soft px-4 py-3">
           <h3 className="text-foreground text-sm font-semibold">
             {t('tourPage.review', 'Đánh giá')} #{singleReview?.id || reviewId}
           </h3>
@@ -126,10 +127,10 @@ export function TourDetailReviewsSection({
       )}
 
       {/* Summary */}
-      <div className="mb-4 rounded-[14px] border border-[#cfe0f4] bg-[#eef7ff] p-4">
+      <div className="mb-4 rounded-[14px] border-border bg-primary-soft p-4">
         <div className="grid gap-4 md:grid-cols-[88px_minmax(0,1fr)]">
           <div className="flex flex-col items-center justify-center">
-            <div className="text-4xl leading-none font-black text-[#0b66c3]">
+            <div className="text-4xl leading-none font-black text-primary">
               {totalReviews > 0 && criteria.averageRating > 0
                 ? Number(criteria.averageRating).toFixed(1)
                 : '—'}
@@ -169,13 +170,13 @@ export function TourDetailReviewsSection({
           Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="h-28 animate-pulse rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff]"
+              className="h-28 animate-pulse rounded-[14px] border-border bg-muted"
             />
           ))
         ) : reviews.length > 0 ? (
           reviews.map((r) => <TourReviewCard key={r.id} r={r} t={t} />)
         ) : (
-          <div className="text-muted-foreground rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] px-4 py-6 text-center text-sm">
+          <div className="text-muted-foreground rounded-[14px] border-border bg-muted px-4 py-6 text-center text-sm">
             {t('tourPage.noReviews', 'Chưa có đánh giá nào.')}
           </div>
         )}
@@ -188,30 +189,30 @@ export function TourDetailReviewsSection({
             {t('tourPage.page', 'Trang')} {pageDisplay} / {pagesDisplay}
           </span>
           <div className="flex items-center gap-1.5">
-            <button
+            <Button variant="ghost"
               type="button"
               disabled={reviewPage <= 1}
               onClick={onPrevPage}
-              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border-border bg-card px-2.5 text-xs font-semibold hover:bg-muted disabled:opacity-40"
             >
               <ChevronLeft size={13} />
               {t('common.prev', 'Trước')}
-            </button>
-            <button
+            </Button>
+            <Button variant="ghost"
               type="button"
               disabled={reviewPage >= pagesDisplay}
               onClick={onNextPage}
-              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+              className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border-border bg-card px-2.5 text-xs font-semibold hover:bg-muted disabled:opacity-40"
             >
               {t('common.next', 'Sau')}
               <ChevronRight size={13} />
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       {/* Write review form */}
-      <div className="mt-4 rounded-[14px] border border-[#cfe0f4] bg-[#f8fbff] p-4">
+      <div className="mt-4 rounded-[14px] border-border bg-muted p-4">
         <h3 className="text-foreground mb-4 text-sm font-bold">
           {t('tourPage.leaveReview', 'Viết đánh giá của bạn')}
         </h3>
@@ -224,12 +225,12 @@ export function TourDetailReviewsSection({
           {criteria.items.map((criterion) => (
             <div
               key={criterion.key}
-              className="flex items-center justify-between rounded-[10px] border border-[#cfe0f4] bg-white px-3 py-2"
+              className="flex items-center justify-between rounded-[10px] border-border bg-card px-3 py-2"
             >
               <span className="text-foreground text-sm">{criterion.label}</span>
               <div className="flex items-center gap-1">
                 {Array.from({ length: 5 }).map((_, idx) => (
-                  <button
+                  <Button variant="ghost"
                     key={idx}
                     type="button"
                     onClick={() => criterion.setValue(idx + 1)}
@@ -243,7 +244,7 @@ export function TourDetailReviewsSection({
                           : 'fill-[#d99200] text-[#d99200] opacity-20'
                       }
                     />
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -252,11 +253,11 @@ export function TourDetailReviewsSection({
 
         {/* Computed average */}
         {newRating > 0 && (
-          <div className="mb-4 flex items-center gap-2 rounded-[10px] border border-[#cfe0f4] bg-white px-3 py-2">
+          <div className="mb-4 flex items-center gap-2 rounded-[10px] border-border bg-card px-3 py-2">
             <span className="text-muted-foreground text-xs">
               {t('tourPage.avgScore', 'Điểm trung bình')}
             </span>
-            <span className="ml-auto text-sm font-black text-[#0b66c3]">{newRating}/5</span>
+            <span className="ml-auto text-sm font-black text-primary">{newRating}/5</span>
             <StarsDisplay count={newRating} size={14} />
           </div>
         )}
@@ -278,20 +279,20 @@ export function TourDetailReviewsSection({
               'tourPage.leave_comment_placeholder',
               'Chia sẻ trải nghiệm, cảm nhận của bạn về tour này...'
             )}
-            className="min-h-20 resize-none rounded-[10px] border-[#cfe0f4] bg-white text-sm focus:border-[#0b66c3]"
+            className="min-h-20 resize-none rounded-[10px] border-border bg-card text-sm focus:border-primary"
           />
         </div>
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-2">
-          <button
+          <Button variant="ghost"
             type="button"
             onClick={onResetForm}
-            className="text-foreground h-9 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff]"
+            className="text-foreground h-9 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted"
           >
             {t('tourPage.cancel', 'Huỷ')}
-          </button>
-          <button
+          </Button>
+          <Button variant="ghost"
             type="button"
             onClick={onCreateReview}
             disabled={isSubmitting}
@@ -301,9 +302,11 @@ export function TourDetailReviewsSection({
             {isSubmitting
               ? t('tourPage.sending', 'Đang gửi...')
               : t('tourPage.sendReview', 'Gửi đánh giá')}
-          </button>
+          </Button>
         </div>
       </div>
     </section>
   );
 }
+
+

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -9,6 +9,7 @@ import { getLocaleFromLanguage } from '@/lib/utils';
 import NewsDetailHero from '@/features/news/components/NewsDetailHero';
 import NewsDetailBody from '@/features/news/components/NewsDetailBody';
 import NewsDetailSidebar from '@/features/news/components/NewsDetailSidebar';
+import { Button } from '@/components/ui/button';
 
 function formatDate(value, locale) {
   if (!value) return '--';
@@ -70,8 +71,8 @@ export default function NewsDetailPageContent() {
       <RootLayout>
         <div className="min-h-screen px-4 py-5 lg:py-6">
           <div className="mx-auto w-full max-w-7xl">
-            <div className="mb-4 h-9 w-32 animate-pulse rounded-[10px] border border-[#cfe0f4] bg-[#f8fbff]" />
-            <div className="mb-5 h-72 animate-pulse rounded-[18px] border border-[#cfe0f4] bg-[#f8fbff] sm:h-96 lg:h-110" />
+            <div className="mb-4 h-9 w-32 animate-pulse rounded-[10px] border-border bg-muted" />
+            <div className="mb-5 h-72 animate-pulse rounded-[18px] border-border bg-muted sm:h-96 lg:h-110" />
             <div className="grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
               <div className="space-y-3">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -79,8 +80,8 @@ export default function NewsDetailPageContent() {
                 ))}
               </div>
               <div className="space-y-3">
-                <div className="h-36 animate-pulse rounded-[18px] border border-[#cfe0f4] bg-[#f8fbff]" />
-                <div className="h-52 animate-pulse rounded-[18px] border border-[#cfe0f4] bg-[#f8fbff]" />
+                <div className="h-36 animate-pulse rounded-[18px] border-border bg-muted" />
+                <div className="h-52 animate-pulse rounded-[18px] border-border bg-muted" />
               </div>
             </div>
           </div>
@@ -93,18 +94,18 @@ export default function NewsDetailPageContent() {
     return (
       <RootLayout>
         <div className="flex min-h-screen items-center justify-center px-4">
-          <div className="w-full max-w-sm rounded-[18px] border border-[#cfe0f4] bg-white p-8 text-center shadow-[0_4px_16px_rgba(13,74,130,0.07)]">
+          <div className="w-full max-w-sm rounded-[18px] border-border bg-card p-8 text-center shadow-[0_4px_16px_rgba(13,74,130,0.07)]">
             <p className="text-sm 2xl:text-base font-bold text-foreground">
               {t('newsPage.detail.not_found')}
             </p>
-            <button
+            <Button variant="ghost"
               type="button"
               onClick={() => navigate('/news')}
-              className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-[#eef7ff]"
+              className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-[10px] border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted"
             >
               <ArrowLeft size={14} />
               {t('newsPage.detail.back')}
-            </button>
+            </Button>
           </div>
         </div>
       </RootLayout>
@@ -138,3 +139,5 @@ export default function NewsDetailPageContent() {
     </RootLayout>
   );
 }
+
+

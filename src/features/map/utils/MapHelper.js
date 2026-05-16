@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl';
+import { circle as turfCircle } from '@turf/turf';
 
 export {
   addTrafficFlowLayer,
@@ -1329,4 +1330,49 @@ export function highlightPointOnMap(map, point) {
   } catch (error) {
     console.error('Error highlighting point on map:', error);
   }
+}
+
+const RADIUS_BUFFER_SOURCE = 'radius-buffer-source';
+const RADIUS_BUFFER_FILL = 'radius-buffer-fill';
+const RADIUS_BUFFER_STROKE = 'radius-buffer-stroke';
+
+export function showRadiusBuffer(map, lng, lat, radiusKm) {
+  if (!map) return;
+
+  const bufferFeature = turfCircle([lng, lat], radiusKm, { units: 'kilometers', steps: 64 });
+
+  if (map.getSource(RADIUS_BUFFER_SOURCE)) {
+    map.getSource(RADIUS_BUFFER_SOURCE).setData(bufferFeature);
+  } else {
+    map.addSource(RADIUS_BUFFER_SOURCE, { type: 'geojson', data: bufferFeature });
+
+    map.addLayer({
+      id: RADIUS_BUFFER_FILL,
+      type: 'fill',
+      source: RADIUS_BUFFER_SOURCE,
+      paint: {
+        'fill-color': '#ef4444',
+        'fill-opacity': 0.1,
+      },
+    });
+
+    map.addLayer({
+      id: RADIUS_BUFFER_STROKE,
+      type: 'line',
+      source: RADIUS_BUFFER_SOURCE,
+      paint: {
+        'line-color': '#ef4444',
+        'line-width': 2,
+        'line-opacity': 0.9,
+        'line-dasharray': [4, 3],
+      },
+    });
+  }
+}
+
+export function clearRadiusBuffer(map) {
+  if (!map) return;
+  if (map.getLayer(RADIUS_BUFFER_STROKE)) map.removeLayer(RADIUS_BUFFER_STROKE);
+  if (map.getLayer(RADIUS_BUFFER_FILL)) map.removeLayer(RADIUS_BUFFER_FILL);
+  if (map.getSource(RADIUS_BUFFER_SOURCE)) map.removeSource(RADIUS_BUFFER_SOURCE);
 }

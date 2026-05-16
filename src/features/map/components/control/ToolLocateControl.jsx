@@ -121,6 +121,59 @@ export default class ToolLocateControl {
     return this._container;
   }
 
+  triggerLocate(lng, lat) {
+    if (!this._btn) return;
+
+    const center = [lng, lat];
+    const maps = this._getMaps();
+
+    this._markers.forEach((marker) => marker.remove());
+    this._markers = [];
+
+    maps.forEach((mapInstance) => {
+      const el = document.createElement('div');
+      el.className = 'mapboxgl-user-location';
+      const dot = document.createElement('div');
+      dot.className = 'mapboxgl-user-location-dot';
+      el.appendChild(dot);
+
+      const marker = new mapboxgl.Marker({ element: el }).setLngLat(center).addTo(mapInstance);
+      this._markers.push(marker);
+
+      const currentZoom = Number(mapInstance.getZoom?.());
+      const currentPitch = Number(mapInstance.getPitch?.());
+      const zoom = Number.isFinite(currentZoom) ? Math.max(currentZoom, defaultZoom) : defaultZoom;
+      const pitch = Number.isFinite(currentPitch) ? currentPitch : 0;
+
+      try {
+        mapInstance.flyTo({
+          center,
+          zoom,
+          pitch,
+          bearing: locateFlyBearing,
+          essential: true,
+          duration: locateFlyDuration,
+        });
+      } catch (_error) {
+        mapInstance.jumpTo({ center, zoom, pitch, bearing: locateFlyBearing });
+      }
+    });
+
+    this._isActive = true;
+    this._btn.disabled = false;
+    this._btn.classList.remove('mapboxgl-ctrl-geolocate-waiting');
+    this._btn.classList.add('mapboxgl-ctrl-geolocate-active');
+  }
+
+  deactivate() {
+    if (!this._btn) return;
+    this._isActive = false;
+    this._clearLocateVisuals();
+    this._btn.classList.remove('mapboxgl-ctrl-geolocate-active');
+    this._btn.classList.remove('mapboxgl-ctrl-geolocate-waiting');
+    this._btn.disabled = false;
+  }
+
   onRemove() {
     if (this._btn && this._onLocateClick) {
       this._btn.removeEventListener('click', this._onLocateClick);

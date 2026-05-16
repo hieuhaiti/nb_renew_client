@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -17,6 +17,15 @@ import RootLayout from '@/components/layout/RootLayout';
 import { useGetOcopProducts } from '@/services/api/ocop/ocopService';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 const HERO_BG = `linear-gradient(135deg,rgba(5,150,105,.92),rgba(3,95,172,.88),rgba(14,165,233,.78)), url("https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80") center/cover`;
@@ -34,7 +43,11 @@ const CATEGORY_COLORS = {
   qua_tang: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' },
 };
 
-const DEFAULT_CAT_COLOR = { bg: 'bg-[#eef7ff]', text: 'text-[#0b66c3]', border: 'border-[#cfe0f4]' };
+const DEFAULT_CAT_COLOR = {
+  bg: 'bg-muted',
+  text: 'text-primary',
+  border: 'border-border',
+};
 
 function getCategoryColor(key) {
   return CATEGORY_COLORS[key] || DEFAULT_CAT_COLOR;
@@ -62,14 +75,17 @@ function OcopCard({ item, navigate, t }) {
   return (
     <article
       onClick={() => item?.id && navigate(`/ocop/${item.id}`)}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border-border bg-card shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
     >
       <div className="relative h-48 overflow-hidden">
         <img
           src={imageSrc}
           alt={name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = placeholderImg;
+          }}
         />
         {stars > 0 && (
           <span className="absolute top-3 left-3 flex items-center gap-1 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-0.5 text-xs font-bold text-[#b45309] backdrop-blur-sm">
@@ -86,30 +102,30 @@ function OcopCard({ item, navigate, t }) {
 
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="line-clamp-2 text-sm font-black leading-snug text-foreground transition-colors group-hover:text-[#0b66c3]"
+          className="text-foreground line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-primary"
           title={name}
         >
           {name}
         </h3>
 
         {item?.producer_name && (
-          <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{item.producer_name}</p>
+          <p className="text-muted-foreground mt-1 line-clamp-1 text-xs">{item.producer_name}</p>
         )}
 
         {(item?.location_name || item?.province_name) && (
-          <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
             <MapPin size={10} className="shrink-0" />
             <span className="line-clamp-1">{item?.location_name || item?.province_name}</span>
           </div>
         )}
 
-        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground mt-2 line-clamp-2 text-xs leading-relaxed">
           {item?.description || t('ocopPage.card.no_description')}
         </p>
 
         {item?.certification_no && (
-          <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
-            <ShieldCheck size={11} className="shrink-0 text-[#10b981]" />
+          <div className="text-muted-foreground mt-2 flex items-center gap-1 text-xs">
+            <ShieldCheck size={11} className="shrink-0 text-secondary" />
             <span className="truncate">{item.certification_no}</span>
           </div>
         )}
@@ -118,16 +134,18 @@ function OcopCard({ item, navigate, t }) {
           <div>
             {priceLabel ? (
               <>
-                <div className="text-sm 2xl:text-base font-black text-[#0b66c3]">{priceLabel}</div>
+                <div className="text-sm font-black text-primary 2xl:text-base">{priceLabel}</div>
                 {item?.unit && (
-                  <div className="text-[10px] text-muted-foreground">/ {item.unit}</div>
+                  <div className="text-muted-foreground text-[10px]">/ {item.unit}</div>
                 )}
               </>
             ) : (
-              <div className="text-sm font-semibold text-[#10b981]">{t('ocopPage.card.view_detail')}</div>
+              <div className="text-sm font-semibold text-secondary">
+                {t('ocopPage.card.view_detail')}
+              </div>
             )}
           </div>
-          <span className="flex items-center gap-1 text-xs font-semibold text-[#0b66c3] group-hover:underline">
+          <span className="flex items-center gap-1 text-xs font-semibold text-primary group-hover:underline">
             {t('ocopPage.card.view_detail')} <ArrowRight size={11} />
           </span>
         </div>
@@ -138,13 +156,13 @@ function OcopCard({ item, navigate, t }) {
 
 function OcopCardSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white">
-      <div className="h-48 w-full bg-muted" />
+    <div className="animate-pulse overflow-hidden rounded-[18px] border-border bg-card">
+      <div className="bg-muted h-48 w-full" />
       <div className="space-y-2 p-4">
-        <div className="h-4 w-3/4 rounded bg-muted" />
-        <div className="h-3 w-1/2 rounded bg-muted" />
-        <div className="h-3 w-full rounded bg-muted" />
-        <div className="h-3 w-2/3 rounded bg-muted" />
+        <div className="bg-muted h-4 w-3/4 rounded" />
+        <div className="bg-muted h-3 w-1/2 rounded" />
+        <div className="bg-muted h-3 w-full rounded" />
+        <div className="bg-muted h-3 w-2/3 rounded" />
       </div>
     </div>
   );
@@ -201,10 +219,10 @@ export default function OcopPageContent() {
               <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
                 {t('ocopPage.hero.badge')}
               </span>
-              <h1 className="mt-2 text-2xl font-black leading-tight tracking-tight md:text-3xl xl:text-4xl">
+              <h1 className="mt-2 text-2xl leading-tight font-black tracking-tight md:text-3xl xl:text-4xl">
                 {t('ocopPage.hero.title')}
               </h1>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
+              <p className="mt-2 text-sm leading-relaxed font-medium text-white/90">
                 {t('ocopPage.hero.description')}
               </p>
             </div>
@@ -214,56 +232,74 @@ export default function OcopPageContent() {
               <div className="flex flex-wrap items-stretch gap-3 self-stretch">
                 {[
                   { value: total, label: t('ocopPage.stats.total') },
-                  { value: availableCategories.length || '—', label: t('ocopPage.filters.all_categories') },
-                  { value: averageStars ? `${averageStars} ★` : '—', label: t('ocopPage.stats.certified') },
+                  {
+                    value: availableCategories.length || '—',
+                    label: t('ocopPage.filters.all_categories'),
+                  },
+                  {
+                    value: averageStars ? `${averageStars} ★` : '—',
+                    label: t('ocopPage.stats.certified'),
+                  },
                 ].map((s) => (
                   <div
                     key={s.label}
                     className="flex min-h-19 flex-col justify-center rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
                   >
-                    <div className="text-lg font-black leading-none md:text-xl xl:text-2xl">{s.value}</div>
+                    <div className="text-lg leading-none font-black md:text-xl xl:text-2xl">
+                      {s.value}
+                    </div>
                     <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
                   </div>
                 ))}
               </div>
 
               {/* Search bar */}
-              <div
-                className="flex flex-1 flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
-                style={{
-                  background: 'rgba(255,255,255,0.94)',
-                  border: '1px solid rgba(255,255,255,0.75)',
-                  boxShadow: '0 12px 28px rgba(0,0,0,.14)',
-                }}
-              >
+              <div className="flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 bg-card/95 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
-                  <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
-                  <input
+                  <Search
+                    size={16}
+                    className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <Input
                     type="text"
                     placeholder={t('ocopPage.filters.search_placeholder')}
                     value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                    className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setPage(1);
+                    }}
+                    className="text-foreground h-11 w-full rounded-xl border-input bg-card pr-3 pl-9 text-sm outline-none focus:border-primary"
                   />
                 </div>
-                <select
+                <Select
                   value={starFilter}
-                  onChange={(e) => { setStarFilter(e.target.value); setPage(1); }}
-                  className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                  onValueChange={(value) => {
+                    setStarFilter(value);
+                    setPage(1);
+                  }}
                 >
-                  <option value="all">{t('ocopPage.filters.all_stars')}</option>
-                  <option value="5">{t('ocopPage.stars.5')}</option>
-                  <option value="4">{t('ocopPage.stars.4')}</option>
-                  <option value="3">{t('ocopPage.stars.3')}</option>
-                </select>
-                <button
+                  <SelectTrigger className="text-foreground h-11 shrink-0 rounded-xl border-input bg-card px-3 text-sm focus:border-primary">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('ocopPage.filters.all_stars')}</SelectItem>
+                    <SelectItem value="5">{t('ocopPage.stars.5')}</SelectItem>
+                    <SelectItem value="4">{t('ocopPage.stars.4')}</SelectItem>
+                    <SelectItem value="3">{t('ocopPage.stars.3')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="ghost"
                   type="button"
-                  onClick={() => { setPage(1); refetch?.(); }}
+                  onClick={() => {
+                    setPage(1);
+                    refetch?.();
+                  }}
                   className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
                   style={BTN_GRADIENT}
                 >
                   {t('ocopPage.filters.search_btn')}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -274,66 +310,81 @@ export default function OcopPageContent() {
           {/* Category chips + toolbar */}
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-1.5">
-              <button
+              <Button
+                variant="ghost"
                 type="button"
-                onClick={() => { setCategoryFilter('all'); setPage(1); }}
+                onClick={() => {
+                  setCategoryFilter('all');
+                  setPage(1);
+                }}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   categoryFilter === 'all'
-                    ? 'bg-[#0b66c3] text-white'
-                    : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground border-border bg-card hover:bg-muted'
                 }`}
               >
                 {t('common.all')}
-              </button>
+              </Button>
               {availableCategories.map((key) => {
                 const conf = getCategoryColor(key);
-                const label = t(`ocopPage.categories.${key}`, { defaultValue: key.replace(/_/g, ' ') });
+                const label = t(`ocopPage.categories.${key}`, {
+                  defaultValue: key.replace(/_/g, ' '),
+                });
                 return (
-                  <button
+                  <Button
+                    variant="ghost"
                     key={key}
                     type="button"
-                    onClick={() => { setCategoryFilter(key); setPage(1); }}
+                    onClick={() => {
+                      setCategoryFilter(key);
+                      setPage(1);
+                    }}
                     className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       categoryFilter === key
-                        ? 'bg-[#0b66c3] text-white'
+                        ? 'bg-primary text-primary-foreground'
                         : `border ${conf.border} ${conf.bg} ${conf.text} hover:opacity-80`
                     }`}
                   >
                     {label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
 
             <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 <strong className="text-foreground">{total}</strong>{' '}
                 {t('ocopPage.stats.total').toLowerCase()}
               </p>
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={handleReset}
-                className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
+                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
                 {t('ocopPage.toolbar.refresh')}
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Product grid */}
           {isLoading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => <OcopCardSkeleton key={i} />)}
+              {Array.from({ length: 8 }).map((_, i) => (
+                <OcopCardSkeleton key={i} />
+              ))}
             </div>
           ) : isError ? (
-            <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
+            <div className="text-muted-foreground rounded-[18px] border-border bg-card py-20 text-center">
               {t('ocopPage.states.error')}
             </div>
           ) : products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
+            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border-border bg-card py-20">
               <Inbox size={40} className="mb-3 opacity-30" />
-              <p className="text-sm 2xl:text-base font-semibold text-foreground">{t('ocopPage.states.empty_title')}</p>
+              <p className="text-foreground text-sm font-semibold 2xl:text-base">
+                {t('ocopPage.states.empty_title')}
+              </p>
               <p className="mt-1 text-sm">{t('ocopPage.states.empty_desc')}</p>
             </div>
           ) : (
@@ -347,25 +398,27 @@ export default function OcopPageContent() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-8 flex items-center justify-between">
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
               >
                 <ChevronLeft size={15} /> {t('ocopPage.pagination.prev')}
-              </button>
-              <span className="rounded-full border border-[#cfe0f4] bg-white px-4 py-1.5 text-sm font-semibold">
+              </Button>
+              <span className="rounded-full border-border bg-card px-4 py-1.5 text-sm font-semibold">
                 {t('ocopPage.pagination.page', { current: page, total: totalPages })}
               </span>
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
               >
                 {t('ocopPage.pagination.next')} <ChevronRight size={15} />
-              </button>
+              </Button>
             </div>
           )}
 
@@ -374,8 +427,10 @@ export default function OcopPageContent() {
             className="mt-10 overflow-hidden rounded-[22px] px-7 py-7 text-white"
             style={{ background: HERO_BG }}
           >
-            <p className="mb-1 text-xs font-semibold text-white/75">{t('home.vouchers_section.label')}</p>
-            <h3 className="text-lg font-black leading-tight md:text-xl xl:text-2xl">
+            <p className="mb-1 text-xs font-semibold text-white/75">
+              {t('home.vouchers_section.label')}
+            </p>
+            <h3 className="text-lg leading-tight font-black md:text-xl xl:text-2xl">
               {t('home.vouchers_section.title')}
             </h3>
             <p className="mt-1.5 text-sm text-white/85">{t('home.vouchers_section.desc')}</p>
@@ -383,16 +438,21 @@ export default function OcopPageContent() {
               {[
                 { key: 'mapPage.toolbar.searchButton', path: '/map', label: t('common.map') },
                 { key: 'tourPage.hero.title', path: '/tour', label: t('common.tourist_route') },
-                { key: 'tourismPointPage.title', path: '/tourism-point', label: t('common.tourism_points') },
+                {
+                  key: 'tourismPointPage.title',
+                  path: '/tourism-point',
+                  label: t('common.tourism_points'),
+                },
               ].map((item) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={item.path}
                   type="button"
                   onClick={() => navigate(item.path)}
                   className="h-9 rounded-[10px] border border-white/35 bg-white/15 px-4 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/25"
                 >
                   {item.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

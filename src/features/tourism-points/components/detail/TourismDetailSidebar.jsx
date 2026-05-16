@@ -1,14 +1,26 @@
 ﻿import React, { useMemo } from 'react';
-import { Map, Phone, RectangleGoggles, ChevronRight } from 'lucide-react';
+import {
+  Map,
+  Phone,
+  RectangleGoggles,
+  CalendarPlus,
+  MapPin,
+  Wind,
+  Droplets,
+  Leaf,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { useGetNearbyPoints } from '@/services/api/tourism-points/tourismPointsApi';
+import { useGetAframeScenes } from '@/services/api/vr360/aframeSceneService';
+import { useWeatherOverview } from '@/features/weather/hooks/useWeatherOverview';
 import { Button } from '@/components/ui/button';
 import {
-  useGetNearbyPoints,
-  useGetDataPointById,
-} from '@/services/api/tourism-points/tourismPointsApi';
-import { useGetAframeScenes } from '@/services/api/vr360/aframeSceneService';
+  formatHumidity,
+  formatTemperature,
+  formatWindSpeedKph,
+} from '@/features/weather/helpers/weatherLevelHelpers';
 
 const toNumberOrNull = (value) => {
   const parsed = Number(value);
@@ -30,46 +42,90 @@ const getNearbySource = (payload) => {
   return candidates.find((item) => Array.isArray(item)) || [];
 };
 
-const accentBorders = [
-  'border-l-primary',
-  'border-l-secondary',
-  'border-l-tertiary',
-  'border-l-quaternary',
-  'border-l-quinary',
-];
-
 export function TourismDetailSidebar({
-  ticketDisplay,
-  childTicketDisplay,
   onOpenMap,
   onContact,
-  rows,
-  nearbyPoints = [],
   lat,
   lng,
+  lang = 'vi',
   radiusKm = 8,
   currentPointId,
+  currentVisitorCount,
+  capacityPct,
+  maxCapacity,
   t,
 }) {
   const normalizedLat = useMemo(() => toNumberOrNull(lat), [lat]);
   const normalizedLng = useMemo(() => toNumberOrNull(lng), [lng]);
-
   const navigate = useNavigate();
 
-  const { data: pointData } = useGetDataPointById({ point_id: currentPointId });
   const pointCoords = useMemo(() => {
-    const s = pointData?.data?.spot ?? pointData?.data ?? null;
-    if (!s) return null;
+    if (!Number.isFinite(normalizedLat) || !Number.isFinite(normalizedLng)) return null;
+    return [normalizedLng, normalizedLat];
+  }, [normalizedLat, normalizedLng]);
 
-    const fromGeojson = s.geojson?.coordinates;
-    if (Array.isArray(fromGeojson) && fromGeojson.length >= 2) return fromGeojson;
+  const {
+    data: weatherData,
+    isLoading: isWeatherLoading,
+    isConfigured: isWeatherConfigured,
+  } = useWeatherOverview({
+    lat: normalizedLat,
+    lng: normalizedLng,
+    lang,
+  });
 
-    const parsedLng = Number(s.longitude ?? s.lng);
-    const parsedLat = Number(s.latitude ?? s.lat);
-    if (Number.isFinite(parsedLng) && Number.isFinite(parsedLat)) return [parsedLng, parsedLat];
+  const weather = weatherData?.weather;
+  const weatherLabel = weather?.weather?.[0]?.description;
+  const weatherTitle = weatherLabel || t('tourism.weather', 'Thoi tiet');
 
-    return null;
-  }, [pointData]);
+  const weatherTempDisplay = useMemo(() => {
+    if (!isWeatherConfigured && !weather) return '-';
+    if (isWeatherLoading && !weather) return '...';
+    if (!weather) return '-';
+    return formatTemperature(weather?.main?.temp, `${String.fromCharCode(176)}C`);
+  }, [isWeatherConfigured, isWeatherLoading, weather]);
+
+  const weatherWindDisplay = useMemo(() => {
+    if (isWeatherLoading && !weather) return '...';
+    if (!weather) return '-';
+    return formatWindSpeedKph(weather?.wind?.speed);
+  }, [isWeatherLoading, weather]);
+
+  const weatherHumidityDisplay = useMemo(() => {
+    if (isWeatherLoading && !weather) return '...';
+    if (!weather) return '-';
+    return formatHumidity(weather?.main?.humidity);
+  }, [isWeatherLoading, weather]);
+
+  const weatherRainDisplay = useMemo(() => {
+    if (isWeatherLoading && !weather) return '...';
+    if (!weather) return '-';
+
+    const rain1h = Number(weather?.rain?.['1h']);
+    if (Number.isFinite(rain1h)) return `${rain1h} mm/h`;
+
+    const rain3h = Number(weather?.rain?.['3h']);
+    if (Number.isFinite(rain3h)) return `${rain3h} mm/3h`;
+
+    return '-';
+  }, [isWeatherLoading, weather]);
+
+  const capacityNumber = capacityPct != null ? Math.round(Number(capacityPct)) : null;
+  const capacityDisplay = capacityNumber != null ? `${capacityNumber}%` : '-';
+
+  const visitorDisplay =
+    currentVisitorCount != null && Number.isFinite(Number(currentVisitorCount))
+      ? Number(currentVisitorCount).toLocaleString('vi')
+      : '-';
+
+  const maxCapacityDisplay =
+    maxCapacity != null && Number.isFinite(Number(maxCapacity))
+      ? Number(maxCapacity).toLocaleString('vi')
+      : '-';
+
+  const hasMaxCapacity = maxCapacity != null && Number.isFinite(Number(maxCapacity));
+  const hasVisitorCount =
+    currentVisitorCount != null && Number.isFinite(Number(currentVisitorCount));
 
   const { data: scenesData } = useGetAframeScenes({ spotId: currentPointId });
   const hasVrTour = useMemo(() => {
@@ -77,10 +133,6 @@ export function TourismDetailSidebar({
     const scenes = Array.isArray(d) ? d : d?.scenes || d?.items || [];
     return scenes.length > 0;
   }, [scenesData]);
-
-  const handleVrTour = () => {
-    navigate('/vr360', { state: { spotId: currentPointId } });
-  };
 
   const { data: nearbyResp } = useGetNearbyPoints({
     lat: normalizedLat,
@@ -91,7 +143,7 @@ export function TourismDetailSidebar({
 
   const resolvedNearbyPoints = useMemo(() => {
     const apiSource = getNearbySource(nearbyResp);
-    const source = apiSource.length > 0 ? apiSource : nearbyPoints;
+    const source = apiSource.length > 0 ? apiSource : [];
 
     return source
       .filter(Boolean)
@@ -104,11 +156,10 @@ export function TourismDetailSidebar({
         let distanceLabel = item?.distance_text || item?.distance || null;
 
         if (Number.isFinite(distanceMeters)) {
-          if (distanceMeters >= 1000) {
-            distanceLabel = `${(distanceMeters / 1000).toFixed(1)} km`;
-          } else {
-            distanceLabel = `${Math.round(distanceMeters)} m`;
-          }
+          distanceLabel =
+            distanceMeters >= 1000
+              ? `${(distanceMeters / 1000).toFixed(1)} km`
+              : `${Math.round(distanceMeters)} m`;
         }
 
         return {
@@ -118,108 +169,102 @@ export function TourismDetailSidebar({
             item?.name_en ||
             item?.name ||
             t('tourism.nearby_point_name', `Point ${index + 1}`),
-          distance: distanceLabel || t('tourism.nearby_distance_unknown', 'Unknown distance'),
+          distance: distanceLabel || t('tourism.nearby_distance_unknown', 'Chua ro'),
           image:
             item?.primary_image ||
             item?.cover_image_url ||
             item?.main_image_url ||
             item?.image ||
-            item?.category_icon ||
             '',
           slug: item?.slug || null,
+          category: item?.category_name || '',
         };
       });
-  }, [nearbyResp, nearbyPoints, currentPointId, t]);
+  }, [nearbyResp, currentPointId, t]);
 
   return (
-    <aside className="space-y-3 lg:sticky lg:top-4 lg:self-start">
-      <section className="from-primary to-secondary text-primary-foreground rounded-[10px] bg-gradient-to-r px-5 py-4">
-        <div className="text-primary-foreground text-xl font-semibold">{ticketDisplay}</div>
-        {childTicketDisplay && (
-          <div className="text-primary-foreground/70 mt-0.5 text-sm">
-            {t('tourism.ticket_child', 'Trẻ em')}: {childTicketDisplay}
-          </div>
-        )}
-        <p className="text-primary-foreground/70 mt-1 text-sm">
-          {t('tourism.price_subtitle', 'Thông tin giá vé từ điểm tham quan')}
+    <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+      <div
+        className="rounded-[24px] p-5 text-white"
+        style={{ background: 'linear-gradient(135deg,#1cb6d8,#0fb49f)' }}
+      >
+        <h3 className="mb-2 text-[22px] font-bold">{t('tourism.cta_title', 'Kham pha ngay')}</h3>
+        <p className="mb-4 text-sm leading-[1.65] text-[#eafffb]">
+          {t('tourism.cta_desc', 'Mo chi duong, xem anh 360.')}
         </p>
-
-        <div className="mt-4 space-y-2">
-          <Button
+        <div className="flex flex-col gap-3">
+          <CtaBtn
             onClick={() => onOpenMap?.(pointCoords)}
-            variant="tertiary"
-            className="h-8.5 w-full rounded-[7px] text-sm font-medium"
-          >
-            <Map className="h-3.5 w-3.5" />
-            {t('tourism.view_on_map', 'Xem trên bản đồ')}
-          </Button>
-          <Button
-            onClick={onContact}
-            variant="quaternary"
-            className="h-8.5 w-full rounded-[7px] text-sm font-medium"
-          >
-            <Phone className="h-3.5 w-3.5" />
-            {t('tourism.contact', 'Liên hệ điểm tham quan')}
-          </Button>
+            icon={<Map className="h-4 w-4" />}
+            label={t('tourism.view_on_map', 'Chi duong')}
+          />
           {hasVrTour && (
-            <Button
-              onClick={handleVrTour}
-              variant="quinary"
-              className="h-8.5 w-full rounded-[7px] text-sm font-medium"
-            >
-              <RectangleGoggles className="h-3.5 w-3.5" />
-              {t('tourism.vr_tour', 'Tour VR 360°')}
-            </Button>
+            <CtaBtn
+              onClick={() => navigate('/vr360', { state: { spotId: currentPointId } })}
+              icon={<RectangleGoggles className="h-4 w-4" />}
+              label={t('tourism.vr_tour', 'VR 360')}
+            />
+          )}
+          <CtaBtn
+            onClick={onContact}
+            icon={<Phone className="h-4 w-4" />}
+            label={t('tourism.contact', 'Lien he')}
+            dark
+          />
+        </div>
+      </div>
+
+      <div className="rounded-[24px] border-border bg-card px-5 py-5 shadow-(--ambient-shadow)">
+        <h3 className="mb-3 flex items-center gap-2.5 text-[18px] font-bold text-foreground">
+          <Leaf className="h-5 w-5 text-secondary" />
+          {t('tourism.conditions', 'Thời tiết & tải khách')}
+        </h3>
+        <div className="mb-2 text-xs font-semibold text-muted-foreground">{weatherTitle}</div>
+        <div className="grid grid-cols-2 gap-2.5">
+          <WeatherBox value={weatherTempDisplay} label={t('tourism.weather', 'Thời tiết')} />
+          <WeatherBox value={capacityDisplay} label={t('tourism.current_capacity', 'Tải khách')} />
+        </div>
+        <div className="mt-3 space-y-2">
+          <QuickRow
+            icon={<Wind className="h-3.5 w-3.5 text-secondary" />}
+            label={t('tourism.wind', 'Gió')}
+            value={weatherWindDisplay}
+          />
+          <QuickRow
+            icon={<Droplets className="h-3.5 w-3.5 text-secondary" />}
+            label={t('tourism.humidity', 'Độ ẩm')}
+            value={weatherHumidityDisplay}
+          />
+          <QuickRow
+            icon={<Droplets className="h-3.5 w-3.5 text-secondary" />}
+            label={t('tourism.rain', 'Mưa')}
+            value={weatherRainDisplay}
+          />
+          {hasVisitorCount && (
+            <QuickRow
+              icon={<Leaf className="h-3.5 w-3.5 text-secondary" />}
+              label={t('tourism.current_visitors', 'Khách hiện tại')}
+              value={visitorDisplay}
+            />
+          )}
+          {hasMaxCapacity && (
+            <QuickRow
+              icon={<Leaf className="h-3.5 w-3.5 text-secondary" />}
+              label={t('tourism.max_capacity', 'Sức chứa')}
+              value={maxCapacityDisplay}
+            />
           )}
         </div>
-      </section>
+      </div>
 
-      <section className="bg-card border-border rounded-[10px] border px-4 py-3.5">
-        <div className="space-y-2">
-          {rows.map((row, index) => (
-            <div
-              key={row.key}
-              className={`bg-card border-border flex items-start gap-2.5 rounded-[8px] border border-l-[3px] px-3 py-2.5 ${accentBorders[index % accentBorders.length]}`}
-            >
-              <div className="bg-muted/60 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px]">
-                {row.icon}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                  {row.label}
-                </div>
-                <div
-                  className="text-foreground mt-0.5 truncate text-sm font-medium"
-                  title={typeof row.value === 'string' ? row.value : undefined}
-                >
-                  {row.href ? (
-                    <a
-                      href={row.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      {row.value}
-                    </a>
-                  ) : (
-                    row.value
-                  )}
-                </div>
-              </div>
-              <ChevronRight size={14} className="text-muted-foreground mt-1 shrink-0" />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-card border-border rounded-[10px] border px-4 py-3.5">
-        <h3 className="text-foreground mb-3 text-sm font-bold 2xl:text-base">
-          {t('tourism.nearby_points', 'Điểm lân cận')}
-        </h3>
-
-        {resolvedNearbyPoints.length > 0 ? (
-          <div className="space-y-2">
-            {resolvedNearbyPoints.map((point, index) => (
+      {resolvedNearbyPoints.length > 0 && (
+        <div className="rounded-[24px] border-border bg-card px-5 py-5 shadow-(--ambient-shadow)">
+          <h3 className="mb-3 flex items-center gap-2.5 text-[18px] font-bold text-foreground">
+            <MapPin className="h-5 w-5 text-secondary" />
+            {t('tourism.nearby_points', 'Diem gan do')}
+          </h3>
+          <div className="space-y-3">
+            {resolvedNearbyPoints.map((point) => (
               <article
                 key={point.id}
                 role="button"
@@ -231,37 +276,69 @@ export function TourismDetailSidebar({
                     navigate(`/tourism-point/point/${point.slug || point.id}`);
                   }
                 }}
-                className={`bg-card border-border hover:bg-muted/40 flex cursor-pointer items-center gap-2.5 overflow-hidden rounded-[8px] border border-l-[3px] transition-colors ${accentBorders[index % accentBorders.length]}`}
+                className="grid cursor-pointer items-center gap-2.5 rounded-[14px] transition-colors hover:bg-muted"
+                style={{ gridTemplateColumns: '72px 1fr' }}
               >
                 <img
                   src={withBaseUrl(point.image)}
                   alt={point.name}
-                  className="h-14 w-14 shrink-0 rounded-l-[8px] object-cover"
+                  className="h-[58px] w-[72px] rounded-[14px] object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = placeholderImg;
                   }}
                 />
-                <div className="min-w-0 flex-1 py-2 pr-3">
-                  <div className="text-foreground truncate text-sm font-medium" title={point.name}>
+                <div className="min-w-0 py-1">
+                  <b className="block truncate text-[13px] text-foreground" title={point.name}>
                     {point.name}
-                  </div>
-                  <div
-                    className="text-muted-foreground mt-0.5 truncate text-xs"
-                    title={point.distance}
-                  >
+                  </b>
+                  <span className="text-[12px] font-bold text-muted-foreground">
                     {point.distance}
-                  </div>
+                    {point.category ? ` · ${point.category}` : ''}
+                  </span>
                 </div>
               </article>
             ))}
           </div>
-        ) : (
-          <p className="text-muted-foreground text-sm">
-            {t('tourism.no_nearby_points', 'Chưa có dữ liệu điểm lân cận.')}
-          </p>
-        )}
-      </section>
+        </div>
+      )}
     </aside>
   );
 }
+
+function CtaBtn({ onClick, icon, label, dark = false }) {
+  return (
+    <Button variant="ghost"
+      onClick={onClick}
+      className={`flex min-h-11 items-center justify-center gap-2 rounded-[15px] px-3 text-[13px] font-bold transition-opacity hover:opacity-90 ${
+        dark ? 'bg-foreground text-background' : 'bg-card text-secondary'
+      }`}
+    >
+      {icon}
+      {label}
+    </Button>
+  );
+}
+
+function WeatherBox({ value, label }) {
+  return (
+    <div className="rounded-[16px] border border-tertiary/30 bg-tertiary-soft p-[13px] text-center">
+      <b className="block text-[20px] font-bold text-tertiary-soft-foreground">{value}</b>
+      <span className="text-[12px] font-bold text-tertiary-soft-foreground/80">{label}</span>
+    </div>
+  );
+}
+
+function QuickRow({ icon, label, value }) {
+  return (
+    <div className="flex items-center justify-between gap-2 rounded-[15px] border-border bg-muted px-3 py-3 text-[13px] font-extrabold text-muted-foreground">
+      <span className="flex items-center gap-2">
+        {icon}
+        {label}
+      </span>
+      <b>{value}</b>
+    </div>
+  );
+}
+
+

@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { Clock3, MapPin, Images } from 'lucide-react';
 import { formatStopDuration, withBaseUrl } from '@/lib/utils';
 import { useGetSpotMedia } from '@/services/api/tourism-points/tourismPointsApi';
 import { useModalCarouselStore } from '@/features/map/store/useModalStore';
+import { Button } from '@/components/ui/button';
 
 function StopMediaStrip({ spot_id }) {
   const { data: mediaResp } = useGetSpotMedia({ spot_id, options: { enabled: Boolean(spot_id) } });
@@ -32,7 +33,8 @@ function StopMediaStrip({ spot_id }) {
   return (
     <div className="mt-2 flex items-center gap-1.5">
       {preview.map((url, i) => (
-        <button
+        <Button
+          variant="ghost"
           key={i}
           type="button"
           className="relative h-12 w-16 shrink-0 overflow-hidden rounded-[8px] border border-[#cfe0f4] focus:outline-none"
@@ -49,16 +51,17 @@ function StopMediaStrip({ spot_id }) {
               +{extra}
             </div>
           )}
-        </button>
+        </Button>
       ))}
-      <button
+      <Button
+        variant="ghost"
         type="button"
         className="text-muted-foreground hover:text-primary ml-0.5 flex items-center gap-1 text-xs transition-colors"
         onClick={() => openCarouselModal(images)}
       >
         <Images className="h-3.5 w-3.5" />
         {images.length}
-      </button>
+      </Button>
     </div>
   );
 }

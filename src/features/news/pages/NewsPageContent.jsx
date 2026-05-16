@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, RefreshCw, Inbox, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
@@ -7,6 +7,15 @@ import RootLayout from '@/components/layout/RootLayout';
 import { useGetNewsList } from '@/services/api/news/newsService';
 import { withBaseUrl, getLocaleFromLanguage } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 /* Missing data fields (not available in current API):
  *  - item.views      — view count shown in some designs
@@ -39,14 +48,17 @@ function NewsCard({ item, navigate, locale, t }) {
   return (
     <article
       onClick={() => slug && navigate(`/news/${encodeURIComponent(String(slug))}`)}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border-border bg-card shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
     >
       <div className="relative h-48 overflow-hidden">
         <img
           src={imageSrc}
           alt={title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = placeholderImg;
+          }}
         />
         {item?.is_featured && (
           <span className="absolute top-3 left-3 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-0.5 text-xs font-bold text-[#b45309] backdrop-blur-sm">
@@ -54,23 +66,23 @@ function NewsCard({ item, navigate, locale, t }) {
           </span>
         )}
         {date && (
-          <span className="absolute bottom-3 right-3 rounded-full bg-black/45 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+          <span className="absolute right-3 bottom-3 rounded-full bg-black/45 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
             {date}
           </span>
         )}
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <p className="text-xs text-muted-foreground">{author}</p>
+        <p className="text-muted-foreground text-xs">{author}</p>
 
         <h3
-          className="mt-1.5 line-clamp-2 text-sm font-black leading-snug text-foreground transition-colors group-hover:text-[#0b66c3]"
+          className="text-foreground mt-1.5 line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-primary"
           title={title}
         >
           {title}
         </h3>
 
-        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground mt-1.5 line-clamp-2 text-xs leading-relaxed">
           {summary || t('newsPage.list.no_summary')}
         </p>
 
@@ -79,7 +91,7 @@ function NewsCard({ item, navigate, locale, t }) {
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-[#cfe0f4] bg-[#f8fbff] px-2 py-0.5 text-[10px] font-medium text-[#52647a]"
+                className="rounded-full border-border bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
               >
                 {tagLabel(tag)}
               </span>
@@ -88,7 +100,7 @@ function NewsCard({ item, navigate, locale, t }) {
         )}
 
         <div className="mt-auto flex items-center justify-end pt-3">
-          <span className="flex items-center gap-1 text-xs font-semibold text-[#0b66c3] group-hover:underline">
+          <span className="flex items-center gap-1 text-xs font-semibold text-primary group-hover:underline">
             {t('newsPage.actions.read_more')} <ArrowRight size={11} />
           </span>
         </div>
@@ -99,13 +111,13 @@ function NewsCard({ item, navigate, locale, t }) {
 
 function NewsCardSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white">
-      <div className="h-48 w-full bg-muted" />
+    <div className="animate-pulse overflow-hidden rounded-[18px] border-border bg-card">
+      <div className="bg-muted h-48 w-full" />
       <div className="space-y-2 p-4">
-        <div className="h-3 w-1/3 rounded bg-muted" />
-        <div className="h-4 w-full rounded bg-muted" />
-        <div className="h-3 w-5/6 rounded bg-muted" />
-        <div className="h-3 w-2/3 rounded bg-muted" />
+        <div className="bg-muted h-3 w-1/3 rounded" />
+        <div className="bg-muted h-4 w-full rounded" />
+        <div className="bg-muted h-3 w-5/6 rounded" />
+        <div className="bg-muted h-3 w-2/3 rounded" />
       </div>
     </div>
   );
@@ -171,10 +183,10 @@ export default function NewsPageContent() {
               <span className="mb-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
                 {t('newsPage.hero.badge')}
               </span>
-              <h1 className="mt-2 text-2xl font-black leading-tight tracking-tight md:text-3xl xl:text-4xl">
+              <h1 className="mt-2 text-2xl leading-tight font-black tracking-tight md:text-3xl xl:text-4xl">
                 {t('newsPage.hero.title')}
               </h1>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-white/90">
+              <p className="mt-2 text-sm leading-relaxed font-medium text-white/90">
                 {t('newsPage.hero.description')}
               </p>
             </div>
@@ -191,48 +203,62 @@ export default function NewsPageContent() {
                     key={s.label}
                     className="flex min-h-19 flex-col justify-center rounded-2xl border border-white/25 bg-white/15 px-5 py-2.5 text-center backdrop-blur-sm"
                   >
-                    <div className="text-lg font-black leading-none md:text-xl xl:text-2xl">{s.value}</div>
+                    <div className="text-lg leading-none font-black md:text-xl xl:text-2xl">
+                      {s.value}
+                    </div>
                     <div className="mt-0.5 text-xs text-white/80">{s.label}</div>
                   </div>
                 ))}
               </div>
 
               {/* Search bar */}
-              <div
-                className="flex flex-1 flex-col gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
-                style={{
-                  background: 'rgba(255,255,255,0.94)',
-                  border: '1px solid rgba(255,255,255,0.75)',
-                  boxShadow: '0 12px 28px rgba(0,0,0,.14)',
-                }}
-              >
+              <div className="flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 bg-card/95 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
-                  <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]" />
-                  <input
+                  <Search
+                    size={16}
+                    className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <Input
                     type="text"
                     placeholder={t('newsPage.filters.placeholder')}
                     value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                    className="h-11 w-full rounded-xl border border-[#a8bed4] bg-white pl-9 pr-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setPage(1);
+                    }}
+                    className="text-foreground h-11 w-full rounded-xl border-input bg-card pr-3 pl-9 text-sm outline-none focus:border-primary"
                   />
                 </div>
-                <select
+                <Select
                   value={featuredFilter}
-                  onChange={(e) => { setFeaturedFilter(e.target.value); setPage(1); }}
-                  className="h-11 shrink-0 rounded-xl border border-[#a8bed4] bg-white px-3 text-sm text-foreground outline-none focus:border-[#0b66c3]"
+                  onValueChange={(value) => {
+                    setFeaturedFilter(value);
+                    setPage(1);
+                  }}
                 >
-                  <option value="all">{t('newsPage.filters.options.all')}</option>
-                  <option value="featured">{t('newsPage.filters.options.featured')}</option>
-                  <option value="normal">{t('newsPage.filters.options.normal')}</option>
-                </select>
-                <button
+                  <SelectTrigger className="text-foreground h-11 shrink-0 rounded-xl border-input bg-card px-3 text-sm focus:border-primary">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('newsPage.filters.options.all')}</SelectItem>
+                    <SelectItem value="featured">
+                      {t('newsPage.filters.options.featured')}
+                    </SelectItem>
+                    <SelectItem value="normal">{t('newsPage.filters.options.normal')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="ghost"
                   type="button"
-                  onClick={() => { setPage(1); refetch?.(); }}
+                  onClick={() => {
+                    setPage(1);
+                    refetch?.();
+                  }}
                   className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
                   style={BTN_GRADIENT}
                 >
                   {t('newsPage.filters.keyword')}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -240,66 +266,78 @@ export default function NewsPageContent() {
 
         {/* Content */}
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
-
           {/* Tag chips + toolbar */}
           <div className="mb-5 flex items-center justify-between gap-3">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-              <button
+              <Button
+                variant="ghost"
                 type="button"
-                onClick={() => { setTagFilter(''); setPage(1); }}
+                onClick={() => {
+                  setTagFilter('');
+                  setPage(1);
+                }}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   !tagFilter
-                    ? 'bg-[#0b66c3] text-white'
-                    : 'border border-[#cfe0f4] bg-white text-muted-foreground hover:bg-[#eef7ff]'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground border-border bg-card hover:bg-muted'
                 }`}
               >
                 {t('common.all')}
-              </button>
+              </Button>
               {availableTags.map((tag) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={tag}
                   type="button"
-                  onClick={() => { setTagFilter(tagFilter === tag ? '' : tag); setPage(1); }}
+                  onClick={() => {
+                    setTagFilter(tagFilter === tag ? '' : tag);
+                    setPage(1);
+                  }}
                   className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                     tagFilter === tag
-                      ? 'bg-[#0b66c3] text-white'
-                      : 'border border-[#cfe0f4] bg-[#f8fbff] text-[#52647a] hover:bg-[#eef7ff]'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border-border bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
                 >
                   {tagLabel(tag)}
-                </button>
+                </Button>
               ))}
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 <strong className="text-foreground">{total}</strong>{' '}
                 {t('newsPage.list.title').toLowerCase()}
               </p>
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={handleReset}
-                className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold text-muted-foreground hover:bg-[#eef7ff]"
+                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
                 {t('newsPage.actions.refresh')}
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* News grid */}
           {isLoading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 12 }).map((_, i) => <NewsCardSkeleton key={i} />)}
+              {Array.from({ length: 12 }).map((_, i) => (
+                <NewsCardSkeleton key={i} />
+              ))}
             </div>
           ) : isError ? (
-            <div className="rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-center text-muted-foreground">
+            <div className="text-muted-foreground rounded-[18px] border-border bg-card py-20 text-center">
               {t('newsPage.states.error')}
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20 text-muted-foreground">
+            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border-border bg-card py-20">
               <Inbox size={40} className="mb-3 opacity-30" />
-              <p className="text-sm 2xl:text-base font-semibold text-foreground">{t('newsPage.states.empty')}</p>
+              <p className="text-foreground text-sm font-semibold 2xl:text-base">
+                {t('newsPage.states.empty')}
+              </p>
               <p className="mt-1 text-sm">{t('newsPage.actions.reset')}</p>
             </div>
           ) : (
@@ -313,25 +351,27 @@ export default function NewsPageContent() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-8 flex items-center justify-between">
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
               >
                 <ChevronLeft size={15} /> {t('common.prev')}
-              </button>
-              <span className="rounded-full border border-[#cfe0f4] bg-white px-4 py-1.5 text-sm font-semibold">
+              </Button>
+              <span className="rounded-full border-border bg-card px-4 py-1.5 text-sm font-semibold">
                 {t('newsPage.pagination.page', { page: currentPage, totalPages })}
               </span>
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
               >
                 {t('common.next')} <ChevronRight size={15} />
-              </button>
+              </Button>
             </div>
           )}
 
@@ -341,7 +381,7 @@ export default function NewsPageContent() {
             style={{ background: HERO_BG }}
           >
             <p className="mb-1 text-xs font-semibold text-white/75">{t('newsPage.cta.label')}</p>
-            <h3 className="text-lg font-black leading-tight md:text-xl xl:text-2xl">
+            <h3 className="text-lg leading-tight font-black md:text-xl xl:text-2xl">
               {t('newsPage.cta.title')}
             </h3>
             <p className="mt-1.5 text-sm text-white/85">{t('newsPage.cta.desc')}</p>
@@ -352,14 +392,15 @@ export default function NewsPageContent() {
                 { path: '/tourism-point', label: t('common.tourism_points') },
                 { path: '/festival', label: t('common.festival') },
               ].map((item) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={item.path}
                   type="button"
                   onClick={() => navigate(item.path)}
                   className="h-9 rounded-[10px] border border-white/35 bg-white/15 px-4 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/25"
                 >
                   {item.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, MapPin, Package, ShieldCheck, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import RootLayout from '@/components/layout/RootLayout';
 import { useGetOcopById } from '@/services/api/ocop/ocopService';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { Button } from '@/components/ui/button';
 
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 
@@ -85,14 +86,14 @@ export default function OcopDetailPageContent() {
         <div className="flex min-h-screen items-center justify-center px-4">
           <div className="w-full max-w-sm rounded-[18px] border border-[#cfe0f4] bg-white p-8 text-center shadow-[0_4px_16px_rgba(13,74,130,0.07)]">
             <p className="text-sm 2xl:text-base font-bold text-foreground">{t('ocopDetail.default_name')}</p>
-            <button
+            <Button variant="ghost"
               type="button"
               onClick={() => navigate('/ocop')}
               className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-[#eef7ff]"
             >
               <ArrowLeft size={14} />
               {t('ocopDetail.back')}
-            </button>
+            </Button>
           </div>
         </div>
       </RootLayout>
@@ -103,14 +104,14 @@ export default function OcopDetailPageContent() {
     <RootLayout>
       <div className="min-h-screen px-4 py-5 lg:py-6">
         <div className="mx-auto w-full max-w-7xl">
-          <button
+          <Button variant="ghost"
             type="button"
             onClick={() => navigate('/ocop')}
             className="mb-4 flex items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-3.5 py-2 text-sm font-semibold text-foreground shadow-sm hover:bg-[#eef7ff]"
           >
             <ArrowLeft size={15} />
             {t('ocopDetail.back')}
-          </button>
+          </Button>
 
           <div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
             {/* Image */}
@@ -197,7 +198,7 @@ export default function OcopDetailPageContent() {
                 )}
               </div>
 
-              <button
+              <Button variant="ghost"
                 type="button"
                 onClick={() =>
                   detail?.shop_url && window.open(detail.shop_url, '_blank', 'noopener,noreferrer')
@@ -208,7 +209,7 @@ export default function OcopDetailPageContent() {
               >
                 {t('ocopDetail.view_map')}
                 <ExternalLink size={15} />
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -216,3 +217,5 @@ export default function OcopDetailPageContent() {
     </RootLayout>
   );
 }
+
+

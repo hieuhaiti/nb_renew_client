@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+﻿import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Activity, AlertTriangle, RefreshCw, Wifi, WifiOff, Construction, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -101,7 +101,7 @@ export default function TrafficPanel() {
               : t('mapPage.traffic.disabled', { defaultValue: 'Đã tắt' })}
           </p>
         </div>
-        <button
+        <Button
           type="button"
           role="switch"
           aria-checked={isTrafficEnabled}
@@ -117,7 +117,7 @@ export default function TrafficPanel() {
               isTrafficEnabled ? 'translate-x-5' : 'translate-x-0'
             )}
           />
-        </button>
+        </Button>
       </div>
 
       {isTrafficEnabled && (
@@ -290,3 +290,5 @@ export default function TrafficPanel() {
     </div>
   );
 }
+
+

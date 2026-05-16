@@ -1,8 +1,9 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Eye, Share2, Star, UserRound } from 'lucide-react';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { Button } from '@/components/ui/button';
 
 export default function NewsDetailHero({ detail, t, locale, formatDate, onShare }) {
   const navigate = useNavigate();
@@ -18,14 +19,14 @@ export default function NewsDetailHero({ detail, t, locale, formatDate, onShare 
   return (
     <div className="mb-5">
       {/* Back button */}
-      <button
+      <Button variant="ghost"
         type="button"
         onClick={() => navigate('/news')}
         className="mb-4 flex items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-3.5 py-2 text-sm font-semibold text-foreground shadow-sm hover:bg-[#eef7ff]"
       >
         <ArrowLeft size={15} />
         {t('newsPage.detail.back')}
-      </button>
+      </Button>
 
       {/* Hero image */}
       <div className="relative h-72 overflow-hidden rounded-[18px] shadow-[0_8px_24px_rgba(13,74,130,0.12)] sm:h-96 lg:h-110">
@@ -42,14 +43,14 @@ export default function NewsDetailHero({ detail, t, locale, formatDate, onShare 
         <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/35 to-transparent" />
 
         {/* Share button */}
-        <button
+        <Button variant="ghost"
           type="button"
           onClick={onShare}
           title={t('newsPage.detail.share')}
           className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur-sm hover:bg-black/50"
         >
           <Share2 size={15} />
-        </button>
+        </Button>
 
         {/* Content on image */}
         <div className="absolute right-0 bottom-0 left-0 p-5 sm:p-7">
@@ -96,3 +97,5 @@ export default function NewsDetailHero({ detail, t, locale, formatDate, onShare 
     </div>
   );
 }
+
+

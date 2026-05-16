@@ -39,7 +39,12 @@ import MapBaseArea from '../components/MapBase';
 import ModalMarker from '@/features/map/components/ModalMarker';
 import ModalCarousel from '@/features/map/components/ModalCarousel';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
-import { clearHighlightedRouteLayers, highlightPointOnMap } from '@/features/map/utils/MapHelper';
+import {
+  clearHighlightedRouteLayers,
+  clearRadiusBuffer,
+  highlightPointOnMap,
+  showRadiusBuffer,
+} from '@/features/map/utils/MapHelper';
 import { getMapColorById } from '@/features/map/constant/mapColor';
 
 export default function MapPage() {
@@ -83,6 +88,7 @@ export default function MapPage() {
   );
   const openSpotModal = useSpotDetailModalStore((state) => state.openSpotModal);
   const mapRef = useMapStore((state) => state.mapRef);
+  const locateControl = useMapStore((state) => state.locateControl);
   const mapRefObj = useMapStore((state) => state.mapRefObj);
   const setHighlightedPoint = useMapStore((state) => state.setHighlightedPoint);
   const setHighlightedRoute = useMapStore((state) => state.setHighlightedRoute);
@@ -261,6 +267,65 @@ export default function MapPage() {
 
   const hasDirectionDetails = Boolean(directions?.legs?.[0]?.steps?.length || directions);
 
+  const resolveCoordinatesFromResult = (result) => {
+    const parsePair = (value) => {
+      if (!Array.isArray(value) || value.length < 2) return null;
+      const lng = Number(value[0]);
+      const lat = Number(value[1]);
+      return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    };
+
+    const parseGeometryObject = (geometryLike) => {
+      if (!geometryLike || typeof geometryLike !== 'object') return null;
+      if (Array.isArray(geometryLike?.coordinates)) {
+        return parsePair(geometryLike.coordinates);
+      }
+      if (geometryLike?.type === 'Feature' && Array.isArray(geometryLike?.geometry?.coordinates)) {
+        return parsePair(geometryLike.geometry.coordinates);
+      }
+      return null;
+    };
+
+    const parseGeometryString = (value) => {
+      if (typeof value !== 'string') return null;
+      try {
+        const parsed = JSON.parse(value);
+        return parseGeometryObject(parsed);
+      } catch {
+        return null;
+      }
+    };
+
+    const parseLngLat = (lngValue, latValue) => {
+      const lng = Number(lngValue);
+      const lat = Number(latValue);
+      return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    };
+
+    const raw = result?.raw;
+    return (
+      parsePair(result?.coordinates) ||
+      parsePair(result?.coords) ||
+      parsePair(raw?.coordinates) ||
+      parsePair(raw?.coords) ||
+      parseLngLat(result?.lng, result?.lat) ||
+      parseLngLat(result?.longitude, result?.latitude) ||
+      parseLngLat(raw?.lng, raw?.lat) ||
+      parseLngLat(raw?.longitude, raw?.latitude) ||
+      parseLngLat(raw?.location?.lng, raw?.location?.lat) ||
+      parseLngLat(raw?.location?.longitude, raw?.location?.latitude) ||
+      parseGeometryObject(result?.geometry) ||
+      parseGeometryObject(raw?.geometry) ||
+      parseGeometryObject(result?.geojson) ||
+      parseGeometryObject(raw?.geojson) ||
+      parseGeometryString(result?.geom_json) ||
+      parseGeometryString(raw?.geom_json) ||
+      parseGeometryString(result?.geom) ||
+      parseGeometryString(raw?.geom) ||
+      null
+    );
+  };
+
   useEffect(() => {
     if (categoriesStoreID == null || categoriesStoreName) return;
 
@@ -322,6 +387,7 @@ export default function MapPage() {
 
   const handleSelectSearchResult = (result) => {
     if (!result) return;
+    const resolvedCoordinates = resolveCoordinatesFromResult(result);
 
     const normalizedCategoryId =
       result.category_id == null || result.category_id === ''
@@ -344,7 +410,7 @@ export default function MapPage() {
       category_id: normalizedCategoryId,
       subcategory_id: normalizedSubcategoryId,
       address: result.address,
-      coordinates: result.coordinates,
+      coordinates: resolvedCoordinates,
       source: 'spots-search',
       raw: result.raw,
     });
@@ -381,14 +447,14 @@ export default function MapPage() {
       setPendingSearchSelection(null);
     }
 
-    if (Array.isArray(result.coordinates) && result.coordinates.length >= 2 && mapRef) {
+    if (Array.isArray(resolvedCoordinates) && resolvedCoordinates.length >= 2 && mapRef) {
       highlightPointOnMap(mapRef, {
         id: result.id,
-        coordinates: result.coordinates,
+        coordinates: resolvedCoordinates,
         properties: result.raw?.properties || result.raw || result,
       });
-    } else if (Array.isArray(result.coordinates) && result.coordinates.length >= 2) {
-      setPendingFlyCoordinates(result.coordinates);
+    } else if (Array.isArray(resolvedCoordinates) && resolvedCoordinates.length >= 2) {
+      setPendingFlyCoordinates(resolvedCoordinates);
     }
 
     if (result.id) {
@@ -606,8 +672,20 @@ export default function MapPage() {
           ? nextRadiusFilter.lng
           : null,
     });
-    console.log('[MapPageContent] radius filter updated', nextRadiusFilter);
   };
+
+  useEffect(() => {
+    const { radius_km, lat, lng } = radiusFilter;
+    const hasCoords = typeof lat === 'number' && typeof lng === 'number';
+
+    if (radius_km > 0 && hasCoords) {
+      if (locateControl) locateControl.triggerLocate(lng, lat);
+      if (mapRef) showRadiusBuffer(mapRef, lng, lat, radius_km);
+    } else {
+      if (locateControl) locateControl.deactivate();
+      if (mapRef) clearRadiusBuffer(mapRef);
+    }
+  }, [radiusFilter, mapRef, locateControl]);
 
   useEffect(() => {
     const shouldSplitMode = activeTab === 'compareSatellite';

@@ -49,7 +49,7 @@
 
   /* Tertiary - Sunset Sand */
   --tertiary: #f59e0b;
-  --tertiary-foreground: #3b2a00;
+  --tertiary-foreground: #ffffff;
   --tertiary-hover: #d97706;
   --tertiary-soft: #fff1dc;
   --tertiary-soft-foreground: #b76100;
@@ -80,8 +80,8 @@
   --quinary-3: #b91c1c;
 
   /* Gold - Golden Hour */
-  --gold: #facc15;
-  --gold-foreground: #3b2a00;
+  --gold: #e6b800;
+  --gold-foreground: #ffffff;
   --gold-hover: #f5b21d;
   --gold-soft: #fff4cf;
   --gold-soft-foreground: #9a5a00;

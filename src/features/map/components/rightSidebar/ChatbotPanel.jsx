@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { Bot, LogIn, Menu, MessageSquare, Plus, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -141,7 +141,7 @@ export default function ChatbotPanel() {
             })}
           </p>
         </div>
-        <Button type="button" className="rounded-full" onClick={() => navigate('/login')}>
+        <Button variant="ghost" type="button" className="rounded-full" onClick={() => navigate('/login')}>
           <LogIn className="size-4" />
           {t('common.login', { defaultValue: 'Đăng nhập' })}
         </Button>
@@ -171,20 +171,20 @@ export default function ChatbotPanel() {
               })}
             </p>
           </div>
-          <button
+          <Button variant="ghost"
             type="button"
             onClick={handleOpenHistory}
             className="text-muted-foreground hover:text-foreground hover:bg-muted shrink-0 rounded-xl p-1.5 transition-colors"
             aria-label={t('mapPage.chatbot.historyTitle', { defaultValue: 'Lịch sử trò chuyện' })}
           >
             <Menu className="size-4.5" />
-          </button>
+          </Button>
         </div>
 
         {messages.length === 0 && !isLoading && (
           <div className="mt-3 flex flex-wrap gap-2">
             {quickPrompts.map((prompt, i) => (
-              <button
+              <Button variant="ghost"
                 key={i}
                 type="button"
                 disabled={isSending}
@@ -192,7 +192,7 @@ export default function ChatbotPanel() {
                 className="typo-badge border-border/70 bg-muted/40 hover:bg-muted text-foreground rounded-full border px-2.5 py-1 transition-colors disabled:opacity-50"
               >
                 {prompt}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -332,7 +332,7 @@ export default function ChatbotPanel() {
               className="typo-search bg-card rounded-full"
               disabled={isSending}
             />
-            <Button
+            <Button variant="ghost"
               type="button"
               className="bg-primary hover:bg-primary/90 rounded-full px-3"
               onClick={() => handleSend()}
@@ -356,18 +356,18 @@ export default function ChatbotPanel() {
             <h4 className="typo-section-title text-foreground">
               {t('mapPage.chatbot.historyTitle', { defaultValue: 'Lịch sử trò chuyện' })}
             </h4>
-            <button
+            <Button variant="ghost"
               type="button"
               onClick={() => setShowHistory(false)}
               className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl p-1.5 transition-colors"
             >
               <X className="size-4" />
-            </button>
+            </Button>
           </div>
 
           {/* New chat button */}
           <div className="shrink-0 border-b px-3 py-2">
-            <button
+            <Button variant="ghost"
               type="button"
               onClick={handleNewChat}
               className="hover:bg-muted text-primary flex w-full items-center gap-2 rounded-xl px-3 py-2 transition-colors"
@@ -376,7 +376,7 @@ export default function ChatbotPanel() {
               <span className="typo-body">
                 {t('mapPage.chatbot.newChat', { defaultValue: 'Cuộc trò chuyện mới' })}
               </span>
-            </button>
+            </Button>
           </div>
 
           {/* Sessions list */}
@@ -416,14 +416,14 @@ export default function ChatbotPanel() {
                         </p>
                       )}
                     </div>
-                    <button
+                    <Button variant="ghost"
                       type="button"
                       onClick={(e) => handleDeleteSession(e, session.id)}
                       className="text-muted-foreground hover:text-destructive shrink-0 rounded-lg p-1 opacity-0 transition-colors group-hover:opacity-100"
                       aria-label={t('mapPage.chatbot.deleteSession', { defaultValue: 'Xóa phiên' })}
                     >
                       <Trash2 className="size-3.5" />
-                    </button>
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -443,16 +443,16 @@ export default function ChatbotPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
-            <button
+            <Button variant="ghost"
               type="button"
               onClick={() => setZoomImage(null)}
               className="bg-muted/90 text-muted-foreground hover:bg-muted hover:text-foreground absolute top-3 right-3 z-10 rounded-lg p-1.5 transition-colors"
             >
               <X className="size-5" />
-            </button>
+            </Button>
 
             {/* Open in new tab button */}
-            <button
+            <Button variant="ghost"
               type="button"
               onClick={() => {
                 window.open(zoomImage, '_blank');
@@ -468,7 +468,7 @@ export default function ChatbotPanel() {
                   d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                 />
               </svg>
-            </button>
+            </Button>
 
             {/* Image */}
             <img
@@ -482,3 +482,5 @@ export default function ChatbotPanel() {
     </div>
   );
 }
+
+

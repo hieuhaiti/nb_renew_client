@@ -1,4 +1,5 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import cameraDroneIcon from '@/assets/hotspot/camera-drone.png';
 import { useTranslation } from 'react-i18next';
 import { cn, withBaseUrl } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -235,6 +236,209 @@ function normalizeBearing(degree) {
 
 const RESET_NORTH_EVENT = 'vr360-reset-north';
 
+function latLonToXYZ(targetLat, targetLon, centerLat, centerLon, radius = 9.5) {
+  const R = 6371;
+  const lat1 = (centerLat * Math.PI) / 180;
+  const lat2 = (targetLat * Math.PI) / 180;
+  const dLat = lat2 - lat1;
+  const dLon = ((targetLon - centerLon) * Math.PI) / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  const distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  const bearing = (((Math.atan2(y, x) * 180) / Math.PI) + 360) % 360;
+  const brRad = (bearing * Math.PI) / 180;
+  return {
+    x: radius * Math.sin(brRad),
+    y: 4.6,
+    z: -radius * Math.cos(brRad),
+    bearing,
+    distance,
+  };
+}
+
+function getNearbySpotCoords(spot) {
+  let geom = spot?.geometry;
+  if (!geom && spot?.geometry_data) {
+    try {
+      geom = typeof spot.geometry_data === 'string' ? JSON.parse(spot.geometry_data) : spot.geometry_data;
+    } catch {
+      geom = null;
+    }
+  }
+  if (geom?.type === 'Point' && Array.isArray(geom.coordinates) && geom.coordinates.length >= 2) {
+    const [lon, lat] = geom.coordinates;
+    if (Number.isFinite(lon) && Number.isFinite(lat)) return [lon, lat];
+  }
+  const lon = Number(spot?.longitude ?? spot?.lng);
+  const lat = Number(spot?.latitude ?? spot?.lat);
+  if (Number.isFinite(lon) && Number.isFinite(lat)) return [lon, lat];
+  return null;
+}
+
+function renderNearbySpots(root, nearbySpots, spotCoordinates, onClickRef, cursorProgressRef) {
+  while (root.firstChild) root.removeChild(root.firstChild);
+  if (!nearbySpots?.length || !spotCoordinates) return;
+
+  const [centerLng, centerLat] = spotCoordinates;
+
+  nearbySpots.forEach((spot) => {
+    const coords = getNearbySpotCoords(spot);
+    if (!coords) return;
+    const [lon, lat] = coords;
+
+    const coord3 = latLonToXYZ(lat, lon, centerLat, centerLng);
+    const s = Math.max(0.25, Math.min(0.5, 0.4 / (1 + coord3.distance * 0.3)));
+    const sF = (s * 1.3).toFixed(3);
+    const facingAngle = ((360 - coord3.bearing) % 360).toFixed(1);
+
+    const group = document.createElement('a-entity');
+    group.setAttribute('position', `${coord3.x.toFixed(3)} ${coord3.y} ${coord3.z.toFixed(3)}`);
+
+    const body = document.createElement('a-entity');
+    body.setAttribute('rotation', `0 ${facingAngle} 0`);
+    body.setAttribute('scale', `${s} ${s} ${s}`);
+    body.setAttribute('animation__focus', `property: scale; to: ${sF} ${sF} ${sF}; startEvents: mouseenter; dur: 300; easing: easeOutElastic`);
+    body.setAttribute('animation__unfocus', `property: scale; to: ${s} ${s} ${s}; startEvents: mouseleave; dur: 400; easing: easeOutCubic`);
+
+    const pulseRing = document.createElement('a-ring');
+    pulseRing.setAttribute('radius-inner', '0.2');
+    pulseRing.setAttribute('radius-outer', '0.5');
+    pulseRing.setAttribute('color', '#FFD700');
+    pulseRing.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.7');
+    pulseRing.setAttribute('animation__scale', 'property: scale; from: 1 1 1; to: 4 4 4; dur: 1800; loop: true; easing: easeInOutSine');
+    pulseRing.setAttribute('animation__opacity', 'property: material.opacity; from: 0.7; to: 0; dur: 1800; loop: true; easing: easeInOutSine');
+    body.appendChild(pulseRing);
+
+    const outerRing = document.createElement('a-ring');
+    outerRing.setAttribute('position', '0 0 0.001');
+    outerRing.setAttribute('radius-inner', '0.7');
+    outerRing.setAttribute('radius-outer', '0.9');
+    outerRing.setAttribute('color', '#FFEB3B');
+    outerRing.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.85');
+    body.appendChild(outerRing);
+
+    const icon = document.createElement('a-image');
+    icon.setAttribute('src', cameraDroneIcon);
+    icon.setAttribute('width', '0.35');
+    icon.setAttribute('height', '0.35');
+    icon.setAttribute(
+      'animation__bob',
+      'property: position; to: 0 0.05 0; dir: alternate; dur: 1500; loop: true; easing: easeInOutSine'
+    );
+    body.appendChild(icon);
+
+    const clickTarget = document.createElement('a-circle');
+    clickTarget.setAttribute('radius', '1.0');
+    clickTarget.setAttribute('position', '0 0 0.002');
+    clickTarget.setAttribute('material', 'transparent: true; opacity: 0; depthTest: false; depthWrite: false');
+    clickTarget.classList.add('hs-click-target');
+    clickTarget.addEventListener('click', () => {
+      onClickRef.current?.(spot);
+    });
+    clickTarget.addEventListener('mouseenter', () => {
+      const ring = cursorProgressRef?.current;
+      if (!ring) return;
+      ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0.8; transparent: true');
+      ring.setAttribute('animation__progress',
+        'property: geometry.thetaLength; from: 0; to: 360; dur: 1500; easing: linear');
+    });
+    clickTarget.addEventListener('mouseleave', () => {
+      const ring = cursorProgressRef?.current;
+      if (!ring) return;
+      ring.removeAttribute('animation__progress');
+      ring.setAttribute('geometry', 'thetaLength: 0');
+      ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0; transparent: true');
+    });
+    body.appendChild(clickTarget);
+
+    group.appendChild(body);
+    root.appendChild(group);
+  });
+}
+
+function renderHotspots(root, hotspots, onClickRef, cursorProgressRef) {
+  while (root.firstChild) {
+    disposeHotspotEntity(root.firstChild);
+    root.removeChild(root.firstChild);
+  }
+
+  hotspots
+    .filter((hotspot) => hotspot.is_active !== false && hotspot.visible !== false)
+    .forEach((hotspot) => {
+      const pos = hotspot.position || { x: 0, y: 1.6, z: -3 };
+      const entity = document.createElement('a-entity');
+      entity.setAttribute('position', `${pos.x ?? 0} ${pos.y ?? 1.6} ${pos.z ?? -3}`);
+
+      const labelEntity = document.createElement('a-entity');
+      const label = normalizeLabel(hotspot.name);
+      const labelMesh = createHotspotLabel(label);
+
+      if (labelMesh) {
+        labelEntity.setObject3D('hotspot-label', labelMesh);
+      } else {
+        labelEntity.setAttribute('text', {
+          value: label,
+          font: AFRAME_TEXT_FONT,
+          fontImage: AFRAME_TEXT_FONT_IMAGE,
+          color: '#ffffff',
+          align: 'center',
+          width: 4,
+          wrapCount: 24,
+          shader: 'msdf',
+          negate: false,
+        });
+      }
+
+      labelEntity.setAttribute('look-at', '[camera]');
+
+      const targetSceneId = hotspot.target_scene_id || hotspot.linked_scene_id;
+      const targetSpotId = hotspot.linked_spot_id ?? hotspot.target_spot_id;
+      const targetSpotSlug = hotspot.target_spot_slug;
+      const hasNavigation = Boolean(targetSceneId || targetSpotId || targetSpotSlug);
+      const hasSceneNav = Boolean(targetSceneId);
+
+      const dot = document.createElement('a-entity');
+      dot.setAttribute('geometry', 'primitive: sphere; radius: 0.1');
+      dot.setAttribute(
+        'material',
+        `color: ${hasSceneNav ? '#f59e0b' : '#94a3b8'}; opacity: 0.9; transparent: true; depthTest: false`
+      );
+      entity.appendChild(dot);
+
+      if (hasNavigation) {
+        const clickSphere = document.createElement('a-entity');
+        clickSphere.setAttribute('geometry', 'primitive: sphere; radius: 0.22');
+        clickSphere.setAttribute(
+          'material',
+          'transparent: true; opacity: 0; depthTest: false; depthWrite: false'
+        );
+        clickSphere.classList.add('hs-click-target');
+        clickSphere.addEventListener('click', () => {
+          onClickRef.current?.(hotspot);
+        });
+        clickSphere.addEventListener('mouseenter', () => {
+          const ring = cursorProgressRef?.current;
+          if (!ring) return;
+          ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0.8; transparent: true');
+          ring.setAttribute('animation__progress',
+            'property: geometry.thetaLength; from: 0; to: 360; dur: 1500; easing: linear');
+        });
+        clickSphere.addEventListener('mouseleave', () => {
+          const ring = cursorProgressRef?.current;
+          if (!ring) return;
+          ring.removeAttribute('animation__progress');
+          ring.setAttribute('geometry', 'thetaLength: 0');
+          ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0; transparent: true');
+        });
+        entity.appendChild(clickSphere);
+      }
+
+      entity.appendChild(labelEntity);
+      root.appendChild(entity);
+    });
+}
+
 function getNarrationRawUrl(scene) {
   if (!scene) return '';
   return scene.narration_audio_url || scene.ambient_sound_url || '';
@@ -243,11 +447,15 @@ function getNarrationRawUrl(scene) {
 export default function Vr360SceneViewer({
   scene,
   hotspots = [],
+  nearbySpots = [],
+  spotCoordinates = null,
   onPrevScene,
   onNextScene,
   canGoPrevScene = false,
   canGoNextScene = false,
   onHotspotClick,
+  onNearbySpotClick,
+  narrationToggleRef = null,
   className,
 }) {
   const { t } = useTranslation();
@@ -276,6 +484,17 @@ export default function Vr360SceneViewer({
     onHotspotClickRef.current = onHotspotClick;
   }, [onHotspotClick]);
 
+  const nearbyHotspotsRootRef = useRef(null);
+  const cursorProgressRef = useRef(null);
+  const onNearbySpotClickRef = useRef(onNearbySpotClick);
+  const nearbySpotsPropRef = useRef(nearbySpots);
+  const spotCoordinatesPropRef = useRef(spotCoordinates);
+  const hotspotsPropRef = useRef(hotspots);
+  useEffect(() => { onNearbySpotClickRef.current = onNearbySpotClick; }, [onNearbySpotClick]);
+  useEffect(() => { nearbySpotsPropRef.current = nearbySpots; });
+  useEffect(() => { spotCoordinatesPropRef.current = spotCoordinates; });
+  useEffect(() => { hotspotsPropRef.current = hotspots; });
+
   const narrationRawUrl = getNarrationRawUrl(scene);
   const narrationUrl = useMemo(
     () => (narrationRawUrl ? withBaseUrl(narrationRawUrl) || narrationRawUrl : ''),
@@ -290,11 +509,9 @@ export default function Vr360SceneViewer({
     const camera = aCameraRef.current;
     const camPos = scene.camera_position || DEFAULT_CAMERA_POSITION;
     const camRot = scene.camera_rotation || DEFAULT_CAMERA_ROTATION;
-    const cameraFov = Number(fovAngle) || Number(scene.camera_fov) || DEFAULT_FOV;
 
     camera.setAttribute('position', `${camPos.x ?? 0} ${camPos.y ?? 1.6} ${camPos.z ?? 0}`);
     camera.setAttribute('rotation', `${camRot.x ?? 0} ${camRot.y ?? 0} ${camRot.z ?? 0}`);
-    camera.setAttribute('fov', String(cameraFov));
 
     const lookControls = camera.components?.['look-controls'];
     if (lookControls?.yawObject && lookControls?.pitchObject) {
@@ -304,13 +521,7 @@ export default function Vr360SceneViewer({
         lookControls.pitchObject.rotation.z = toRadians(camRot.z ?? 0);
       }
     }
-
-    const cameraObj = camera.getObject3D('camera');
-    if (cameraObj) {
-      cameraObj.fov = cameraFov;
-      cameraObj.updateProjectionMatrix();
-    }
-  }, [scene, fovAngle]);
+  }, [scene]);
 
   useEffect(() => {
     loadAFrame().then(() => setAframeReady(true));
@@ -323,11 +534,18 @@ export default function Vr360SceneViewer({
     const container = containerRef.current;
     const aScene = document.createElement('a-scene');
     aScene.setAttribute('embedded', '');
-    aScene.setAttribute('vr-mode-ui', 'enabled: false');
+    aScene.setAttribute('vr-mode-ui', 'enabled: true');
+
+    if (!document.getElementById('vr-btn-fix')) {
+      const s = document.createElement('style');
+      s.id = 'vr-btn-fix';
+      s.textContent = '.a-enter-vr { display: block !important; z-index: 9999 !important; }';
+      document.head.appendChild(s);
+    }
     aScene.setAttribute('loading-screen', 'enabled: false');
     aScene.setAttribute(
       'renderer',
-      'antialias: false; precision: mediump; colorManagement: true; sortObjects: true; physicallyCorrectLights: false;'
+      'antialias: false; precision: mediump; colorManagement: true; sortTransparentObjects: true; physicallyCorrectLights: false;'
     );
     aScene.style.height = '100%';
     aScene.style.width = '100%';
@@ -341,17 +559,58 @@ export default function Vr360SceneViewer({
     const hotspotsRoot = document.createElement('a-entity');
     aScene.appendChild(hotspotsRoot);
 
+    const nearbyHotspotsRoot = document.createElement('a-entity');
+    aScene.appendChild(nearbyHotspotsRoot);
+
     const aCamera = document.createElement('a-camera');
     aCamera.setAttribute('look-controls', 'enabled: true');
     aCamera.setAttribute('cursor', 'rayOrigin: mouse');
-    aCamera.setAttribute('raycaster', 'objects: .hs-click-target; recursive: false');
+    aCamera.setAttribute('raycaster', 'objects: .hs-click-target');
+
+    const aCursor = document.createElement('a-entity');
+    aCursor.setAttribute('cursor', 'fuse: true; fuseTimeout: 1500');
+    aCursor.setAttribute('position', '0 0 -0.5');
+    aCursor.setAttribute('geometry', 'primitive: ring; radiusInner: 0.008; radiusOuter: 0.012');
+    aCursor.setAttribute('material', 'color: #00ffff; shader: flat; opacity: 0.9');
+    aCursor.setAttribute('raycaster', 'objects: .hs-click-target; far: 20');
+
+    const aCursorProgress = document.createElement('a-ring');
+    aCursorProgress.setAttribute('radius-inner', '0.014');
+    aCursorProgress.setAttribute('radius-outer', '0.018');
+    aCursorProgress.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0; transparent: true');
+    aCursorProgress.setAttribute('theta-start', '0');
+    aCursorProgress.setAttribute('theta-length', '0');
+    aCursorProgress.setAttribute('position', '0 0 0.001');
+    aCursor.appendChild(aCursorProgress);
+    cursorProgressRef.current = aCursorProgress;
+
+    aCamera.appendChild(aCursor);
+
     aScene.appendChild(aCamera);
 
     aSkyRef.current = aSky;
     hotspotsRootRef.current = hotspotsRoot;
+    nearbyHotspotsRootRef.current = nearbyHotspotsRoot;
     aCameraRef.current = aCamera;
     aSceneRef.current = aScene;
     container.appendChild(aScene);
+
+    // Set ảnh ngay lập tức để tránh race condition với image loading effect
+    const initRawUrl = scene?.equirectangular_image_url;
+    if (initRawUrl) {
+      const initImageUrl = withBaseUrl(initRawUrl) || initRawUrl;
+      aSky.setAttribute('src', initImageUrl);
+      aSky.setAttribute('color', '#ffffff');
+    }
+
+    renderHotspots(hotspotsRoot, hotspotsPropRef.current, onHotspotClickRef, cursorProgressRef);
+    renderNearbySpots(
+      nearbyHotspotsRoot,
+      nearbySpotsPropRef.current,
+      spotCoordinatesPropRef.current,
+      onNearbySpotClickRef,
+      cursorProgressRef
+    );
 
     return () => {
       try {
@@ -362,12 +621,13 @@ export default function Vr360SceneViewer({
       aSceneRef.current = null;
       aSkyRef.current = null;
       hotspotsRootRef.current = null;
+      nearbyHotspotsRootRef.current = null;
       aCameraRef.current = null;
     };
   }, [aframeReady, scene]);
 
   useEffect(() => {
-    if (!scene || !aSkyRef.current) return;
+    if (!scene) return;
 
     const rawUrl = scene.equirectangular_image_url;
     const imageUrl = rawUrl ? withBaseUrl(rawUrl) || rawUrl : '';
@@ -379,9 +639,11 @@ export default function Vr360SceneViewer({
       image.decoding = 'async';
 
       image.onload = () => {
-        if (!aSkyRef.current) return;
-        aSkyRef.current.setAttribute('src', imageUrl);
-        aSkyRef.current.setAttribute('color', '#ffffff');
+        // Sky có thể chưa tạo khi effect này chạy lần đầu — scene creation sẽ set src riêng
+        if (aSkyRef.current) {
+          aSkyRef.current.setAttribute('src', imageUrl);
+          aSkyRef.current.setAttribute('color', '#ffffff');
+        }
         setIsSceneImageLoading(false);
       };
 
@@ -398,8 +660,10 @@ export default function Vr360SceneViewer({
     }
 
     setIsSceneImageLoading(false);
-    aSkyRef.current.removeAttribute('src');
-    aSkyRef.current.setAttribute('color', '#1a1a2e');
+    if (aSkyRef.current) {
+      aSkyRef.current.removeAttribute('src');
+      aSkyRef.current.setAttribute('color', '#1a1a2e');
+    }
   }, [scene?.id, scene?.equirectangular_image_url]);
 
   useEffect(() => {
@@ -436,84 +700,7 @@ export default function Vr360SceneViewer({
     const root = hotspotsRootRef.current;
     if (!root) return;
 
-    while (root.firstChild) {
-      disposeHotspotEntity(root.firstChild);
-      root.removeChild(root.firstChild);
-    }
-
-    hotspots
-      .filter((hotspot) => hotspot.is_active !== false && hotspot.visible !== false)
-      .forEach((hotspot) => {
-        const pos = hotspot.position || { x: 0, y: 1.6, z: -3 };
-        const entity = document.createElement('a-entity');
-        entity.setAttribute('position', `${pos.x ?? 0} ${pos.y ?? 1.6} ${pos.z ?? -3}`);
-
-        const labelEntity = document.createElement('a-entity');
-        const label = normalizeLabel(hotspot.name);
-        const labelMesh = createHotspotLabel(label);
-
-        if (labelMesh) {
-          labelEntity.setObject3D('hotspot-label', labelMesh);
-        } else {
-          labelEntity.setAttribute('text', {
-            value: label,
-            font: AFRAME_TEXT_FONT,
-            fontImage: AFRAME_TEXT_FONT_IMAGE,
-            color: '#ffffff',
-            align: 'center',
-            width: 4,
-            wrapCount: 24,
-            shader: 'msdf',
-            negate: false,
-          });
-        }
-
-        labelEntity.setAttribute('look-at', '[camera]');
-
-        const isNavigate = hotspot.hotspot_type === 'navigate';
-        const targetSceneId = hotspot.target_scene_id || hotspot.linked_scene_id;
-        const targetSpotId = hotspot.target_spot_id;
-        const targetSpotSlug = hotspot.target_spot_slug;
-        const hasNavigation = isNavigate && Boolean(targetSceneId || targetSpotId || targetSpotSlug);
-
-        // eslint-disable-next-line no-console
-        console.debug('[VR360 hotspot]', {
-          id: hotspot.id,
-          name: hotspot.name,
-          hotspot_type: hotspot.hotspot_type,
-          target_scene_id: hotspot.target_scene_id,
-          target_spot_id: hotspot.target_spot_id,
-          hasNavigation,
-        });
-
-        if (hasNavigation) {
-          const dot = document.createElement('a-entity');
-          dot.setAttribute('geometry', 'primitive: sphere; radius: 0.1');
-          dot.setAttribute(
-            'material',
-            'color: #f59e0b; opacity: 0.9; transparent: true; depthTest: false'
-          );
-
-          const clickSphere = document.createElement('a-entity');
-          clickSphere.setAttribute('geometry', 'primitive: sphere; radius: 0.22');
-          clickSphere.setAttribute(
-            'material',
-            'transparent: true; opacity: 0; depthTest: false; depthWrite: false'
-          );
-          clickSphere.classList.add('hs-click-target');
-          clickSphere.addEventListener('click', () => {
-            // eslint-disable-next-line no-console
-            console.debug('[VR360 hotspot] click fired', { hotspot, targetSceneId, targetSpotId });
-            onHotspotClickRef.current?.(hotspot);
-          });
-
-          entity.appendChild(dot);
-          entity.appendChild(clickSphere);
-        }
-
-        entity.appendChild(labelEntity);
-        root.appendChild(entity);
-      });
+    renderHotspots(root, hotspots, onHotspotClickRef, cursorProgressRef);
 
     return () => {
       while (root.firstChild) {
@@ -521,7 +708,13 @@ export default function Vr360SceneViewer({
         root.removeChild(root.firstChild);
       }
     };
-  }, [hotspots]);
+  }, [hotspots, scene?.id]);
+
+  useEffect(() => {
+    const root = nearbyHotspotsRootRef.current;
+    if (!root) return;
+    renderNearbySpots(root, nearbySpots, spotCoordinates, onNearbySpotClickRef, cursorProgressRef);
+  }, [nearbySpots, spotCoordinates, scene?.id]);
 
   useEffect(() => {
     const sceneVolume = Number(scene?.ambient_sound_volume);
@@ -604,6 +797,11 @@ export default function Vr360SceneViewer({
 
     audio.pause();
   }, []);
+
+  useEffect(() => {
+    if (!narrationToggleRef) return;
+    narrationToggleRef.current = handleTogglePlay;
+  }, [narrationToggleRef, handleTogglePlay]);
 
   const handleToggleMute = useCallback(() => {
     setIsNarrationMuted((prev) => !prev);

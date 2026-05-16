@@ -199,7 +199,9 @@ export default function MapBaseArea() {
       map.addControl(new ToolViewModeControl(), 'right');
       map.addControl(new ToolBaseMap(), 'right');
       map.addControl(new ResetControl(), 'right');
-      map.addControl(new ToolLocateControl(), 'right');
+      const locateControl = new ToolLocateControl();
+      map.addControl(locateControl, 'right');
+      useMapStore.getState().setLocateControl(locateControl);
       map.addControl(new mapboxgl.FullscreenControl(), 'right');
       map.addControl(
         new mapboxgl.NavigationControl({

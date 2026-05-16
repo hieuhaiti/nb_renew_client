@@ -9,6 +9,7 @@ export function useGetAllDataPoints({
   parent_category_id,
   category_ids,
   is_featured,
+  has_vr_360,
   options = {},
 } = {}) {
   const queryParams = new URLSearchParams();
@@ -25,6 +26,7 @@ export function useGetAllDataPoints({
   if (search) queryParams.set('search', search);
   if (subcategory_id) queryParams.set('subcategory_id', subcategory_id);
   if (is_featured !== undefined && is_featured !== '') queryParams.set('is_featured', is_featured);
+  if (has_vr_360) queryParams.set('has_vr_360', true);
 
   return useApiQuery(
     [
@@ -37,6 +39,7 @@ export function useGetAllDataPoints({
       parent_category_id,
       JSON.stringify(category_ids || []),
       is_featured,
+      has_vr_360,
     ],
     `spots?${queryParams.toString()}`,
     {

@@ -1,7 +1,18 @@
-import React, { useState, useMemo, useEffect } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Star, Clock3, MapPin, Globe, Leaf } from 'lucide-react';
+import {
+  ChevronRight,
+  Bell,
+  Car,
+  Utensils,
+  Camera,
+  Ticket,
+  Headphones,
+  Eye,
+  Users,
+  Droplets,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import RootLayout from '@/components/layout/RootLayout';
 import {
@@ -14,20 +25,20 @@ import {
   useCreateTourismReview,
 } from '@/services/api/tourism-points/tourismPointsReviewApi';
 import { mutater } from '@/services/mutater';
-// TODO: map states removed for now
-import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import LoadingOverlay from '@/components/common/LoadingOverlay';
 import placeholderImg from '@/assets/images/placeholder.png';
-import { TourismDetailTopBar } from '@/features/tourism-points/components/detail/TourismDetailTopBar';
+import { TourismDetailSkeleton } from '@/features/tourism-points/components/detail/TourismDetailSkeleton';
 import { TourismDetailHero } from '@/features/tourism-points/components/detail/TourismDetailHero';
-import { TourismDetailQuickStats } from '@/features/tourism-points/components/detail/TourismDetailQuickStats';
 import { TourismDetailGallerySection } from '@/features/tourism-points/components/detail/TourismDetailGallerySection';
 import { TourismDetailIntroSection } from '@/features/tourism-points/components/detail/TourismDetailIntroSection';
 import { TourismDetailReviewsSection } from '@/features/tourism-points/components/detail/TourismDetailReviewsSection';
 import { TourismDetailSidebar } from '@/features/tourism-points/components/detail/TourismDetailSidebar';
 import ModalCarousel from '@/features/map/components/ModalCarousel';
 import { useModalCarouselStore } from '@/features/map/store/useModalStore';
+import { useMapStore } from '@/features/map/store/useMapStore';
+import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
+
+/* â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const getDefaultVisitDate = () =>
   new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
@@ -54,60 +65,128 @@ const formatOpeningHoursDisplay = (openingHours, language = 'vi') => {
   if (typeof openingHours === 'string') return openingHours;
   if (typeof openingHours === 'number') return String(openingHours);
   if (!openingHours || typeof openingHours !== 'object') return '';
-
   const directDaily = openingHours?.daily || openingHours?.default;
-  if (typeof directDaily === 'string' || typeof directDaily === 'number') {
+  if (typeof directDaily === 'string' || typeof directDaily === 'number')
     return String(directDaily);
-  }
-
   const note =
     language === 'en'
       ? openingHours?.note_en || openingHours?.note_vi
       : openingHours?.note_vi || openingHours?.note_en;
   if (typeof note === 'string' && note.trim()) return note.trim();
-
   for (const dayKey of OPENING_DAY_KEYS) {
     const dayRange = openingHours?.[dayKey];
     if (!dayRange || typeof dayRange !== 'object') continue;
     const open = dayRange?.open;
     const close = dayRange?.close;
-    if (typeof open === 'string' && typeof close === 'string') {
-      return `${open} - ${close}`;
-    }
+    if (typeof open === 'string' && typeof close === 'string') return `${open} - ${close}`;
   }
-
   return '';
 };
 
+const parseOpeningTimeStart = (formatted) => {
+  if (!formatted) return null;
+  const match = formatted.match(/^(\d{1,2}:\d{2})/);
+  return match ? match[1] : formatted;
+};
+
+/* â”€â”€â”€ static timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+const SERVICE_ICON_MAP = {
+  parking: Car,
+  restaurant: Utensils,
+  food: Utensils,
+  wc: Droplets,
+  restroom: Droplets,
+  checkin: Camera,
+  ticket: Ticket,
+  audio_guide: Headphones,
+  accessibility: Users,
+  vr_360: Eye,
+  vr: Eye,
+  ar: Eye,
+};
+const normalizeServiceList = (relatedServices) => {
+  if (Array.isArray(relatedServices)) return relatedServices;
+  if (!relatedServices || typeof relatedServices !== 'object') return [];
+  return (
+    relatedServices?.items ||
+    relatedServices?.services ||
+    relatedServices?.data ||
+    relatedServices?.list ||
+    []
+  );
+};
+const normalizeServiceKey = (service) => {
+  if (typeof service === 'string') return service.trim().toLowerCase();
+  if (!service || typeof service !== 'object') return '';
+  return String(
+    service?.code || service?.slug || service?.service_code || service?.key || service?.name || ''
+  )
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_');
+};
+const normalizeServiceLabel = (service, key) => {
+  if (service && typeof service === 'object') {
+    return service?.name_vi || service?.name_en || service?.name || service?.label || key;
+  }
+  if (typeof service === 'string' && service.trim()) return service;
+  return key.replace(/[_-]+/g, ' ').trim();
+};
+const buildServices = (attraction, t) => {
+  const relatedServices = normalizeServiceList(attraction?.related_services);
+  const unique = new Map();
+  relatedServices.forEach((service) => {
+    const key = normalizeServiceKey(service);
+    if (!key || unique.has(key)) return;
+    const Icon = SERVICE_ICON_MAP[key] || Users;
+    unique.set(key, { key, icon: Icon, label: normalizeServiceLabel(service, key) });
+  });
+  if (attraction?.has_audio_guide && !unique.has('audio_guide')) {
+    unique.set('audio_guide', {
+      key: 'audio_guide',
+      icon: Headphones,
+      label: t('tourism.audio_guide', 'Thuyet minh'),
+    });
+  }
+  if (attraction?.has_vr_360 && !unique.has('vr_360')) {
+    unique.set('vr_360', {
+      key: 'vr_360',
+      icon: Eye,
+      label: 'VR 360',
+    });
+  }
+  if (attraction?.has_ar_support && !unique.has('ar')) {
+    unique.set('ar', {
+      key: 'ar',
+      icon: Eye,
+      label: t('tourism.ar_support', 'AR ho tro'),
+    });
+  }
+  return Array.from(unique.values());
+};
+/* ??? page ??????????????????????????????????????????????? */
+
 export default function TourismDetailPage() {
-  const queryClient = useQueryClient();
   const { slug, id } = useParams();
   const pointSlug = slug || id;
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.startsWith('en') ? 'en' : 'vi';
+  const mapRef = useMapStore((state) => state.mapRef);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [shareStatus, setShareStatus] = useState('idle'); // 'idle' | 'copied' | 'shared'
+  const [shareStatus, setShareStatus] = useState('idle');
   const { openCarouselModal } = useModalCarouselStore();
-  // const { resetLayers } = useDataLayerStore();
-  // const { setCategoryID } = useCategoriesStore();
 
-  // Fetch point detail from API using provided service hook
   const {
     data: pointResp,
     isError,
     isLoading,
-  } = useGetDataPointBySlug({
-    slug: pointSlug,
-    format: 'json',
-  });
+  } = useGetDataPointBySlug({ slug: pointSlug, format: 'json' });
+
   const attraction = useMemo(() => {
     if (!pointResp) return null;
-    // Common shapes:
-    // - { data: { spot: {...} } }  (current API)
-    // - { data: { point: {...} } }
-    // - { spot: {...} } / { point: {...} } / {...}
     return (
       pointResp.data?.spot ||
       pointResp.data?.point ||
@@ -119,12 +198,12 @@ export default function TourismDetailPage() {
   }, [pointResp]);
 
   const attractionName =
+    attraction?.name ||
     attraction?.name_vi ||
     attraction?.name_en ||
-    attraction?.name ||
     t('tourism.detail_title', 'Tourism point');
   const attractionAddress =
-    attraction?.address_vi || attraction?.address_en || attraction?.address || '';
+    attraction?.address || attraction?.address_vi || attraction?.address_en || '';
 
   const { data: spotMediaResp } = useGetSpotMedia({
     spot_id: attraction?.id,
@@ -139,19 +218,16 @@ export default function TourismDetailPage() {
       spotMediaResp?.data ||
       [];
     if (!Array.isArray(source)) return [];
-
     return source
       .filter((item) => {
         const mediaType = String(item?.media_type || item?.type || '').toLowerCase();
         const mimeType = String(item?.mime_type || '').toLowerCase();
-        const isVideo = mediaType.includes('video') || mimeType.startsWith('video/');
-        return !isVideo;
+        return !(mediaType.includes('video') || mimeType.startsWith('video/'));
       })
       .map((item) => item?.url || item?.file_path || item?.path || item?.image_url || '')
       .filter(Boolean);
   }, [spotMediaResp]);
 
-  // Compute images safely and keep them memoized so hooks below are stable
   const images = useMemo(() => {
     if (mediaImages.length > 0) return mediaImages;
     if (!attraction) return [];
@@ -163,20 +239,14 @@ export default function TourismDetailPage() {
     );
   }, [attraction, mediaImages]);
 
-  const placeholderImage = placeholderImg;
   const safeImages = useMemo(
-    () => (Array.isArray(images) && images.length > 0 ? images : [placeholderImage]),
+    () => (Array.isArray(images) && images.length > 0 ? images : [placeholderImg]),
     [images]
   );
-
-  // Map images through withBaseUrl so every src is a normalized absolute URL
   const safeImagesMapped = useMemo(() => safeImages.map((s) => withBaseUrl(s)), [safeImages]);
 
-  // Keep currentImageIndex within bounds when images change
   useEffect(() => {
-    if (currentImageIndex >= safeImages.length) {
-      setCurrentImageIndex(0);
-    }
+    if (currentImageIndex >= safeImages.length) setCurrentImageIndex(0);
   }, [safeImages, currentImageIndex]);
 
   const favoriteKey = useMemo(
@@ -184,14 +254,12 @@ export default function TourismDetailPage() {
     [attraction?.id, pointSlug]
   );
 
-  // Favorites: persist liked point ids in localStorage under key 'favorites'
   useEffect(() => {
     try {
       const raw = localStorage.getItem('favorites');
       const favs = raw ? JSON.parse(raw) : [];
       setIsLiked(Boolean(favoriteKey && Array.isArray(favs) && favs.includes(favoriteKey)));
     } catch {
-      // ignore malformed localStorage
       setIsLiked(false);
     }
   }, [favoriteKey]);
@@ -206,7 +274,7 @@ export default function TourismDetailPage() {
       localStorage.setItem('favorites', JSON.stringify(newFavs));
       setIsLiked(!exists);
     } catch {
-      // ignore
+      /* ignore */
     }
   };
 
@@ -214,16 +282,12 @@ export default function TourismDetailPage() {
     const url = window.location.href;
     try {
       if (navigator.share) {
-        await navigator.share({
-          title: attractionName,
-          url,
-        });
+        await navigator.share({ title: attractionName, url });
         setShareStatus('shared');
-      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
         setShareStatus('copied');
       } else {
-        // fallback
         const el = document.createElement('textarea');
         el.value = url;
         document.body.appendChild(el);
@@ -232,7 +296,6 @@ export default function TourismDetailPage() {
         document.body.removeChild(el);
         setShareStatus('copied');
       }
-      // reset status after 2s
       setTimeout(() => setShareStatus('idle'), 2000);
     } catch {
       setShareStatus('idle');
@@ -244,7 +307,7 @@ export default function TourismDetailPage() {
     openCarouselModal(safeImagesMapped);
   };
 
-  // Reviews hooks/state must be initialized unconditionally (before early returns)
+  /* reviews */
   const [reviewPage, setReviewPage] = useState(1);
   const [reviewLimit] = useState(10);
   const reviewsQuery = useGetTourismReviewByTourismPointId({
@@ -257,15 +320,12 @@ export default function TourismDetailPage() {
       reviewsQuery.refetch();
     },
   });
-
   const [newStars, setNewStars] = useState(0);
   const [hoverStars, setHoverStars] = useState(0);
   const [newTitle, setNewTitle] = useState('');
   const [newPros, setNewPros] = useState('');
   const [newCons, setNewCons] = useState('');
-
   const [newComment, setNewComment] = useState('');
-
   const [newVisitDate, setNewVisitDate] = useState(getDefaultVisitDate());
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
@@ -275,24 +335,19 @@ export default function TourismDetailPage() {
   }, [attraction?.id]);
 
   useEffect(() => {
-    // build previews
     if (!selectedFiles || selectedFiles.length === 0) {
       setPreviews([]);
       return;
     }
-
     const urls = Array.from(selectedFiles).map((f) => URL.createObjectURL(f));
     setPreviews(urls);
-
     return () => urls.forEach((u) => URL.revokeObjectURL(u));
   }, [selectedFiles]);
 
   const handleFilesChange = (e) => {
-    const files = e.target.files;
-    if (!files) return;
-    setSelectedFiles(Array.from(files));
+    if (!e.target.files) return;
+    setSelectedFiles(Array.from(e.target.files));
   };
-
   const handleRemoveFile = (index) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setPreviews((prev) => prev.filter((_, i) => i !== index));
@@ -300,12 +355,10 @@ export default function TourismDetailPage() {
 
   const handleCreateReview = async () => {
     if (!attraction?.id) return;
-
     if (Number(newStars) === 0) {
       toast.error(t('tourism.review.missing_rating', 'Vui lòng chọn số sao đánh giá.'));
       return;
     }
-
     const payload = {
       spot_id: String(attraction.id),
       stars: Number(newStars),
@@ -315,7 +368,6 @@ export default function TourismDetailPage() {
       cons: newCons || '',
       visit_date: newVisitDate ? new Date(newVisitDate).toISOString() : null,
     };
-
     if (selectedFiles && selectedFiles.length > 0) {
       const fd = new FormData();
       fd.append('spot_id', payload.spot_id);
@@ -330,13 +382,11 @@ export default function TourismDetailPage() {
     } else {
       createReviewMut.mutate(payload);
     }
-
     setNewStars(0);
     setNewTitle('');
     setNewComment('');
     setNewPros('');
     setNewCons('');
-
     setSelectedFiles([]);
     setPreviews([]);
   };
@@ -348,7 +398,6 @@ export default function TourismDetailPage() {
     setNewPros('');
     setNewCons('');
     setNewVisitDate(getDefaultVisitDate());
-
     setSelectedFiles([]);
     setPreviews([]);
   };
@@ -358,26 +407,67 @@ export default function TourismDetailPage() {
       await mutater(`ratings/${reviewId}`, 'DELETE');
       reviewsQuery.refetch();
     } catch {
-      // ignore
+      /* ignore */
     }
   };
 
-  const handleOpenMap = async () => {
-    const cachedVi = queryClient.getQueryData(['categories', 'vi']);
-    const cachedEn = queryClient.getQueryData(['categories', 'en']);
-    const categories = cachedVi?.data?.categories || cachedEn?.data?.categories || [];
-    const category = categories.find((c) => c.id === attraction.category_id);
-    const slug = category ? category.slug : null;
-    if (category && slug) {
-      navigate(`/${slug}`, {
-        state: {
-          attractionId: attraction.id,
-          mode: 'direction',
-        },
+  const handleOpenMap = async (inputCoordinates) => {
+    const fallbackLat = pickCoordinate(
+      attraction?.geojson?.coordinates?.[1],
+      attraction?.lat,
+      attraction?.latitude,
+      attraction?.location?.lat,
+      attraction?.location?.latitude
+    );
+    const fallbackLng = pickCoordinate(
+      attraction?.geojson?.coordinates?.[0],
+      attraction?.lng,
+      attraction?.longitude,
+      attraction?.location?.lng,
+      attraction?.location?.longitude
+    );
+    const coordinatesFromInput =
+      Array.isArray(inputCoordinates) &&
+      inputCoordinates.length >= 2 &&
+      Number.isFinite(Number(inputCoordinates[0])) &&
+      Number.isFinite(Number(inputCoordinates[1]))
+        ? [Number(inputCoordinates[0]), Number(inputCoordinates[1])]
+        : null;
+    const fallbackCoordinates =
+      Number.isFinite(fallbackLng) && Number.isFinite(fallbackLat)
+        ? [fallbackLng, fallbackLat]
+        : null;
+    const coordinates = coordinatesFromInput || fallbackCoordinates;
+    const resolvedDescription = stripHtmlTags(
+      attraction?.description_vi || attraction?.description_en || attraction?.description || ''
+    );
+
+    const selectedSearchResult = {
+      id: attraction?.id,
+      slug: attraction?.slug || pointSlug || null,
+      name: attractionName || '',
+      description: resolvedDescription,
+      address: attractionAddress || attraction?.location_name || '',
+      coordinates,
+      category_id: attraction?.category_id ?? null,
+      subcategory_id: attraction?.subcategory_id ?? null,
+      raw: attraction,
+    };
+
+    if (coordinates && mapRef) {
+      highlightPointOnMap(mapRef, {
+        id: attraction?.id,
+        coordinates,
+        properties: attraction || {},
       });
-      return;
     }
-    navigate('/map');
+
+    navigate('/map', {
+      state: {
+        prefillKeyword: attractionName || '',
+        selectedSearchResult,
+      },
+    });
   };
 
   const handleContact = () => {
@@ -389,12 +479,11 @@ export default function TourismDetailPage() {
     window.location.href = `tel:${String(phone).trim()}`;
   };
 
+  /* â”€â”€â”€ loading / error â”€â”€â”€â”€ */
   if (isLoading) {
     return (
       <RootLayout>
-        <div className="bg-background min-h-screen">
-          <LoadingOverlay />
-        </div>
+        <TourismDetailSkeleton />
       </RootLayout>
     );
   }
@@ -406,10 +495,7 @@ export default function TourismDetailPage() {
             <h2 className="text-foreground mb-4 text-2xl font-bold">
               {t('tourism.not_found', 'Tourism point not found')}
             </h2>
-            <Button
-              onClick={() => navigate('/tourism-point')}
-              className="bg-primary text-primary-foreground hover:bg-primary-hover hover:text-primary-foreground"
-            >
+            <Button variant="ghost" onClick={() => navigate('/tourism-point')}>
               {t('tourism.back_to_list', 'Back to list')}
             </Button>
           </div>
@@ -418,15 +504,13 @@ export default function TourismDetailPage() {
     );
   }
 
+  /* â”€â”€â”€ derived display values â”€â”€â”€â”€â”€ */
+
   const computeDisplayRating = (r) => {
     if (!r) return 0;
     return Math.round(Number(r.stars ?? r.rating ?? 0));
   };
 
-  /* Two-column detail layout */
-
-  // Pagination display: use server-provided pagination when available,
-  // otherwise fall back to sensible defaults (page 1 / pages 1).
   const serverPagination =
     reviewsQuery?.data?.data?.pagination || reviewsQuery?.data?.pagination || null;
   const pageDisplay = serverPagination?.page ?? reviewPage ?? 1;
@@ -443,9 +527,7 @@ export default function TourismDetailPage() {
   const derivedStarCounts = safeReviewItems.reduce(
     (acc, item) => {
       const rating = Math.min(5, Math.max(1, computeDisplayRating(item)));
-      if (rating >= 1 && rating <= 5) {
-        acc[rating] += 1;
-      }
+      if (rating >= 1 && rating <= 5) acc[rating] += 1;
       acc.total += 1;
       return acc;
     },
@@ -462,7 +544,6 @@ export default function TourismDetailPage() {
 
   const totalReviewCount =
     Number(attraction.rating_count ?? attraction.total_reviews ?? derivedStarCounts.total) || 0;
-
   const avgReviewFromStats = Number(attraction.rating_avg ?? attraction.average_rating);
   const averageDisplayRating =
     Number.isFinite(avgReviewFromStats) && avgReviewFromStats > 0 ? avgReviewFromStats : 0;
@@ -470,205 +551,117 @@ export default function TourismDetailPage() {
   const openingHours =
     formatOpeningHoursDisplay(attraction?.opening_hours, lang) ||
     t('tourism.unknown', 'Chưa cập nhật');
+  const openingTimeStart = parseOpeningTimeStart(openingHours);
 
-  const entranceFeeRaw =
-    attraction?.ticket_price_adult ?? attraction?.entrance_fee ?? attraction?.ticket_price ?? 0;
-  const entranceFeeNumber = Number(entranceFeeRaw);
+  const entranceFeeNumber = Number(
+    attraction?.ticket_price_adult ?? attraction?.entrance_fee ?? attraction?.ticket_price ?? 0
+  );
   const ticketDisplay =
     Number.isFinite(entranceFeeNumber) && entranceFeeNumber > 0
       ? formatVND(entranceFeeNumber)
       : t('tourism.free', 'Miễn phí');
 
-  const durationTextCandidate =
-    attraction?.visit_duration_text ||
-    attraction?.recommended_duration_text ||
-    attraction?.visit_duration ||
-    attraction?.recommended_duration ||
-    null;
-  const durationHours = Number(attraction?.duration_hours ?? attraction?.visit_duration_hours);
-  const durationMinutes = Number(
-    attraction?.duration_minutes ?? attraction?.visit_duration_minutes
-  );
-  const visitDurationDisplay =
-    (typeof durationTextCandidate === 'string' && durationTextCandidate.trim()) ||
-    (Number.isFinite(durationHours) && durationHours > 0
-      ? `${durationHours} ${t('tourism.hours', 'giờ')}`
-      : null) ||
-    (Number.isFinite(durationMinutes) && durationMinutes > 0
-      ? `${durationMinutes} ${t('tourism.minutes', 'phút')}`
-      : null) ||
-    t('tourism.unknown', 'Chưa cập nhật');
-
-  const ticketChildRaw = attraction?.ticket_price_child ?? 0;
-  const ticketChildNumber = Number(ticketChildRaw);
-  const ticketChildDisplay =
-    Number.isFinite(ticketChildNumber) && ticketChildNumber > 0
-      ? formatVND(ticketChildNumber)
-      : t('tourism.free', 'Miễn phí');
-
-  const heroTags = (() => {
-    const extracted = [attraction?.category_name, attraction?.province_name]
-      .filter(Boolean)
-      .map((item) => String(item).trim());
-    return [...new Set(extracted)].slice(0, 2);
-  })();
-
-  const introTags = (() => {
-    const tags = [
-      attraction?.category_name,
-      attraction?.province_name,
-      attraction?.commune_name,
-      attraction?.has_vr_360 ? t('tourism.feature_vr360', 'VR 360°') : null,
-      attraction?.has_ar_support ? t('tourism.feature_ar', 'AR') : null,
-      attraction?.has_audio_guide ? t('tourism.feature_audio_guide', 'Audio guide') : null,
-    ]
-      .filter(Boolean)
-      .map((item) => String(item).trim());
-    return [...new Set(tags)].slice(0, 6);
-  })();
-
-  const galleryPreviewImages = (() => {
-    if (!safeImagesMapped.length) return [];
-    const picked = safeImagesMapped.slice(0, 5);
-    if (picked.length === 5) return picked;
-    const filled = [...picked];
-    while (filled.length < 5) {
-      filled.push(safeImagesMapped[filled.length % safeImagesMapped.length]);
-    }
-    return filled;
-  })();
-
   const plainDescription = stripHtmlTags(
     attraction?.description_vi || attraction?.description_en || attraction?.description
   );
 
+  const attractionGeo = attraction?.geojson?.coordinates;
   const attractionLat = pickCoordinate(
+    Array.isArray(attractionGeo) ? attractionGeo[1] : null,
     attraction?.lat,
     attraction?.latitude,
     attraction?.location?.lat,
     attraction?.location?.latitude
   );
   const attractionLng = pickCoordinate(
+    Array.isArray(attractionGeo) ? attractionGeo[0] : null,
     attraction?.lng,
     attraction?.longitude,
     attraction?.location?.lng,
     attraction?.location?.longitude
   );
 
-  const nearbyPoints = (() => {
-    const source = Array.isArray(attraction?.nearby_points)
-      ? attraction.nearby_points
-      : Array.isArray(attraction?.nearby)
-        ? attraction.nearby
-        : [];
-    return source.slice(0, 4).map((item, index) => ({
-      id: item?.id || `nearby-${index}`,
-      name:
-        item?.name_vi ||
-        item?.name_en ||
-        item?.name ||
-        t('tourism.nearby_point_name', `Điểm ${index + 1}`),
-      distance:
-        item?.distance_text ||
-        (typeof item?.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : null) ||
-        item?.distance ||
-        t('tourism.nearby_distance_unknown', 'Chưa rõ khoảng cách'),
-      image:
-        item?.primary_image || item?.cover_image_url || item?.main_image_url || item?.image || '',
-    }));
+  const galleryPreviewImages = (() => {
+    if (!safeImagesMapped.length) return [];
+    const picked = safeImagesMapped.slice(0, 5);
+    if (picked.length === 5) return picked;
+    const filled = [...picked];
+    while (filled.length < 5)
+      filled.push(safeImagesMapped[filled.length % safeImagesMapped.length]);
+    return filled;
   })();
 
-  const sidebarRows = [
-    {
-      key: 'location',
-      label: t('tourism.location', 'Vị trí'),
-      value: attractionAddress || t('tourism.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-primary',
-      icon: <MapPin className="text-primary h-3.5 w-3.5" />,
-    },
-    {
-      key: 'hours',
-      label: t('tourism.opening_hours', 'Giờ mở'),
-      value: openingHours,
-      dotClass: 'bg-primary',
-      icon: <Clock3 className="text-primary h-3.5 w-3.5" />,
-    },
-    {
-      key: 'website',
-      label: t('tourism.website', 'Website'),
-      value: attraction?.website || t('tourism.unknown', 'Chưa cập nhật'),
-      href: attraction?.website || null,
-      dotClass: 'bg-primary',
-      icon: <Globe className="text-primary h-3.5 w-3.5" />,
-    },
-    {
-      key: 'type',
-      label: t('tourism.type', 'Loại hình'),
-      value: attraction?.category_name || t('tourism.unknown', 'Chưa cập nhật'),
-      dotClass: 'bg-primary',
-      icon: <Leaf className="text-primary h-3.5 w-3.5" />,
-    },
-  ];
+  const services = buildServices(attraction, t);
 
-  const quickStats = [
-    {
-      key: 'rating',
-      label: t('tourism.rating', 'Đánh giá'),
-      value:
-        averageDisplayRating > 0 ? (
-          <div className="text-primary flex items-center gap-1 text-sm font-medium">
-            <span>{averageDisplayRating.toFixed(1)}</span>
-            <Star className="fill-gold text-gold h-3.5 w-3.5" />
-          </div>
-        ) : (
-          <span className="text-foreground text-sm font-medium">-</span>
-        ),
-    },
-    {
-      key: 'hours',
-      label: t('tourism.opening_hours', 'Giờ mở'),
-      value: <span className="text-foreground text-sm font-medium">{openingHours}</span>,
-    },
-    {
-      key: 'ticket',
-      label: t('tourism.ticket_price', 'Giá vé'),
-      value: <span className="text-foreground text-sm font-medium">{ticketDisplay}</span>,
-    },
-    {
-      key: 'visit_duration',
-      label: t('tourism.visit_duration', 'Thời gian tham quan'),
-      value: <span className="text-foreground text-sm font-medium">{visitDurationDisplay}</span>,
-    },
-  ];
+  /* â”€â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   return (
     <RootLayout>
-      <div className="bg-background min-h-screen pb-8">
-        <div className="mx-auto max-w-7xl px-3 py-4 md:px-4">
-          <TourismDetailTopBar
-            onBack={() => navigate('/tourism-point')}
+      <div className="min-h-screen bg-[#f5fbff] pb-10">
+        <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
+          {/* Breadcrumb */}
+          <nav className="mb-4 flex items-center gap-2 text-[13px] font-extrabold text-[#42627a]">
+            <Button variant="ghost"
+              onClick={() => navigate('/')}
+              className="flex items-center gap-1 transition-colors hover:text-[#08aeb9]"
+            >
+              {t('common.home', 'Trang chủ')}
+            </Button>
+            <ChevronRight className="h-3 w-3 text-[#08aeb9]" />
+            <Button variant="ghost"
+              onClick={() => navigate('/tourism-point')}
+              className="transition-colors hover:text-[#08aeb9]"
+            >
+              {t('tourism.title', 'Điểm du lịch')}
+            </Button>
+            <ChevronRight className="h-3 w-3 text-[#08aeb9]" />
+            <span className="truncate text-[#08aeb9]">{attractionName}</span>
+          </nav>
+
+          {/* Hero */}
+          <TourismDetailHero
+            imageSrc={safeImagesMapped[currentImageIndex]}
+            title={attractionName}
+            subtitle={attractionAddress}
+            description={plainDescription}
+            categoryTag={attraction?.category_name}
+            totalImages={safeImagesMapped.length}
+            openingTime={openingTimeStart}
+            ticketDisplay={ticketDisplay}
+            ratingAvg={averageDisplayRating}
+            ratingCount={totalReviewCount}
+            capacityPct={attraction?.current_capacity_pct}
+            maxCapacity={attraction?.max_capacity}
             isLiked={isLiked}
             onToggleFavorite={toggleFavorite}
             onShare={shareLink}
             t={t}
-            shareStatus={shareStatus}
           />
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
-            <main className="space-y-3">
-              <TourismDetailHero
-                imageSrc={safeImagesMapped[currentImageIndex]}
-                title={attractionName}
-                subtitle={
-                  attractionAddress || t('tourism.location_pending', 'Đang cập nhật vị trí')
-                }
-                tags={heroTags}
-                totalImages={safeImagesMapped.length}
+          {/* Share feedback toast */}
+          {shareStatus !== 'idle' && (
+            <div className="mt-3 rounded-[10px] border border-[#dcecf7] bg-white px-4 py-2.5 text-sm font-medium text-[#42627a]">
+              {shareStatus === 'copied'
+                ? t('tourism.share.copied', 'Đã sao chép liên kết')
+                : t('tourism.share.shared', 'Đã chia sẻ')}
+            </div>
+          )}
+
+          {/* Two-column layout */}
+          <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_360px]">
+            <main className="space-y-5">
+              {/* Intro */}
+              <TourismDetailIntroSection
+                description={plainDescription}
+                address={attractionAddress}
+                categoryName={attraction?.category_name}
+                provinceName={attraction?.province_name}
+                website={attraction?.website}
+                openingHours={openingHours}
                 t={t}
               />
 
-              <TourismDetailQuickStats stats={quickStats} />
-
+              {/* Gallery */}
               <TourismDetailGallerySection
                 images={galleryPreviewImages}
                 totalImages={safeImagesMapped.length}
@@ -678,8 +671,28 @@ export default function TourismDetailPage() {
                 t={t}
               />
 
-              <TourismDetailIntroSection description={plainDescription} tags={introTags} t={t} />
+              {/* Services */}
+              {services.length > 0 && (
+                <section className="rounded-[24px] border border-[#dcecf7] bg-white px-5 py-5 shadow-[0_10px_28px_rgba(7,29,54,0.08)]">
+                  <h2 className="mb-4 flex items-center gap-2.5 text-xl font-bold text-[#071d36] md:text-2xl">
+                    <Bell className="h-6 w-6 text-[#08aeb9]" />
+                    {t('tourism.services', 'Dich vu va tien ich')}
+                  </h2>
+                  <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                    {services.map(({ key, icon: Icon, label }) => (
+                      <div
+                        key={key}
+                        className="rounded-[16px] border border-[#e2eef7] bg-[#f6fbff] px-3 py-[13px] text-center text-[12px] font-extrabold text-[#325066]"
+                      >
+                        <Icon className="mx-auto mb-2 h-5 w-5 text-[#08aeb9]" />
+                        {label}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
 
+              {/* Reviews */}
               <TourismDetailReviewsSection
                 t={t}
                 averageDisplayRating={averageDisplayRating}
@@ -717,17 +730,18 @@ export default function TourismDetailPage() {
               />
             </main>
 
+            {/* Sidebar */}
             <TourismDetailSidebar
-              ticketDisplay={ticketDisplay}
-              childTicketDisplay={ticketChildDisplay}
               onOpenMap={handleOpenMap}
               onContact={handleContact}
-              rows={sidebarRows}
-              nearbyPoints={nearbyPoints}
               lat={attractionLat}
               lng={attractionLng}
               radiusKm={8}
               currentPointId={attraction?.id}
+              lang={lang}
+              currentVisitorCount={attraction?.current_visitor_count}
+              capacityPct={attraction?.current_capacity_pct}
+              maxCapacity={attraction?.max_capacity}
               t={t}
             />
           </div>
@@ -737,3 +751,4 @@ export default function TourismDetailPage() {
     </RootLayout>
   );
 }
+

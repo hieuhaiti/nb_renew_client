@@ -25,7 +25,7 @@
     "ocop": "OCOP products",
     "festival": "Festival",
     "see_all": "See all",
-    "search_placeholder": "Search places / routes...",
+    "search_placeholder": "Search places / routes..",
     "search_results": "Search Results",
     "search_no_results": "No results found",
     "search_view_all": "View all results",
@@ -52,19 +52,30 @@
       "scroll_hint": "Scroll to explore",
       "intro": "Explore Ninh Binh via WebGIS",
       "map_title": "Smart Tourism Map",
-      "map_desc": "Find destinations, routes, weather and services on an interactive map.",
+      "map_desc": "Find destinations, routes, weather and services on an interactive map",
       "map_cta": "Open tourism map",
       "vlog_title": "Vlog & Experiences",
-      "vlog_desc": "Get inspired by real videos, traveller reviews and community 360° content.",
+      "vlog_desc": "Get inspired by real videos, traveller reviews and community 360° content",
       "vlog_cta": "Visit vlog page",
       "chatbot_title": "AI Travel Companion",
-      "chatbot_desc": "Ask about tours, weather, OCOP and get personalised itinerary suggestions.",
+      "chatbot_desc": "Ask about tours, weather, OCOP and get personalised itinerary suggestions",
       "chatbot_cta": "Chat with the assistant",
-      "lead": "The homepage is designed to be bright, clear, and rich in real information: destinations, events, tours, cuisine, OCOP, digital maps, and community content."
+      "lead": "The homepage is designed to be bright, clear, and rich in real information: destinations, events, tours, cuisine, OCOP, digital maps, and community content"
     },
     "search": {
       "label": "Find a destination",
-      "placeholder": "Explore destinations, tours, festivals..."
+      "placeholder": "Explore destinations, tours, festivals.."
+    },
+    "filters": {
+      "experience_type": "Experience type",
+      "nature": "Nature tourism",
+      "culture": "Cultural tourism",
+      "cuisine": "Cuisine",
+      "radius": "Radius",
+      "radius_2km": "2 km",
+      "radius_5km": "5 km",
+      "radius_10km": "10 km",
+      "radius_20km": "20 km"
     },
     "weather_card": {
       "label": "Weather",
@@ -73,16 +84,16 @@
       "wind": "Wind",
       "aqi": "Air Quality",
       "view_map": "View on map",
-      "unavailable": "Weather data unavailable.",
-      "not_configured": "OpenWeather API not configured.",
-      "loading_text": "Updating weather data...",
-      "ok": "Current weather conditions updated."
+      "unavailable": "Weather data unavailable",
+      "not_configured": "OpenWeather API not configured",
+      "loading_text": "Updating weather data..",
+      "ok": "Current weather conditions updated"
     },
     "festivals_card": {
       "label": "Seasonal Festivals",
       "title": "Upcoming Festivals",
       "cta": "View all festivals",
-      "empty": "No upcoming festivals.",
+      "empty": "No upcoming festivals",
       "days_until": "{{days}} days left",
       "today": "Today",
       "recurring": "Annual"
@@ -95,13 +106,13 @@
     "quick_access": {
       "label": "Quick Access",
       "title": "Explore destinations with integrated tools",
-      "description": "Use the platform's key features to plan your journey quickly and visually."
+      "description": "Use the platform's key features to plan your journey quickly and visually"
     },
     "featured_destinations": {
       "label": "Featured Destinations",
       "title": "Top attractions in Ninh Binh",
       "see_all": "View all tourism points",
-      "description": "Large images and quick action buttons to navigate from the homepage to the map or detail page.",
+      "description": "Large images and quick action buttons to navigate from the homepage to the map or detail page",
       "detail_cta": "Details"
     },
     "news_section": {
@@ -118,8 +129,8 @@
       "see_all": "View all tours",
       "days": "days",
       "from_price": "From",
-      "default_title": "Trang An Classic Tour — Boat Trip Through 3 Cave Routes",
-      "default_desc": "Explore the Trang An Landscape Complex through 3 famous tourism routes.",
+      "default_title": "Trang An Classic Tour â€” Boat Trip Through 3 Cave Routes",
+      "default_desc": "Explore the Trang An Landscape Complex through 3 famous tourism routes",
       "schedule": "itinerary",
       "per_person": "per guest",
       "reviews": "reviews",
@@ -134,15 +145,15 @@
     "food_section": {
       "label": "Local Cuisine",
       "title": "Must-try Ninh Binh specialities",
-      "description": "Featured dishes, dining spots, quick search keywords, and service links right on the homepage."
+      "description": "Featured dishes, dining spots, quick search keywords, and service links right on the homepage"
     },
     "vouchers_section": {
       "label": "Tourism Businesses",
       "title": "Vouchers near you",
-      "desc": "Exclusive vouchers from local tourism businesses in your area.",
+      "desc": "Exclusive vouchers from local tourism businesses in your area",
       "cta": "Go to destinations for vouchers",
       "partners": "Our Partners",
-      "empty": "No vouchers available in this area.",
+      "empty": "No vouchers available in this area",
       "min_order": "Min. order",
       "valid_until": "Valid until",
       "view_map": "View business on map"
@@ -151,7 +162,7 @@
       "label": "OCOP Products",
       "title": "Local products integrated on the homepage",
       "see_all": "View all OCOP products",
-      "description": "Showcase products, certifications, localities, and order links right on the homepage.",
+      "description": "Showcase products, certifications, localities, and order links right on the homepage",
       "view_product": "View product",
       "contact": "Contact"
     },
@@ -160,10 +171,10 @@
       "title": "Travel stories from the community",
       "see_all": "View all vlogs",
       "author_prefix": "Author:",
-      "description": "Enrich community content with real-life experiences, travel tips, and itinerary suggestions."
+      "description": "Enrich community content with real-life experiences, travel tips, and itinerary suggestions"
     },
     "footer_section": {
-      "brand": "Ninh Binh Tourism Information Portal — Integrated GIS, VR360, OCOP and smart itinerary platform.",
+      "brand": "Ninh Binh Tourism Information Portal â€” Integrated GIS, VR360, OCOP and smart itinerary platform",
       "quick_links": "Quick links",
       "contact": "Contact",
       "follow": "Follow us"
@@ -204,8 +215,8 @@
   "newsPage": {
     "hero": {
       "badge": "Tourism news, events, and travel alerts center",
-      "title": "Stay updated with the latest Ninh Binh destination news.",
-      "description": "Follow official updates on events, attraction operations, and travel support information across the digital tourism map ecosystem.",
+      "title": "Stay updated with the latest Ninh Binh destination news",
+      "description": "Follow official updates on events, attraction operations, and travel support information across the digital tourism map ecosystem",
       "cta_latest": "View latest news",
       "cta_map": "Open tourism map"
     },
@@ -218,22 +229,22 @@
       "title": "Highlights",
       "fast": {
         "title": "Fast updates",
-        "desc": "Important updates are summarized so travelers can quickly prepare."
+        "desc": "Important updates are summarized so travelers can quickly prepare"
       },
       "time": {
         "title": "Time-based feed",
-        "desc": "Easy to track publish dates with priority on the latest updates."
+        "desc": "Easy to track publish dates with priority on the latest updates"
       },
       "map": {
         "title": "Map-connected",
-        "desc": "Pair updates with the map to validate locations and adjust your plan."
+        "desc": "Pair updates with the map to validate locations and adjust your plan"
       }
     },
     "filters": {
       "title": "News filters",
       "description": "Search by keyword and featured status",
       "keyword": "Keyword",
-      "placeholder": "Example: festival, traffic, weather alert...",
+      "placeholder": "Example: festival, traffic, weather alert..",
       "featured": "Status",
       "options": {
         "all": "All",
@@ -243,7 +254,7 @@
     },
     "actions": {
       "refresh": "Refresh data",
-      "loading": "Loading...",
+      "loading": "Loading..",
       "reset": "Reset",
       "read_more": "Read details"
     },
@@ -252,26 +263,26 @@
       "description": "Showing {{count}} matching articles",
       "featured": "Featured",
       "unknown_author": "Editorial team",
-      "no_summary": "No summary available."
+      "no_summary": "No summary available"
     },
     "pagination": {
       "page": "Page {{page}} / {{totalPages}}"
     },
     "states": {
-      "error": "Unable to load news at the moment.",
-      "empty": "No matching news found."
+      "error": "Unable to load news at the moment",
+      "empty": "No matching news found"
     },
     "cta": {
       "label": "Explore Ninh Binh",
       "title": "Connect news with the digital tourism map",
-      "desc": "View the latest news and look up destinations, itineraries, and events on one platform."
+      "desc": "View the latest news and look up destinations, itineraries, and events on one platform"
     },
     "detail": {
       "back": "Back to news",
       "not_found": "News content not found",
-      "no_content": "No detail content available.",
+      "no_content": "No detail content available",
       "sidebar_title": "Explore on map",
-      "sidebar_desc": "After reading the update, open the map to quickly check related locations and refine your itinerary.",
+      "sidebar_desc": "After reading the update, open the map to quickly check related locations and refine your itinerary",
       "cta_map": "Open map now",
       "share": "Share",
       "views": "views",
@@ -279,13 +290,13 @@
       "link_copied": "Link copied!",
       "tags_title": "Topics",
       "related_title": "Related articles",
-      "no_related": "No related articles found."
+      "no_related": "No related articles found"
     }
   },
   "auth": {
     "login": {
       "title": "Sign In",
-      "description": "Welcome back! Please enter your credentials to continue.",
+      "description": "Welcome back! Please enter your credentials to continue",
       "email_or_username": "Email or Username",
       "email_placeholder": "example@email.com or username",
       "password": "Password",
@@ -293,7 +304,7 @@
       "remember": "Remember me",
       "forgot": "Forgot password?",
       "submit": "Sign In",
-      "loading": "Signing in...",
+      "loading": "Signing in..",
       "noAccount": "Don't have an account?",
       "signup": "Sign Up",
       "success": "Signed in successfully!"
@@ -310,7 +321,7 @@
       "confirmPassword": "Confirm Password",
       "confirmPassword_placeholder": "Re-enter your password",
       "submit": "Sign Up",
-      "loading": "Creating account...",
+      "loading": "Creating account..",
       "haveAccount": "Already have an account?",
       "login": "Sign In",
       "success": "Account created successfully!"
@@ -333,7 +344,7 @@
     "title": "My Profile",
     "editProfile": "Edit profile",
     "saveChanges": "Save changes",
-    "saving": "Saving...",
+    "saving": "Saving..",
     "cancel": "Cancel",
     "cancelShort": "Cancel",
     "confirmAction": "Confirm",
@@ -356,51 +367,51 @@
     "newPassword": "New password",
     "confirmNewPassword": "Confirm new password",
     "validation": {
-      "username": "Username must contain only letters and numbers, 3-50 characters.",
-      "emailMax": "Email must be at most 100 characters.",
-      "invalidEmail": "Invalid email format.",
-      "nameMin": "Full name must be at least 2 characters.",
-      "invalidName": "Invalid full name.",
-      "invalidPhone": "Invalid phone number.",
-      "currentRequired": "Current password is required.",
-      "newRequired": "New password is required.",
-      "newMin": "New password must be at least 8 characters.",
-      "newWeak": "New password must include lowercase, uppercase, number, and special character.",
-      "confirmMismatch": "Password confirmation does not match."
+      "username": "Username must contain only letters and numbers, 3-50 characters",
+      "emailMax": "Email must be at most 100 characters",
+      "invalidEmail": "Invalid email format",
+      "nameMin": "Full name must be at least 2 characters",
+      "invalidName": "Invalid full name",
+      "invalidPhone": "Invalid phone number",
+      "currentRequired": "Current password is required",
+      "newRequired": "New password is required",
+      "newMin": "New password must be at least 8 characters",
+      "newWeak": "New password must include lowercase, uppercase, number, and special character",
+      "confirmMismatch": "Password confirmation does not match"
     },
     "toast": {
-      "invalidImage": "Invalid image file type.",
-      "imageTooLarge": "Image size must be 5MB or less.",
+      "invalidImage": "Invalid image file type",
+      "imageTooLarge": "Image size must be 5MB or less",
       "updateSuccess": "Profile updated successfully!",
-      "updateError": "Failed to update profile.",
-      "changePasswordError": "Failed to change password.",
-      "changePasswordSuccess": "Password changed successfully."
+      "updateError": "Failed to update profile",
+      "changePasswordError": "Failed to change password",
+      "changePasswordSuccess": "Password changed successfully"
     }
   },
   "error": {
     "400": {
       "title": "Bad request",
-      "message": "The request is invalid or missing required information. Please review and try again."
+      "message": "The request is invalid or missing required information. Please review and try again"
     },
     "401": {
       "title": "Unauthorized",
-      "message": "Your session is invalid or has expired. Please sign in to continue."
+      "message": "Your session is invalid or has expired. Please sign in to continue"
     },
     "403": {
       "title": "Access forbidden",
-      "message": "You do not have permission to access this content. Contact an administrator if you need help."
+      "message": "You do not have permission to access this content. Contact an administrator if you need help"
     },
     "404": {
       "title": "Page not found",
-      "message": "The page you are looking for may have been removed, renamed, or is temporarily unavailable."
+      "message": "The page you are looking for may have been removed, renamed, or is temporarily unavailable"
     },
     "500": {
       "title": "Internal server error",
-      "message": "Something went wrong on our side. Please try again in a few minutes."
+      "message": "Something went wrong on our side. Please try again in a few minutes"
     },
     "503": {
       "title": "Service unavailable",
-      "message": "The service is temporarily unavailable due to maintenance or high load. Please come back later."
+      "message": "The service is temporarily unavailable due to maintenance or high load. Please come back later"
     },
     "login": "Login",
     "back_home": "Back to home"
@@ -427,7 +438,7 @@
     "recommend": "Do you recommend this place?",
     "upload_photos": "Upload photos (max 5)",
     "upload_hint": "Click or drag images here",
-    "sending": "Sending...",
+    "sending": "Sending..",
     "submit_review": "Submit review",
     "cancel": "Cancel",
     "location": "Location",
@@ -441,7 +452,7 @@
     "view_on_map": "View on map",
     "contact": "Contact",
     "vr_tour": "VR Tour 360°",
-    "leave_comment_placeholder": "Share your experience and feelings about this place...",
+    "leave_comment_placeholder": "Share your experience and feelings about this place..",
     "min_characters": "Minimum 10 characters",
     "characters_left": "left",
     "share": {
@@ -453,20 +464,47 @@
       "share": "Share"
     },
     "review": {
-      "missing_rating": "Please provide ratings."
-    }
+      "missing_rating": "Please provide ratings"
+    },
+    "cta_title": "Explore Now",
+    "cta_desc": "Get directions, view 360° photos or add this place to your personal itinerary",
+    "conditions": "Weather & Capacity",
+    "current_capacity": "Current Capacity",
+    "wind": "Wind",
+    "humidity": "Humidity",
+    "rain": "Rain",
+    "current_visitors": "Current Visitors",
+    "max_capacity": "Max Capacity",
+    "nearby_points": "Nearby Points",
+    "nearby_point_name": "Point {{index}}",
+    "nearby_distance_unknown": "Unknown distance",
+    "open_map": "Map",
+    "add_schedule": "Add Schedule",
+    "gallery": "Photo Gallery",
+    "view_all_photos": "View All",
+    "introduction": "About This Place",
+    "province": "Province/City",
+    "type": "Type",
+    "no_reviews": "No reviews yet",
+    "write_review": "Write a Review",
+    "average_rating": "Average Rating",
+    "total_reviews": "Total Reviews",
+    "share_experience": "Share Your Experience",
+    "pros": "Pros",
+    "cons": "Cons"
   },
   "tourismPointPage": {
     "title": "Tourism Points",
     "subtitle": "Discover outstanding attractions in Ninh Binh",
     "hero_title": "Explore Tourism Spots in Ninh Binh",
-    "hero_desc": "Search, filter by type, view map locations, 360° photos, descriptions and directions to top attractions.",
+    "hero_desc": "Search, filter by type, view map locations, 360° photos, descriptions and directions to top attractions",
     "stat_spots": "Attractions",
     "stat_categories": "Categories",
     "stat_subcategories": "Subcategories",
     "is_featured_label": "Featured",
     "is_featured_all": "All",
-    "is_featured_yes": "Featured points",
+    "is_featured_yes": "Featured only",
+    "is_featured_no": "Non-featured",
     "unknown_category": "Unknown category",
     "47_points": "47 attractions",
     "ninh_binh": "Ninh Binh",
@@ -481,7 +519,7 @@
     "results": "results",
     "sort_by": "Sort by",
     "featured": "Featured",
-    "search_placeholder": "Search attractions...",
+    "search_placeholder": "Search attractions..",
     "filter": "Filter",
     "reviews": "reviews",
     "view_detail": "View Details",
@@ -491,15 +529,24 @@
     "all_subcategories": "All subcategories",
     "free": "Free",
     "no_results": "No results found",
-    "errorLoading": "Unable to load data.",
-    "tryDifferentKeyword": "Try searching with a different keyword."
+    "errorLoading": "Unable to load data",
+    "tryDifferentKeyword": "Try searching with a different keyword",
+    "quick_filters": "Quick Filters",
+    "quick_map": "Quick Map",
+    "tip_title": "Tips",
+    "tip_desc": "Combine Trang An â€“ Hoa Lu â€“ Hang Mua on one route to optimise travel time and scenery",
+    "featured_list": "Featured Attractions",
+    "subcategory": "Subcategory",
+    "near_me": "Near Me",
+    "near_me_getting": "Getting location..",
+    "has_vr": "Has VR 360"
   },
   "tourPage": {
     "title": "Tour Routes",
     "description": "Explore available tour routes from live system data",
     "detailDescriptionTitle": "Tour Description",
     "refresh": "Refresh",
-    "searchPlaceholder": "Search tour routes...",
+    "searchPlaceholder": "Search tour routes..",
     "gridView": "Grid view",
     "listView": "List view",
     "showing": "Showing",
@@ -507,10 +554,10 @@
     "noTours": "No tours found",
     "unknown": "Unknown",
     "noDescription": "No description",
-    "loading": "Loading...",
+    "loading": "Loading..",
     "locationPending": "Location updating",
     "back": "Back",
-    "notFound": "Tour information not found.",
+    "notFound": "Tour information not found",
     "shareTitle": "Tour details",
     "copied": "Copied",
     "shared": "Shared",
@@ -520,7 +567,7 @@
     "by": "by",
     "guest": "Guest",
     "createdAt": "Created at",
-    "reviewNotFound": "Review not found.",
+    "reviewNotFound": "Review not found",
     "reviews": "Reviews",
     "cleanliness": "Cleanliness",
     "service": "Service",
@@ -532,7 +579,7 @@
     "leaveReview": "Leave a review",
     "starCount": "Stars (auto-calculated from criteria)",
     "noRating": "No rating",
-    "sending": "Sending...",
+    "sending": "Sending..",
     "sendReview": "Submit review",
     "cancel": "Cancel",
     "information": "Information",
@@ -544,7 +591,8 @@
     "contact": "Contact",
     "tourList": "Open map",
     "contactBusiness": "Contact provider: {{name}}",
-    "contactNotAvailable": "No contact information available.",
+    "contactNotAvailable": "No contact information available",
+    "defaultProvince": "Ninh Binh",
     "featured": "Featured",
     "maxGuests": "Capacity",
     "people": "people",
@@ -552,42 +600,69 @@
     "startLocation": "Start location",
     "endLocation": "Destination",
     "provider": "Provider",
-    "reviewErrorRatings": "Please provide ratings for all criteria: cleanliness, service, value, and accessibility.",
+    "itinerary": "Itinerary",
+    "includes": "Included",
+    "excludes": "Excluded",
+    "relatedTours": "Related tours",
+    "viewStopGallery": "View stop image gallery",
+    "reviewErrorRatings": "Please provide ratings for all criteria: cleanliness, service, value, and accessibility",
     "hero": {
       "badge": "Ninh Binh Tourist Routes",
       "title": "Discover Amazing Tourist Routes",
-      "description": "Choose a tour that fits your schedule and preferences."
+      "description": "Choose a tour that fits your schedule and preferences"
     },
     "duration_options": {
       "all": "All durations",
       "1day": "1 day",
       "2days": "2 days",
-      "3_4days": "3–4 days",
+      "3_4days": "3â€“4 days",
       "5plus": "5+ days"
     },
     "price_options": {
       "all": "All price ranges",
       "under500": "Under 500K",
-      "500_1000": "500K – 1M",
-      "1000_2000": "1M – 2M",
+      "500_1000": "500K â€“ 1M",
+      "1000_2000": "1M â€“ 2M",
       "above2000": "Above 2M"
     },
     "sort_options": {
+      "recommended": "Recommended",
       "default": "Default",
       "price_asc": "Price: low to high",
       "price_desc": "Price: high to low",
       "rating_best": "Highest rated",
+      "duration_asc": "Duration: short to long",
+      "duration_desc": "Duration: long to short",
       "newest": "Newest"
     },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "stats": {
+      "total": "Suggested tours",
+      "durationRange": "Duration range",
+      "groupFriendly": "Group size",
+      "avgRating": "Average rating"
+    },
     "filters": {
-      "search_placeholder": "Search tourist routes...",
+      "keyword": "Keyword",
+      "status": "Status",
+      "provinceCode": "Province code",
+      "provincePlaceholder": "Example: 37",
+      "featured": "Tour type",
+      "nonFeatured": "Non-featured",
+      "priceRange": "Price range (VND)",
+      "priceMin": "Min price",
+      "priceMax": "Max price",
+      "search_placeholder": "Search tourist routes..",
       "price": "Price range",
       "sort": "Sort by",
       "search_btn": "Search"
     },
     "card": {
       "from_price": "From",
-      "no_description": "No description available.",
+      "no_description": "No description available",
       "view_detail": "View details",
       "max_guests": "guests",
       "rating_count": "reviews"
@@ -596,9 +671,9 @@
       "count": "{{total}} tours"
     },
     "states": {
-      "error": "Unable to load tours right now.",
+      "error": "Unable to load tours right now",
       "empty_title": "No matching tours found",
-      "empty_desc": "Try adjusting your search or filters."
+      "empty_desc": "Try adjusting your search or filters"
     },
     "per_page": "{{size}}/page",
     "priceFrom": "From",
@@ -608,11 +683,12 @@
     "startLocationPlaceholder": "E.g. Trang An boat dock",
     "applyFilters": "Apply filters",
     "featuredToday": "Featured tour today",
-    "featuredSubtitle": "Ideal for families, groups, and first-time visitors to Ninh Binh.",
+    "featuredSubtitle": "Ideal for families, groups, and first-time visitors to Ninh Binh",
     "viewTour": "View route",
     "filter": "Filter routes",
     "toursLabel": "matching tours",
-    "viewDetail": "View details"
+    "viewDetail": "View details",
+    "viewRouteOnMap": "View route on map"
   },
   "mapStyle": {
     "toggle": "Switch base map",
@@ -620,10 +696,10 @@
     "street": "Street",
     "satellite": "Satellite",
     "satelliteStreet": "Hybrid",
-    "outdoorDesc": "Topographic and nature-oriented map style.",
-    "streetDesc": "Urban-focused map with roads and labels.",
-    "satelliteDesc": "High-resolution satellite imagery.",
-    "satelliteStreetDesc": "Satellite imagery with road ."
+    "outdoorDesc": "Topographic and nature-oriented map style",
+    "streetDesc": "Urban-focused map with roads and labels",
+    "satelliteDesc": "High-resolution satellite imagery",
+    "satelliteStreetDesc": "Satellite imagery with road "
   },
   "headerAside": {
     "layerData": "Data layers",
@@ -644,14 +720,30 @@
     "main_badge": "Main",
     "back_to_map": "Back to map",
     "pick_spot": "Select a destination",
-    "pick_spot_placeholder": "Choose a destination to view VR scenes...",
-    "scene_list_title": "VR Scene List",
-    "no_scenes": "No VR scenes available for this destination.",
-    "no_scenes_select": "Select a destination to view its VR scenes.",
-    "error_scenes": "Unable to load VR scenes.",
+    "pick_spot_placeholder": "Choose a destination to view VR scenes..",
+    "scene_list_title": "360° Scene List",
+    "scene_label": "Scene",
+    "scene_default_desc": "360° scene at this destination",
+    "no_scenes": "No VR scenes available for this destination",
+    "no_scenes_select": "Select a destination to view its VR scenes",
+    "error_scenes": "Unable to load VR scenes",
     "viewer_placeholder": "Select a VR scene from the list to start exploring",
     "hotspots": "hotspots",
-    "current_scene": "Currently viewing",
+    "current_scene": "Viewing",
+    "loading": "Loading...",
+    "tour_badge": "Featured Virtual Tour",
+    "no_desc_fallback": "Select a scene below to start the VR360 experience.",
+    "no_spot_title": "No destination selected",
+    "no_spot_desc": "Please go back to the map and select a destination to start the VR360 experience.",
+    "drag_hint": "Drag to rotate your view",
+    "hotspot_hint": "Click or gaze at a hotspot in the 360° space to switch scenes.",
+    "spot_info_title": "Spot Information",
+    "rating_label": "Rating",
+    "opening_hours_label": "Opening hours",
+    "current_capacity_label": "Current capacity",
+    "max_capacity_label": "Max capacity",
+    "open_map": "Open Map",
+    "narration": "Audio Guide",
     "play_narration": "Play sample narration",
     "scene_prev": "Previous scene",
     "scene_next": "Next scene",
@@ -671,11 +763,11 @@
     "minimap_placeholder": "Minimap will appear here",
     "features": {
       "interactive": "Interactive hotspots",
-      "interactive_desc": "Tap hotspots in the scene to switch views or open extended information.",
+      "interactive_desc": "Tap hotspots in the scene to switch views or open extended information",
       "multilang": "Multilingual support",
-      "multilang_desc": "Layout includes a language selection area for narration and description text.",
+      "multilang_desc": "Layout includes a language selection area for narration and description text",
       "webgis": "WebGIS integration",
-      "webgis_desc": "Each scene can be pinned to the exact point on the map for a seamless experience."
+      "webgis_desc": "Each scene can be pinned to the exact point on the map for a seamless experience"
     }
   },
   "mapPage": {
@@ -706,12 +798,12 @@
       "weatherNoAlert": "No alert",
       "weatherUnknown": "Unknown",
       "weatherUnknownLocation": "Ninh Binh",
-      "weatherUnavailable": "Unable to load weather data.",
-      "weatherNotConfigured": "OpenWeather API is not configured.",
-      "weatherAlertAirPollutionHigh": "High air pollution detected.",
-      "weatherAlertHeat": "High temperature warning.",
-      "weatherAlertWind": "Strong wind warning.",
-      "weatherAlertThunderstorm": "Thunderstorm warning.",
+      "weatherUnavailable": "Unable to load weather data",
+      "weatherNotConfigured": "OpenWeather API is not configured",
+      "weatherAlertAirPollutionHigh": "High air pollution detected",
+      "weatherAlertHeat": "High temperature warning",
+      "weatherAlertWind": "Strong wind warning",
+      "weatherAlertThunderstorm": "Thunderstorm warning",
       "aqiGood": "Good",
       "aqiFair": "Fair",
       "aqiModerate": "Moderate",
@@ -719,34 +811,34 @@
       "aqiVeryPoor": "Very poor",
       "aqiUnknown": "Unknown",
       "unsupportedTitle": "Map is not supported on this device",
-      "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience.",
+      "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience",
       "toolResetDesc": "Reset map to the default center and viewing angle"
     },
     "toolbar": {
-      "searchPlaceholder": "Search destination, service, food, event...",
+      "searchPlaceholder": "Search destination, service, food, event..",
       "searchButton": "Search",
       "category": "Category",
       "filter": "Filter",
       "baseMap": "Base Map",
       "radius": "Radius",
       "radiusAll": "No radius limit",
-      "searchNoResult": "No matching destination found for current filters.",
-      "locationError": "Could not get your location. Please enable location access.",
-      "styleUnavailable": "Selected map style is not configured.",
-      "geoUnsupported": "Geolocation is not supported by this browser.",
-      "mapNotReady": "Map is still loading, please try again in a moment.",
-      "geoFailed": "Could not retrieve current location.",
-      "routePrototype": "Directions integration is in prototype mode.",
-      "vrPrototype": "VR360 preview integration is in prototype mode."
+      "searchNoResult": "No matching destination found for current filters",
+      "locationError": "Could not get your location. Please enable location access",
+      "styleUnavailable": "Selected map style is not configured",
+      "geoUnsupported": "Geolocation is not supported by this browser",
+      "mapNotReady": "Map is still loading, please try again in a moment",
+      "geoFailed": "Could not retrieve current location",
+      "routePrototype": "Directions integration is in prototype mode",
+      "vrPrototype": "VR360 preview integration is in prototype mode"
     },
     "destination": {
       "title": "Destination",
       "unknownName": "Unknown destination",
-      "empty": "Select a point on the map to view details.",
-      "inactiveSubcategory": "This point belongs to a disabled data layer. Re-enable the layer or select another point.",
+      "empty": "Select a point on the map to view details",
+      "inactiveSubcategory": "This point belongs to a disabled data layer. Re-enable the layer or select another point",
       "noImage": "No image available",
       "noAddress": "No address",
-      "noDescription": "No description available for this point.",
+      "noDescription": "No description available for this point",
       "category": "Category",
       "subcategory": "Subcategory",
       "flyTo": "Fly to",
@@ -770,27 +862,27 @@
     },
     "tourPanel": {
       "title": "Tours",
-      "syncing": "Syncing...",
+      "syncing": "Syncing..",
       "count": "{{count}} tours",
       "reset": "Reset",
-      "searchPlaceholder": "Search tours...",
+      "searchPlaceholder": "Search tours..",
       "featuredOnly": "Featured",
       "nonFeatured": "Not featured",
-      "error": "Unable to load tour list.",
-      "empty": "No tours match your filters.",
+      "error": "Unable to load tour list",
+      "empty": "No tours match your filters",
       "openRoute": "View on map",
-      "loadingRoute": "Opening...",
-      "routeSummary": "{{from}} → {{to}}",
+      "loadingRoute": "Opening..",
+      "routeSummary": "{{from}} â†’ {{to}}",
       "hideOtherPoints": "Hide other points",
       "showOtherPoints": "Show other points",
       "clearRoute": "Clear route",
-      "routeReady": "Tour route is now displayed on the map.",
-      "routeFailed": "Cannot display this tour route right now.",
-      "routeCleared": "Tour route was removed from the map.",
-      "routeInsufficientStops": "A tour needs at least 2 stops to draw a route.",
+      "routeReady": "Tour route is now displayed on the map",
+      "routeFailed": "Cannot display this tour route right now",
+      "routeCleared": "Tour route was removed from the map",
+      "routeInsufficientStops": "A tour needs at least 2 stops to draw a route",
       "dayStopLabel": "Day {{day}} ? Stop {{order}}",
-      "noStopsAvailable": "No stops available for this tour.",
-      "noStopResults": "No matching stops found.",
+      "noStopsAvailable": "No stops available for this tour",
+      "noStopResults": "No matching stops found",
       "statsDays": "Days",
       "statsStops": "Stops",
       "statsDuration": "Duration",
@@ -799,20 +891,20 @@
       "itineraryTitle": "Itinerary details",
       "filteredStopCount": "{{filtered}}/{{total}} stops",
       "totalStopCount": "{{count}} stops in this itinerary",
-      "stopSearchPlaceholder": "Search stop name, description, category...",
+      "stopSearchPlaceholder": "Search stop name, description, category..",
       "coverAlt": "{{tourName}} cover image",
       "stopFallbackLabel": "Stop {{index}}"
     },
     "eventPanel": {
       "title": "Festivals",
-      "syncing": "Syncing...",
+      "syncing": "Syncing..",
       "count": "{{count}} events",
       "reset": "Reset",
-      "searchPlaceholder": "Search festival name...",
+      "searchPlaceholder": "Search festival name..",
       "upcoming": "Upcoming",
-      "error": "Unable to load event list from the system.",
-      "empty": "No events match the current filters.",
-      "openingMap": "Opening...",
+      "error": "Unable to load event list from the system",
+      "empty": "No events match the current filters",
+      "openingMap": "Opening..",
       "viewOnMap": "View on map",
       "website": "Website",
       "festivalTypes": {
@@ -829,7 +921,7 @@
     },
     "capacityPanel": {
       "title": "Tourist capacity",
-      "syncing": "Updating...",
+      "syncing": "Updating..",
       "count": "{{count}} tracked spots",
       "refresh": "Refresh",
       "all": "All",
@@ -840,8 +932,8 @@
         "busy": "Busy",
         "normal": "Normal"
       },
-      "error": "Unable to load capacity data.",
-      "empty": "No matching spots found.",
+      "error": "Unable to load capacity data",
+      "empty": "No matching spots found",
       "peopleWithCapacity": "{{current}} / {{max}} people",
       "peopleOnly": "{{count}} people",
       "viewOnMap": "View on map"
@@ -855,14 +947,14 @@
       "startPlaceholder": "Enter start location",
       "endPlaceholder": "Enter destination",
       "current_location": "My location",
-      "searching": "Searching...",
+      "searching": "Searching..",
       "swap": "Swap",
       "calculate": "Calculate route",
-      "calculateReadyHint": "Click to calculate directions.",
-      "calculateDisabledHint": "Enter both start point and destination to calculate directions.",
+      "calculateReadyHint": "Click to calculate directions",
+      "calculateDisabledHint": "Enter both start point and destination to calculate directions",
       "clear": "Clear",
-      "clearReadyHint": "Clear the current route from the map.",
-      "clearDisabledHint": "No route available to clear yet.",
+      "clearReadyHint": "Clear the current route from the map",
+      "clearDisabledHint": "No route available to clear yet",
       "totalDistance": "Total distance",
       "totalDuration": "Total duration",
       "stepsTitle": "Turn-by-turn steps",
@@ -871,9 +963,9 @@
     "chatbot": {
       "title": "Map assistant",
       "heading": "AI Travel Companion",
-      "description": "Ask about tours, weather, OCOP and get personalised itinerary suggestions.",
+      "description": "Ask about tours, weather, OCOP and get personalised itinerary suggestions",
       "cta": "Chat with the assistant",
-      "placeholder": "Enter a question about destinations, tours, or weather...",
+      "placeholder": "Enter a question about destinations, tours, or weather..",
       "youLabel": "You",
       "botLabel": "AI Assistant",
       "quickPrompts": {
@@ -882,9 +974,9 @@
         "weatherToday": "Weather advice for today"
       },
       "sampleMessages": {
-        "welcome": "Hello, I can suggest destinations, weather updates, tours, and itineraries that fit your preferences.",
-        "userPreference": "I want a one-day trip, avoid crowded places, and prioritize nature.",
-        "botSuggestion": "You can consider Trang An in the morning, then move to Bich Dong or Hang Mua for a gentler route."
+        "welcome": "Hello, I can suggest destinations, weather updates, tours, and itineraries that fit your preferences",
+        "userPreference": "I want a one-day trip, avoid crowded places, and prioritize nature",
+        "botSuggestion": "You can consider Trang An in the morning, then move to Bich Dong or Hang Mua for a gentler route"
       }
     },
     "traffic": {
@@ -893,7 +985,7 @@
       "flow": "Traffic Flow",
       "incidents": "Traffic Incidents",
       "refresh": "Refresh",
-      "loading": "Updating...",
+      "loading": "Updating..",
       "error": "Failed to load data",
       "incidentCount": "{{count}} incidents",
       "flowLegend": "Congestion level",
@@ -906,7 +998,11 @@
       "viewImages": "Photos",
       "review": "Review",
       "directions": "Get directions",
-      "vrTour": "VR Tour 360°"
+      "vrTour": "VR Tour 360°",
+      "noDescription": "No description available",
+      "capacity": "Capacity",
+      "currentVisitors": "Current visitors",
+      "maxCapacity": "Max capacity"
     }
   },
   "satellite": {
@@ -924,7 +1020,7 @@
       "show": "Show layer",
       "download_raster": "Download raster",
       "confirm_download": "Confirm download",
-      "download_note": "Image will be clipped to the study area.",
+      "download_note": "Image will be clipped to the study area",
       "download": "Download",
       "cancel": "Close",
       "close_panel": "Close panel",
@@ -945,8 +1041,8 @@
       "cloud_cover": "Max cloud cover",
       "opacity": "Opacity",
       "auto_detect_change": "Auto-detect change",
-      "auto_detect_change_desc": "Detect vegetation change, forest gain and road/construction between 2 periods.",
-      "auto_detect_change_single_desc": "Compare current period with the same period one year ago."
+      "auto_detect_change_desc": "Detect vegetation change, forest gain and road/construction between 2 periods",
+      "auto_detect_change_single_desc": "Compare current period with the same period one year ago"
     },
     "layers": {
       "rgb": "True Color",
@@ -974,30 +1070,30 @@
       "boundary_layer": "Study area boundary"
     },
     "loading": {
-      "title": "Analyzing...",
-      "downloading": "Downloading..."
+      "title": "Analyzing..",
+      "downloading": "Downloading.."
     },
     "empty": {
       "title": "No satellite imagery",
-      "description": "Select a date range and layer type, then click Load Image to start analysis."
+      "description": "Select a date range and layer type, then click Load Image to start analysis"
     },
     "errors": {
       "title": "An error occurred",
-      "generic": "Something went wrong. Please try again.",
-      "no_roi": "Could not load study area geometry.",
-      "no_layer": "Please select at least one layer type.",
-      "invalid_date": "Invalid date. Please select again.",
-      "date_order": "Start date must be before end date."
+      "generic": "Something went wrong. Please try again",
+      "no_roi": "Could not load study area geometry",
+      "no_layer": "Please select at least one layer type",
+      "invalid_date": "Invalid date. Please select again",
+      "date_order": "Start date must be before end date"
     },
     "success": {
-      "loaded": "Satellite imagery loaded successfully."
+      "loaded": "Satellite imagery loaded successfully"
     }
   },
   "festivalPage": {
     "hero": {
       "badge": "Festivals & Culture of Ninh Binh",
       "title": "Traditional Festivals of Ninh Binh",
-      "description": "Discover the cultural, spiritual and traditional festivals of this ancient capital region."
+      "description": "Discover the cultural, spiritual and traditional festivals of this ancient capital region"
     },
     "stats": {
       "total": "Festivals",
@@ -1005,7 +1101,7 @@
       "page": "Page"
     },
     "filters": {
-      "search_placeholder": "Search festivals, locations, types...",
+      "search_placeholder": "Search festivals, locations, types..",
       "upcoming": "Upcoming",
       "past": "Past",
       "all_time": "All time",
@@ -1028,7 +1124,7 @@
     },
     "card": {
       "recurring": "Annual",
-      "no_description": "No description available.",
+      "no_description": "No description available",
       "view_detail": "View details",
       "days_until": "{{days}} days left",
       "today": "Today"
@@ -1038,9 +1134,9 @@
       "refresh": "Refresh"
     },
     "states": {
-      "error": "Unable to load festival data right now.",
+      "error": "Unable to load festival data right now",
       "empty_title": "No matching festivals",
-      "empty_desc": "Try adjusting your filters or search keyword."
+      "empty_desc": "Try adjusting your filters or search keyword"
     },
     "pagination": {
       "prev": "Previous",
@@ -1050,7 +1146,7 @@
     "cta_section": {
       "badge": "Plan your journey",
       "title": "Combine festivals into your travel itinerary",
-      "description": "Use the GIS map to find nearby attractions and plan the perfect trip around festival dates.",
+      "description": "Use the GIS map to find nearby attractions and plan the perfect trip around festival dates",
       "cta_map": "Open map",
       "cta_points": "View tourism points"
     }
@@ -1065,8 +1161,8 @@
     "recurring_label": "Frequency",
     "recurring_yes": "Annual",
     "recurring_no": "Non-recurring",
-    "no_description": "No description available.",
-    "no_location": "Location not yet updated.",
+    "no_description": "No description available",
+    "no_location": "Location not yet updated",
     "view_map": "View on map",
     "types": {
       "religious": "Religious",
@@ -1087,7 +1183,7 @@
     "hero": {
       "badge": "OCOP Products of Ninh Binh",
       "title": "Ninh Binh OCOP Specialities",
-      "description": "Discover and shop high-quality OCOP products representing local cultural heritage."
+      "description": "Discover and shop high-quality OCOP products representing local cultural heritage"
     },
     "stats": {
       "total": "Products",
@@ -1095,7 +1191,7 @@
       "page": "Page"
     },
     "filters": {
-      "search_placeholder": "Search products, suppliers...",
+      "search_placeholder": "Search products, suppliers..",
       "all_categories": "All categories",
       "all_stars": "All star ratings",
       "search_btn": "Search"
@@ -1116,7 +1212,7 @@
     },
     "card": {
       "stars": "stars",
-      "no_description": "No description available.",
+      "no_description": "No description available",
       "view_detail": "View details",
       "certified": "Certified"
     },
@@ -1125,9 +1221,9 @@
       "refresh": "Refresh"
     },
     "states": {
-      "error": "Unable to load OCOP products right now.",
+      "error": "Unable to load OCOP products right now",
       "empty_title": "No products found",
-      "empty_desc": "Try adjusting your search or filters."
+      "empty_desc": "Try adjusting your search or filters"
     },
     "pagination": {
       "prev": "Previous",
@@ -1138,7 +1234,7 @@
   "ocopDetail": {
     "back": "Back to OCOP",
     "default_name": "OCOP Product",
-    "no_description": "No description available.",
+    "no_description": "No description available",
     "labels": {
       "province": "Province / City",
       "unit": "Producer",
@@ -1163,7 +1259,7 @@
     "hero": {
       "badge": "Ninh Binh travel community space",
       "title": "Vlog & Travel Experiences",
-      "description": "A place for travellers to share journeys, impressions and memorable moments in Ninh Binh.",
+      "description": "A place for travellers to share journeys, impressions and memorable moments in Ninh Binh",
       "cta_write": "Write a post",
       "cta_featured": "View featured posts"
     },
@@ -1175,22 +1271,22 @@
     "composer": {
       "title": "Quick post",
       "title_label": "Post title",
-      "title_placeholder": "Enter an engaging title...",
+      "title_placeholder": "Enter an engaging title..",
       "content_label": "Content",
-      "content_placeholder": "Share your journey, impressions or travel tips...",
+      "content_placeholder": "Share your journey, impressions or travel tips..",
       "type_label": "Content type",
       "topic_label": "Topic",
       "submit": "Publish",
-      "toast_empty_title": "Please enter a post title.",
+      "toast_empty_title": "Please enter a post title",
       "toast_success": "Post published successfully!"
     },
     "filters": {
       "title": "Filter content",
       "keyword_label": "Keyword",
-      "keyword_placeholder": "Search by title, author...",
+      "keyword_placeholder": "Search by title, author..",
       "type_label": "Content type",
       "location_label": "Location",
-      "location_placeholder": "Filter by location...",
+      "location_placeholder": "Filter by location..",
       "refresh": "Refresh"
     },
     "types": {
@@ -1222,10 +1318,10 @@
       "empty_desc": "Be the first to share your experience!"
     },
     "attach": {
-      "photo": "📷 Photo",
-      "video": "🎥 Video",
-      "place": "📍 Location",
-      "hashtag": "🏷 Hashtag"
+      "photo": "ðŸ“· Photo",
+      "video": "ðŸŽ¥ Video",
+      "place": "ðŸ“ Location",
+      "hashtag": "ðŸ· Hashtag"
     },
     "just_now": "Just now"
   }

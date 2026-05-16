@@ -1,6 +1,17 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Camera, Star, Clock, Ticket, Navigation, RectangleGoggles } from 'lucide-react';
+import {
+  MapPin,
+  Camera,
+  Star,
+  Clock,
+  Ticket,
+  Navigation,
+  RectangleGoggles,
+  Phone,
+  Globe,
+  Users,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -34,12 +45,13 @@ function getOpeningHours(opening_hours) {
   if (typeof opening_hours === 'string') {
     try {
       const parsed = JSON.parse(opening_hours);
-      return parsed?.default || null;
+      return parsed?.default || parsed?.daily || null;
     } catch {
       return opening_hours;
     }
   }
-  if (typeof opening_hours === 'object') return opening_hours?.default || null;
+  if (typeof opening_hours === 'object')
+    return opening_hours?.default || opening_hours?.daily || null;
   return null;
 }
 
@@ -70,10 +82,11 @@ export default function ModalMarker() {
 
   const { data: scenesData } = useGetAframeScenes({ spotId: isOpen ? spotId : null });
   const hasVrTour = useMemo(() => {
+    if (spot?.has_vr_360 === true) return true;
     const d = scenesData?.data ?? scenesData;
     const scenes = Array.isArray(d) ? d : d?.scenes || d?.items || [];
     return scenes.length > 0;
-  }, [scenesData]);
+  }, [scenesData, spot?.has_vr_360]);
 
   const handleViewImages = () => {
     const images =
@@ -111,9 +124,12 @@ export default function ModalMarker() {
   };
 
   const openingHours = spot ? getOpeningHours(spot.opening_hours) : null;
-  const ticketPrice = spot ? formatPrice(spot.ticket_price_adult, spot.ticket_currency) : null;
+  const ticketPriceAdult = spot ? formatPrice(spot.ticket_price_adult, spot.ticket_currency) : null;
+  const ticketPriceChild = spot ? formatPrice(spot.ticket_price_child, spot.ticket_currency) : null;
   const ratingAvg = spot ? parseFloat(spot.rating_avg) : 0;
   const hasMedia = Array.isArray(mediaItems) && mediaItems.length > 0;
+  const capacityPct = spot?.current_capacity_pct != null ? Number(spot.current_capacity_pct) : null;
+  const alertThreshold = spot?.alert_threshold_pct ?? 80;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeSpotModal()}>
@@ -200,7 +216,7 @@ export default function ModalMarker() {
               )}
 
               {/* Opening hours + ticket */}
-              {(openingHours || ticketPrice) && (
+              {(openingHours || ticketPriceAdult) && (
                 <div className="grid grid-cols-2 gap-2">
                   {openingHours && (
                     <div className="bg-muted/50 flex items-start gap-2 rounded-lg p-2">
@@ -213,17 +229,93 @@ export default function ModalMarker() {
                       </div>
                     </div>
                   )}
-                  {ticketPrice && (
+                  {ticketPriceAdult && (
                     <div className="bg-muted/50 flex items-start gap-2 rounded-lg p-2">
                       <Ticket size={13} className="text-muted-foreground mt-0.5 shrink-0" />
                       <div>
                         <p className="typo-meta font-medium">
                           {t('mapPage.spotModal.ticketPrice')}
                         </p>
-                        <p className="typo-meta text-muted-foreground">{ticketPrice}</p>
+                        <p className="typo-meta text-muted-foreground">{ticketPriceAdult}</p>
+                        {ticketPriceChild && (
+                          <p className="typo-meta text-muted-foreground">
+                            {t('mapPage.spotModal.ticketChild')}: {ticketPriceChild}
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Contact info */}
+              {(spot.phone || spot.website) && (
+                <div className="flex flex-col gap-1">
+                  {spot.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone size={13} className="text-muted-foreground shrink-0" />
+                      <a
+                        href={`tel:${spot.phone}`}
+                        className="typo-meta text-muted-foreground hover:text-foreground"
+                      >
+                        {spot.phone}
+                      </a>
+                    </div>
+                  )}
+                  {spot.website && (
+                    <div className="flex items-center gap-2">
+                      <Globe size={13} className="text-muted-foreground shrink-0" />
+                      <a
+                        href={spot.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="typo-meta text-muted-foreground hover:text-foreground line-clamp-1"
+                      >
+                        {spot.website}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Capacity indicator */}
+              {capacityPct != null && (
+                <div className="flex items-center gap-2">
+                  <Users size={13} className="text-muted-foreground shrink-0" />
+                  <div className="flex flex-1 flex-col gap-0.5">
+                    <div className="flex items-center justify-between">
+                      <p className="typo-meta text-muted-foreground">
+                        {t('mapPage.spotModal.capacity')}
+                      </p>
+                      <p
+                        className="typo-meta font-medium"
+                        style={{
+                          color:
+                            capacityPct >= alertThreshold
+                              ? '#ef4444'
+                              : capacityPct >= alertThreshold * 0.75
+                                ? '#f59e0b'
+                                : '#22c55e',
+                        }}
+                      >
+                        {Math.round(capacityPct)}%
+                      </p>
+                    </div>
+                    <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: `${Math.min(capacityPct, 100)}%`,
+                          backgroundColor:
+                            capacityPct >= alertThreshold
+                              ? '#ef4444'
+                              : capacityPct >= alertThreshold * 0.75
+                                ? '#f59e0b'
+                                : '#22c55e',
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -249,7 +341,7 @@ export default function ModalMarker() {
               </Button>
               <Button
                 size="sm"
-                variant="gold"
+                variant="destructive"
                 onClick={handleReview}
                 disabled={isLoading}
                 className="gap-1.5"
@@ -261,9 +353,9 @@ export default function ModalMarker() {
             {hasVrTour && (
               <Button
                 size="sm"
-                variant="tertiary"
+                variant="default"
                 onClick={handleVrTour}
-                className="w-full gap-1.5"
+                className="bg-green-500 text-secondary-foreground w-full gap-1.5"
               >
                 <RectangleGoggles size={14} />
                 {t('mapPage.spotModal.vrTour')}

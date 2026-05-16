@@ -1,18 +1,33 @@
-import { useState, useCallback, useEffect } from 'react';
+﻿import { useState, useCallback, useEffect } from 'react';
 import { Play, RotateCcw, ChevronDown, ChevronUp, Settings, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSatelliteStore } from '../store/useSatelliteStore';
 import { useLoadingStore } from '@/stores/useLoadingStore';
-import { SINGLE_LAYER_ENTRIES, LAYER_CONFIG, COLLECTION_OPTIONS, CLOUD_COVER_MIN, CLOUD_COVER_MAX } from '../constants/satelliteConstants';
-import { formatDateForInput, isValidDateObject, parseDateInputValue, oneYearBefore } from '../utils/satelliteUtils';
+import {
+  SINGLE_LAYER_ENTRIES,
+  LAYER_CONFIG,
+  COLLECTION_OPTIONS,
+  CLOUD_COVER_MIN,
+  CLOUD_COVER_MAX,
+} from '../constants/satelliteConstants';
+import {
+  formatDateForInput,
+  isValidDateObject,
+  parseDateInputValue,
+  oneYearBefore,
+} from '../utils/satelliteUtils';
 import { getDefaultSatelliteGeometry } from '../utils/satelliteGeometry.util';
 
 export function SatelliteSingleModePanel() {
@@ -21,17 +36,33 @@ export function SatelliteSingleModePanel() {
   const [selectedLayers, setSelectedLayers] = useState(['ndvi']);
 
   const {
-    startDate, endDate, collection, cloudCover, autoDetectChange,
-    isLoading, error,
-    setStartDate, setEndDate, setCollection, setCloudCover, setAutoDetectChange,
-    setIsLoading, setError, setAnalysisData,
-    syncSingleImagesFromResults, addChangeLayer,
-    setIsCompareMode, clearData, reset,
+    startDate,
+    endDate,
+    collection,
+    cloudCover,
+    autoDetectChange,
+    isLoading,
+    error,
+    setStartDate,
+    setEndDate,
+    setCollection,
+    setCloudCover,
+    setAutoDetectChange,
+    setIsLoading,
+    setError,
+    setAnalysisData,
+    syncSingleImagesFromResults,
+    addChangeLayer,
+    setIsCompareMode,
+    clearData,
+    reset,
   } = useSatelliteStore();
 
   const { setLoading } = useLoadingStore();
 
-  useEffect(() => { setIsCompareMode(false); }, [setIsCompareMode]);
+  useEffect(() => {
+    setIsCompareMode(false);
+  }, [setIsCompareMode]);
 
   const handleLayerToggle = (layerId) => {
     setSelectedLayers((prev) =>
@@ -41,24 +72,46 @@ export function SatelliteSingleModePanel() {
 
   const handleStartDateChange = (e) => {
     const newDate = parseDateInputValue(e.target.value);
-    if (!newDate) { setError(t('satellite.errors.invalid_date')); return; }
-    if (newDate < endDate) { setStartDate(newDate); setError(null); }
-    else setError(t('satellite.errors.date_order'));
+    if (!newDate) {
+      setError(t('satellite.errors.invalid_date'));
+      return;
+    }
+    if (newDate < endDate) {
+      setStartDate(newDate);
+      setError(null);
+    } else setError(t('satellite.errors.date_order'));
   };
 
   const handleEndDateChange = (e) => {
     const newDate = parseDateInputValue(e.target.value);
-    if (!newDate) { setError(t('satellite.errors.invalid_date')); return; }
-    if (newDate > startDate) { setEndDate(newDate); setError(null); }
-    else setError(t('satellite.errors.date_order'));
+    if (!newDate) {
+      setError(t('satellite.errors.invalid_date'));
+      return;
+    }
+    if (newDate > startDate) {
+      setEndDate(newDate);
+      setError(null);
+    } else setError(t('satellite.errors.date_order'));
   };
 
   const handleAnalyze = useCallback(async () => {
     const geometry = getDefaultSatelliteGeometry();
-    if (!geometry) { setError(t('satellite.errors.no_roi')); return; }
-    if (selectedLayers.length === 0 && !autoDetectChange) { setError(t('satellite.errors.no_layer')); return; }
-    if (!isValidDateObject(startDate) || !isValidDateObject(endDate)) { setError(t('satellite.errors.invalid_date')); return; }
-    if (startDate >= endDate) { setError(t('satellite.errors.date_order')); return; }
+    if (!geometry) {
+      setError(t('satellite.errors.no_roi'));
+      return;
+    }
+    if (selectedLayers.length === 0 && !autoDetectChange) {
+      setError(t('satellite.errors.no_layer'));
+      return;
+    }
+    if (!isValidDateObject(startDate) || !isValidDateObject(endDate)) {
+      setError(t('satellite.errors.invalid_date'));
+      return;
+    }
+    if (startDate >= endDate) {
+      setError(t('satellite.errors.date_order'));
+      return;
+    }
 
     setIsLoading(true);
     setLoading(true);
@@ -102,9 +155,12 @@ export function SatelliteSingleModePanel() {
             cloudCover,
           });
           addChangeLayer(changeResult, {
-            startDate1: p1Start, endDate1: p1End,
-            startDate2: startDate, endDate2: endDate,
-            collection, cloudCover,
+            startDate1: p1Start,
+            endDate1: p1End,
+            startDate2: startDate,
+            endDate2: endDate,
+            collection,
+            cloudCover,
           });
         } catch (err) {
           console.error('[auto-detect-change single]', err);
@@ -117,71 +173,114 @@ export function SatelliteSingleModePanel() {
       setLoading(false);
     }
   }, [
-    selectedLayers, autoDetectChange, startDate, endDate, collection, cloudCover,
-    setIsLoading, setError, setAnalysisData, syncSingleImagesFromResults, addChangeLayer, setLoading, t,
+    selectedLayers,
+    autoDetectChange,
+    startDate,
+    endDate,
+    collection,
+    cloudCover,
+    setIsLoading,
+    setError,
+    setAnalysisData,
+    syncSingleImagesFromResults,
+    addChangeLayer,
+    setLoading,
+    t,
   ]);
 
   return (
     <div className="bg-card">
-      <button
+      <Button
+        variant="ghost"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-3 py-2 hover:bg-muted/50 transition-colors"
+        className="hover:bg-muted/50 flex w-full items-center justify-between px-3 py-2 transition-colors"
       >
         <div className="flex items-center gap-2">
           <Settings size={16} className="text-primary" />
-          <span className="typo-body font-semibold text-foreground">{t('satellite.fields.config')}</span>
+          <span className="typo-body text-foreground font-semibold">
+            {t('satellite.fields.config')}
+          </span>
         </div>
-        {open ? <ChevronUp size={16} className="text-foreground/60" /> : <ChevronDown size={16} className="text-foreground/60" />}
-      </button>
+        {open ? (
+          <ChevronUp size={16} className="text-foreground/60" />
+        ) : (
+          <ChevronDown size={16} className="text-foreground/60" />
+        )}
+      </Button>
 
       {error && (
-        <div className="mx-3 mb-2 px-3 py-2 bg-destructive/10 border border-destructive/20 rounded text-xs text-destructive">
+        <div className="bg-destructive/10 border-destructive/20 text-destructive mx-3 mb-2 rounded border px-3 py-2 text-xs">
           {error}
         </div>
       )}
 
-      <div className="overflow-hidden transition-all duration-300" style={{ maxHeight: open ? '1200px' : '0px' }}>
-        <div className="border-t border-border px-3 py-3 space-y-3">
+      <div
+        className="overflow-hidden transition-all duration-300"
+        style={{ maxHeight: open ? '1200px' : '0px' }}
+      >
+        <div className="border-border space-y-3 border-t px-3 py-3">
           {/* Date Range */}
           <div className="space-y-2">
-            <h4 className="typo-meta font-semibold text-foreground/80 uppercase tracking-wide">
+            <h4 className="typo-meta text-foreground/80 font-semibold tracking-wide uppercase">
               {t('satellite.fields.time_range')}
             </h4>
             <div className="space-y-2">
               <div>
-                <label className="typo-meta text-foreground/60 mb-1 block">{t('satellite.fields.from')}</label>
-                <Input type="date" value={formatDateForInput(startDate)} onChange={handleStartDateChange} disabled={isLoading} className="typo-meta h-8" />
+                <label className="typo-meta text-foreground/60 mb-1 block">
+                  {t('satellite.fields.from')}
+                </label>
+                <Input
+                  type="date"
+                  value={formatDateForInput(startDate)}
+                  onChange={handleStartDateChange}
+                  disabled={isLoading}
+                  className="typo-meta h-8"
+                />
               </div>
               <div>
-                <label className="typo-meta text-foreground/60 mb-1 block">{t('satellite.fields.to')}</label>
-                <Input type="date" value={formatDateForInput(endDate)} onChange={handleEndDateChange} disabled={isLoading} className="typo-meta h-8" />
+                <label className="typo-meta text-foreground/60 mb-1 block">
+                  {t('satellite.fields.to')}
+                </label>
+                <Input
+                  type="date"
+                  value={formatDateForInput(endDate)}
+                  onChange={handleEndDateChange}
+                  disabled={isLoading}
+                  className="typo-meta h-8"
+                />
               </div>
             </div>
           </div>
 
           {/* Layer Types */}
           <div className="space-y-2">
-            <h4 className="typo-meta font-semibold text-foreground/80 uppercase tracking-wide">
+            <h4 className="typo-meta text-foreground/80 font-semibold tracking-wide uppercase">
               {t('satellite.fields.layer_types')}
             </h4>
             <div className="space-y-1.5">
               {SINGLE_LAYER_ENTRIES.map(([layerId, cfg]) => (
                 <Tooltip key={layerId} delayDuration={200}>
                   <TooltipTrigger asChild>
-                    <label className={`flex items-center gap-2 p-2 rounded border cursor-pointer transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed bg-muted' : 'hover:bg-muted border-border/50'}`}>
+                    <label
+                      className={`flex cursor-pointer items-center gap-2 rounded border p-2 transition-colors ${isLoading ? 'bg-muted cursor-not-allowed opacity-50' : 'hover:bg-muted border-border/50'}`}
+                    >
                       <Checkbox
                         checked={selectedLayers.includes(layerId)}
                         onCheckedChange={() => handleLayerToggle(layerId)}
                         disabled={isLoading}
                       />
-                      <div className={`w-3 h-3 rounded-full ${cfg.color}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="typo-meta font-medium text-foreground">{t(cfg.labelKey)}</p>
-                        <p className="text-xs text-foreground/50 truncate">{t(cfg.descKey)}</p>
+                      <div className={`h-3 w-3 rounded-full ${cfg.color}`} />
+                      <div className="min-w-0 flex-1">
+                        <p className="typo-meta text-foreground font-medium">{t(cfg.labelKey)}</p>
+                        <p className="text-foreground/50 truncate text-xs">{t(cfg.descKey)}</p>
                       </div>
                     </label>
                   </TooltipTrigger>
-                  {isLoading && <TooltipContent className="typo-meta">{t('satellite.loading.title')}</TooltipContent>}
+                  {isLoading && (
+                    <TooltipContent className="typo-meta">
+                      {t('satellite.loading.title')}
+                    </TooltipContent>
+                  )}
                 </Tooltip>
               ))}
             </div>
@@ -189,29 +288,39 @@ export function SatelliteSingleModePanel() {
 
           {/* Settings */}
           <div className="space-y-2">
-            <h4 className="typo-meta font-semibold text-foreground/80 uppercase tracking-wide">
+            <h4 className="typo-meta text-foreground/80 font-semibold tracking-wide uppercase">
               {t('satellite.fields.settings')}
             </h4>
             <div className="flex items-center justify-between gap-2">
-              <label className="typo-meta text-foreground/60 shrink-0">{t('satellite.fields.collection')}</label>
+              <label className="typo-meta text-foreground/60 shrink-0">
+                {t('satellite.fields.collection')}
+              </label>
               <Select onValueChange={setCollection} value={collection} disabled={isLoading}>
-                <SelectTrigger className="w-[150px] h-8 typo-meta">
+                <SelectTrigger className="typo-meta h-8 w-[150px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {COLLECTION_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="typo-meta text-foreground/60">{t('satellite.fields.cloud_cover')}</label>
-                <span className="typo-badge bg-primary/10 text-primary px-2 py-0.5 rounded">{cloudCover}%</span>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="typo-meta text-foreground/60">
+                  {t('satellite.fields.cloud_cover')}
+                </label>
+                <span className="typo-badge bg-primary/10 text-primary rounded px-2 py-0.5">
+                  {cloudCover}%
+                </span>
               </div>
               <Slider
-                min={CLOUD_COVER_MIN} max={CLOUD_COVER_MAX} step={5}
+                min={CLOUD_COVER_MIN}
+                max={CLOUD_COVER_MAX}
+                step={5}
                 value={[cloudCover]}
                 onValueChange={(vals) => setCloudCover(vals[0])}
                 disabled={isLoading}
@@ -220,8 +329,10 @@ export function SatelliteSingleModePanel() {
           </div>
 
           {/* Auto Detect Change */}
-          <div className="p-2.5 bg-red-500/5 border border-red-500/20 rounded-lg">
-            <label className={`flex items-start gap-2.5 cursor-pointer ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          <div className="rounded-lg border border-quinary/20 bg-quinary/5 p-2.5">
+            <label
+              className={`flex cursor-pointer items-start gap-2.5 ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
+            >
               <Checkbox
                 checked={autoDetectChange}
                 onCheckedChange={(checked) => setAutoDetectChange(!!checked)}
@@ -230,10 +341,14 @@ export function SatelliteSingleModePanel() {
               />
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5">
-                  <AlertTriangle size={12} className="text-red-500 shrink-0" />
-                  <span className="typo-meta font-semibold text-foreground">{t('satellite.fields.auto_detect_change')}</span>
+                  <AlertTriangle size={12} className="shrink-0 text-quinary" />
+                  <span className="typo-meta text-foreground font-semibold">
+                    {t('satellite.fields.auto_detect_change')}
+                  </span>
                 </div>
-                <p className="text-xs text-foreground/50 leading-tight">{t('satellite.fields.auto_detect_change_single_desc')}</p>
+                <p className="text-foreground/50 text-xs leading-tight">
+                  {t('satellite.fields.auto_detect_change_single_desc')}
+                </p>
               </div>
             </label>
           </div>
@@ -241,18 +356,24 @@ export function SatelliteSingleModePanel() {
           {/* Actions */}
           <div className="flex gap-2 pt-1">
             <Button
+              variant="ghost"
               onClick={handleAnalyze}
               disabled={isLoading || (selectedLayers.length === 0 && !autoDetectChange)}
-              className="flex-1 gap-2 h-8"
+              className="h-8 flex-1 gap-2"
             >
               <Play size={14} />
-              <span className="typo-button">{isLoading ? t('satellite.loading.title') : t('satellite.actions.load_image')}</span>
+              <span className="typo-button">
+                {isLoading ? t('satellite.loading.title') : t('satellite.actions.load_image')}
+              </span>
             </Button>
             <Button
-              onClick={() => { clearData(); reset(); }}
               variant="outline"
+              onClick={() => {
+                clearData();
+                reset();
+              }}
               disabled={isLoading}
-              className="flex-1 gap-2 h-8"
+              className="h-8 flex-1 gap-2"
             >
               <RotateCcw size={14} />
               <span className="typo-button">{t('satellite.actions.reset')}</span>

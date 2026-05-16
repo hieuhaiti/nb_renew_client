@@ -1,7 +1,8 @@
-import React from 'react';
+﻿import React from 'react';
 import { Bookmark, MapPin, Clock, Star } from 'lucide-react';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { Button } from '@/components/ui/button';
 
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 
@@ -103,13 +104,13 @@ export function TourismPointFeaturedCard({
         <span className="bg-primary/80 absolute top-3.5 left-3.5 rounded-full border border-white/30 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
           {categoryName}
         </span>
-        <button
+        <Button variant="ghost"
           type="button"
           onClick={onToggleLike}
           className="text-primary absolute top-3.5 right-3.5 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-white/75 bg-white/90"
         >
           <Bookmark size={14} className={isLiked ? 'fill-destructive text-destructive' : ''} />
-        </button>
+        </Button>
       </div>
 
       {/* Body */}
@@ -162,19 +163,19 @@ export function TourismPointFeaturedCard({
               : t('tourismPointPage.free', 'Miễn phí')}
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <Button variant="ghost"
               className="h-10.5 rounded-full px-4.5 text-sm font-bold text-white"
               style={BTN_GRADIENT}
             >
               {t('tourismPointPage.view_detail', 'Xem chi tiết')}
-            </button>
-            <button
+            </Button>
+            <Button variant="ghost"
               type="button"
               onClick={onToggleLike}
               className="flex h-10.5 w-10.5 items-center justify-center rounded-full border border-[#9db8d2] bg-white text-[#52647a]"
             >
               <Bookmark size={16} className={isLiked ? 'fill-destructive text-destructive' : ''} />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -258,13 +259,13 @@ export function TourismPointStandardCard({
         <span className="bg-primary/80 absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
           {categoryName}
         </span>
-        <button
+        <Button variant="ghost"
           type="button"
           onClick={onToggleLike}
           className="text-primary absolute top-3 right-3 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-white/75 bg-white/90"
         >
           <Bookmark size={13} className={isLiked ? 'fill-destructive text-destructive' : ''} />
-        </button>
+        </Button>
       </div>
 
       {/* Card body */}
@@ -303,3 +304,5 @@ export function TourismPointStandardCard({
     </div>
   );
 }
+
+
