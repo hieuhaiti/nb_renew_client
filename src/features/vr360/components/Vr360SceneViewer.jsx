@@ -529,7 +529,7 @@ export default function Vr360SceneViewer({
   }, []);
 
   useEffect(() => {
-    if (!aframeReady || !containerRef.current || !scene) return;
+    if (!aframeReady || !containerRef.current) return;
     if (aSceneRef.current) return;
 
     const container = containerRef.current;
@@ -634,7 +634,7 @@ export default function Vr360SceneViewer({
       nearbyHotspotsRootRef.current = null;
       aCameraRef.current = null;
     };
-  }, [aframeReady, scene]);
+  }, [aframeReady]);
 
   useEffect(() => {
     if (!scene) return;

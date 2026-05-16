@@ -572,17 +572,7 @@ export default function Vr360PageContent() {
 
   return (
     <RootLayout>
-      <div
-        className="xl:overflow-hidden"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: '16px',
-          padding: '16px',
-          background: 'linear-gradient(180deg,#f5fbff,#edf8fb)',
-          minHeight: '100%',
-        }}
-      >
+      <div className="bg-background grid-cols-1fr grid h-full overflow-hidden p-3">
         {/* ── 3-col wrapper (xl only) ─────────────────────────────────────── */}
         <div className="xl:contents" style={{ display: 'contents' }} />
 
@@ -619,20 +609,14 @@ export default function Vr360PageContent() {
         >
           {/* ══ LEFT: scene list ══════════════════════════════════════════════ */}
           <aside className="vr360-left" style={panelStyle}>
-            <div style={panelHeadStyle}>
-              <h3
-                style={{
-                  fontSize: '17px',
-                  fontWeight: 800,
-                  color: C.text,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
-              >
-                <Layers style={{ width: '18px', height: '18px', color: C.primary }} />
-                {t('vr360.scene_list_title')}
-              </h3>
+            <div
+              style={{
+                ...panelHeadStyle,
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: '6px',
+              }}
+            >
               <button
                 type="button"
                 onClick={() => navigate('/map')}
@@ -648,12 +632,26 @@ export default function Vr360PageContent() {
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                   borderRadius: '999px',
-                  padding: '6px 10px',
+                  padding: '2px 0',
                 }}
               >
                 <ArrowLeft style={{ width: '14px', height: '14px' }} />
                 {t('vr360.back_to_map')}
               </button>
+              <h3
+                style={{
+                  fontSize: '17px',
+                  fontWeight: 800,
+                  color: C.text,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  margin: 0,
+                }}
+              >
+                <Layers style={{ width: '18px', height: '18px', color: C.primary }} />
+                {t('vr360.scene_list_title')}
+              </h3>
             </div>
 
             <div
