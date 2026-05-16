@@ -129,7 +129,7 @@
       "see_all": "View all tours",
       "days": "days",
       "from_price": "From",
-      "default_title": "Trang An Classic Tour â€” Boat Trip Through 3 Cave Routes",
+      "default_title": "Trang An Classic Tour — Boat Trip Through 3 Cave Routes",
       "default_desc": "Explore the Trang An Landscape Complex through 3 famous tourism routes",
       "schedule": "itinerary",
       "per_person": "per guest",
@@ -174,7 +174,7 @@
       "description": "Enrich community content with real-life experiences, travel tips, and itinerary suggestions"
     },
     "footer_section": {
-      "brand": "Ninh Binh Tourism Information Portal â€” Integrated GIS, VR360, OCOP and smart itinerary platform",
+      "brand": "Ninh Binh Tourism Information Portal — Integrated GIS, VR360, OCOP and smart itinerary platform",
       "quick_links": "Quick links",
       "contact": "Contact",
       "follow": "Follow us"
@@ -534,7 +534,7 @@
     "quick_filters": "Quick Filters",
     "quick_map": "Quick Map",
     "tip_title": "Tips",
-    "tip_desc": "Combine Trang An â€“ Hoa Lu â€“ Hang Mua on one route to optimise travel time and scenery",
+    "tip_desc": "Combine Trang An — Hoa Lu — Hang Mua on one route to optimise travel time and scenery",
     "featured_list": "Featured Attractions",
     "subcategory": "Subcategory",
     "near_me": "Near Me",
@@ -615,14 +615,14 @@
       "all": "All durations",
       "1day": "1 day",
       "2days": "2 days",
-      "3_4days": "3â€“4 days",
+      "3_4days": "3–4 days",
       "5plus": "5+ days"
     },
     "price_options": {
       "all": "All price ranges",
       "under500": "Under 500K",
-      "500_1000": "500K â€“ 1M",
-      "1000_2000": "1M â€“ 2M",
+      "500_1000": "500K – 1M",
+      "1000_2000": "1M – 2M",
       "above2000": "Above 2M"
     },
     "sort_options": {
@@ -872,7 +872,7 @@
       "empty": "No tours match your filters",
       "openRoute": "View on map",
       "loadingRoute": "Opening..",
-      "routeSummary": "{{from}} â†’ {{to}}",
+      "routeSummary": "{{from}} → {{to}}",
       "hideOtherPoints": "Hide other points",
       "showOtherPoints": "Show other points",
       "clearRoute": "Clear route",
@@ -1318,10 +1318,10 @@
       "empty_desc": "Be the first to share your experience!"
     },
     "attach": {
-      "photo": "ðŸ“· Photo",
-      "video": "ðŸŽ¥ Video",
-      "place": "ðŸ“ Location",
-      "hashtag": "ðŸ· Hashtag"
+      "photo": "📷 Photo",
+      "video": "🎥 Video",
+      "place": "📍 Location",
+      "hashtag": "🏷 Hashtag"
     },
     "just_now": "Just now"
   }
