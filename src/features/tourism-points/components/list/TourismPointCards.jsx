@@ -270,13 +270,14 @@ export function TourismPointStandardCard({
 
       {/* Card body */}
       <div className="flex flex-1 flex-col p-4.25">
-        <h3 className="text-foreground group-hover:text-primary mb-1.5 line-clamp-1 text-lg leading-snug font-black transition-colors">
-          {name}
-        </h3>
-
-        <div className="mb-2 flex items-center gap-1 font-bold text-[#d99200]">
-          <Star size={13} className="fill-[#d99200]" />
-          {rating ? Number(rating).toFixed(1) : '—'}
+        <div className="mb-1.5 flex items-start justify-between gap-2">
+          <h3 className="text-foreground group-hover:text-primary line-clamp-1 text-lg leading-snug font-black transition-colors">
+            {name}
+          </h3>
+          <span className="mt-0.5 flex shrink-0 items-center gap-1 text-sm font-bold text-[#d99200]">
+            <Star size={13} className="fill-[#d99200]" />
+            {rating ? Number(rating).toFixed(1) : '—'}
+          </span>
         </div>
 
         <p className="text-muted-foreground line-clamp-2 min-h-11.75 text-sm leading-relaxed">
