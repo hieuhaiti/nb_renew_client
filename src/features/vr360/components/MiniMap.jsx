@@ -414,20 +414,10 @@ export default function MiniMap({
     if (!map) return;
     if (map.getLayer(LAYER_TC_CIRCLE)) map.setLayoutProperty(LAYER_TC_CIRCLE, 'visibility', 'none');
     if (map.getLayer(LAYER_TC_LABEL)) map.setLayoutProperty(LAYER_TC_LABEL, 'visibility', 'none');
-    const apiCoords = [
-      ...(Array.isArray(scenesRef.current) ? scenesRef.current : []),
-      ...(Array.isArray(spotsRef.current) ? spotsRef.current : []),
-    ]
-      .map(getSceneCoords)
-      .filter(Boolean);
-    const tcCoords = TAM_CHUC_POINTS.map((p) => [p.lon, p.lat]);
-    const allCoords = [...apiCoords, ...tcCoords];
-    if (allCoords.length === 0) return;
-    const bounds = allCoords.reduce(
-      (b, c) => b.extend(c),
-      new mapboxgl.LngLatBounds(allCoords[0], allCoords[0])
-    );
-    map.fitBounds(bounds, { padding: 40, duration: 1000, maxZoom: 14 });
+    const center = currentCenterRef.current;
+    if (center) {
+      map.flyTo({ center, zoom: 15, pitch: 0, essential: true, duration: 800 });
+    }
   }, []);
 
   const switchToCloseup = useCallback(() => {

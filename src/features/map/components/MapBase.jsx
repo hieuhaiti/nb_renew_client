@@ -518,6 +518,14 @@ export default function MapBaseArea() {
         addOrUpdateHighlightedRouteLayers(map, {
           routeFeature,
           routePointsFeatureCollection: routePoints,
+          onPointClick: (feature) => {
+            const destination = mapFeatureToDestination(feature);
+            if (!destination) return;
+            setHighlightedPoint(destination);
+            if (destination.id) {
+              openSpotModal(destination.id, destination.slug ?? null);
+            }
+          },
         });
 
         const coordinates = routeResult.geometry.coordinates;

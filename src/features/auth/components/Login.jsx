@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,7 @@ const loginSchema = (t) =>
 export default function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const setUser = useAuthStore((state) => state.setUser);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -58,7 +59,8 @@ export default function Login() {
       }
       setUser(payload.user || payload);
       toast.success(t('auth.login.success'));
-      navigate('/');
+      const returnTo = location.state?.from || '/';
+      navigate(returnTo, { replace: true });
     } catch (err) {
       const message = err?.response?.data?.message || err?.message || t('auth.errors.login_failed');
       setError('root', { message });

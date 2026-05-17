@@ -91,61 +91,17 @@ const QUICK_ICON_MAP = {
 };
 
 const FEATURE_CARDS = [
-  {
-    icon: <MapPinned size={22} />,
-    bg: ICON_GRADS[0],
-    title: 'Bản đồ du lịch thông minh',
-    desc: 'Lớp điểm du lịch, dịch vụ, bản đồ nền, tìm kiếm theo tên và bán kính vị trí.',
-    path: '/map',
-  },
-  {
-    icon: <CloudLightning size={22} />,
-    bg: ICON_GRADS[1],
-    title: 'Thời tiết, AQI, cảnh báo',
-    desc: 'Cập nhật gió, mưa, chất lượng không khí và cảnh báo thời tiết cực đoan.',
-    path: '/map',
-  },
-  {
-    icon: <Users size={22} />,
-    bg: ICON_GRADS[2],
-    title: 'Theo dõi tải khách',
-    desc: 'Hiển thị mức tải, cảnh báo quá tải và đề xuất điều hướng thay thế.',
-    path: '/map',
-  },
-  {
-    icon: <Satellite size={22} />,
-    bg: ICON_GRADS[3],
-    title: 'Giám sát khu bảo tồn',
-    desc: 'Tìm kiếm ảnh vệ tinh, so sánh thời gian, phân loại và phát hiện biến động.',
-    path: '/map',
-  },
+  { icon: <MapPinned size={22} />, bg: ICON_GRADS[0], titleKey: 'home.feature_cards.map.title', descKey: 'home.feature_cards.map.desc', path: '/map', sidebar: 'tour' },
+  { icon: <CloudLightning size={22} />, bg: ICON_GRADS[1], titleKey: 'home.feature_cards.weather.title', descKey: 'home.feature_cards.weather.desc', path: '/map', sidebar: 'event' },
+  { icon: <Users size={22} />, bg: ICON_GRADS[2], titleKey: 'home.feature_cards.capacity.title', descKey: 'home.feature_cards.capacity.desc', path: '/map', sidebar: 'capacity' },
+  { icon: <Satellite size={22} />, bg: ICON_GRADS[3], titleKey: 'home.feature_cards.satellite.title', descKey: 'home.feature_cards.satellite.desc', path: '/map', sidebar: 'satellite' },
 ];
 
 const ROLE_CARDS = [
-  {
-    icon: <MapPin size={22} />,
-    bg: ICON_GRADS[0],
-    title: 'Khách du lịch',
-    items: ['Tìm điểm đến, tour, dịch vụ', 'Tạo và chia sẻ lịch trình', 'Xem VR 360, đánh giá'],
-  },
-  {
-    icon: <CalendarDays size={22} />,
-    bg: ICON_GRADS[1],
-    title: 'Doanh nghiệp',
-    items: ['Đăng tin, voucher', 'Nhận phản hồi, đánh giá', 'Dashboard doanh thu, tải khách'],
-  },
-  {
-    icon: <FileText size={22} />,
-    bg: ICON_GRADS[2],
-    title: 'Nhà quản lý',
-    items: ['Nhận báo cáo tự động', 'Cảnh báo quá tải', 'Giám sát khu bảo tồn'],
-  },
-  {
-    icon: <Satellite size={22} />,
-    bg: ICON_GRADS[3],
-    title: 'Quản trị hệ thống',
-    items: ['Quản trị tài khoản, API', 'Quản trị lớp bản đồ', 'Nhật ký và phân quyền'],
-  },
+  { icon: <MapPin size={22} />, bg: ICON_GRADS[0], titleKey: 'home.role_cards.tourist.title', itemKeys: ['home.role_cards.tourist.item_1', 'home.role_cards.tourist.item_2', 'home.role_cards.tourist.item_3'] },
+  { icon: <CalendarDays size={22} />, bg: ICON_GRADS[1], titleKey: 'home.role_cards.business.title', itemKeys: ['home.role_cards.business.item_1', 'home.role_cards.business.item_2', 'home.role_cards.business.item_3'] },
+  { icon: <FileText size={22} />, bg: ICON_GRADS[2], titleKey: 'home.role_cards.manager.title', itemKeys: ['home.role_cards.manager.item_1', 'home.role_cards.manager.item_2', 'home.role_cards.manager.item_3'] },
+  { icon: <Satellite size={22} />, bg: ICON_GRADS[3], titleKey: 'home.role_cards.admin.title', itemKeys: ['home.role_cards.admin.item_1', 'home.role_cards.admin.item_2', 'home.role_cards.admin.item_3'] },
 ];
 
 /* ─── Skeleton ─────────────────────────────────────── */
@@ -556,7 +512,7 @@ export default function HomePageContent() {
             HERO
         ══════════════════════════════════════════ */}
         <section
-          className="grid items-center gap-7 px-5 pt-7 pb-[22px] min-h-[calc(100vh-76px)] md:px-[5vw] lg:grid-cols-[1.05fr_.95fr]"
+          className="grid items-center gap-7 px-5 pt-7 pb-[22px] md:px-[5vw] lg:min-h-[calc(100vh-76px)] lg:grid-cols-[1.05fr_.95fr]"
         >
           {/* ── Left ── */}
           <div>
@@ -656,7 +612,7 @@ export default function HomePageContent() {
                   className="h-[50px] rounded-full px-5 text-[14px] font-black"
                   onClick={() => handleGoMapWithSearch(null)}
                 >
-                  Tìm ngay
+                  {t('home.hero.search_cta')}
                 </Button>
               </div>
 
@@ -768,7 +724,7 @@ export default function HomePageContent() {
               <div className="pointer-events-none absolute top-[18px] right-[18px] left-[18px] flex items-start justify-between gap-2.5">
                 <div className="bg-card/95 inline-flex items-center gap-2 rounded-full px-3.5 py-2.5 text-[12px] font-black shadow-[var(--ambient-shadow)]">
                   <MapPinned size={13} className="text-secondary" />
-                  Bản đồ du lịch trực quan
+                  {t('home.hero.map_preview_label')}
                 </div>
                 <div className="pointer-events-auto flex flex-col gap-2">
                   {['+', '−'].map((s) => (
@@ -813,12 +769,12 @@ export default function HomePageContent() {
               {/* Map info */}
               {/* TODO: '65%' crowd load & '4 tuyến' are mock – replace with live crowd-density API */}
               <div className="bg-card/96 absolute right-[18px] bottom-[18px] left-[18px] rounded-[24px] p-4 shadow-[var(--ambient-shadow-strong)]">
-                <h3 className="text-foreground mb-2 text-[15px] font-black">Trạng thái điểm đến</h3>
+                <h3 className="text-foreground mb-2 text-[15px] font-black">{t('home.hero.map_status_title')}</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { val: '65%', label: 'Tải khách TB' },
+                    { val: '65%', label: t('home.hero.map_crowd_label') },
                     { val: `AQI ${weatherOverview?.aqiValue ?? '--'}`, label: t(aqiMeta.labelKey) },
-                    { val: '4 tuyến', label: 'Đang gợi ý' },
+                    { val: '4', label: t('home.hero.map_routes_label') },
                   ].map((cell) => (
                     <div key={cell.label} className="bg-muted rounded-[14px] p-2.5">
                       <strong className="text-foreground block text-[15px] font-black">
@@ -834,7 +790,7 @@ export default function HomePageContent() {
             </div>
 
             {/* Side stack */}
-            <div className="flex flex-col gap-4">
+            <div className="hidden lg:flex flex-col gap-4">
               {/* Weather */}
               <div
                 className={glassCard}
@@ -929,22 +885,21 @@ export default function HomePageContent() {
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="text-foreground flex items-center gap-2 text-[17px] font-black">
                     <Bot size={16} className="text-secondary" />
-                    AI Chatbot
+                    {t('mapPage.chatbot.heading')}
                   </h3>
                   <span className="bg-secondary h-[11px] w-[11px] rounded-full shadow-[0_0_0_6px_var(--secondary-soft)]" />
                 </div>
                 <p className="text-muted-foreground text-[13px] leading-relaxed">
-                  "Gợi ý cho tôi lịch trình 1 ngày, tránh điểm đang quá tải và ưu tiên ẩm thực địa
-                  phương."
+                  "{t('home.hero.chatbot_sample')}"
                 </p>
                 {/* TODO: add input field + send button to open AI chat panel */}
                 <Button
                   variant="outline"
                   size="sm"
                   className="mt-3 w-full rounded-[14px]"
-                  onClick={() => navigate('/map')}
+                  onClick={() => navigate('/map', { state: { activeSidebar: 'chatbot' } })}
                 >
-                  Mở chat AI
+                  {t('home.hero.open_ai_chat')}
                 </Button>
               </div>
             </div>
@@ -967,7 +922,7 @@ export default function HomePageContent() {
               className="h-10 rounded-full"
               onClick={() => navigate('/map')}
             >
-              Xem toàn bộ chức năng
+              {t('home.quick_access.see_all')}
             </Button>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -976,7 +931,7 @@ export default function HomePageContent() {
                 key={i}
                 type="button"
                 variant="outline"
-                onClick={() => navigate(card.path)}
+                onClick={() => navigate(card.path, card.sidebar ? { state: { activeSidebar: card.sidebar } } : undefined)}
                 className={`border-border bg-card relative h-auto min-h-[188px] w-full overflow-hidden rounded-[26px] p-[22px] text-left shadow-[var(--ambient-shadow)] ${cardHover}`}
               >
                 <div
@@ -989,8 +944,8 @@ export default function HomePageContent() {
                 >
                   {card.icon}
                 </div>
-                <h3 className="text-foreground mb-2 text-[17px] font-black">{card.title}</h3>
-                <p className="text-muted-foreground text-[13px] leading-[1.65]">{card.desc}</p>
+                <h3 className="text-foreground mb-2 text-[17px] font-black">{t(card.titleKey)}</h3>
+                <p className="text-muted-foreground text-[13px] leading-[1.65]">{t(card.descKey)}</p>
               </Button>
             ))}
           </div>
@@ -1012,7 +967,7 @@ export default function HomePageContent() {
               style={{ background: 'linear-gradient(135deg,#10b981,#0b66c3)' }}
               onClick={() => navigate('/map')}
             >
-              <Compass size={14} /> Mở bản đồ đầy đủ
+              <Compass size={14} /> {t('home.featured_destinations.open_map')}
             </Button>
           </div>
 
@@ -1119,7 +1074,7 @@ export default function HomePageContent() {
                   className="rounded-[12px]"
                   onClick={() => navigate('/tour')}
                 >
-                  Tạo mới
+                  {t('home.itinerary_section.create_new')}
                 </Button>
               </div>
 
@@ -1184,18 +1139,17 @@ export default function HomePageContent() {
             <div>
               <h2 className="mb-2.5 flex items-center gap-2.5 text-[28px] leading-snug font-black sm:text-[30px]">
                 <Compass size={26} />
-                Trải nghiệm VR 360 &amp; bản đồ toàn cảnh
+                {t('home.vr_banner.title')}
               </h2>
               <p className="max-w-2xl text-[15px] leading-[1.65] opacity-90">
-                Xem ảnh, video 360, thuyết minh điểm đến, chọn điểm bằng hotspot và chuyển cảnh trực
-                tiếp trên bản đồ toàn cảnh.
+                {t('home.vr_banner.desc')}
               </p>
             </div>
             <Button
               className="bg-card text-secondary hover:bg-card/90 h-12 shrink-0 rounded-full px-6 text-[14px] font-black"
               onClick={() => navigate('/vr360')}
             >
-              <Play size={15} /> Khám phá VR
+              <Play size={15} /> {t('home.vr_banner.cta')}
             </Button>
           </div>
         </section>
@@ -1211,14 +1165,13 @@ export default function HomePageContent() {
               style={{ background: 'linear-gradient(135deg,#083d4d,#10b981)' }}
             >
               <Badge className="mb-3 gap-1.5 border border-white/25 bg-white/15 text-[12px] text-white">
-                <Users size={12} /> Phân hệ người dùng
+                <Users size={12} /> {t('home.role_section.badge')}
               </Badge>
               <h2 className="mb-3 text-[30px] leading-[1.2] font-black sm:text-[34px]">
-                Bố cục phục vụ đồng thời du khách, doanh nghiệp và nhà quản lý
+                {t('home.role_section.title')}
               </h2>
               <p className="text-[14px] leading-[1.7] text-white/85">
-                Trang chủ không chỉ giới thiệu điểm đến mà còn dẫn người dùng vào đúng phân hệ: tra
-                cứu, đăng tin dịch vụ, nhận phản ánh, quản lý cảnh báo và xem báo cáo.
+                {t('home.role_section.desc')}
               </p>
             </div>
 
@@ -1235,13 +1188,13 @@ export default function HomePageContent() {
                   >
                     {role.icon}
                   </div>
-                  <h3 className="text-foreground mb-2 text-[17px] font-black">{role.title}</h3>
+                  <h3 className="text-foreground mb-2 text-[17px] font-black">{t(role.titleKey)}</h3>
                   <ul
                     className="text-muted-foreground space-y-0.5 pl-4 text-[13px] leading-[1.8]"
                     style={{ listStyleType: 'disc' }}
                   >
-                    {role.items.map((it) => (
-                      <li key={it}>{it}</li>
+                    {role.itemKeys.map((key) => (
+                      <li key={key}>{t(key)}</li>
                     ))}
                   </ul>
                 </div>
@@ -1464,7 +1417,7 @@ export default function HomePageContent() {
                     <img
                       src={withBaseUrl(product.cover_image_url)}
                       alt={product.name || ''}
-                      className="h-[190px] w-[72%] rounded-[18px] object-cover"
+                      className="h-[190px] w-full sm:w-[72%] rounded-[18px] object-cover"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = placeholderImg;
@@ -1534,27 +1487,27 @@ export default function HomePageContent() {
           </div>
           {[
             {
-              title: 'Du khách',
+              title: t('home.footer_section.tourist_col'),
               links: [
                 { label: t('common.map'), path: '/map' },
-                { label: 'Lịch trình', path: '/tour' },
-                { label: 'VR 360', path: '/vr360' },
+                { label: t('home.footer_section.link_schedule'), path: '/tour' },
+                { label: t('home.footer_section.link_vr360'), path: '/vr360' },
               ],
             },
             {
-              title: 'Doanh nghiệp',
+              title: t('home.footer_section.business_col'),
               links: [
-                { label: 'Đăng tin dịch vụ', path: '/map' },
-                { label: 'Quản lý phản hồi', path: '/map' },
-                { label: 'Tạo voucher', path: '/map' },
+                { label: t('home.footer_section.link_services'), path: '/map' },
+                { label: t('home.footer_section.link_feedback'), path: '/map' },
+                { label: t('home.footer_section.link_voucher'), path: '/map' },
               ],
             },
             {
-              title: 'Nhà quản lý',
+              title: t('home.footer_section.manager_col'),
               links: [
-                { label: 'Dashboard thống kê', path: '/map' },
+                { label: t('home.footer_section.link_dashboard'), path: '/map' },
                 { label: t('common.tourism_points'), path: '/tourism-point' },
-                { label: 'OCOP', path: '/ocop' },
+                { label: t('common.ocop'), path: '/ocop' },
               ],
             },
           ].map((col) => (

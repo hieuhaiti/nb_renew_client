@@ -61,7 +61,14 @@
       "chatbot_title": "Trợ lý du lịch AI",
       "chatbot_desc": "Hỏi về tour, thời tiết, OCOP và nhận gợi ý lịch trình cá nhân hóa",
       "chatbot_cta": "Chat với trợ lý",
-      "lead": "Trang chủ được thiết kế sáng, rõ ràng và giàu thông tin thực tế: điểm đến, sự kiện, tour, ẩm thực, OCOP, bản đồ số và nội dung cộng đồng"
+      "lead": "Trang chủ được thiết kế sáng, rõ ràng và giàu thông tin thực tế: điểm đến, sự kiện, tour, ẩm thực, OCOP, bản đồ số và nội dung cộng đồng",
+      "map_preview_label": "Bản đồ du lịch trực quan",
+      "map_status_title": "Trạng thái điểm đến",
+      "map_crowd_label": "Tải khách TB",
+      "map_routes_label": "Đang gợi ý",
+      "search_cta": "Tìm ngay",
+      "chatbot_sample": "Gợi ý cho tôi lịch trình 1 ngày, tránh điểm đang quá tải và ưu tiên ẩm thực địa phương.",
+      "open_ai_chat": "Mở chat AI"
     },
     "search": {
       "label": "Tìm điểm đến",
@@ -107,14 +114,22 @@
     "quick_access": {
       "label": "Truy cập nhanh",
       "title": "Khám phá điểm đến với công cụ tích hợp",
-      "description": "Sử dụng các tính năng chính của nền tảng để lên kế hoạch hành trình nhanh chóng và trực quan"
+      "description": "Sử dụng các tính năng chính của nền tảng để lên kế hoạch hành trình nhanh chóng và trực quan",
+      "see_all": "Xem toàn bộ chức năng"
+    },
+    "feature_cards": {
+      "map": { "title": "Bản đồ du lịch thông minh", "desc": "Lớp điểm du lịch, dịch vụ, bản đồ nền, tìm kiếm theo tên và bán kính vị trí." },
+      "weather": { "title": "Thời tiết, AQI, cảnh báo", "desc": "Cập nhật gió, mưa, chất lượng không khí và cảnh báo thời tiết cực đoan." },
+      "capacity": { "title": "Theo dõi tải khách", "desc": "Hiển thị mức tải, cảnh báo quá tải và đề xuất điều hướng thay thế." },
+      "satellite": { "title": "Giám sát khu bảo tồn", "desc": "Tìm kiếm ảnh vệ tinh, so sánh thời gian, phân loại và phát hiện biến động." }
     },
     "featured_destinations": {
       "label": "Điểm đến nổi bật",
       "title": "Điểm tham quan hàng đầu tại Ninh Bình",
       "see_all": "Xem tất cả điểm du lịch",
       "description": "Hình ảnh lớn và nút hành động nhanh để điều hướng từ trang chủ đến bản đồ hoặc trang chi tiết",
-      "detail_cta": "Chi tiết"
+      "detail_cta": "Chi tiết",
+      "open_map": "Mở bản đồ đầy đủ"
     },
     "news_section": {
       "label": "Tin tức & Khám phá",
@@ -141,7 +156,8 @@
     "itinerary_section": {
       "label": "Lịch trình gợi ý",
       "title": "Lịch trình Ninh Bình theo ngày",
-      "day_label": "Ngày {{day}}"
+      "day_label": "Ngày {{day}}",
+      "create_new": "Tạo mới"
     },
     "food_section": {
       "label": "Ẩm thực địa phương",
@@ -174,11 +190,36 @@
       "author_prefix": "Tác giả:",
       "description": "Làm phong phú nội dung cộng đồng với trải nghiệm thực tế, mẹo du lịch và gợi ý lịch trình"
     },
+    "vr_banner": {
+      "title": "Trải nghiệm VR 360 & bản đồ toàn cảnh",
+      "desc": "Xem ảnh, video 360, thuyết minh điểm đến, chọn điểm bằng hotspot và chuyển cảnh trực tiếp trên bản đồ toàn cảnh.",
+      "cta": "Khám phá VR"
+    },
+    "role_section": {
+      "badge": "Phân hệ người dùng",
+      "title": "Bố cục phục vụ đồng thời du khách, doanh nghiệp và nhà quản lý",
+      "desc": "Trang chủ không chỉ giới thiệu điểm đến mà còn dẫn người dùng vào đúng phân hệ: tra cứu, đăng tin dịch vụ, nhận phản ánh, quản lý cảnh báo và xem báo cáo."
+    },
+    "role_cards": {
+      "tourist": { "title": "Khách du lịch", "item_1": "Tìm điểm đến, tour, dịch vụ", "item_2": "Tạo và chia sẻ lịch trình", "item_3": "Xem VR 360, đánh giá" },
+      "business": { "title": "Doanh nghiệp", "item_1": "Đăng tin, voucher", "item_2": "Nhận phản hồi, đánh giá", "item_3": "Dashboard doanh thu, tải khách" },
+      "manager": { "title": "Nhà quản lý", "item_1": "Nhận báo cáo tự động", "item_2": "Cảnh báo quá tải", "item_3": "Giám sát khu bảo tồn" },
+      "admin": { "title": "Quản trị hệ thống", "item_1": "Quản trị tài khoản, API", "item_2": "Quản trị lớp bản đồ", "item_3": "Nhật ký và phân quyền" }
+    },
     "footer_section": {
       "brand": "Cổng thông tin du lịch Ninh Bình – Nền tảng GIS, VR360, OCOP và lịch trình thông minh tích hợp",
       "quick_links": "Liên kết nhanh",
       "contact": "Liên hệ",
-      "follow": "Theo dõi chúng tôi"
+      "follow": "Theo dõi chúng tôi",
+      "tourist_col": "Du khách",
+      "business_col": "Doanh nghiệp",
+      "manager_col": "Nhà quản lý",
+      "link_schedule": "Lịch trình",
+      "link_vr360": "VR 360",
+      "link_services": "Đăng tin dịch vụ",
+      "link_feedback": "Quản lý phản hồi",
+      "link_voucher": "Tạo voucher",
+      "link_dashboard": "Dashboard thống kê"
     },
     "ad_carousel": {
       "subtitle": "Dịch vụ & Sự kiện",

@@ -526,14 +526,15 @@ export default function MapPage() {
     const prefillResult = location.state?.selectedSearchResult;
     const prefillTourPanel = location.state?.prefillTourPanel;
     const prefillRoute = location.state?.highlightedRoute;
-    if (!prefillKeyword && !prefillResult && !prefillRoute && !prefillTourPanel) return;
+    const prefillActiveSidebar = location.state?.activeSidebar;
+    if (!prefillKeyword && !prefillResult && !prefillRoute && !prefillTourPanel && !prefillActiveSidebar) return;
 
     prefillHandledRef.current = true;
     if (prefillKeyword) setKeyword(prefillKeyword);
     if (prefillRoute) {
       setHighlightedRoute(prefillRoute);
       setShowOnlyHighlightedRoute(Boolean(prefillRoute));
-    } else {
+    } else if (!prefillActiveSidebar) {
       console.warn('[MapPage prefill] NO prefillRoute in location.state → route will NOT be drawn');
     }
     if (prefillTourPanel) {
@@ -548,6 +549,13 @@ export default function MapPage() {
       });
       setActiveTab('tour');
       setActiveSidebar('tour');
+    }
+    if (prefillActiveSidebar && !prefillTourPanel) {
+      const isValid = headerSidebar.some((item) => item.value === prefillActiveSidebar);
+      if (isValid) {
+        setActiveSidebar(prefillActiveSidebar);
+        setActiveTab(prefillActiveSidebar);
+      }
     }
     if (prefillResult) handleSelectSearchResult(prefillResult);
   }, [location.state, setHighlightedRoute, setShowOnlyHighlightedRoute, setSelectedTour]);

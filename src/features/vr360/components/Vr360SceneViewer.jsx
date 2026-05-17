@@ -682,8 +682,7 @@ export default function Vr360SceneViewer({
 
   useEffect(() => {
     const sceneFov = Number(scene?.camera_fov);
-    if (!Number.isFinite(sceneFov)) return;
-    setFovAngle(sceneFov);
+    setFovAngle(Number.isFinite(sceneFov) ? sceneFov : DEFAULT_FOV);
   }, [scene?.id, scene?.camera_fov, setFovAngle]);
 
   useEffect(() => {

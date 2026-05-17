@@ -13,6 +13,7 @@ import {
 } from '@/services/api/vr360/aframeSceneService';
 import Vr360SceneViewer from '../components/Vr360SceneViewer';
 import MiniMap from '../components/MiniMap';
+import FOVControls from '../components/FOVControls';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   ArrowLeft,
@@ -572,11 +573,7 @@ export default function Vr360PageContent() {
 
   return (
     <RootLayout>
-      <div className="bg-background grid-cols-1fr grid h-full overflow-hidden p-3">
-        {/* ── 3-col wrapper (xl only) ─────────────────────────────────────── */}
-        <div className="xl:contents" style={{ display: 'contents' }} />
-
-        {/* We use a single grid that becomes 3-col on xl */}
+      <div className="bg-background h-full p-3">
         <style>{`
           .vr360-center { min-height: min(56vw, 480px); }
           @media (max-width: 1279px) {
@@ -590,7 +587,7 @@ export default function Vr360PageContent() {
           @media (min-width: 1280px) {
             .vr360-grid {
               grid-template-columns: 320px minmax(0,1fr) 360px !important;
-              height: calc(100vh - 4.5rem) !important;
+              height: 100% !important;
               overflow: hidden !important;
             }
             .vr360-mobile-tabs { display: none !important; }
@@ -603,7 +600,7 @@ export default function Vr360PageContent() {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
-            gap: '16px',
+            gap: '12px',
             height: '100%',
           }}
         >
@@ -1057,24 +1054,25 @@ export default function Vr360PageContent() {
               )}
 
               {/* MiniMap */}
-              <div
-                style={{ borderRadius: '22px', overflow: 'hidden', height: '180px', flexShrink: 0 }}
-              >
-                <MiniMap
-                  scenes={miniMapScenes}
-                  spots={spots}
-                  currentSpot={currentSpot}
-                  currentSceneIndex={Math.max(0, selectedSceneIndex)}
-                  onSelectScene={(nextScene) => {
-                    if (nextScene?.id) setSelectedSceneId(nextScene.id);
-                  }}
-                  onSelectSpot={(spot) => {
-                    if (!spot?.id) return;
-                    setSelectedSpotId(String(spot.id));
-                    setSelectedSceneId(null);
-                  }}
-                  showFovControls={false}
-                />
+              <div style={{ flexShrink: 0 }}>
+                <div style={{ borderRadius: '22px', overflow: 'hidden', height: '260px' }}>
+                  <MiniMap
+                    scenes={miniMapScenes}
+                    spots={spots}
+                    currentSpot={currentSpot}
+                    currentSceneIndex={Math.max(0, selectedSceneIndex)}
+                    onSelectScene={(nextScene) => {
+                      if (nextScene?.id) setSelectedSceneId(nextScene.id);
+                    }}
+                    onSelectSpot={(spot) => {
+                      if (!spot?.id) return;
+                      setSelectedSpotId(String(spot.id));
+                      setSelectedSceneId(null);
+                    }}
+                    showFovControls={false}
+                  />
+                </div>
+                <FOVControls center={spotCoordinates} className="mt-2" />
               </div>
 
               {/* Action buttons */}

@@ -67,7 +67,7 @@ export function TourismDetailGallerySection({
           <div className="grid grid-cols-2 gap-2">
             {pics.slice(1, 3).map((src, i) => (
               <GalleryBtn
-                key={src}
+                key={`${src}-${i}`}
                 src={src}
                 alt={alt(i + 1)}
                 onClick={() => onPickImage(i + 1)}
@@ -94,7 +94,7 @@ export function TourismDetailGallerySection({
       >
         {pics.map((src, idx) => (
           <GalleryBtn
-            key={src}
+            key={`${src}-${idx}`}
             src={src}
             alt={alt(idx)}
             onClick={() => onPickImage(idx)}

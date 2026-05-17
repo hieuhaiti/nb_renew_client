@@ -8,6 +8,36 @@ import {
   toggleSatelliteLayerVisibility,
 } from '../utils/satelliteMapLayer.util';
 
+function syncLayersToMap(mapRef, layers, isCompareMode) {
+  layers.forEach((layer) => {
+    if (!layer.layerData?.tileUrl) return;
+
+    const targetMap =
+      isCompareMode && layer.splitSide === 'right' ? mapRef.split : mapRef.single;
+    if (!targetMap) return;
+
+    try {
+      if (!targetMap.getLayer(layer.id)) {
+        addSatelliteLayerToMap(
+          targetMap,
+          layer.layerData,
+          layer.id,
+          layer.layerOpacity ?? 1,
+          layer.sourceId
+        );
+        if (layer.visible === false) {
+          toggleSatelliteLayerVisibility(targetMap, layer.id, false);
+        }
+      } else {
+        updateSatelliteLayerOpacity(targetMap, layer.id, layer.layerOpacity ?? 1);
+        toggleSatelliteLayerVisibility(targetMap, layer.id, layer.visible !== false);
+      }
+    } catch (e) {
+      console.error(`[SatelliteMapOverlayControls] Error syncing layer ${layer.id}:`, e);
+    }
+  });
+}
+
 /**
  * Headless component — syncs satellite store layers to the Mapbox map.
  * Renders nothing; must be mounted inside the map scope.
@@ -40,34 +70,25 @@ export function SatelliteMapOverlayControls() {
       }
     }
 
-    // Add or update layers
-    satelliteLayers.forEach((layer) => {
-      if (!layer.layerData?.tileUrl) return;
-
-      const targetMap =
-        isCompareMode && layer.splitSide === 'right' ? mapRef.split : mapRef.single;
-      if (!targetMap) return;
-
-      try {
-        if (!targetMap.getLayer(layer.id)) {
-          addSatelliteLayerToMap(
-            targetMap,
-            layer.layerData,
-            layer.id,
-            layer.layerOpacity ?? 1,
-            layer.sourceId
-          );
-        } else {
-          updateSatelliteLayerOpacity(targetMap, layer.id, layer.layerOpacity ?? 1);
-          toggleSatelliteLayerVisibility(targetMap, layer.id, layer.visible !== false);
-        }
-      } catch (e) {
-        console.error(`[SatelliteMapOverlayControls] Error syncing layer ${layer.id}:`, e);
-      }
-    });
-
+    syncLayersToMap(mapRef, satelliteLayers, isCompareMode);
     prevLayerIds.current = currentIds;
   }, [satelliteLayers, isCompareMode, mapRefObj]);
+
+  // Re-sync satellite layers after basemap style changes
+  useEffect(() => {
+    if (!mapRefObj?.current) return;
+    const mapRef = mapRefObj.current;
+    const maps = [mapRef.single, mapRef.split].filter(Boolean);
+
+    const handleStyleLoad = () => {
+      const { satelliteLayers: layers, isCompareMode: compareMode } =
+        useSatelliteStore.getState();
+      syncLayersToMap(mapRef, layers, compareMode);
+    };
+
+    maps.forEach((map) => map.on('style.load', handleStyleLoad));
+    return () => maps.forEach((map) => map.off('style.load', handleStyleLoad));
+  }, [mapRefObj]);
 
   return null;
 }

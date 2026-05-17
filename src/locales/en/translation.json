@@ -61,7 +61,14 @@
       "chatbot_title": "AI Travel Companion",
       "chatbot_desc": "Ask about tours, weather, OCOP and get personalised itinerary suggestions",
       "chatbot_cta": "Chat with the assistant",
-      "lead": "The homepage is designed to be bright, clear, and rich in real information: destinations, events, tours, cuisine, OCOP, digital maps, and community content"
+      "lead": "The homepage is designed to be bright, clear, and rich in real information: destinations, events, tours, cuisine, OCOP, digital maps, and community content",
+      "map_preview_label": "Visual Tourism Map",
+      "map_status_title": "Destination Status",
+      "map_crowd_label": "Avg. Crowd",
+      "map_routes_label": "Active Suggestions",
+      "search_cta": "Search now",
+      "chatbot_sample": "Suggest a 1-day itinerary, avoid crowded spots, and prioritise local cuisine.",
+      "open_ai_chat": "Open AI Chat"
     },
     "search": {
       "label": "Find a destination",
@@ -107,14 +114,22 @@
     "quick_access": {
       "label": "Quick Access",
       "title": "Explore destinations with integrated tools",
-      "description": "Use the platform's key features to plan your journey quickly and visually"
+      "description": "Use the platform's key features to plan your journey quickly and visually",
+      "see_all": "See all features"
+    },
+    "feature_cards": {
+      "map": { "title": "Smart Tourism Map", "desc": "Tourism spots, services, basemaps, and search by name or radius." },
+      "weather": { "title": "Weather, AQI & Alerts", "desc": "Wind, rain, air quality updates and extreme weather warnings." },
+      "capacity": { "title": "Tourist Capacity Tracking", "desc": "Load levels, overload alerts, and alternative routing suggestions." },
+      "satellite": { "title": "Conservation Zone Monitoring", "desc": "Satellite imagery search, time comparison, classification and change detection." }
     },
     "featured_destinations": {
       "label": "Featured Destinations",
       "title": "Top attractions in Ninh Binh",
       "see_all": "View all tourism points",
       "description": "Large images and quick action buttons to navigate from the homepage to the map or detail page",
-      "detail_cta": "Details"
+      "detail_cta": "Details",
+      "open_map": "Open full map"
     },
     "news_section": {
       "label": "News & Discover",
@@ -141,7 +156,8 @@
     "itinerary_section": {
       "label": "Suggested Itineraries",
       "title": "Ninh Binh Day-by-Day Itinerary",
-      "day_label": "Day {{day}}"
+      "day_label": "Day {{day}}",
+      "create_new": "Create new"
     },
     "food_section": {
       "label": "Local Cuisine",
@@ -174,11 +190,36 @@
       "author_prefix": "Author:",
       "description": "Enrich community content with real-life experiences, travel tips, and itinerary suggestions"
     },
+    "vr_banner": {
+      "title": "VR 360° & Panoramic Map Experience",
+      "desc": "View 360° photos and videos, destination narrations, select spots via hotspots and switch scenes on the panoramic map.",
+      "cta": "Explore VR"
+    },
+    "role_section": {
+      "badge": "User modules",
+      "title": "Built for tourists, businesses and managers all at once",
+      "desc": "The homepage guides each user to the right module: search destinations, post services, collect feedback, manage alerts, and view reports."
+    },
+    "role_cards": {
+      "tourist": { "title": "Tourists", "item_1": "Find destinations, tours, services", "item_2": "Create and share itineraries", "item_3": "View VR 360°, leave reviews" },
+      "business": { "title": "Businesses", "item_1": "Post listings and create vouchers", "item_2": "Receive feedback and reviews", "item_3": "Revenue and crowd dashboard" },
+      "manager": { "title": "Managers", "item_1": "Receive automated reports", "item_2": "Capacity overload alerts", "item_3": "Monitor conservation zones" },
+      "admin": { "title": "System Admins", "item_1": "Manage accounts and APIs", "item_2": "Manage map layers", "item_3": "Audit logs and permissions" }
+    },
     "footer_section": {
       "brand": "Ninh Binh Tourism Information Portal — Integrated GIS, VR360, OCOP and smart itinerary platform",
       "quick_links": "Quick links",
       "contact": "Contact",
-      "follow": "Follow us"
+      "follow": "Follow us",
+      "tourist_col": "Tourists",
+      "business_col": "Businesses",
+      "manager_col": "Managers",
+      "link_schedule": "Itinerary",
+      "link_vr360": "VR 360",
+      "link_services": "Post services",
+      "link_feedback": "Manage feedback",
+      "link_voucher": "Create vouchers",
+      "link_dashboard": "Stats dashboard"
     },
     "ad_carousel": {
       "subtitle": "Services & Events",

@@ -165,7 +165,7 @@ function formatTicketPrice(priceLike, currency = 'VND', locale = 'vi-VN') {
   }).format(value);
 }
 
-function TourStopCard({ stop, day, order, accent }) {
+function TourStopCard({ stop, day, order, accent, onFlyTo }) {
   const { t, i18n } = useTranslation();
   const isEnglish = String(i18n.resolvedLanguage || i18n.language || '').startsWith('en');
 
@@ -192,9 +192,13 @@ function TourStopCard({ stop, day, order, accent }) {
   const capacityPct = Number(spot?.current_capacity_pct);
   const hasCapacityPct = Number.isFinite(capacityPct);
 
+  const canFly = Boolean(coords && onFlyTo);
+  const handleClick = canFly ? () => onFlyTo(coords) : undefined;
+
   return (
     <article
-      className={`group relative overflow-hidden rounded-xl border ${accent.border} from-background via-background to-muted/35 bg-gradient-to-br p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md`}
+      className={`group relative overflow-hidden rounded-xl border ${accent.border} from-background via-background to-muted/35 bg-gradient-to-br p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md${canFly ? ' cursor-pointer' : ''}`}
+      onClick={handleClick}
     >
       <div className={`absolute inset-y-0 left-0 w-1 bg-gradient-to-b ${accent.rail}`} />
 
@@ -216,7 +220,7 @@ function TourStopCard({ stop, day, order, accent }) {
           <span
             className={`typo-badge inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 font-semibold ${accent.badge}`}
           >
-            <Route className="h-3 w-3" />#{order}
+            {canFly ? <MapIcon className="h-3 w-3" /> : <Route className="h-3 w-3" />}#{order}
           </span>
         </div>
 
@@ -258,7 +262,7 @@ function TourStopCard({ stop, day, order, accent }) {
   );
 }
 
-function TourStopList({ stops, tourName }) {
+function TourStopList({ stops, tourName, onFlyToStop }) {
   const { t } = useTranslation();
 
   const sortedStops = useMemo(() => sortStops(stops), [stops]);
@@ -347,6 +351,7 @@ function TourStopList({ stops, tourName }) {
                   day={day}
                   order={order}
                   accent={accent}
+                  onFlyTo={onFlyToStop}
                 />
               );
             })}
@@ -370,7 +375,7 @@ function TourStopList({ stops, tourName }) {
   );
 }
 
-function TourPanelBody({ tourName, stops, selectedTour, onClose, onFocusRoute }) {
+function TourPanelBody({ tourName, stops, selectedTour, onClose, onFocusRoute, onFlyToStop }) {
   const { t } = useTranslation();
   const sortedStops = useMemo(() => sortStops(stops), [stops]);
 
@@ -436,7 +441,7 @@ function TourPanelBody({ tourName, stops, selectedTour, onClose, onFocusRoute })
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-        <TourStopList stops={sortedStops} tourName={tourName} />
+        <TourStopList stops={sortedStops} tourName={tourName} onFlyToStop={onFlyToStop} />
       </div>
     </div>
   );
@@ -464,6 +469,28 @@ export default function MapTourPanel({
   const mapRef = useMapStore((state) => state.mapRef);
   const mapRefObj = useMapStore((state) => state.mapRefObj);
   const resolvedPanelWidthClass = panelWidthClass || (embedded ? 'w-full' : 'w-80');
+
+  const handleFlyToStop = (coords) => {
+    const targetMap = mapRef || mapRefObj?.current?.single || null;
+    if (!targetMap || !coords) return;
+
+    const flyTo = () => {
+      targetMap.flyTo({
+        center: [coords.lng, coords.lat],
+        zoom: Math.max(targetMap.getZoom(), 15),
+        pitch: 45,
+        bearing: 0,
+        essential: true,
+        duration: 1200,
+      });
+    };
+
+    if (targetMap.isStyleLoaded?.()) {
+      flyTo();
+    } else {
+      targetMap.once('style.load', flyTo);
+    }
+  };
 
   const handleFocusRoute = () => {
     const coordinates = highlightedRoute?.geometry?.coordinates;
@@ -533,6 +560,7 @@ export default function MapTourPanel({
             selectedTour={selectedTour}
             onClose={onClose}
             onFocusRoute={handleFocusRoute}
+            onFlyToStop={handleFlyToStop}
           />
         </div>
       </div>
@@ -550,6 +578,7 @@ export default function MapTourPanel({
           selectedTour={selectedTour}
           onClose={onClose}
           onFocusRoute={handleFocusRoute}
+          onFlyToStop={handleFlyToStop}
         />
       </div>
     </div>

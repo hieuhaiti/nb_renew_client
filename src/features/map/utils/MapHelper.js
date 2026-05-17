@@ -702,12 +702,19 @@ export function clearHighlightedRouteLayers(map) {
   }
 }
 
-function createPin({ color, num = null, glyph = null }) {
+function createPin({ color, num = null, glyph = null, onClick = null }) {
   const wrap = document.createElement('div');
   wrap.className = 'pin-wrap';
   wrap.dataset.routeMarker = 'true';
-  // Let map click events pass through to route point layers beneath the marker.
-  wrap.style.pointerEvents = 'none';
+  if (onClick) {
+    wrap.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onClick();
+    });
+  } else {
+    // Let map click events pass through to route point layers beneath the marker.
+    wrap.style.pointerEvents = 'none';
+  }
   const pin = document.createElement('div');
   pin.className = 'pin';
   pin.style.setProperty('--pin-color', color);
@@ -754,7 +761,7 @@ function clearRoutePinMarkers(map) {
   });
 }
 
-function addRoutePinMarkers(map, routePointsFeatureCollection) {
+function addRoutePinMarkers(map, routePointsFeatureCollection, onPointClick = null) {
   if (!map) return;
   clearRoutePinMarkers(map);
 
@@ -773,14 +780,25 @@ function addRoutePinMarkers(map, routePointsFeatureCollection) {
         color: getRoutePointColor(properties),
         num: properties.step_number ?? null,
         glyph: properties.glyph ?? null,
+        onClick: onPointClick ? () => onPointClick(feature) : null,
       });
 
-      return new mapboxgl.Marker({
+      const marker = new mapboxgl.Marker({
         element,
         anchor: 'bottom',
       })
         .setLngLat([Number(coordinates[0]), Number(coordinates[1])])
         .addTo(map);
+
+      // The Mapbox wrapper div (.mapboxgl-marker) defaults to pointer-events:auto
+      // and would swallow clicks before they reach the canvas.  Setting it to
+      // none lets events fall through to the canvas so the route-point layers
+      // remain clickable (same intent as the pin-wrap style in createPin).
+      if (element.parentElement) {
+        element.parentElement.style.pointerEvents = 'none';
+      }
+
+      return marker;
     })
     .filter(Boolean);
 
@@ -794,13 +812,14 @@ export function addOrUpdateHighlightedRouteLayers(
     routePointsFeatureCollection,
     routeSourceId = HIGHLIGHT_ROUTE_SOURCE_ID,
     routePointsSourceId = HIGHLIGHT_ROUTE_POINTS_SOURCE_ID,
+    onPointClick = null,
   }
 ) {
   if (!map || !routeFeature || !routePointsFeatureCollection) return;
 
   ensureGeojsonSource(map, routeSourceId, routeFeature);
   ensureGeojsonSource(map, routePointsSourceId, routePointsFeatureCollection);
-  addRoutePinMarkers(map, routePointsFeatureCollection);
+  addRoutePinMarkers(map, routePointsFeatureCollection, onPointClick);
 
   ensureLayer(map, {
     id: 'highlight-route-shadow',

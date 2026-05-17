@@ -98,7 +98,6 @@ export default function Header() {
       tokenManager.clearTokens();
       clearAuth();
       toast.success(t('auth.logout_success'));
-      navigate('/');
     } catch {
       toast.warn(t('auth.logout_error'));
     } finally {
@@ -225,7 +224,7 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <Button id="header-login-btn" size="sm" onClick={() => navigate('/login')}>
+            <Button id="header-login-btn" size="sm" onClick={() => navigate('/login', { state: { from: location.pathname + location.search } })}>
               <LogIn size={14} className="mr-1.5" />
               {t('common.login')}
             </Button>
@@ -360,7 +359,7 @@ export default function Header() {
                 <Button
                   id="mobile-login-btn"
                   onClick={() => {
-                    navigate('/login');
+                    navigate('/login', { state: { from: location.pathname + location.search } });
                     setIsMobileMenuOpen(false);
                   }}
                   className="font-bold"

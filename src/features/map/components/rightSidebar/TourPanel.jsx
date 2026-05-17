@@ -344,7 +344,7 @@ export default function TourPanel() {
   };
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
-      <div className="shrink-0 flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+      <div className="flex shrink-0 items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
           <p className="typo-section-title text-foreground">
             {t('mapPage.tourPanel.title', { defaultValue: 'Tour du lịch' })}
@@ -370,22 +370,24 @@ export default function TourPanel() {
       </div>
 
       {activeRouteTourId ? (
-        <div className="shrink-0 grid grid-cols-2 gap-1.5 rounded-lg border p-1.5">
+        <div className="grid shrink-0 grid-cols-2 gap-1.5 rounded-lg border p-1.5">
           <Button
             type="button"
             size="sm"
             variant="outline"
-            className="typo-meta h-8"
+            className="typo-meta h-8 min-w-0 shrink overflow-hidden"
             onClick={() => setShowOnlyHighlightedRoute(!showOnlyHighlightedRoute)}
           >
             <Eye className="h-3.5 w-3.5" />
-            {showOnlyHighlightedRoute
-              ? t('mapPage.tourPanel.showOtherPoints', {
-                  defaultValue: 'Hiện điểm khác',
-                })
-              : t('mapPage.tourPanel.hideOtherPoints', {
-                  defaultValue: 'Ẩn điểm khác',
-                })}
+            <span className="truncate">
+              {showOnlyHighlightedRoute
+                ? t('mapPage.tourPanel.showOtherPoints', {
+                    defaultValue: 'Hiện điểm khác',
+                  })
+                : t('mapPage.tourPanel.hideOtherPoints', {
+                    defaultValue: 'Ẩn điểm khác',
+                  })}
+            </span>
           </Button>
           <Button
             type="button"
@@ -444,132 +446,133 @@ export default function TourPanel() {
         </Select>
       </div>
 
-      <ScrollArea className="flex-1 min-h-0">
-      {isLoading ? (
-        <div className="space-y-2">
-          {[...Array(3)].map((_, index) => (
-            <TourRowSkeleton key={index} />
-          ))}
-        </div>
-      ) : isError ? (
-        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
-          {t('mapPage.tourPanel.error', { defaultValue: 'Không thể tải danh sách tour.' })}
-        </div>
-      ) : tours.length === 0 ? (
-        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
-          {t('mapPage.tourPanel.empty', { defaultValue: 'Không có tour phù hợp với bộ lọc.' })}
-        </div>
-      ) : (
-        <div className="space-y-2 pr-0.5">
-          {tours.map((tour) => {
-            const isSelected = selectedTour != null && String(selectedTour.id) === String(tour.id);
-            const isRouteActive =
-              activeRouteTourId != null && String(activeRouteTourId) === String(tour.id);
-            const isRouteLoading =
-              routeLoadingTourId != null && String(routeLoadingTourId) === String(tour.id);
-            const imageUrl = withBaseUrl(tour.main_image_url);
+      <ScrollArea className="min-h-0 flex-1">
+        {isLoading ? (
+          <div className="space-y-2">
+            {[...Array(3)].map((_, index) => (
+              <TourRowSkeleton key={index} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
+            {t('mapPage.tourPanel.error', { defaultValue: 'Không thể tải danh sách tour.' })}
+          </div>
+        ) : tours.length === 0 ? (
+          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
+            {t('mapPage.tourPanel.empty', { defaultValue: 'Không có tour phù hợp với bộ lọc.' })}
+          </div>
+        ) : (
+          <div className="space-y-2 pr-0.5">
+            {tours.map((tour) => {
+              const isSelected =
+                selectedTour != null && String(selectedTour.id) === String(tour.id);
+              const isRouteActive =
+                activeRouteTourId != null && String(activeRouteTourId) === String(tour.id);
+              const isRouteLoading =
+                routeLoadingTourId != null && String(routeLoadingTourId) === String(tour.id);
+              const imageUrl = withBaseUrl(tour.main_image_url);
 
-            return (
-              <article
-                key={tour.id}
-                className={cn(
-                  'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
-                  isRouteActive
-                    ? 'border-primary/60 bg-primary/5'
-                    : isSelected
-                      ? 'border-border bg-muted/20'
-                      : 'from-card to-muted/10 hover:bg-muted/40 bg-linear-to-b'
-                )}
-              >
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={tour.name}
-                    className="h-28 w-full rounded-lg object-cover"
-                    onError={(event) => {
-                      event.target.onerror = null;
-                      event.target.src = placeholderImg;
-                    }}
-                  />
-                ) : null}
-
-                <div className="space-y-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <h4
-                      className="typo-body text-foreground truncate font-semibold"
-                      title={tour.name}
-                    >
-                      {tour.name}
-                    </h4>
-                    {tour.is_featured && (
-                      <Badge variant="secondary" className="shrink-0 gap-1">
-                        <Star className="fill-gold text-gold h-3 w-3" />
-                        {t('tourPage.featured', { defaultValue: 'Featured' })}
-                      </Badge>
-                    )}
-                  </div>
-
-                  <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
-                    <Clock3 className="h-3.5 w-3.5 shrink-0" />
-                    {formatTourDurationLabel(tour, t)}
-                  </p>
-
-                  {(tour.start_location || tour.end_location) && (
-                    <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 shrink-0" />
-                      {tour.start_location && tour.end_location
-                        ? t('mapPage.tourPanel.routeSummary', {
-                            defaultValue: '{{from}} → {{to}}',
-                            from: tour.start_location,
-                            to: tour.end_location,
-                          })
-                        : tour.start_location || tour.end_location}
-                    </p>
+              return (
+                <article
+                  key={tour.id}
+                  className={cn(
+                    'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
+                    isRouteActive
+                      ? 'border-primary/60 bg-primary/5'
+                      : isSelected
+                        ? 'border-border bg-muted/20'
+                        : 'from-card to-muted/10 hover:bg-muted/40 bg-linear-to-b'
                   )}
+                >
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={tour.name}
+                      className="h-28 w-full rounded-lg object-cover"
+                      onError={(event) => {
+                        event.target.onerror = null;
+                        event.target.src = placeholderImg;
+                      }}
+                    />
+                  ) : null}
 
-                  <p
-                    className="typo-body text-muted-foreground line-clamp-3"
-                    title={tour.description || ''}
-                  >
-                    {tour.description ||
-                      t('tourPage.noDescription', { defaultValue: 'No description' })}
-                  </p>
+                  <div className="space-y-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4
+                        className="typo-body text-foreground truncate font-semibold"
+                        title={tour.name}
+                      >
+                        {tour.name}
+                      </h4>
+                      {tour.is_featured && (
+                        <Badge variant="secondary" className="shrink-0 gap-1">
+                          <Star className="fill-gold text-gold h-3 w-3" />
+                          {t('tourPage.featured', { defaultValue: 'Featured' })}
+                        </Badge>
+                      )}
+                    </div>
 
-                  <div className="typo-body text-foreground font-semibold">
-                    {formatTourPriceLabel(tour, locale)}
+                    <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
+                      <Clock3 className="h-3.5 w-3.5 shrink-0" />
+                      {formatTourDurationLabel(tour, t)}
+                    </p>
+
+                    {(tour.start_location || tour.end_location) && (
+                      <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        {tour.start_location && tour.end_location
+                          ? t('mapPage.tourPanel.routeSummary', {
+                              defaultValue: '{{from}} → {{to}}',
+                              from: tour.start_location,
+                              to: tour.end_location,
+                            })
+                          : tour.start_location || tour.end_location}
+                      </p>
+                    )}
+
+                    <p
+                      className="typo-body text-muted-foreground line-clamp-3"
+                      title={tour.description || ''}
+                    >
+                      {tour.description ||
+                        t('tourPage.noDescription', { defaultValue: 'No description' })}
+                    </p>
+
+                    <div className="typo-body text-foreground font-semibold">
+                      {formatTourPriceLabel(tour, locale)}
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex flex-wrap gap-1.5">
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="typo-meta h-8"
-                    disabled={isRouteLoading}
-                    onClick={() => handleOpenTourRoute(tour)}
-                  >
-                    <Map className="h-3.5 w-3.5" />
-                    {isRouteLoading
-                      ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Đang mở...' })
-                      : t('mapPage.tourPanel.openTourOnMap', {
-                          defaultValue: 'Mở tour trên bản đồ',
-                        })}
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="typo-meta h-8"
-                    onClick={() => navigate(`/tour/${tour.slug}`)}
-                  >
-                    {t('tourismPointPage.view_detail', { defaultValue: 'Xem chi tiết' })}
-                  </Button>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      )}
+                  <div className="flex flex-wrap gap-1.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="typo-meta h-8"
+                      disabled={isRouteLoading}
+                      onClick={() => handleOpenTourRoute(tour)}
+                    >
+                      <Map className="h-3.5 w-3.5" />
+                      {isRouteLoading
+                        ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Đang mở...' })
+                        : t('mapPage.tourPanel.openTourOnMap', {
+                            defaultValue: 'Mở tour trên bản đồ',
+                          })}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="typo-meta h-8"
+                      onClick={() => navigate(`/tour/${tour.slug}`)}
+                    >
+                      {t('tourismPointPage.view_detail', { defaultValue: 'Xem chi tiết' })}
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </ScrollArea>
     </div>
   );
