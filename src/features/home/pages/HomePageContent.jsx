@@ -925,27 +925,31 @@ export default function HomePageContent() {
               {t('home.quick_access.see_all')}
             </Button>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             {FEATURE_CARDS.map((card, i) => (
               <Button
                 key={i}
                 type="button"
                 variant="outline"
                 onClick={() => navigate(card.path, card.sidebar ? { state: { activeSidebar: card.sidebar } } : undefined)}
-                className={`border-border bg-card relative h-auto min-h-[188px] w-full overflow-hidden rounded-[26px] p-[22px] text-left shadow-[var(--ambient-shadow)] ${cardHover}`}
+                className={`border-border bg-card relative h-auto min-h-[170px] w-full flex-col items-start justify-start gap-0 overflow-hidden rounded-[22px] p-4 text-left whitespace-normal shadow-[var(--ambient-shadow)] sm:min-h-[188px] sm:rounded-[24px] sm:p-5 lg:rounded-[26px] lg:p-[22px] ${cardHover}`}
               >
                 <div
-                  className="absolute -top-7 -right-7 h-24 w-24 rounded-full opacity-[.06]"
+                  className="absolute -top-6 -right-6 h-20 w-20 rounded-full opacity-[.06] sm:-top-7 sm:-right-7 sm:h-24 sm:w-24"
                   style={{ background: card.bg }}
                 />
                 <div
-                  className="mb-3.5 flex h-[54px] w-[54px] items-center justify-center rounded-[19px] text-white"
+                  className="mb-3 flex h-12 w-12 items-center justify-center rounded-[16px] text-white sm:mb-3.5 sm:h-[54px] sm:w-[54px] sm:rounded-[19px]"
                   style={{ background: card.bg }}
                 >
                   {card.icon}
                 </div>
-                <h3 className="text-foreground mb-2 text-[17px] font-black">{t(card.titleKey)}</h3>
-                <p className="text-muted-foreground text-[13px] leading-[1.65]">{t(card.descKey)}</p>
+                <h3 className="text-foreground mb-1.5 text-[15px] leading-tight font-black sm:mb-2 sm:text-[17px]">
+                  {t(card.titleKey)}
+                </h3>
+                <p className="text-muted-foreground text-[12.5px] leading-[1.55] sm:text-[13px] sm:leading-[1.65]">
+                  {t(card.descKey)}
+                </p>
               </Button>
             ))}
           </div>
