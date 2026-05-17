@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function DirectionDetails({ className }) {
   const { t } = useTranslation();
@@ -19,15 +20,16 @@ export default function DirectionDetails({ className }) {
       setHoveredStepPoint(null);
     }
   }, [directions, setHoveredStepPoint]);
+
   return (
     <div
       className={cn(
-        'flex h-full flex-col space-y-3 overflow-hidden rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3',
+        'flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3',
         className
       )}
     >
-      {/* Header */}
-      <div className="rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+      {/* Header — fixed, không scroll */}
+      <div className="shrink-0 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <p className="typo-section-title text-foreground">
           {t('mapPage.direction.title', { defaultValue: 'Chỉ đường' })}
         </p>
@@ -37,9 +39,12 @@ export default function DirectionDetails({ className }) {
             : t('mapPage.direction.empty', { defaultValue: 'Chọn 2 điểm để xem chỉ đường' })}
         </p>
       </div>
+
       {directions ? (
-        <div className="flex h-full flex-col space-y-2">
-          <div className="bg-muted/40 grid flex-shrink-0 grid-cols-2 gap-2 rounded-lg border p-2.5">
+        /* flex-1 min-h-0: lấy phần còn lại sau header, cho phép con dùng flex-1 */
+        <div className="flex min-h-0 flex-1 flex-col gap-2">
+          {/* Stats — fixed */}
+          <div className="bg-muted/40 grid shrink-0 grid-cols-2 gap-2 rounded-lg border p-2.5">
             <div className="bg-background rounded-md px-2 py-1.5">
               <p className="text-muted-foreground text-sm">
                 {t('mapPage.direction.totalDistance', { defaultValue: 'Total distance' })}
@@ -54,52 +59,55 @@ export default function DirectionDetails({ className }) {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col space-y-1.5 overflow-hidden rounded-lg border p-2.5">
-            <p className="text-sm font-semibold">
+          {/* Steps box — flex-1 min-h-0: chiếm phần còn lại, title cố định, list scroll */}
+          <div className="flex min-h-0 flex-1 flex-col space-y-1.5 rounded-lg border p-2.5">
+            <p className="shrink-0 text-sm font-semibold">
               {t('mapPage.direction.stepsTitle', { defaultValue: 'Step-by-step guidance' })}
             </p>
-            <div className="flex-1 space-y-1.5 overflow-y-auto pr-1">
-              {(directions.legs?.[0]?.steps || []).map((step, index) => (
-                <div
-                  key={`${step?.maneuver?.instruction || 'step'}-${index}`}
-                  className={cn(
-                    'rounded-md p-2 text-sm cursor-pointer transition-colors',
-                    hoveredIndex === index
-                      ? 'bg-primary/15'
-                      : activeIndex === index
-                        ? 'bg-muted ring-1 ring-border'
-                        : 'bg-muted/40'
-                  )}
-                  title={step?.maneuver?.instruction || ''}
-                  onMouseEnter={() => {
-                    setHoveredIndex(index);
-                    if (isDirectionActive) {
+            <ScrollArea className="min-h-0 flex-1">
+              <div className="space-y-1.5 pr-1">
+                {(directions.legs?.[0]?.steps || []).map((step, index) => (
+                  <div
+                    key={`${step?.maneuver?.instruction || 'step'}-${index}`}
+                    className={cn(
+                      'cursor-pointer rounded-md p-2 text-sm transition-colors',
+                      hoveredIndex === index
+                        ? 'bg-primary/15'
+                        : activeIndex === index
+                          ? 'bg-muted ring-1 ring-border'
+                          : 'bg-muted/40'
+                    )}
+                    title={step?.maneuver?.instruction || ''}
+                    onMouseEnter={() => {
+                      setHoveredIndex(index);
+                      if (isDirectionActive) {
+                        const [lng, lat] = step?.maneuver?.location || [];
+                        if (lng != null && lat != null) setHoveredStepPoint({ lng, lat });
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredIndex(null);
+                      setHoveredStepPoint(null);
+                    }}
+                    onClick={() => {
+                      setActiveIndex(index);
                       const [lng, lat] = step?.maneuver?.location || [];
-                      if (lng != null && lat != null) setHoveredStepPoint({ lng, lat });
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    setHoveredIndex(null);
-                    setHoveredStepPoint(null);
-                  }}
-                  onClick={() => {
-                    setActiveIndex(index);
-                    const [lng, lat] = step?.maneuver?.location || [];
-                    if (lng != null && lat != null && mapRef?.flyTo) {
-                      mapRef.flyTo({ center: [lng, lat], zoom: 16, duration: 800 });
-                    }
-                  }}
-                >
-                  <p className="line-clamp-3 font-medium">
-                    {step?.maneuver?.instruction ||
-                      t('mapPage.direction.noInstruction', { defaultValue: 'No instruction' })}
-                  </p>
-                  <p className="text-muted-foreground mt-0.5 text-sm">
-                    {formatDistance(step?.distance || 0)}
-                  </p>
-                </div>
-              ))}
-            </div>
+                      if (lng != null && lat != null && mapRef?.flyTo) {
+                        mapRef.flyTo({ center: [lng, lat], zoom: 16, duration: 800 });
+                      }
+                    }}
+                  >
+                    <p className="line-clamp-3 font-medium">
+                      {step?.maneuver?.instruction ||
+                        t('mapPage.direction.noInstruction', { defaultValue: 'No instruction' })}
+                    </p>
+                    <p className="text-muted-foreground mt-0.5 text-sm">
+                      {formatDistance(step?.distance || 0)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
           </div>
         </div>
       ) : null}

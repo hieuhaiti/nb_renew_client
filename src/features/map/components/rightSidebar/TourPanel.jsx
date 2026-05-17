@@ -42,6 +42,7 @@ import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import { cn, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
 import { useLanguageStore } from '@/stores/useLanguageStore';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function TourRowSkeleton() {
   return (
@@ -342,8 +343,8 @@ export default function TourPanel() {
     }
   };
   return (
-    <div className="space-y-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
-      <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+    <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+      <div className="shrink-0 flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
           <p className="typo-section-title text-foreground">
             {t('mapPage.tourPanel.title', { defaultValue: 'Tour du lịch' })}
@@ -369,7 +370,7 @@ export default function TourPanel() {
       </div>
 
       {activeRouteTourId ? (
-        <div className="grid grid-cols-2 gap-1.5 rounded-lg border p-1.5">
+        <div className="shrink-0 grid grid-cols-2 gap-1.5 rounded-lg border p-1.5">
           <Button
             type="button"
             size="sm"
@@ -411,7 +412,7 @@ export default function TourPanel() {
         </div>
       ) : null}
 
-      <div className="space-y-2">
+      <div className="shrink-0 space-y-2">
         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
@@ -443,6 +444,7 @@ export default function TourPanel() {
         </Select>
       </div>
 
+      <ScrollArea className="flex-1 min-h-0">
       {isLoading ? (
         <div className="space-y-2">
           {[...Array(3)].map((_, index) => (
@@ -568,6 +570,7 @@ export default function TourPanel() {
           })}
         </div>
       )}
+      </ScrollArea>
     </div>
   );
 }

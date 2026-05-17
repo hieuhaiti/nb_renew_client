@@ -7,9 +7,10 @@ export const TOKEN_EXPIRES_IN_KEY = "token_expires_in";
 export const REFRESH_EXPIRES_IN_KEY = "refresh_expires_in";
 export const LOGIN_TIMESTAMP_KEY = "login_timestamp";
 
-// Helper function to parse duration strings like "7D", "7d", "30D", "24H" to seconds
+// Parse duration to days. Accepts numeric seconds (e.g. 900) or strings like "15m", "7d".
 function parseDurationToDays(duration) {
   if (!duration) return undefined;
+  if (typeof duration === 'number') return duration / 86400;
   const match = /^(\d+)([smhd])$/i.exec(duration);
   if (!match) return undefined;
   const value = parseInt(match[1], 10);
@@ -178,6 +179,36 @@ export const tokenManager = {
     const accessToken = this.getAccessToken();
     const tokenType = this.getTokenType();
     return accessToken ? `${tokenType} ${accessToken}` : null;
+  },
+
+  // Decode JWT payload (base64url → object). Returns null if malformed.
+  decodeJwt(token) {
+    try {
+      const payload = token.split('.')[1];
+      if (!payload) return null;
+      return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    } catch {
+      return null;
+    }
+  },
+
+  // Returns true if the access token is expired or will expire within `bufferSeconds`.
+  // Returns true if no token exists. Returns false if exp claim is absent (can't determine).
+  isAccessTokenExpired(bufferSeconds = 30) {
+    const token = this.getAccessToken();
+    if (!token) return true;
+    const payload = this.decodeJwt(token);
+    if (!payload?.exp) return false;
+    return Date.now() / 1000 > payload.exp - bufferSeconds;
+  },
+
+  // Returns true if the refresh token is expired or missing.
+  isRefreshTokenExpired(bufferSeconds = 0) {
+    const token = this.getRefreshToken();
+    if (!token) return true;
+    const payload = this.decodeJwt(token);
+    if (!payload?.exp) return false;
+    return Date.now() / 1000 > payload.exp - bufferSeconds;
   },
 
   // Get all token information as an object

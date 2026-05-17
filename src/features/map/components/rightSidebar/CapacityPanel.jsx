@@ -12,6 +12,7 @@ import {
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const STATUS_META = {
   overloaded: {
@@ -234,9 +235,9 @@ export default function CapacityPanel() {
   }, [items]);
 
   return (
-    <div className="space-y-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+    <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
       {/* Header */}
-      <div className="flex items-start justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+      <div className="shrink-0 flex items-start justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div className="min-w-0">
           <p className="typo-section-title text-foreground">
             {t('mapPage.capacityPanel.title', { defaultValue: 'Sức chứa điểm đến' })}
@@ -281,7 +282,7 @@ export default function CapacityPanel() {
 
       {/* Search */}
       {!isLoading && items.length > 0 && (
-        <div className="relative">
+        <div className="shrink-0 relative">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
             value={search}
@@ -296,7 +297,7 @@ export default function CapacityPanel() {
 
       {/* Status filter chips */}
       {!isLoading && items.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="shrink-0 flex flex-wrap gap-1.5">
           <Button
             variant="ghost"
             type="button"
@@ -336,6 +337,7 @@ export default function CapacityPanel() {
         </div>
       )}
 
+      <ScrollArea className="flex-1 min-h-0">
       {/* Content */}
       {isLoading ? (
         <div className="space-y-2">
@@ -425,6 +427,7 @@ export default function CapacityPanel() {
           })}
         </div>
       )}
+      </ScrollArea>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   Star,
   Clock,
   Ticket,
+  DollarSign,
   Navigation,
   RectangleGoggles,
   Phone,
@@ -216,8 +217,7 @@ export default function ModalMarker() {
               )}
 
               {/* Opening hours + ticket */}
-              {(openingHours || ticketPriceAdult) && (
-                <div className="grid grid-cols-2 gap-2">
+              <div className={`grid gap-2 ${openingHours ? 'grid-cols-2' : 'grid-cols-1'}`}>
                   {openingHours && (
                     <div className="bg-muted/50 flex items-start gap-2 rounded-lg p-2">
                       <Clock size={13} className="text-muted-foreground mt-0.5 shrink-0" />
@@ -229,28 +229,35 @@ export default function ModalMarker() {
                       </div>
                     </div>
                   )}
-                  {ticketPriceAdult && (
-                    <div className="bg-muted/50 flex items-start gap-2 rounded-lg p-2">
+                  <div className="bg-muted/50 flex items-start gap-2 rounded-lg p-2">
+                    {ticketPriceAdult ? (
                       <Ticket size={13} className="text-muted-foreground mt-0.5 shrink-0" />
-                      <div>
-                        <p className="typo-meta font-medium">
-                          {t('mapPage.spotModal.ticketPrice')}
+                    ) : (
+                      <DollarSign size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                    )}
+                    <div>
+                      <p className="typo-meta font-medium">{t('mapPage.spotModal.ticketPrice')}</p>
+                      {ticketPriceAdult ? (
+                        <>
+                          <p className="typo-meta text-muted-foreground">{ticketPriceAdult}</p>
+                          {ticketPriceChild && (
+                            <p className="typo-meta text-muted-foreground">
+                              {t('mapPage.spotModal.ticketChild')}: {ticketPriceChild}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p className="typo-meta text-muted-foreground">
+                          {t('common.free', { defaultValue: 'Free' })}
                         </p>
-                        <p className="typo-meta text-muted-foreground">{ticketPriceAdult}</p>
-                        {ticketPriceChild && (
-                          <p className="typo-meta text-muted-foreground">
-                            {t('mapPage.spotModal.ticketChild')}: {ticketPriceChild}
-                          </p>
-                        )}
-                      </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
-              )}
 
               {/* Contact info */}
               {(spot.phone || spot.website) && (
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2">
                   {spot.phone && (
                     <div className="flex items-center gap-2">
                       <Phone size={13} className="text-muted-foreground shrink-0" />

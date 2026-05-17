@@ -32,6 +32,7 @@ import { useMapStore } from '@/features/map/store/useMapStore';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { cn, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function FestivalRowSkeleton() {
   return (
@@ -166,8 +167,8 @@ export default function EventPanel() {
   };
 
   return (
-    <div className="space-y-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
-      <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+    <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+      <div className="shrink-0 flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
           <p className="typo-section-title text-foreground">
             {t('mapPage.eventPanel.title', { defaultValue: 'Lễ hội' })}
@@ -183,7 +184,7 @@ export default function EventPanel() {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="shrink-0 space-y-2">
         <div className="relative">
           <Search className="text-primary-soft-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
@@ -196,7 +197,7 @@ export default function EventPanel() {
           />
         </div>
       </div>
-
+      <ScrollArea className="flex-1 min-h-0">
       {isLoading ? (
         <div className="space-y-2">
           {[...Array(3)].map((_, index) => (
@@ -314,6 +315,7 @@ export default function EventPanel() {
           })}
         </div>
       )}
+      </ScrollArea>
     </div>
   );
 }

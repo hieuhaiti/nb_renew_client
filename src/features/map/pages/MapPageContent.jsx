@@ -18,7 +18,10 @@ import {
   mapTourSuggestions,
 } from '@/features/map/constant/mapPageMockData';
 import DataLayer from '@/features/map/components/leftSidebar/DataLayer';
-import { currentHeaderSidebar } from '@/features/map/constant/sidebarConstant';
+import {
+  headerSidebar,
+  resolveDefaultHeaderSidebar,
+} from '@/features/map/constant/sidebarConstant';
 import MapToolbarCard from '@/features/map/components/toolbar/MapToolbarCard';
 import MapWeatherCard from '@/features/map/components/MapWeatherCard';
 import MapRightSidebar from '@/features/map/components/rightSidebar/MapRightSidebar';
@@ -34,6 +37,7 @@ import {
   normalizeSpotsSearchResults,
   useSearchSpotsQuery,
 } from '@/services/api/map/mapSearchService';
+import useAuthStore from '@/stores/useAuthStore.js';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import MapBaseArea from '../components/MapBase';
 import ModalMarker from '@/features/map/components/ModalMarker';
@@ -52,8 +56,10 @@ export default function MapPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const prefillHandledRef = useRef(false);
-  const [activeSidebar, setActiveSidebar] = useState(currentHeaderSidebar);
-  const [activeTab, setActiveTab] = useState(currentHeaderSidebar);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const initialSidebar = resolveDefaultHeaderSidebar(isAuthenticated);
+  const [activeSidebar, setActiveSidebar] = useState(initialSidebar);
+  const [activeTab, setActiveTab] = useState(initialSidebar);
   const [selectedPlaceId, setSelectedPlaceId] = useState(mapDestinations[0]?.id ?? 0);
   const [keyword, setKeyword] = useState('');
   const [activeChip, setActiveChip] = useState('all');
@@ -358,6 +364,21 @@ export default function MapPage() {
     setActiveSidebar('event');
     setActiveTab('event');
   }, [activeTab, hasDirectionDetails]);
+
+  useEffect(() => {
+    const visibleSidebarValues = headerSidebar
+      .filter((item) => !item.authen || isAuthenticated)
+      .map((item) => item.value);
+    const resolvedDefaultSidebar = resolveDefaultHeaderSidebar(isAuthenticated);
+
+    if (!visibleSidebarValues.includes(activeSidebar)) {
+      setActiveSidebar(resolvedDefaultSidebar);
+    }
+
+    if (!visibleSidebarValues.includes(activeTab)) {
+      setActiveTab(resolvedDefaultSidebar);
+    }
+  }, [activeSidebar, activeTab, isAuthenticated]);
 
   const flyToPlace = (place) => {
     if (!place || !mapRef) return;

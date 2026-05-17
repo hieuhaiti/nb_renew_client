@@ -9,6 +9,7 @@ import { useMapStore } from '@/features/map/store/useMapStore';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { INCIDENT_LEGEND } from '@/features/map/utils/trafficLayerUtils';
 import boundaryGeoJSON from '@/data/NB_RG_line.json';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const REFRESH_MS = 5 * 60 * 1000;
 
@@ -74,9 +75,9 @@ export default function TrafficPanel() {
   const isLive = isTrafficEnabled && !isLoading && !error;
 
   return (
-    <div className="space-y-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+    <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+      <div className="shrink-0 flex items-start justify-between gap-3 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span
@@ -120,8 +121,9 @@ export default function TrafficPanel() {
         </Button>
       </div>
 
-      {isTrafficEnabled && (
-        <>
+      <ScrollArea className="flex-1 min-h-0">
+        {isTrafficEnabled && (
+        <div className="space-y-3">
           {/* Quick stats grid */}
           <div className="grid grid-cols-4 gap-1.5">
             {[
@@ -285,8 +287,9 @@ export default function TrafficPanel() {
               </div>
             </div>
           )}
-        </>
-      )}
+        </div>
+        )}
+      </ScrollArea>
     </div>
   );
 }

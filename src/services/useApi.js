@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { fetcher } from '@/services/fetcher';
 import { mutater } from '@/services/mutater';
 import { tokenManager } from '@/lib/tokenManager';
+import useAuthStore from '@/stores/useAuthStore';
 import { useLoadingStore } from '@/stores/useLoadingStore.js';
 import { toast } from 'react-toastify';
 import { renderValidationErrors } from '@/services/errorUtils';
@@ -72,8 +73,8 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
     const { status, isAuthRequest, errors, message } = query.error;
 
     if (status === 401 && !isAuthRequest) {
-      // TODO: if backend uses httpOnly cookies, no tokenManager.clearTokens() needed
       tokenManager.clearTokens();
+      useAuthStore.getState().clearAuth();
       toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
       navigate('/login');
       return;

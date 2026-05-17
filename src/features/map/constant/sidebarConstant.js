@@ -66,4 +66,21 @@ export const headerSidebar = [
   },
 ];
 
-export const currentHeaderSidebar = 'event';
+export const currentHeaderSidebar = 'chatbot';
+export const fallbackHeaderSidebar = 'event';
+
+export const resolveDefaultHeaderSidebar = (isAuthenticated) => {
+  const currentSidebarConfig = headerSidebar.find((item) => item.value === currentHeaderSidebar);
+
+  if (currentSidebarConfig?.authen && !isAuthenticated) {
+    const fallbackSidebarConfig = headerSidebar.find((item) => item.value === fallbackHeaderSidebar);
+    if (fallbackSidebarConfig && (!fallbackSidebarConfig.authen || isAuthenticated)) {
+      return fallbackHeaderSidebar;
+    }
+
+    const firstVisibleSidebar = headerSidebar.find((item) => !item.authen || isAuthenticated);
+    return firstVisibleSidebar?.value ?? currentHeaderSidebar;
+  }
+
+  return currentHeaderSidebar;
+};
