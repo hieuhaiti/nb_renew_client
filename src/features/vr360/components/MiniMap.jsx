@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { env } from '@/config/env';
 import { defaultLatLong, defaultZoom } from '@/features/map/constant/mapConstant';
@@ -20,6 +20,24 @@ const LAYER_LABELS = 'allTourismPoints-label';
 const SOURCE_SPOTS = 'tourism-spots';
 const LAYER_SPOTS = 'tourism-spots-circles';
 const LAYER_SPOTS_LABELS = 'tourism-spots-labels';
+const SOURCE_TC = 'tamchuc-points';
+const LAYER_TC_CIRCLE = 'tamchuc-points-circle';
+const LAYER_TC_LABEL = 'tamchuc-points-label';
+
+const TAM_CHUC_POINTS = [
+  { id: 0, name: 'Toàn cảnh Chùa Tam Chúc', lon: 105.813644, lat: 20.570221 },
+  { id: 1, name: 'Quang cảnh giữa hồ', lon: 105.802141, lat: 20.559819 },
+  { id: 2, name: 'Đình Tam Chúc', lon: 105.810591, lat: 20.563899 },
+  { id: 3, name: 'Phía sau Tam Quan Nội', lon: 105.792921, lat: 20.550073 },
+  { id: 4, name: 'Trung tâm Tam Quan Nội', lon: 105.795188, lat: 20.552453 },
+  { id: 5, name: 'Tổng quan Tam Quan Nội', lon: 105.798021, lat: 20.555202 },
+  { id: 6, name: 'Tổng quan Chùa Ba Sao', lon: 105.780935, lat: 20.558702 },
+  { id: 7, name: 'Cảnh quan phía Tây 2', lon: 105.799395, lat: 20.568123 },
+  { id: 8, name: 'Cảnh quan phía Tây 1', lon: 105.806941, lat: 20.575695 },
+  { id: 9, name: 'Cổng vào chùa Tam Chúc', lon: 105.819089, lat: 20.565783 },
+  { id: 10, name: 'Trục đường tiến vào 2', lon: 105.821317, lat: 20.578552 },
+  { id: 11, name: 'Trục đường tiến vào 1', lon: 105.829817, lat: 20.584428 },
+];
 
 function parseGeometryValue(value) {
   if (!value) return null;
@@ -216,6 +234,60 @@ function ensurePointArtifacts(map, initialData) {
   }
 }
 
+function buildTamChucGeoJson(activeId = -1) {
+  return {
+    type: 'FeatureCollection',
+    features: TAM_CHUC_POINTS.map((p) => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [p.lon, p.lat] },
+      properties: { id: p.id, name: p.name, active: p.id === activeId },
+    })),
+  };
+}
+
+function ensureTcArtifacts(map, initialData) {
+  if (!map.getSource(SOURCE_TC)) {
+    map.addSource(SOURCE_TC, { type: 'geojson', data: initialData || buildTamChucGeoJson() });
+  }
+
+  if (!map.getLayer(LAYER_TC_CIRCLE)) {
+    map.addLayer({
+      id: LAYER_TC_CIRCLE,
+      type: 'circle',
+      source: SOURCE_TC,
+      layout: { visibility: 'visible' },
+      paint: {
+        'circle-radius': ['case', ['boolean', ['get', 'active'], false], 7, 5],
+        'circle-color': ['case', ['boolean', ['get', 'active'], false], '#00ffd5', '#ff3b30'],
+        'circle-stroke-width': 1.5,
+        'circle-stroke-color': '#ffffff',
+      },
+    });
+  }
+
+  if (!map.getLayer(LAYER_TC_LABEL)) {
+    map.addLayer({
+      id: LAYER_TC_LABEL,
+      type: 'symbol',
+      source: SOURCE_TC,
+      minzoom: 12,
+      layout: {
+        visibility: 'visible',
+        'text-field': ['get', 'name'],
+        'text-size': 12,
+        'text-offset': [0, 1.2],
+        'text-anchor': 'top',
+        'text-allow-overlap': false,
+      },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': '#000000',
+        'text-halo-width': 1.2,
+      },
+    });
+  }
+}
+
 function buildScenesGeoJson(scenes, currentSceneIndex) {
   const features = (Array.isArray(scenes) ? scenes : [])
     .map((scene, index) => {
@@ -270,8 +342,12 @@ export default function MiniMap({
   const scenesGeoJsonRef = useRef(null);
   const spotsGeoJsonRef = useRef(null);
 
+  const viewModeRef = useRef('closeup');
+  const tcActiveIdRef = useRef(-1);
   const headingRafRef = useRef(null);
   const pendingHeadingRef = useRef(null);
+
+  const [viewMode, setViewMode] = useState('closeup');
 
   const fovPolygon = useFovStore((state) => state.fovPolygon);
   const fovAngle = useFovStore((state) => state.fovAngle);
@@ -329,6 +405,40 @@ export default function MiniMap({
     if (!map) return;
     const source = map.getSource(SOURCE_SPOTS);
     if (source) source.setData(nextData || emptyFeatureCollection());
+  }, []);
+
+  const switchToOverview = useCallback(() => {
+    viewModeRef.current = 'overview';
+    setViewMode('overview');
+    const map = mapRef.current;
+    if (!map) return;
+    if (map.getLayer(LAYER_TC_CIRCLE)) map.setLayoutProperty(LAYER_TC_CIRCLE, 'visibility', 'none');
+    if (map.getLayer(LAYER_TC_LABEL)) map.setLayoutProperty(LAYER_TC_LABEL, 'visibility', 'none');
+    const apiCoords = [
+      ...(Array.isArray(scenesRef.current) ? scenesRef.current : []),
+      ...(Array.isArray(spotsRef.current) ? spotsRef.current : []),
+    ]
+      .map(getSceneCoords)
+      .filter(Boolean);
+    const tcCoords = TAM_CHUC_POINTS.map((p) => [p.lon, p.lat]);
+    const allCoords = [...apiCoords, ...tcCoords];
+    if (allCoords.length === 0) return;
+    const bounds = allCoords.reduce(
+      (b, c) => b.extend(c),
+      new mapboxgl.LngLatBounds(allCoords[0], allCoords[0])
+    );
+    map.fitBounds(bounds, { padding: 40, duration: 1000, maxZoom: 14 });
+  }, []);
+
+  const switchToCloseup = useCallback(() => {
+    viewModeRef.current = 'closeup';
+    setViewMode('closeup');
+    const map = mapRef.current;
+    if (!map) return;
+    if (map.getLayer(LAYER_TC_CIRCLE)) map.setLayoutProperty(LAYER_TC_CIRCLE, 'visibility', 'visible');
+    if (map.getLayer(LAYER_TC_LABEL)) map.setLayoutProperty(LAYER_TC_LABEL, 'visibility', 'visible');
+    const activePoint = TAM_CHUC_POINTS[tcActiveIdRef.current] ?? TAM_CHUC_POINTS[0];
+    if (activePoint) map.easeTo({ center: [activePoint.lon, activePoint.lat], zoom: 13, duration: 400 });
   }, []);
 
   useEffect(() => {
@@ -391,6 +501,7 @@ export default function MiniMap({
       ensureSpotArtifacts(map, spotsGeoJsonRef.current);
       ensureFovArtifacts(map, fovPolygonRef.current);
       ensurePointArtifacts(map, scenesGeoJsonRef.current);
+      ensureTcArtifacts(map, buildTamChucGeoJson(tcActiveIdRef.current));
       updateSpotsSourceData(spotsGeoJsonRef.current);
       updateFovSourceData(fovPolygonRef.current);
       updatePointsSourceData(scenesGeoJsonRef.current);
@@ -399,10 +510,8 @@ export default function MiniMap({
     const handlePointClick = (event) => {
       const feature = event?.features?.[0];
       if (!feature) return;
-
       const nextIndex = Number(feature.properties?.index);
       if (!Number.isFinite(nextIndex)) return;
-
       setCurrentSceneIndex(nextIndex);
       const selectedScene = scenesRef.current?.[nextIndex] ?? null;
       onSelectSceneRef.current?.(selectedScene, nextIndex);
@@ -419,11 +528,23 @@ export default function MiniMap({
       onSelectSpotRef.current?.(spot);
     };
 
+    const handleTcPointClick = (event) => {
+      const feature = event?.features?.[0];
+      if (!feature) return;
+      const pointId = Number(feature.properties?.id);
+      if (!Number.isFinite(pointId)) return;
+      tcActiveIdRef.current = pointId;
+      const source = map.getSource(SOURCE_TC);
+      if (source) source.setData(buildTamChucGeoJson(pointId));
+      const selectedScene = scenesRef.current?.[pointId] ?? null;
+      setCurrentSceneIndex(pointId);
+      onSelectSceneRef.current?.(selectedScene, pointId);
+    };
+
     const handlePointMouseEnter = (event) => {
       map.getCanvas().style.cursor = 'pointer';
       const feature = event?.features?.[0];
       if (!feature) return;
-
       const coordinates = [...feature.geometry.coordinates];
       const name = feature.properties?.name || 'Point';
       popupRef.current?.setLngLat(coordinates).setText(name).addTo(map);
@@ -438,6 +559,15 @@ export default function MiniMap({
       popupRef.current?.setLngLat(coordinates).setText(name).addTo(map);
     };
 
+    const handleTcMouseEnter = (event) => {
+      map.getCanvas().style.cursor = 'pointer';
+      const feature = event?.features?.[0];
+      if (!feature) return;
+      const coordinates = [...feature.geometry.coordinates];
+      const name = feature.properties?.name || 'Điểm tham quan';
+      popupRef.current?.setLngLat(coordinates).setText(name).addTo(map);
+    };
+
     const handlePointMouseLeave = () => {
       map.getCanvas().style.cursor = '';
       popupRef.current?.remove();
@@ -447,20 +577,26 @@ export default function MiniMap({
     map.on('style.load', initializeArtifacts);
     map.on('click', LAYER_POINTS, handlePointClick);
     map.on('click', LAYER_SPOTS, handleSpotClick);
+    map.on('click', LAYER_TC_CIRCLE, handleTcPointClick);
     map.on('mouseenter', LAYER_POINTS, handlePointMouseEnter);
     map.on('mouseenter', LAYER_SPOTS, handleSpotMouseEnter);
+    map.on('mouseenter', LAYER_TC_CIRCLE, handleTcMouseEnter);
     map.on('mouseleave', LAYER_POINTS, handlePointMouseLeave);
     map.on('mouseleave', LAYER_SPOTS, handlePointMouseLeave);
+    map.on('mouseleave', LAYER_TC_CIRCLE, handlePointMouseLeave);
 
     return () => {
       map.off('load', initializeArtifacts);
       map.off('style.load', initializeArtifacts);
       map.off('click', LAYER_POINTS, handlePointClick);
       map.off('click', LAYER_SPOTS, handleSpotClick);
+      map.off('click', LAYER_TC_CIRCLE, handleTcPointClick);
       map.off('mouseenter', LAYER_POINTS, handlePointMouseEnter);
       map.off('mouseenter', LAYER_SPOTS, handleSpotMouseEnter);
+      map.off('mouseenter', LAYER_TC_CIRCLE, handleTcMouseEnter);
       map.off('mouseleave', LAYER_POINTS, handlePointMouseLeave);
       map.off('mouseleave', LAYER_SPOTS, handlePointMouseLeave);
+      map.off('mouseleave', LAYER_TC_CIRCLE, handlePointMouseLeave);
 
       if (headingRafRef.current) {
         window.cancelAnimationFrame(headingRafRef.current);
@@ -487,28 +623,35 @@ export default function MiniMap({
     updateSpotsSourceData(spotsGeoJson);
   }, [spotsGeoJson, updateSpotsSourceData]);
 
+  // Đồng bộ TC layer khi scene đổi — giống highlightPoint() trong index.html
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    tcActiveIdRef.current = currentSceneIndex;
+    const source = map.getSource(SOURCE_TC);
+    if (source) source.setData(buildTamChucGeoJson(currentSceneIndex));
+    if (viewModeRef.current !== 'closeup') return;
+    const p = TAM_CHUC_POINTS[currentSceneIndex];
+    if (p && map.loaded()) map.easeTo({ center: [p.lon, p.lat], duration: 400 });
+  }, [currentSceneIndex]);
+
   useEffect(() => {
     const map = mapRef.current;
     const targetCenter = currentSpotCenter || currentCenter;
-    if (!map || !targetCenter) return;
+    if (!map || !targetCenter || viewModeRef.current !== 'closeup') return;
 
-    const runFlyTo = () => {
-      map.flyTo({
-        center: targetCenter,
-        zoom: Math.max(map.getZoom(), 13),
-        duration: 2000,
-        essential: true,
-      });
+    const runEaseTo = () => {
+      map.easeTo({ center: targetCenter, zoom: Math.max(map.getZoom(), 13), duration: 400 });
     };
 
     if (map.loaded()) {
-      runFlyTo();
+      runEaseTo();
       return;
     }
 
     const handleMapReady = () => {
       if (!mapRef.current) return;
-      runFlyTo();
+      runEaseTo();
     };
 
     map.once('load', handleMapReady);
@@ -565,6 +708,29 @@ export default function MiniMap({
   return (
     <div className={`relative h-full w-full ${className}`}>
       <div ref={containerRef} className="h-full w-full" />
+
+      <div className="absolute top-2 left-2 z-10 flex gap-1">
+        <button
+          onClick={switchToOverview}
+          className={`px-2 py-1 text-[11px] font-bold rounded shadow-sm transition-colors ${
+            viewMode === 'overview'
+              ? 'bg-amber-500 text-white'
+              : 'bg-white/90 text-gray-700 hover:bg-white'
+          }`}
+        >
+          Toàn cảnh
+        </button>
+        <button
+          onClick={switchToCloseup}
+          className={`px-2 py-1 text-[11px] font-bold rounded shadow-sm transition-colors ${
+            viewMode === 'closeup'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white/90 text-gray-700 hover:bg-white'
+          }`}
+        >
+          Cận cảnh
+        </button>
+      </div>
 
       {showFovControls && (
         <FOVControls
