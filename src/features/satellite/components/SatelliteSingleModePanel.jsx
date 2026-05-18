@@ -329,7 +329,7 @@ export function SatelliteSingleModePanel() {
           </div>
 
           {/* Auto Detect Change */}
-          <div className="rounded-lg border border-quinary/20 bg-quinary/5 p-2.5">
+          <div className="border-quinary/20 bg-quinary/5 rounded-lg border p-2.5">
             <label
               className={`flex cursor-pointer items-start gap-2.5 ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
             >
@@ -341,7 +341,7 @@ export function SatelliteSingleModePanel() {
               />
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5">
-                  <AlertTriangle size={12} className="shrink-0 text-quinary" />
+                  <AlertTriangle size={12} className="text-quinary shrink-0" />
                   <span className="typo-meta text-foreground font-semibold">
                     {t('satellite.fields.auto_detect_change')}
                   </span>
@@ -356,7 +356,7 @@ export function SatelliteSingleModePanel() {
           {/* Actions */}
           <div className="flex gap-2 pt-1">
             <Button
-              variant="ghost"
+              variant="default"
               onClick={handleAnalyze}
               disabled={isLoading || (selectedLayers.length === 0 && !autoDetectChange)}
               className="h-8 flex-1 gap-2"

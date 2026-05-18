@@ -395,7 +395,7 @@ export function SatelliteCompareModePanel() {
           {/* Actions */}
           <div className="flex gap-2 pt-1">
             <Button
-              variant="ghost"
+              variant="default"
               onClick={handleAnalyze}
               disabled={isLoading || (activeLayerTypes.size === 0 && !autoDetectChange)}
               className="h-8 flex-1 gap-2"

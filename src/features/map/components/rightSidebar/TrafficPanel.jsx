@@ -2,6 +2,7 @@
 import { useTranslation } from 'react-i18next';
 import { Activity, AlertTriangle, RefreshCw, Wifi, WifiOff, Construction, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { useTrafficStore } from '@/features/map/store/useTrafficStore';
@@ -102,23 +103,11 @@ export default function TrafficPanel() {
               : t('mapPage.traffic.disabled', { defaultValue: 'Đã tắt' })}
           </p>
         </div>
-        <Button
-          type="button"
-          role="switch"
-          aria-checked={isTrafficEnabled}
-          onClick={() => setTrafficEnabled(!isTrafficEnabled)}
-          className={cn(
-            'focus-visible:ring-ring relative mt-0.5 inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
-            isTrafficEnabled ? 'bg-primary' : 'bg-input'
-          )}
-        >
-          <span
-            className={cn(
-              'bg-background pointer-events-none inline-block h-5 w-5 rounded-full shadow-lg ring-0 transition-transform duration-200',
-              isTrafficEnabled ? 'translate-x-5' : 'translate-x-0'
-            )}
-          />
-        </Button>
+        <Switch
+          checked={isTrafficEnabled}
+          onCheckedChange={setTrafficEnabled}
+          className="mt-0.5 shrink-0"
+        />
       </div>
 
       <ScrollArea className="flex-1 min-h-0">
