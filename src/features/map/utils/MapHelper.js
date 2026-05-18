@@ -794,9 +794,7 @@ function addRoutePinMarkers(map, routePointsFeatureCollection, onPointClick = nu
       // and would swallow clicks before they reach the canvas.  Setting it to
       // none lets events fall through to the canvas so the route-point layers
       // remain clickable (same intent as the pin-wrap style in createPin).
-      if (element.parentElement) {
-        element.parentElement.style.pointerEvents = 'none';
-      }
+      element.style.pointerEvents = onPointClick ? 'auto' : 'none';
 
       return marker;
     })

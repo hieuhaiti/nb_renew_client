@@ -804,11 +804,11 @@ export default function MapPage() {
                   categoryColor={selectedCategoryColor}
                 />
 
-                <div className="pointer-events-auto my-3 min-h-0 flex-1">
+                <div className="pointer-events-none my-3 min-h-0 flex-1">
                   {showLeftPanelRail && activePanel === 'direction' && (
                     <MapDirectionPanel
                       embedded
-                      className="h-full min-h-0"
+                      className="h-full min-h-0 pointer-events-none"
                       isOpen={isPanelOpen}
                       onOpen={() => setPanelOpen(true)}
                       onClose={() => setPanelOpen(false)}
@@ -818,7 +818,7 @@ export default function MapPage() {
                   {showLeftPanelRail && activePanel === 'tour' && (
                     <MapTourPanel
                       embedded
-                      className="h-full min-h-0"
+                      className="h-full min-h-0 pointer-events-none"
                       isOpen={isPanelOpen}
                       onOpen={() => setPanelOpen(true)}
                       onClose={() => setPanelOpen(false)}

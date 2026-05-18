@@ -25,9 +25,7 @@ function syncLayersToMap(mapRef, layers, isCompareMode) {
           layer.layerOpacity ?? 1,
           layer.sourceId
         );
-        if (layer.visible === false) {
-          toggleSatelliteLayerVisibility(targetMap, layer.id, false);
-        }
+        toggleSatelliteLayerVisibility(targetMap, layer.id, layer.visible !== false);
       } else {
         updateSatelliteLayerOpacity(targetMap, layer.id, layer.layerOpacity ?? 1);
         toggleSatelliteLayerVisibility(targetMap, layer.id, layer.visible !== false);

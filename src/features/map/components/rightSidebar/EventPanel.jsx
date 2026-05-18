@@ -168,7 +168,7 @@ export default function EventPanel() {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
-      <div className="shrink-0 flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+      <div className="flex shrink-0 items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
           <p className="typo-section-title text-foreground">
             {t('mapPage.eventPanel.title', { defaultValue: 'Lễ hội' })}
@@ -197,124 +197,124 @@ export default function EventPanel() {
           />
         </div>
       </div>
-      <ScrollArea className="flex-1 min-h-0">
-      {isLoading ? (
-        <div className="space-y-2">
-          {[...Array(3)].map((_, index) => (
-            <FestivalRowSkeleton key={index} />
-          ))}
-        </div>
-      ) : isError ? (
-        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
-          {t('mapPage.eventPanel.error', {
-            defaultValue: 'Không thể tải danh sách sự kiện từ hệ thống.',
-          })}
-        </div>
-      ) : festivals.length === 0 ? (
-        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
-          {t('mapPage.eventPanel.empty', {
-            defaultValue: 'Không có sự kiện phù hợp với bộ lọc hiện tại.',
-          })}
-        </div>
-      ) : (
-        <div className="space-y-2 pr-0.5">
-          {festivals.map((festival) => {
-            const isActive =
-              selectedFestival != null && String(selectedFestival.id) === String(festival.id);
-            const cover = withBaseUrl(festival.cover_image_url);
-            const isOpening =
-              openingFestivalId != null && String(openingFestivalId) === String(festival.id);
+      <ScrollArea className="min-h-0 flex-1">
+        {isLoading ? (
+          <div className="space-y-2">
+            {[...Array(3)].map((_, index) => (
+              <FestivalRowSkeleton key={index} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
+            {t('mapPage.eventPanel.error', {
+              defaultValue: 'Không thể tải danh sách sự kiện từ hệ thống.',
+            })}
+          </div>
+        ) : festivals.length === 0 ? (
+          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
+            {t('mapPage.eventPanel.empty', {
+              defaultValue: 'Không có sự kiện phù hợp với bộ lọc hiện tại.',
+            })}
+          </div>
+        ) : (
+          <div className="space-y-2 pr-0.5">
+            {festivals.map((festival) => {
+              const isActive =
+                selectedFestival != null && String(selectedFestival.id) === String(festival.id);
+              const cover = withBaseUrl(festival.cover_image_url);
+              const isOpening =
+                openingFestivalId != null && String(openingFestivalId) === String(festival.id);
 
-            return (
-              <article
-                key={festival.id}
-                className={cn(
-                  'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
-                  isActive
-                    ? 'border-[var(--event-panel-active-border)] bg-[var(--event-panel-active-bg)]'
-                    : 'border-[var(--event-panel-border)] bg-[var(--event-panel-card-bg)] hover:bg-[var(--event-panel-card-hover-bg)]'
-                )}
-              >
-                {cover ? (
-                  <img
-                    src={cover}
-                    alt={festival.name}
-                    className="h-28 w-full rounded-lg object-cover"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = placeholderImg;
-                    }}
-                  />
-                ) : null}
+              return (
+                <article
+                  key={festival.id}
+                  className={cn(
+                    'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
+                    isActive
+                      ? 'border-[var(--event-panel-active-border)] bg-[var(--event-panel-active-bg)]'
+                      : 'border-[var(--event-panel-border)] bg-[var(--event-panel-card-bg)] hover:bg-[var(--event-panel-card-hover-bg)]'
+                  )}
+                >
+                  {cover ? (
+                    <img
+                      src={cover}
+                      alt={festival.name}
+                      className="h-28 w-full rounded-lg object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = placeholderImg;
+                      }}
+                    />
+                  ) : null}
 
-                <div className="space-y-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <h4 className="typo-body text-foreground line-clamp-2 font-semibold">
-                      {festival.name}
-                    </h4>
-                    {festival.festival_type && (
-                      <Badge
-                        variant="outline"
-                        className="shrink-0 border-[var(--event-panel-chip-border)] bg-[var(--event-panel-chip-bg)] text-[var(--event-panel-chip-fg)]"
-                      >
-                        {getFestivalTypeLabel(festival.festival_type, festival.festival_type)}
-                      </Badge>
+                  <div className="space-y-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="typo-body text-foreground line-clamp-2 font-semibold">
+                        {festival.name}
+                      </h4>
+                      {festival.festival_type && (
+                        <Badge
+                          variant="outline"
+                          className="shrink-0 border-[var(--event-panel-chip-border)] bg-[var(--event-panel-chip-bg)] text-[var(--event-panel-chip-fg)]"
+                        >
+                          {getFestivalTypeLabel(festival.festival_type, festival.festival_type)}
+                        </Badge>
+                      )}
+                    </div>
+
+                    <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
+                      <CalendarDays className="text-tertiary h-3.5 w-3.5 shrink-0" />
+                      {formatFestivalDateRange(festival.start_date, festival.end_date, locale)}
+                    </p>
+
+                    {festival.location_name && (
+                      <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
+                        <MapPin className="text-secondary h-3.5 w-3.5 shrink-0" />
+                        {festival.location_name}
+                      </p>
                     )}
+
+                    {festival.description ? (
+                      <p className="typo-body text-muted-foreground line-clamp-2">
+                        {festival.description}
+                      </p>
+                    ) : null}
                   </div>
 
-                  <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
-                    <CalendarDays className="text-tertiary h-3.5 w-3.5 shrink-0" />
-                    {formatFestivalDateRange(festival.start_date, festival.end_date, locale)}
-                  </p>
-
-                  {festival.location_name && (
-                    <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
-                      <MapPin className="text-secondary h-3.5 w-3.5 shrink-0" />
-                      {festival.location_name}
-                    </p>
-                  )}
-
-                  {festival.description ? (
-                    <p className="typo-body text-muted-foreground line-clamp-2">
-                      {festival.description}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="flex flex-wrap gap-1.5">
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="typo-meta h-8"
-                    onClick={() => handleOpenFestivalOnMap(festival)}
-                    disabled={!festival?.id || openingFestivalId != null}
-                  >
-                    <LocateFixed className="h-3.5 w-3.5 shrink-0" />
-                    {isOpening
-                      ? t('mapPage.eventPanel.openingMap', { defaultValue: 'Đang mở...' })
-                      : t('mapPage.eventPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
-                  </Button>
-
-                  {festival.website ? (
+                  <div className="flex flex-wrap gap-1.5">
                     <Button
                       type="button"
                       size="sm"
-                      variant="outline"
                       className="typo-meta h-8"
-                      asChild
+                      onClick={() => handleOpenFestivalOnMap(festival)}
+                      disabled={!festival?.id || openingFestivalId != null}
                     >
-                      <a href={festival.website} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        {t('mapPage.eventPanel.website', { defaultValue: 'Website' })}
-                      </a>
+                      <LocateFixed className="h-3.5 w-3.5 shrink-0" />
+                      {isOpening
+                        ? t('mapPage.eventPanel.openingMap', { defaultValue: 'Đang mở...' })
+                        : t('mapPage.eventPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
                     </Button>
-                  ) : null}
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      )}
+
+                    {festival.website ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="typo-meta h-8"
+                        asChild
+                      >
+                        <a href={festival.website} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          {t('mapPage.eventPanel.website', { defaultValue: 'Website' })}
+                        </a>
+                      </Button>
+                    ) : null}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </ScrollArea>
     </div>
   );

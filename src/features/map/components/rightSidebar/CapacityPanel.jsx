@@ -16,42 +16,58 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 const STATUS_META = {
   overloaded: {
-    badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
+    activeBadgeClass:
+      'border-border/60 bg-destructive text-white hover:bg-destructive/80 hover:text-white',
+    badgeClass:
+      'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
     // red-400 → red-700
     barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
     labelVi: 'Quá tải',
     labelEn: 'Overloaded',
   },
   near_full: {
-    badgeClass: 'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
+    activeBadgeClass:
+      'border-border/60 bg-orange-500 text-white hover:bg-orange-500/80 hover:text-white',
+    badgeClass:
+      'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
     // tertiary-1 (amber) → quaternary (coral-red)
     barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
     labelVi: 'Gần đầy',
     labelEn: 'Near full',
   },
   busy: {
-    badgeClass: 'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
+    activeBadgeClass: 'border-border/60 bg-warning text-white hover:bg-warning/80 hover:text-white',
+    badgeClass:
+      'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
     // gold → tertiary-2 (warm amber-orange)
     barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
     labelVi: 'Đông',
     labelEn: 'Busy',
   },
   moderate: {
-    badgeClass: 'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
+    activeBadgeClass: 'border-border/60 bg-sky-500 text-white hover:bg-sky-500/80 hover:text-white',
+    badgeClass:
+      'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
     // primary-1 (sky) → primary-2 (deep blue)
     barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
     labelVi: 'Vừa phải',
     labelEn: 'Moderate',
   },
   normal: {
-    badgeClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
+    activeBadgeClass:
+      'border-border/60 bg-emerald-500 text-white hover:bg-emerald-500/80 hover:text-white',
+    badgeClass:
+      'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
     // secondary-1 (teal) → secondary-2 (forest green)
     barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
     labelVi: 'Bình thường',
     labelEn: 'Normal',
   },
   low: {
-    badgeClass: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
+    activeBadgeClass:
+      'border-border/60 bg-emerald-500 text-white hover:bg-emerald-500/80 hover:text-white',
+    badgeClass:
+      'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
     // lighter teal → secondary-1
     barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
     labelVi: 'Thưa thớt',
@@ -237,7 +253,7 @@ export default function CapacityPanel() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
       {/* Header */}
-      <div className="shrink-0 flex items-start justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+      <div className="flex shrink-0 items-start justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div className="min-w-0">
           <p className="typo-section-title text-foreground">
             {t('mapPage.capacityPanel.title', { defaultValue: 'Sức chứa điểm đến' })}
@@ -282,7 +298,7 @@ export default function CapacityPanel() {
 
       {/* Search */}
       {!isLoading && items.length > 0 && (
-        <div className="shrink-0 relative">
+        <div className="relative shrink-0">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
             value={search}
@@ -297,20 +313,20 @@ export default function CapacityPanel() {
 
       {/* Status filter chips */}
       {!isLoading && items.length > 0 && (
-        <div className="shrink-0 flex flex-wrap gap-1.5">
+        <div className="flex shrink-0 flex-wrap gap-1.5">
           <Button
             variant="ghost"
             type="button"
             onClick={() => setStatusFilter('all')}
             className={cn(
-              'typo-badge h-auto inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
+              'typo-badge inline-flex h-auto items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
               statusFilter === 'all'
-                ? 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'
-                : 'border-border text-muted-foreground hover:bg-muted/50'
+                ? 'border-border/60 bg-primary hover:bg-primary/80 text-white hover:text-white'
+                : 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'
             )}
           >
             {t('mapPage.capacityPanel.all', { defaultValue: 'Tất cả' })}
-            <span className="opacity-70">{items.length}</span>
+            <span className="opacity-90">{items.length}</span>
           </Button>
 
           {presentStatuses.map((status) => {
@@ -323,112 +339,109 @@ export default function CapacityPanel() {
                 type="button"
                 onClick={() => setStatusFilter(status)}
                 className={cn(
-                  'typo-badge h-auto inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
-                  isActive
-                    ? meta.badgeClass
-                    : 'border-border text-muted-foreground hover:bg-muted/50'
+                  'typo-badge inline-flex h-auto items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
+                  isActive ? meta.activeBadgeClass : meta.badgeClass
                 )}
               >
                 {getStatusLabel(status, isVi)}
-                <span className="opacity-70">{statusCounts[status]}</span>
+                <span className="opacity-90">{statusCounts[status]}</span>
               </Button>
             );
           })}
         </div>
       )}
 
-      <ScrollArea className="flex-1 min-h-0">
-      {/* Content */}
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <CapacityRowSkeleton key={i} />
-          ))}
-        </div>
-      ) : isError ? (
-        <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
-          {t('mapPage.capacityPanel.error', { defaultValue: 'Không thể tải dữ liệu sức chứa.' })}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
-          {t('mapPage.capacityPanel.empty', { defaultValue: 'Không có điểm phù hợp.' })}
-        </div>
-      ) : (
-        <div className="space-y-2 pr-0.5">
-          {/* Result count */}
-          <p className="typo-meta text-muted-foreground px-0.5">
-            {filtered.length !== items.length
-              ? `${filtered.length} / ${items.length} điểm`
-              : `${items.length} điểm đang theo dõi`}
-          </p>
+      <ScrollArea className="min-h-0 flex-1">
+        {/* Content */}
+        {isLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <CapacityRowSkeleton key={i} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
+            {t('mapPage.capacityPanel.error', { defaultValue: 'Không thể tải dữ liệu sức chứa.' })}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
+            {t('mapPage.capacityPanel.empty', { defaultValue: 'Không có điểm phù hợp.' })}
+          </div>
+        ) : (
+          <div className="space-y-2 pr-0.5">
+            {/* Result count */}
+            <p className="typo-meta text-muted-foreground px-0.5">
+              {filtered.length !== items.length
+                ? `${filtered.length} / ${items.length} điểm`
+                : `${items.length} điểm đang theo dõi`}
+            </p>
 
-          {filtered.map((item) => {
-            const meta = getStatusMeta(item.status);
-            const hasCoords = typeof item.lat === 'number' && typeof item.lng === 'number';
-            const capacityText =
-              item.max > 0
-                ? `${numberFormatter.format(item.current)} / ${numberFormatter.format(item.max)} người`
-                : `${numberFormatter.format(item.current)} người`;
+            {filtered.map((item) => {
+              const meta = getStatusMeta(item.status);
+              const hasCoords = typeof item.lat === 'number' && typeof item.lng === 'number';
+              const capacityText =
+                item.max > 0
+                  ? `${numberFormatter.format(item.current)} / ${numberFormatter.format(item.max)} người`
+                  : `${numberFormatter.format(item.current)} người`;
 
-            return (
-              <article
-                key={item.id}
-                className="hover:bg-muted/40 space-y-2 rounded-lg border p-3 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <h4
-                    className="typo-body text-foreground line-clamp-2 font-semibold"
-                    title={item.name}
-                  >
-                    {item.name}
-                  </h4>
-                  <Badge variant="outline" className={cn('typo-badge shrink-0', meta.badgeClass)}>
-                    {getStatusLabel(item.status, isVi)}
-                  </Badge>
-                </div>
-
-                <div>
-                  <div className="mb-1.5 flex items-center justify-between gap-1">
-                    <span className="typo-meta text-muted-foreground flex items-center gap-1">
-                      <Users className="h-3 w-3 shrink-0" />
-                      {capacityText}
-                    </span>
-                    <span
-                      className={cn(
-                        'typo-meta font-semibold tabular-nums',
-                        meta.badgeClass.split(' ').find((c) => c.startsWith('text-'))
-                      )}
+              return (
+                <article
+                  key={item.id}
+                  className="w-full min-w-0 overflow-hidden space-y-2 rounded-xl border border-primary/60 bg-primary/5 p-3 shadow-sm transition-colors hover:bg-primary/10 hover:border-primary/80"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h4
+                      className="typo-body text-foreground line-clamp-2 font-semibold"
+                      title={item.name}
                     >
-                      {item.pct}%
-                    </span>
+                      {item.name}
+                    </h4>
+                    <Badge variant="outline" className={cn('typo-badge shrink-0', meta.badgeClass)}>
+                      {getStatusLabel(item.status, isVi)}
+                    </Badge>
                   </div>
-                  <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${item.pct}%`, ...meta.barStyle }}
-                    />
-                  </div>
-                </div>
 
-                {hasCoords && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={getViewOnMapVariant(item.status)}
-                    className="typo-meta h-7 w-full"
-                    onClick={() => handleFlyTo(item)}
-                  >
-                    <LocateFixed className="h-3 w-3" />
-                    {t('mapPage.capacityPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
-                  </Button>
-                )}
-              </article>
-            );
-          })}
-        </div>
-      )}
+                  <div>
+                    <div className="mb-1.5 flex items-center justify-between gap-1">
+                      <span className="typo-meta text-muted-foreground flex items-center gap-1">
+                        <Users className="h-3 w-3 shrink-0" />
+                        {capacityText}
+                      </span>
+                      <span
+                        className={cn(
+                          'typo-meta font-semibold tabular-nums',
+                          meta.badgeClass.split(' ').find((c) => c.startsWith('text-'))
+                        )}
+                      >
+                        {item.pct}%
+                      </span>
+                    </div>
+                    <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${item.pct}%`, ...meta.barStyle }}
+                      />
+                    </div>
+                  </div>
+
+                  {hasCoords && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={getViewOnMapVariant(item.status)}
+                      className="typo-meta h-7 w-full"
+                      onClick={() => handleFlyTo(item)}
+                    >
+                      <LocateFixed className="h-3 w-3" />
+                      {t('mapPage.capacityPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
+                    </Button>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
       </ScrollArea>
     </div>
   );
 }
-

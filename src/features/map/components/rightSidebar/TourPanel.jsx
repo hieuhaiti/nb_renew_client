@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
 import { useDebounce } from 'use-debounce';
 import { Clock3, Eye, Map, MapPin, Search, Star, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -29,15 +28,13 @@ import {
   normalizeTourListPayload,
 } from '@/features/map/utils/tourPanelUtils';
 import {
-  buildHighlightRoutePointsFeatureCollection,
   createRouteFromPoints,
   normalizeTourRoutePoint,
 } from '@/features/map/utils/highlightRouteUtils';
-import {
-  addOrUpdateHighlightedRouteLayers,
-  clearHighlightedRouteLayers,
-} from '@/features/map/utils/MapHelper';
+import { clearHighlightedRouteLayers } from '@/features/map/utils/MapHelper';
+import { defaultLatLong, defaultZoom, pitchDefault } from '@/features/map/constant/mapConstant';
 import { useMapStore } from '@/features/map/store/useMapStore';
+import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import { cn, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
@@ -46,7 +43,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 function TourRowSkeleton() {
   return (
-    <div className="space-y-2 rounded-lg border p-3">
+    <div className="space-y-2 rounded-lg border border-[var(--event-panel-border)] bg-[var(--event-panel-card-bg)] p-3">
       <Skeleton className="h-4 w-2/3" />
       <Skeleton className="h-3 w-1/2" />
       <Skeleton className="h-3 w-5/6" />
@@ -191,6 +188,7 @@ export default function TourPanel() {
   const activeRouteTourId = highlightedRoute?.tourId ? String(highlightedRoute.tourId) : null;
   const handleOpenTourRoute = async (tour) => {
     if (!tour?.id) return;
+    console.log('[TOUR-DEBUG] handleOpenTourRoute START', { tourId: tour.id, tourName: tour.name });
 
     setSelectedTour({
       ...tour,
@@ -201,6 +199,7 @@ export default function TourPanel() {
     try {
       const stops = await fetchTourStopsByTourId(tour.id);
       const sortedStops = sortStops(stops);
+      console.log('[TOUR-DEBUG] stops fetched', { count: sortedStops.length });
 
       if (sortedStops.length < 2) {
         throw new Error(
@@ -236,6 +235,10 @@ export default function TourPanel() {
           })
         )
       ).filter(Boolean);
+      console.log('[TOUR-DEBUG] routePoints resolved', {
+        count: routePoints.length,
+        points: routePoints.map((p) => ({ name: p?.name, lat: p?.lat, lng: p?.lng })),
+      });
 
       if (routePoints.length < 2) {
         throw new Error(
@@ -250,6 +253,9 @@ export default function TourPanel() {
         'driving',
         lang === 'en' ? 'en' : 'vi'
       );
+      console.log('[TOUR-DEBUG] routeResult', {
+        coordCount: routeResult?.geometry?.coordinates?.length,
+      });
       if (!routeResult?.geometry?.coordinates?.length) {
         throw new Error(
           t('mapPage.tourPanel.routeFailed', {
@@ -258,8 +264,10 @@ export default function TourPanel() {
         );
       }
 
+      console.log('[TOUR-DEBUG] calling openTourPanel');
       openTourPanel({ tourId: tour.id, tourName: tour.name, stops: sortedStops });
       clearDirections();
+      console.log('[TOUR-DEBUG] calling setHighlightedRoute');
       setHighlightedRoute({
         type: 'tour',
         tourId: tour.id,
@@ -275,56 +283,9 @@ export default function TourPanel() {
           total_stops: routePoints.length,
         },
       });
+      console.log('[TOUR-DEBUG] calling setShowOnlyHighlightedRoute(true)');
       setShowOnlyHighlightedRoute(true);
-
-      const resolvedMap = mapRef || mapRefObj?.current?.single || null;
-      const drawRouteOnMap = (targetMap) => {
-        if (!targetMap) return;
-
-        const routeFeature = {
-          type: 'Feature',
-          geometry: routeResult.geometry,
-          properties: {
-            ...(routeResult.properties || {}),
-            tour_name: tour.name,
-            total_stops: routePoints.length,
-          },
-        };
-        const routePointsFeatureCollection = buildHighlightRoutePointsFeatureCollection(
-          routeResult.points?.length ? routeResult.points : routePoints
-        );
-
-        clearHighlightedRouteLayers(targetMap);
-        addOrUpdateHighlightedRouteLayers(targetMap, {
-          routeFeature,
-          routePointsFeatureCollection,
-        });
-
-        const coordinates = routeResult.geometry.coordinates;
-        if (Array.isArray(coordinates) && coordinates.length > 1) {
-          const bounds = coordinates.reduce(
-            (acc, coord) => acc.extend(coord),
-            new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
-          );
-
-          targetMap.fitBounds(bounds, {
-            padding: 88,
-            duration: 850,
-          });
-        }
-      };
-
-      if (resolvedMap?.isStyleLoaded?.()) {
-        try {
-          drawRouteOnMap(resolvedMap);
-        } catch (_drawError) {}
-      } else if (resolvedMap) {
-        resolvedMap.once('style.load', () => {
-          try {
-            drawRouteOnMap(resolvedMap);
-          } catch (_drawError) {}
-        });
-      }
+      console.log('[TOUR-DEBUG] handleOpenTourRoute DONE');
 
       toast.success(
         t('mapPage.tourPanel.routeReady', {
@@ -370,7 +331,7 @@ export default function TourPanel() {
       </div>
 
       {activeRouteTourId ? (
-        <div className="grid shrink-0 grid-cols-2 gap-1.5 rounded-lg border p-1.5">
+        <div className="grid shrink-0 grid-cols-2 gap-1.5 rounded-lg border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-1.5">
           <Button
             type="button"
             size="sm"
@@ -401,6 +362,21 @@ export default function TourPanel() {
               }
               clearHighlightedRoute();
               useMapPanelStore.getState().clearPanel();
+
+              const mapRefObjCurrent = mapRefObj?.current;
+              const maps = [resolvedMap, mapRefObjCurrent?.single, mapRefObjCurrent?.split].filter(
+                (instance, index, all) => instance && all.indexOf(instance) === index
+              );
+              const terrainState = useMapStyleStore.getState().terrainState;
+              maps.forEach((mapInstance) => {
+                mapInstance.flyTo({
+                  center: defaultLatLong,
+                  zoom: defaultZoom,
+                  pitch: pitchDefault(terrainState),
+                  bearing: 0,
+                });
+              });
+
               toast.info(
                 t('mapPage.tourPanel.routeCleared', {
                   defaultValue: 'Đã xóa tuyến tour khỏi bản đồ.',
@@ -423,7 +399,7 @@ export default function TourPanel() {
             placeholder={t('mapPage.tourPanel.searchPlaceholder', {
               defaultValue: 'Tìm tour...',
             })}
-            className="h-9 pr-2 pl-8 text-sm"
+            className="h-9 border-[var(--event-panel-border)] bg-[var(--event-panel-control-bg)] pr-2 pl-8 text-sm"
           />
         </div>
 
@@ -454,11 +430,11 @@ export default function TourPanel() {
             ))}
           </div>
         ) : isError ? (
-          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
+          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
             {t('mapPage.tourPanel.error', { defaultValue: 'Không thể tải danh sách tour.' })}
           </div>
         ) : tours.length === 0 ? (
-          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
+          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
             {t('mapPage.tourPanel.empty', { defaultValue: 'Không có tour phù hợp với bộ lọc.' })}
           </div>
         ) : (
@@ -477,11 +453,9 @@ export default function TourPanel() {
                   key={tour.id}
                   className={cn(
                     'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
-                    isRouteActive
-                      ? 'border-primary/60 bg-primary/5'
-                      : isSelected
-                        ? 'border-border bg-muted/20'
-                        : 'from-card to-muted/10 hover:bg-muted/40 bg-linear-to-b'
+                    isRouteActive || isSelected
+                      ? 'border-[var(--event-panel-active-border)] bg-[var(--event-panel-active-bg)]'
+                      : 'border-[var(--event-panel-border)] bg-[var(--event-panel-card-bg)] hover:bg-[var(--event-panel-card-hover-bg)]'
                   )}
                 >
                   {imageUrl ? (
@@ -498,10 +472,7 @@ export default function TourPanel() {
 
                   <div className="space-y-1">
                     <div className="flex items-start justify-between gap-2">
-                      <h4
-                        className="typo-body text-foreground truncate font-semibold"
-                        title={tour.name}
-                      >
+                      <h4 className="typo-body text-foreground line-clamp-2 min-w-0 font-semibold">
                         {tour.name}
                       </h4>
                       {tour.is_featured && (

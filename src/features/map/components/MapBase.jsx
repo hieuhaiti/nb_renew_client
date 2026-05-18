@@ -4,7 +4,7 @@ import MapboxCompare from 'mapbox-gl-compare';
 import { useTranslation } from 'react-i18next';
 import { useSubcategoryLayerQuery } from '@/services/api/map/mapDataLayerService';
 import { useMapStore } from '../store/useMapStore';
-import { defaultLatLong, defaultZoom, mapDelta, pitchDefault } from '../constant/mapConstant';
+import { defaultLatLong, defaultZoom, pitchDefault } from '../constant/mapConstant';
 import { useMapStyleStore } from '../store/useMapStyleStore';
 import { getMapColorById } from '../constant/mapColor';
 import ResetControl from './control/ToolResetControl';
@@ -189,13 +189,6 @@ export default function MapBaseArea() {
       setMapRef(map);
       useMapStore.getState().setMapRefObj(mapRef);
 
-      const center = map.getCenter();
-      const mapBounds = [
-        [center.lng - mapDelta, center.lat - mapDelta],
-        [center.lng + mapDelta, center.lat + mapDelta],
-      ];
-      map.setMaxBounds(mapBounds);
-
       map.addControl(new ToolViewModeControl(), 'right');
       map.addControl(new ToolBaseMap(), 'right');
       map.addControl(new ResetControl(), 'right');
@@ -286,8 +279,6 @@ export default function MapBaseArea() {
     const { single, split } = mapRef.current;
     if (!single || !split) return;
 
-    // debug log removed
-
     if (isSplitMode) {
       if (compareTeardownTimerRef.current) {
         window.clearTimeout(compareTeardownTimerRef.current);
@@ -305,9 +296,6 @@ export default function MapBaseArea() {
       compareInitTimerRef.current = window.setTimeout(() => {
         const singleContainer = single.getContainer();
         const splitContainer = split.getContainer();
-        const compareNodeBeforeInit = mapContainer.current?.querySelector('.mapboxgl-compare');
-        // debug log removed
-
         split.resize();
 
         // Sync camera with single map
@@ -333,7 +321,6 @@ export default function MapBaseArea() {
               orientation: 'vertical',
             });
             compareRef.current = mapRef.current.compare;
-            // debug log removed
           } catch (error) {
             console.error('[MapBase] Failed to initialize map compare:', error);
           }
@@ -377,28 +364,6 @@ export default function MapBaseArea() {
         compareTeardownTimerRef.current = null;
       }
     };
-  }, [isSplitMode, mapsReady.single, mapsReady.split]);
-
-  useEffect(() => {
-    if (!isSplitMode || !mapContainer.current) return;
-
-    const debugTimer = window.setTimeout(() => {
-      const compareDom = mapContainer.current?.querySelector('.mapboxgl-compare');
-      const swiperDom =
-        mapContainer.current?.querySelector('.compare-swiper-vertical') ||
-        mapContainer.current?.querySelector('.compare-swiper-horizontal');
-      const splitDisplay = mapRef.current.split?.getContainer()?.style?.display;
-      const swiperRect = swiperDom?.getBoundingClientRect?.();
-      const sampleX = swiperRect ? Math.round(swiperRect.left + swiperRect.width / 2) : null;
-      const sampleY = swiperRect ? Math.round(swiperRect.top + swiperRect.height / 2) : null;
-      const topElementAtSwiper =
-        sampleX != null && sampleY != null ? document.elementFromPoint(sampleX, sampleY) : null;
-      const swiperStyle = swiperDom ? window.getComputedStyle(swiperDom) : null;
-
-      // debug log removed
-    }, 260);
-
-    return () => window.clearTimeout(debugTimer);
   }, [isSplitMode, mapsReady.single, mapsReady.split]);
 
   useEffect(() => {
@@ -472,7 +437,6 @@ export default function MapBaseArea() {
       const points = Array.isArray(highlightedRoute?.points) ? highlightedRoute.points : [];
 
       if (points.length < 2) {
-        console.warn('[MapBase drawHighlightedRoute] points.length < 2 → clearing layers');
         clearHighlightedRouteLayers(map);
         return;
       }
@@ -496,7 +460,6 @@ export default function MapBaseArea() {
         if (didCancel) return;
 
         if (!routeResult?.geometry?.coordinates?.length) {
-          console.warn('[MapBase drawHighlightedRoute] no geometry → clearing layers');
           clearHighlightedRouteLayers(map);
           return;
         }
@@ -534,12 +497,10 @@ export default function MapBaseArea() {
           new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
         );
 
-        // debug log removed
         map.fitBounds(bounds, {
           padding: 88,
           duration: 850,
         });
-        // debug log removed
       } catch (error) {
         if (!didCancel) {
           console.error('[MapBase drawHighlightedRoute] error:', error);
@@ -547,9 +508,6 @@ export default function MapBaseArea() {
         }
       }
     };
-
-    const isStyleReady = map.isStyleLoaded();
-    // debug log removed
 
     // Khi mapsReady.single = true, 'load' event đã fire → 'style.load' đã fire trước đó.
     // isStyleLoaded() có thể false vì tiles vẫn đang load, nhưng addSource/addLayer vẫn hoạt động.
@@ -880,6 +838,7 @@ export default function MapBaseArea() {
           pitch: map.getPitch(),
           bearing: map.getBearing(),
           essential: true,
+          duration: 2500,
         });
       }
 
