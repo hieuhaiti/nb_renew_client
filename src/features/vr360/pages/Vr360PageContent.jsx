@@ -573,7 +573,7 @@ export default function Vr360PageContent() {
 
   return (
     <RootLayout>
-      <div className="bg-background h-full p-3">
+      <div className="bg-background h-full">
         <style>{`
           .vr360-center { min-height: min(56vw, 480px); }
           @media (max-width: 1279px) {
@@ -595,7 +595,7 @@ export default function Vr360PageContent() {
         `}</style>
 
         <div
-          className="vr360-grid"
+          className="vr360-grid p-3"
           data-tab={mobilePanelTab}
           style={{
             display: 'grid',
@@ -914,7 +914,7 @@ export default function Vr360PageContent() {
           </div>
 
           {/* ══ RIGHT: spot info ══════════════════════════════════════════════ */}
-          <aside className="vr360-right" style={panelStyle}>
+          <aside className="vr360-right" style={{ ...panelStyle, overflow: 'hidden auto' }}>
             <div style={panelHeadStyle}>
               <h3
                 style={{
@@ -1043,10 +1043,6 @@ export default function Vr360PageContent() {
                     fontSize: '13px',
                     color: C.muted,
                     lineHeight: 1.7,
-                    display: '-webkit-box',
-                    WebkitLineClamp: 4,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
                   }}
                 >
                   {spotInfo.description}
