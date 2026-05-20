@@ -387,6 +387,31 @@ function loadStatusMarkerImages(map, markerImageBaseId, markerSvgByStatus, callb
   });
 }
 
+const svgFetchCache = new Map();
+
+function fetchSvgContent(iconUrl) {
+  if (svgFetchCache.has(iconUrl)) {
+    return svgFetchCache.get(iconUrl);
+  }
+
+  const promise = fetch(iconUrl, { mode: 'cors', credentials: 'omit' })
+    .then((response) => {
+      if (!response.ok) throw new Error(`Cannot fetch icon SVG: ${response.status}`);
+      return response.text();
+    })
+    .then((iconSvg) => {
+      if (!/<svg[\s>]/i.test(iconSvg)) throw new Error('Icon content is not SVG');
+      return iconSvg;
+    })
+    .catch((error) => {
+      svgFetchCache.delete(iconUrl);
+      throw error;
+    });
+
+  svgFetchCache.set(iconUrl, promise);
+  return promise;
+}
+
 function loadMapIconStatusImages(map, iconUrl, color, markerImageBaseId, callback) {
   if (!iconUrl) {
     callback(new Error('Icon URL is empty'));
@@ -398,19 +423,8 @@ function loadMapIconStatusImages(map, iconUrl, color, markerImageBaseId, callbac
     return;
   }
 
-  fetch(iconUrl, { mode: 'cors', credentials: 'omit' })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Cannot fetch icon SVG: ${response.status}`);
-      }
-
-      return response.text();
-    })
+  fetchSvgContent(iconUrl)
     .then((iconSvg) => {
-      if (!/<svg[\s>]/i.test(iconSvg)) {
-        throw new Error('Icon content is not SVG');
-      }
-
       loadStatusMarkerImages(
         map,
         markerImageBaseId,

@@ -198,19 +198,33 @@ function disposeHotspotEntity(entity) {
 function loadAFrame() {
   return new Promise((resolve) => {
     if (window.AFRAME) {
+      console.debug('[VR-DEBUG][loadAFrame] window.AFRAME already defined — skipping CDN load');
       resolve();
       return;
     }
 
+    console.debug('[VR-DEBUG][loadAFrame] window.AFRAME undefined — injecting CDN script', AFRAME_CDN);
+    const t0 = performance.now();
+
     const existing = document.querySelector(`script[src="${AFRAME_CDN}"]`);
     if (existing) {
-      existing.addEventListener('load', resolve, { once: true });
+      console.debug('[VR-DEBUG][loadAFrame] CDN script tag exists, waiting for its load event');
+      existing.addEventListener('load', () => {
+        console.debug(`[VR-DEBUG][loadAFrame] existing script loaded in ${(performance.now() - t0).toFixed(0)}ms`);
+        resolve();
+      }, { once: true });
       return;
     }
 
     const script = document.createElement('script');
     script.src = AFRAME_CDN;
-    script.onload = resolve;
+    script.onload = () => {
+      console.debug(`[VR-DEBUG][loadAFrame] CDN script loaded in ${(performance.now() - t0).toFixed(0)}ms`);
+      resolve();
+    };
+    script.onerror = () => {
+      console.error('[VR-DEBUG][loadAFrame] CDN script FAILED to load', AFRAME_CDN);
+    };
     document.head.appendChild(script);
   });
 }
@@ -468,6 +482,7 @@ export default function Vr360SceneViewer({
   const volumeControlRef = useRef(null);
   const headingRafRef = useRef(null);
   const lastHeadingRef = useRef(null);
+  const latestImageUrlRef = useRef(null);
 
   const [aframeReady, setAframeReady] = useState(!!window.AFRAME);
   const [isSceneImageLoading, setIsSceneImageLoading] = useState(false);
@@ -525,13 +540,19 @@ export default function Vr360SceneViewer({
   }, [scene]);
 
   useEffect(() => {
-    loadAFrame().then(() => setAframeReady(true));
+    console.debug('[VR-DEBUG][mount] window.AFRAME at mount:', !!window.AFRAME, '| aframeReady state:', !!window.AFRAME);
+    loadAFrame().then(() => {
+      console.debug('[VR-DEBUG][loadAFrame] resolved → setAframeReady(true)');
+      setAframeReady(true);
+    });
   }, []);
 
   useEffect(() => {
+    console.debug('[VR-DEBUG][sceneCreate] aframeReady:', aframeReady, '| containerRef:', !!containerRef.current, '| aSceneRef already exists:', !!aSceneRef.current);
     if (!aframeReady || !containerRef.current) return;
     if (aSceneRef.current) return;
 
+    console.debug('[VR-DEBUG][sceneCreate] Creating a-scene now. latestImageUrl at creation time:', latestImageUrlRef.current);
     const container = containerRef.current;
     const aScene = document.createElement('a-scene');
     aScene.setAttribute('embedded', '');
@@ -605,12 +626,25 @@ export default function Vr360SceneViewer({
       aCamera.setAttribute('look-controls', 'enabled: true; touchEnabled: true');
     });
 
-    // Set ảnh ngay lập tức để tránh race condition với image loading effect
-    const initRawUrl = scene?.equirectangular_image_url;
-    if (initRawUrl) {
-      const initImageUrl = withBaseUrl(initRawUrl) || initRawUrl;
-      aSky.setAttribute('src', initImageUrl);
-      aSky.setAttribute('color', '#ffffff');
+    const applyPendingImage = () => {
+      const url = latestImageUrlRef.current;
+      console.debug('[VR-DEBUG][applyPendingImage] called. url:', url, '| aSkyRef:', !!aSkyRef.current, '| aScene.hasLoaded:', aScene.hasLoaded);
+      if (url && aSkyRef.current) {
+        aSkyRef.current.setAttribute('src', url);
+        aSkyRef.current.setAttribute('color', '#ffffff');
+        console.debug('[VR-DEBUG][applyPendingImage] setAttribute src done →', url);
+      } else {
+        console.warn('[VR-DEBUG][applyPendingImage] SKIPPED — url empty or aSkyRef null', { url, aSky: !!aSkyRef.current });
+      }
+    };
+    console.debug('[VR-DEBUG][sceneCreate] aScene.hasLoaded at appendChild time:', aScene.hasLoaded);
+    if (aScene.hasLoaded) {
+      applyPendingImage();
+    } else {
+      aScene.addEventListener('loaded', () => {
+        console.debug('[VR-DEBUG][sceneCreate] a-scene "loaded" event fired');
+        applyPendingImage();
+      }, { once: true });
     }
 
     renderHotspots(hotspotsRoot, hotspotsPropRef.current, onHotspotClickRef, cursorProgressRef);
@@ -642,26 +676,37 @@ export default function Vr360SceneViewer({
     const rawUrl = scene.equirectangular_image_url;
     const imageUrl = rawUrl ? withBaseUrl(rawUrl) || rawUrl : '';
 
+    latestImageUrlRef.current = imageUrl;
+
+    console.debug('[VR-DEBUG][imageLoad] effect triggered. scene.id:', scene?.id, '| rawUrl:', rawUrl, '| resolvedUrl:', imageUrl, '| aSkyRef ready:', !!aSkyRef.current, '| aframeReady:', aframeReady);
+
     if (imageUrl) {
       setIsSceneImageLoading(true);
+      const t0 = performance.now();
       const image = new Image();
       image.crossOrigin = 'anonymous';
       image.decoding = 'async';
 
       image.onload = () => {
-        // Sky có thể chưa tạo khi effect này chạy lần đầu — scene creation sẽ set src riêng
+        const elapsed = (performance.now() - t0).toFixed(0);
+        console.debug(`[VR-DEBUG][imageLoad] onload fired in ${elapsed}ms | aSkyRef ready:`, !!aSkyRef.current, '| url:', imageUrl);
         if (aSkyRef.current) {
           aSkyRef.current.setAttribute('src', imageUrl);
           aSkyRef.current.setAttribute('color', '#ffffff');
+          console.debug('[VR-DEBUG][imageLoad] setAttribute src → applied to a-sky');
+        } else {
+          console.warn('[VR-DEBUG][imageLoad] onload fired but aSkyRef is NULL — image cannot be applied yet. Will rely on applyPendingImage via loaded event.');
         }
         setIsSceneImageLoading(false);
       };
 
-      image.onerror = () => {
+      image.onerror = (err) => {
+        console.error('[VR-DEBUG][imageLoad] image load ERROR', { url: imageUrl, err });
         setIsSceneImageLoading(false);
       };
 
       image.src = imageUrl;
+      console.debug('[VR-DEBUG][imageLoad] new Image().src set, fetching…');
 
       return () => {
         image.onload = null;
@@ -669,6 +714,7 @@ export default function Vr360SceneViewer({
       };
     }
 
+    console.debug('[VR-DEBUG][imageLoad] no imageUrl — clearing sky');
     setIsSceneImageLoading(false);
     if (aSkyRef.current) {
       aSkyRef.current.removeAttribute('src');
@@ -690,18 +736,24 @@ export default function Vr360SceneViewer({
     if (!cameraEl) return;
 
     const currentFov = Number(fovAngle) || Number(scene?.camera_fov) || DEFAULT_FOV;
-    cameraEl.setAttribute('animation__fov', {
-      property: 'fov',
-      to: currentFov,
-      dur: 300,
-      easing: 'easeInOutQuad',
-    });
+    const cameraObj = cameraEl.getObject3D('camera');
+
+    console.debug('[VR-DEBUG][fovUpdate] fovAngle:', fovAngle, '| resolved:', currentFov, '| THREE camera fov before:', cameraObj?.fov ?? 'null(not ready)');
+
+    // Chỉ dùng setAttribute — KHÔNG dùng animation__fov cùng lúc.
+    // animation__fov chạy 300ms từ old→new, nhưng setAttribute đã jump ngay lập tức
+    // → 2 mechanism xung đột, camera giật qua lại giữa 2 giá trị.
     cameraEl.setAttribute('fov', currentFov);
 
-    const cameraObj = cameraEl.getObject3D('camera');
+    // Direct THREE update để render ngay lập tức, không chờ A-Frame component tick
     if (cameraObj) {
+      const prevFov = cameraObj.fov;
       cameraObj.fov = currentFov;
       cameraObj.updateProjectionMatrix();
+      console.debug('[VR-DEBUG][fovUpdate] THREE camera fov:', prevFov, '→', cameraObj.fov);
+    } else {
+      // Camera chưa ready (initial mount) — setAttribute sẽ được A-Frame apply khi camera init xong
+      console.debug('[VR-DEBUG][fovUpdate] THREE camera not ready yet, setAttribute(fov) queued by A-Frame');
     }
   }, [fovAngle, scene?.id, scene?.camera_fov]);
 
@@ -837,9 +889,15 @@ export default function Vr360SceneViewer({
   }, []);
 
   useEffect(() => {
-    if (!scene || !aCameraRef.current) return undefined;
+    console.debug('[VR-DEBUG][emitHeading] effect triggered. scene:', scene?.id, '| aCameraRef ready:', !!aCameraRef.current, '| aframeReady:', aframeReady);
+    if (!scene || !aCameraRef.current) {
+      console.warn('[VR-DEBUG][emitHeading] Early return — scene:', !!scene, '| aCameraRef:', !!aCameraRef.current, '→ RAF NOT started, FOV will not rotate');
+      return undefined;
+    }
 
+    console.debug('[VR-DEBUG][emitHeading] Starting RAF heading loop for scene', scene?.id);
     let isAlive = true;
+    let frameCount = 0;
 
     const emitHeading = () => {
       if (!isAlive) return;
@@ -852,12 +910,29 @@ export default function Vr360SceneViewer({
 
       const lookControls = cameraEl.components?.['look-controls'];
       let nextHeading = null;
+      let source = 'none';
 
       if (lookControls?.yawObject?.rotation) {
-        nextHeading = normalizeBearing(toDegrees(lookControls.yawObject.rotation.y));
+        const yawRad = lookControls.yawObject.rotation.y;
+        const yawDeg = toDegrees(yawRad);
+        nextHeading = normalizeBearing(-yawDeg);
+        source = 'yawObject';
+
+        // Log chi tiết mỗi 120 frame (~2s) để debug góc lệch
+        frameCount += 1;
+        if (frameCount % 120 === 0) {
+          const aframeDeclaredRotY = Number(cameraEl.getAttribute('rotation')?.y);
+          console.debug('[VR-DEBUG][emitHeading] yawRad:', yawRad.toFixed(4), '| yawDeg:', yawDeg.toFixed(2), '| bearing=-yawDeg→normalized:', nextHeading.toFixed(2), '| aframe rotation.y attr:', aframeDeclaredRotY.toFixed(2), '| look right → yawDeg<0 → bearing>0 (CW) ✓');
+        }
       } else {
         const rotY = Number(cameraEl.getAttribute('rotation')?.y);
-        if (Number.isFinite(rotY)) nextHeading = normalizeBearing(rotY);
+        if (Number.isFinite(rotY)) {
+          nextHeading = normalizeBearing(rotY);
+          source = 'getAttribute(rotation)';
+        }
+        if (frameCount === 0) {
+          console.warn('[VR-DEBUG][emitHeading] look-controls.yawObject not available — fallback to getAttribute(rotation). source:', source, '| lookControls:', !!lookControls, '| yawObject:', !!lookControls?.yawObject);
+        }
       }
 
       if (nextHeading != null) {
@@ -885,7 +960,7 @@ export default function Vr360SceneViewer({
       }
       lastHeadingRef.current = null;
     };
-  }, [scene?.id]);
+  }, [scene?.id, aframeReady]);
 
   useEffect(() => {
     const handleResetNorthRequest = () => {

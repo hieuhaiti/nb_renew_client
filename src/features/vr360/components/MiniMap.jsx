@@ -659,6 +659,10 @@ export default function MiniMap({
   }, [currentCenter, heading, fovAngle, fovRadius, updateFovPolygon]);
 
   useEffect(() => {
+    console.debug('[VR-DEBUG][MiniMap] smooth-fov-update listener registered');
+
+    let flushCount = 0;
+
     const flushHeading = () => {
       headingRafRef.current = null;
       const nextBearing = pendingHeadingRef.current;
@@ -666,7 +670,17 @@ export default function MiniMap({
       if (!Number.isFinite(nextBearing)) return;
 
       const center = currentCenterRef.current;
-      if (!center) return;
+      if (!center) {
+        if (flushCount === 0) {
+          console.warn('[VR-DEBUG][MiniMap] flushHeading: currentCenterRef is NULL — FOV polygon cannot be drawn. Check that scenes/spot have coordinates.');
+        }
+        return;
+      }
+
+      flushCount += 1;
+      if (flushCount <= 3 || flushCount % 60 === 0) {
+        console.debug('[VR-DEBUG][MiniMap] flushHeading #' + flushCount + ' bearing:', nextBearing.toFixed(2), '| center:', center, '| fovAngle:', fovAngleRef.current, '| fovRadius:', fovRadiusRef.current);
+      }
 
       setHeading(nextBearing);
       updateFovPolygon(center, nextBearing, fovAngleRef.current, fovRadiusRef.current);
@@ -684,6 +698,7 @@ export default function MiniMap({
     };
 
     window.addEventListener('smooth-fov-update', handleSmoothFovUpdate);
+    console.debug('[VR-DEBUG][MiniMap] currentCenterRef at listener setup:', currentCenterRef.current);
 
     return () => {
       window.removeEventListener('smooth-fov-update', handleSmoothFovUpdate);
