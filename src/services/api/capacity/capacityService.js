@@ -5,7 +5,7 @@ import { tokenManager } from '@/lib/tokenManager';
 
 // GET /capacity/current
 export function useGetCurrentCapacity(options = {}) {
-  return useApiQuery(['capacity', 'current'], 'capacity/current', {
+  return useApiQuery(['capacity', 'current'], 'capacity/current?sortOrder=desc', {
     staleTime: 60 * 1000,
     ...options,
   });
