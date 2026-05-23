@@ -200,7 +200,7 @@ export function TourismDetailSidebar({
           />
           {hasVrTour && (
             <CtaBtn
-              onClick={() => navigate('/vr360', { state: { spotId: currentPointId } })}
+              onClick={() => navigate(`/vr360/${currentPointId}`)}
               icon={<RectangleGoggles className="h-4 w-4" />}
               label={t('tourism.vr_tour', 'VR 360')}
             />

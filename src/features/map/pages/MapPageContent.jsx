@@ -670,7 +670,7 @@ export default function MapPage() {
 
   const handleOpenVr = (target) => {
     const spotId = target?.id || target?.spot_id || null;
-    navigate('/vr360', spotId ? { state: { spotId } } : undefined);
+    navigate(spotId ? `/vr360/${spotId}` : '/vr360');
   };
 
   function handleLayerToggle(key, checked) {

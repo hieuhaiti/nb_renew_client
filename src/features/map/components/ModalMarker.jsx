@@ -120,7 +120,7 @@ export default function ModalMarker() {
   const handleVrTour = () => {
     const resolvedSpotId = spotId ?? spot?.id ?? spot?.spot_id ?? spot?.point_id;
     if (!resolvedSpotId) return;
-    navigate('/vr360', { state: { spotId: resolvedSpotId } });
+    navigate(`/vr360/${resolvedSpotId}`);
     closeSpotModal();
   };
 

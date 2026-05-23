@@ -483,6 +483,7 @@ export default function Vr360SceneViewer({
   const headingRafRef = useRef(null);
   const lastHeadingRef = useRef(null);
   const latestImageUrlRef = useRef(null);
+  const isNarrationAutoPlayRef = useRef(true);
 
   const [aframeReady, setAframeReady] = useState(!!window.AFRAME);
   const [isSceneImageLoading, setIsSceneImageLoading] = useState(false);
@@ -782,7 +783,9 @@ export default function Vr360SceneViewer({
     if (Number.isFinite(sceneVolume)) {
       setNarrationVolume(clampVolume(sceneVolume * 100));
     }
-    setIsNarrationAutoPlay(scene?.auto_play_narration ?? true);
+    const nextAutoPlay = scene?.auto_play_narration ?? true;
+    isNarrationAutoPlayRef.current = nextAutoPlay;
+    setIsNarrationAutoPlay(nextAutoPlay);
     setIsNarrationMuted(false);
   }, [scene?.id]);
 
@@ -793,10 +796,9 @@ export default function Vr360SceneViewer({
       narrationAudioRef.current = null;
     }
 
-    if (!narrationUrl) {
-      setIsNarrationPlaying(false);
-      return;
-    }
+    setIsNarrationPlaying(false);
+
+    if (!narrationUrl) return;
 
     const audio = new Audio(narrationUrl);
     audio.preload = 'auto';
@@ -814,13 +816,16 @@ export default function Vr360SceneViewer({
 
     narrationAudioRef.current = audio;
 
-    if (isNarrationAutoPlay) {
+    // Đọc từ ref thay vì state để tránh audio effect bị re-run khi autoplay thay đổi
+    if (isNarrationAutoPlayRef.current) {
       audio.play().catch(() => {
         setIsNarrationPlaying(false);
       });
     }
 
     return () => {
+      // Reset ngay khi cleanup, không chờ 'pause' event vì listener sẽ bị xóa ngay sau
+      setIsNarrationPlaying(false);
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('ended', handleEnd);
@@ -835,7 +840,6 @@ export default function Vr360SceneViewer({
     scene?.id,
     scene?.ambient_sound_loop,
     scene?.narration_audio_url,
-    isNarrationAutoPlay,
   ]);
 
   useEffect(() => {

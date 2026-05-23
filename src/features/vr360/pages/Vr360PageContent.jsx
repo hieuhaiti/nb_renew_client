@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import RootLayout from '@/components/layout/RootLayout';
 import {
   useGetAllDataPoints,
@@ -385,17 +385,24 @@ export default function Vr360PageContent() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { id: routeSpotId } = useParams();
   const prefillHandledRef = useRef(false);
   const narrationToggleRef = useRef(null);
   const [mobilePanelTab, setMobilePanelTab] = useState('scenes');
   const sceneListScrollRef = useRef(null);
 
   const entrySpotId = useMemo(
-    () => location.state?.spotId ?? location.state?.spot?.id ?? location.state?.spot?.spot_id,
-    [location.state]
+    () =>
+      routeSpotId ??
+      location.state?.spotId ??
+      location.state?.spot?.id ??
+      location.state?.spot?.spot_id,
+    [routeSpotId, location.state]
   );
 
-  const [selectedSpotId, setSelectedSpotId] = useState(null);
+  const [selectedSpotId, setSelectedSpotId] = useState(() =>
+    routeSpotId ? String(routeSpotId) : null
+  );
   const [selectedSceneId, setSelectedSceneId] = useState(null);
 
   // Prefill from navigation state

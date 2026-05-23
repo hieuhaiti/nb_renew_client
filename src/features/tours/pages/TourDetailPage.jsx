@@ -53,11 +53,16 @@ function normalizeStopMediaUrls(response) {
 
   return source
     .filter((item) => {
-      const mediaType = String(item?.media_type || item?.type || item?.file_type || '').toLowerCase();
+      const mediaType = String(
+        item?.media_type || item?.type || item?.file_type || ''
+      ).toLowerCase();
       const mimeType = String(item?.mime_type || '').toLowerCase();
       return !(mediaType.includes('video') || mimeType.startsWith('video/'));
     })
-    .map((item) => item?.url || item?.file_url || item?.file_path || item?.path || item?.image_url || '')
+    .map(
+      (item) =>
+        item?.url || item?.file_url || item?.file_path || item?.path || item?.image_url || ''
+    )
     .filter(Boolean);
 }
 
@@ -159,7 +164,7 @@ function RelatedTourCard({ tour, onOpen, t }) {
   return (
     <article
       onClick={onOpen}
-      className="cursor-pointer overflow-hidden rounded-[24px] border-border bg-card shadow-(--ambient-shadow) transition hover:-translate-y-0.5"
+      className="border-border bg-card cursor-pointer overflow-hidden rounded-[24px] shadow-(--ambient-shadow) transition hover:-translate-y-0.5"
     >
       <div
         className="h-[130px] bg-cover bg-center"
@@ -231,8 +236,8 @@ export default function TourDetailPage() {
               {t('tourPage.back')}
             </Button>
           </div>
-      </div>
-    </RootLayout>
+        </div>
+      </RootLayout>
     );
   }
 
@@ -294,19 +299,8 @@ export default function TourDetailPage() {
                 <Button
                   variant="ghost"
                   type="button"
-                  className="inline-flex items-center gap-2 rounded-full px-4.5 py-3 font-black text-white hover:text-white"
-                  style={{
-                    background: PRIMARY_GRAD,
-                    boxShadow: '0 12px 26px rgba(18,169,183,.25)',
-                  }}
-                >
-                  <CalendarCheck size={14} /> {t('tourPage.bookNow')}
-                </Button>
-                <Button
-                  variant="ghost"
-                  type="button"
                   onClick={handleOpenMap}
-                  className="text-secondary inline-flex items-center gap-2 rounded-full bg-card px-4.5 py-3 font-black"
+                  className="text-secondary bg-card inline-flex items-center gap-2 rounded-full px-4.5 py-3 font-black"
                 >
                   <Map size={14} /> {t('tourPage.viewRouteOnMap')}
                 </Button>
@@ -360,7 +354,7 @@ export default function TourDetailPage() {
             {/* Main col */}
             <div className="flex flex-col gap-[18px]">
               {/* Overview */}
-              <div className="rounded-[28px] border-border bg-card p-5 shadow-(--ambient-shadow)">
+              <div className="border-border bg-card rounded-[28px] p-5 shadow-(--ambient-shadow)">
                 <h2 className="text-foreground mb-[14px] flex items-center gap-[10px] text-[18px] font-black">
                   {t('tourPage.information')}
                 </h2>
@@ -410,7 +404,7 @@ export default function TourDetailPage() {
               </div>
 
               {/* Schedule */}
-              <div className="rounded-[28px] border-border bg-card p-5 shadow-(--ambient-shadow)">
+              <div className="border-border bg-card rounded-[28px] p-5 shadow-(--ambient-shadow)">
                 <h2 className="text-foreground mb-[14px] flex items-center gap-[10px] text-[18px] font-black">
                   {t('tourPage.itinerary')}
                 </h2>
@@ -464,7 +458,7 @@ export default function TourDetailPage() {
               </div>
 
               {/* Services included / excluded */}
-              <div className="rounded-[28px] border-border bg-card p-5 shadow-(--ambient-shadow)">
+              <div className="border-border bg-card rounded-[28px] p-5 shadow-(--ambient-shadow)">
                 <h2 className="text-foreground mb-[14px] flex items-center gap-[10px] text-[18px] font-black">
                   {t('tourPage.includes')} / {t('tourPage.excludes')}
                 </h2>
@@ -492,7 +486,7 @@ export default function TourDetailPage() {
 
               {/* Related tours */}
               {relatedTours.length > 0 && (
-                <div className="rounded-[28px] border-border bg-card p-5 shadow-(--ambient-shadow)">
+                <div className="border-border bg-card rounded-[28px] p-5 shadow-(--ambient-shadow)">
                   <h2 className="text-foreground mb-[14px] flex items-center gap-[10px] text-[18px] font-black">
                     {t('tourPage.relatedTours')}
                   </h2>
@@ -512,9 +506,9 @@ export default function TourDetailPage() {
 
             {/* Sidebar */}
             <aside className="flex flex-col gap-[18px] xl:sticky xl:top-[86px]">
-              <div className="overflow-hidden rounded-[28px] border-border bg-card shadow-(--ambient-shadow)">
+              <div className="border-border bg-card overflow-hidden rounded-[28px] shadow-(--ambient-shadow)">
                 <div
-                  className="border-b border-border p-5"
+                  className="border-border border-b p-5"
                   style={{ background: 'linear-gradient(135deg,#fff8e6,#fff)' }}
                 >
                   <small className="text-muted-foreground text-[13px] font-black">
@@ -532,7 +526,7 @@ export default function TourDetailPage() {
               </div>
 
               {/* Rating card */}
-              <div className="rounded-[28px] border-border bg-card p-5 shadow-(--ambient-shadow)">
+              <div className="border-border bg-card rounded-[28px] p-5 shadow-(--ambient-shadow)">
                 <h3 className="text-foreground mb-[14px] flex items-center gap-[10px] text-[16px] font-black">
                   {t('tourPage.rating')}
                 </h3>
@@ -551,7 +545,7 @@ export default function TourDetailPage() {
               </div>
 
               {/* Guide / Provider card */}
-              <div className="rounded-[28px] border-border bg-card p-5 shadow-(--ambient-shadow)">
+              <div className="border-border bg-card rounded-[28px] p-5 shadow-(--ambient-shadow)">
                 <h3 className="text-foreground mb-[14px] flex items-center gap-[10px] text-[16px] font-black">
                   {t('tourPage.provider')}
                 </h3>

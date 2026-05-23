@@ -118,10 +118,22 @@
       "see_all": "See all features"
     },
     "feature_cards": {
-      "map": { "title": "Smart Tourism Map", "desc": "Tourism spots, services, basemaps, and search by name or radius." },
-      "weather": { "title": "Weather, AQI & Alerts", "desc": "Wind, rain, air quality updates and extreme weather warnings." },
-      "capacity": { "title": "Tourist Capacity Tracking", "desc": "Load levels, overload alerts, and alternative routing suggestions." },
-      "satellite": { "title": "Conservation Zone Monitoring", "desc": "Satellite imagery search, time comparison, classification and change detection." }
+      "map": {
+        "title": "Smart Tourism Map",
+        "desc": "Tourism spots, services, basemaps, and search by name or radius."
+      },
+      "weather": {
+        "title": "Weather, AQI & Alerts",
+        "desc": "Wind, rain, air quality updates and extreme weather warnings."
+      },
+      "capacity": {
+        "title": "Tourist Capacity Tracking",
+        "desc": "Load levels, overload alerts, and alternative routing suggestions."
+      },
+      "satellite": {
+        "title": "Conservation Zone Monitoring",
+        "desc": "Satellite imagery search, time comparison, classification and change detection."
+      }
     },
     "featured_destinations": {
       "label": "Featured Destinations",
@@ -201,10 +213,30 @@
       "desc": "The homepage guides each user to the right module: search destinations, post services, collect feedback, manage alerts, and view reports."
     },
     "role_cards": {
-      "tourist": { "title": "Tourists", "item_1": "Find destinations, tours, services", "item_2": "Create and share itineraries", "item_3": "View VR 360°, leave reviews" },
-      "business": { "title": "Businesses", "item_1": "Post listings and create vouchers", "item_2": "Receive feedback and reviews", "item_3": "Revenue and crowd dashboard" },
-      "manager": { "title": "Managers", "item_1": "Receive automated reports", "item_2": "Capacity overload alerts", "item_3": "Monitor conservation zones" },
-      "admin": { "title": "System Admins", "item_1": "Manage accounts and APIs", "item_2": "Manage map layers", "item_3": "Audit logs and permissions" }
+      "tourist": {
+        "title": "Tourists",
+        "item_1": "Find destinations, tours, services",
+        "item_2": "Create and share itineraries",
+        "item_3": "View VR 360°, leave reviews"
+      },
+      "business": {
+        "title": "Businesses",
+        "item_1": "Post listings and create vouchers",
+        "item_2": "Receive feedback and reviews",
+        "item_3": "Revenue and crowd dashboard"
+      },
+      "manager": {
+        "title": "Managers",
+        "item_1": "Receive automated reports",
+        "item_2": "Capacity overload alerts",
+        "item_3": "Monitor conservation zones"
+      },
+      "admin": {
+        "title": "System Admins",
+        "item_1": "Manage accounts and APIs",
+        "item_2": "Manage map layers",
+        "item_3": "Audit logs and permissions"
+      }
     },
     "footer_section": {
       "brand": "Ninh Binh Tourism Information Portal — Integrated GIS, VR360, OCOP and smart itinerary platform",
@@ -957,6 +989,7 @@
         "cultural": "Cultural",
         "traditional": "Traditional",
         "music": "Music",
+        "nature": "Nature",
         "food": "Food",
         "craft": "Craft",
         "sport": "Sport"
