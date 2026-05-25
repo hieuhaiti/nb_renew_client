@@ -1,4 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Clock, LocateFixed, RefreshCw, Search, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   useGetCurrentCapacity,
-  useCapacityWebSocket,
+  useCapacityStream,
 } from '@/services/api/capacity/capacityService';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
@@ -157,6 +158,31 @@ function formatRelativeTime(isoStr) {
   }
 }
 
+function patchCapacityCache(old, sseData) {
+  if (!old || !sseData?.spot_id) return old;
+  const spotId = String(sseData.spot_id);
+  const patch = {
+    visitor_count: sseData.visitor_count,
+    capacity_pct: sseData.capacity_pct,
+    status: sseData.status,
+    recorded_at: sseData.recorded_at,
+  };
+  function patchArr(arr) {
+    if (!Array.isArray(arr)) return arr;
+    return arr.map((item) => {
+      const id = String(item.spot_id ?? item.id ?? '');
+      return id === spotId ? { ...item, ...patch } : item;
+    });
+  }
+  const d = old?.data;
+  if (!d) return old;
+  if (Array.isArray(d.capacity)) return { ...old, data: { ...d, capacity: patchArr(d.capacity) } };
+  if (Array.isArray(d.spots)) return { ...old, data: { ...d, spots: patchArr(d.spots) } };
+  if (Array.isArray(d.items)) return { ...old, data: { ...d, items: patchArr(d.items) } };
+  if (Array.isArray(d)) return { ...old, data: patchArr(d) };
+  return old;
+}
+
 function CapacityRowSkeleton() {
   return (
     <div className="space-y-2 rounded-lg border p-3">
@@ -177,40 +203,25 @@ export default function CapacityPanel() {
 
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
-  const [capacityOverrides, setCapacityOverrides] = useState(() => new Map());
 
+  const queryClient = useQueryClient();
   const numberFormatter = useMemo(() => new Intl.NumberFormat(isVi ? 'vi-VN' : 'en-US'), [isVi]);
 
   const { data, isLoading, isError, isFetching, refetch } = useGetCurrentCapacity();
-  const { data: wsData, status: wsStatus } = useCapacityWebSocket();
+  const { data: sseData, status: sseStatus } = useCapacityStream();
 
   useEffect(() => {
-    if (!wsData?.spot_id) return;
-    setCapacityOverrides((prev) => {
-      const next = new Map(prev);
-      next.set(String(wsData.spot_id), {
-        visitor_count: wsData.visitor_count,
-        capacity_pct: wsData.capacity_pct,
-        status: wsData.status,
-        recorded_at: wsData.recorded_at,
-      });
-      return next;
-    });
-  }, [wsData]);
+    if (!sseData?.spot_id) return;
+    queryClient.setQueryData(['capacity', 'current'], (old) => patchCapacityCache(old, sseData));
+  }, [sseData, queryClient]);
 
   const items = useMemo(() => {
     const raw = data?.data?.capacity ?? data?.data?.spots ?? data?.data?.items ?? data?.data ?? [];
     if (!Array.isArray(raw)) return [];
-    return raw.map((item) => {
-      const id = String(item.spot_id ?? item.id ?? '');
-      const override = id ? capacityOverrides.get(id) : undefined;
-      const merged = override ? { ...item, ...override } : item;
-      return normalizeItem(
-        merged,
-        t('mapPage.capacityPanel.defaultName', { defaultValue: 'Địa điểm' })
-      );
-    });
-  }, [data, capacityOverrides, t]);
+    return raw.map((item) =>
+      normalizeItem(item, t('mapPage.capacityPanel.defaultName', { defaultValue: 'Địa điểm' }))
+    );
+  }, [data, t]);
 
   const filtered = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -259,12 +270,12 @@ export default function CapacityPanel() {
             {t('mapPage.capacityPanel.title', { defaultValue: 'Sức chứa điểm đến' })}
           </p>
           <p className="typo-meta text-muted-foreground truncate">
-            {wsStatus === 'open' ? (
+            {sseStatus === 'open' ? (
               <span className="flex items-center gap-1 text-emerald-600">
                 <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" />
                 {t('mapPage.capacityPanel.live', { defaultValue: 'Trực tiếp' })}
               </span>
-            ) : wsStatus === 'connecting' ? (
+            ) : sseStatus === 'connecting' ? (
               t('mapPage.capacityPanel.connecting', { defaultValue: 'Đang kết nối...' })
             ) : isFetching ? (
               t('mapPage.capacityPanel.syncing', { defaultValue: 'Đang cập nhật...' })
@@ -281,7 +292,7 @@ export default function CapacityPanel() {
             )}
           </p>
         </div>
-        {wsStatus !== 'open' && (
+        {sseStatus !== 'open' && (
           <Button
             type="button"
             size="sm"

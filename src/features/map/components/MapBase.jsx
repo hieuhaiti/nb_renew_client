@@ -40,7 +40,7 @@ import { withBaseUrl } from '@/lib/utils';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useOcopModalStore, useSpotDetailModalStore } from '@/features/map/store/useModalStore';
 import { useTrafficStore } from '@/features/map/store/useTrafficStore';
-import { useCapacityWebSocket } from '@/services/api/capacity/capacityService';
+import { useCapacityStream } from '@/services/api/capacity/capacityService';
 import { useGetOcopGeoJson } from '@/services/api/ocop/ocopService';
 import { SatelliteMapOverlayControls } from '@/features/satellite';
 
@@ -141,7 +141,7 @@ export default function MapBaseArea() {
   const prevRenderedSourceIdsRef = useRef(new Set());
   const featureCollectionBySourceId = useRef(new Map());
 
-  const { data: wsCapacityData } = useCapacityWebSocket();
+  const { data: sseCapacityData } = useCapacityStream();
   const { data: ocopGeoJsonData } = useGetOcopGeoJson();
 
   const ocopFeatureCollection = useMemo(() => {
@@ -725,12 +725,12 @@ export default function MapBaseArea() {
   ]);
 
   useEffect(() => {
-    if (!wsCapacityData?.spot_id) return;
+    if (!sseCapacityData?.spot_id) return;
     if (!mapsReady.single) return;
     const maps = getStyleReadyMaps();
     if (maps.length === 0) return;
 
-    const spotId = String(wsCapacityData.spot_id);
+    const spotId = String(sseCapacityData.spot_id);
 
     featureCollectionBySourceId.current.forEach((fc, sourceId) => {
       const hasSpot = fc.features.some(
@@ -738,7 +738,7 @@ export default function MapBaseArea() {
       );
       if (!hasSpot) return;
 
-      const updated = applyCapacityUpdateToCollection(fc, wsCapacityData);
+      const updated = applyCapacityUpdateToCollection(fc, sseCapacityData);
       featureCollectionBySourceId.current.set(sourceId, updated);
 
       maps.forEach((map) => {
@@ -747,7 +747,7 @@ export default function MapBaseArea() {
         source.setData(updated);
       });
     });
-  }, [wsCapacityData, mapsReady.single, mapsReady.split]);
+  }, [sseCapacityData, mapsReady.single, mapsReady.split]);
 
   useEffect(() => {
     if (!mapsReady.single || !ocopFeatureCollection) return;

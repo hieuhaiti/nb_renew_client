@@ -1389,3 +1389,168 @@ export function removeOcopLayer(map) {
   });
   if (map.getSource(OCOP_SOURCE_ID)) map.removeSource(OCOP_SOURCE_ID);
 }
+
+// --- Chatbot AI Map Action Utilities ---
+
+const aiMarkersRegistry = new WeakMap();
+const aiPopupsRegistry = new WeakMap();
+const aiRouteRegistry = new WeakMap();
+let aiRouteIdCounter = 0;
+
+const OCOP_ALL_LAYER_IDS = [OCOP_POINT_LAYER_ID, OCOP_CLUSTER_LAYER_ID, OCOP_CLUSTER_COUNT_LAYER_ID];
+
+function getAiMarkerList(map) {
+  if (!aiMarkersRegistry.has(map)) aiMarkersRegistry.set(map, []);
+  return aiMarkersRegistry.get(map);
+}
+
+function getAiPopupList(map) {
+  if (!aiPopupsRegistry.has(map)) aiPopupsRegistry.set(map, []);
+  return aiPopupsRegistry.get(map);
+}
+
+function getAiRouteList(map) {
+  if (!aiRouteRegistry.has(map)) aiRouteRegistry.set(map, []);
+  return aiRouteRegistry.get(map);
+}
+
+export function clearAiMapOverlays(map) {
+  if (!map) return;
+  getAiMarkerList(map).forEach((m) => m.remove());
+  aiMarkersRegistry.set(map, []);
+  getAiPopupList(map).forEach((p) => p.remove());
+  aiPopupsRegistry.set(map, []);
+  getAiRouteList(map).forEach(({ sourceId, layerId }) => {
+    if (map.getLayer(layerId)) map.removeLayer(layerId);
+    if (map.getSource(sourceId)) map.removeSource(sourceId);
+  });
+  aiRouteRegistry.set(map, []);
+}
+
+export function executeChatbotMapAction(map, action) {
+  if (!map || !action?.action) return;
+
+  switch (action.action) {
+    case 'fly_to': {
+      const [lng, lat] = action.center ?? [];
+      if (lng == null || lat == null) break;
+      map.flyTo({
+        center: [Number(lng), Number(lat)],
+        zoom: action.zoom != null ? Number(action.zoom) : Math.max(map.getZoom(), 13),
+        essential: true,
+        duration: 2000,
+        pitch: 30,
+      });
+      break;
+    }
+    case 'pan': {
+      const [lng, lat] = action.center ?? [];
+      if (lng == null || lat == null) break;
+      map.panTo([Number(lng), Number(lat)], { duration: 800 });
+      break;
+    }
+    case 'zoom': {
+      if (action.zoom == null) break;
+      map.zoomTo(Number(action.zoom), { duration: 800 });
+      break;
+    }
+    case 'fit_bounds': {
+      const bounds = action.bounds;
+      if (!Array.isArray(bounds) || bounds.length < 2) break;
+      const [[minLng, minLat], [maxLng, maxLat]] = bounds;
+      if ([minLng, minLat, maxLng, maxLat].some((v) => v == null)) break;
+      map.fitBounds(
+        [
+          [Number(minLng), Number(minLat)],
+          [Number(maxLng), Number(maxLat)],
+        ],
+        { padding: action.padding ?? 60, duration: 1200 }
+      );
+      break;
+    }
+    case 'draw_route': {
+      const coordinates = action.coordinates;
+      if (!Array.isArray(coordinates) || coordinates.length < 2) break;
+      const id = ++aiRouteIdCounter;
+      const sourceId = `chatbot-ai-route-${id}`;
+      const layerId = `${sourceId}-line`;
+      const color = action.color ?? '#2563eb';
+      const normalizedCoords = coordinates.map(([lng, lat]) => [Number(lng), Number(lat)]);
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'LineString', coordinates: normalizedCoords },
+        },
+      });
+      map.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': color, 'line-width': 5, 'line-opacity': 0.9 },
+      });
+      getAiRouteList(map).push({ sourceId, layerId });
+      const routeBounds = normalizedCoords.reduce(
+        (acc, coord) => acc.extend(coord),
+        new mapboxgl.LngLatBounds(normalizedCoords[0], normalizedCoords[0])
+      );
+      map.fitBounds(routeBounds, { padding: 72, duration: 1200 });
+      break;
+    }
+    case 'add_marker': {
+      const [lng, lat] = action.center ?? [];
+      if (lng == null || lat == null) break;
+      const color = action.color ?? '#ef4444';
+      const marker = new mapboxgl.Marker({ color, scale: 0.85 }).setLngLat([
+        Number(lng),
+        Number(lat),
+      ]);
+      if (action.label) {
+        marker.setPopup(
+          new mapboxgl.Popup({ offset: 28, closeButton: true }).setHTML(
+            `<div style="font-size:13px;font-weight:600;padding:2px 0">${action.label}</div>`
+          )
+        );
+      }
+      marker.addTo(map);
+      if (action.label) marker.togglePopup();
+      getAiMarkerList(map).push(marker);
+      break;
+    }
+    case 'clear_markers': {
+      clearAiMapOverlays(map);
+      // scope === 'all' also hides highlight markers — leave highlight state to caller
+      break;
+    }
+    case 'show_popup': {
+      const [lng, lat] = action.center ?? [];
+      if (lng == null || lat == null) break;
+      const popup = new mapboxgl.Popup({ closeButton: true, offset: 14, maxWidth: '300px' }).setLngLat(
+        [Number(lng), Number(lat)]
+      );
+      if (action.html) popup.setHTML(action.html);
+      else if (action.text) popup.setText(action.text);
+      popup.addTo(map);
+      getAiPopupList(map).push(popup);
+      break;
+    }
+    case 'filter_layer': {
+      const { layers = [], visible = true } = action;
+      layers.forEach((layerName) => {
+        const lower = String(layerName).toLowerCase();
+        if (lower === 'ocop') {
+          OCOP_ALL_LAYER_IDS.forEach((id) => {
+            if (map.getLayer(id)) {
+              map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+            }
+          });
+        }
+      });
+      break;
+    }
+    default:
+      break;
+  }
+}

@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useGetNewsComments, useCreateNewsComment } from '@/services/api/news/newsService';
 import { mutater } from '@/services/mutater';
 import useAuthStore from '@/stores/useAuthStore';
+import { ADMIN_ROLE_CODES } from '@/constants/roles';
 
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 
@@ -17,7 +18,8 @@ function CommentItem({
   isAuthenticated, currentUser,
 }) {
   const authorName =
-    comment.author_name || comment.user?.name || comment.user?.username ||
+    comment.author_full_name || comment.user_name || comment.author_name ||
+    comment.user?.name || comment.user?.username ||
     t('newsPage.comments.anonymous');
   const isOwn =
     currentUser &&
@@ -109,9 +111,64 @@ function CommentItem({
   );
 }
 
+const ADMIN_GRADIENT = { background: 'linear-gradient(135deg, #059669, #10b981)' };
+
+function isAdminComment(comment) {
+  if (comment.role_code != null) return ADMIN_ROLE_CODES.includes(comment.role_code);
+  return Boolean(comment.author_full_name);
+}
+
+function AdminReplyItem({ comment, t }) {
+  const authorName = comment.author_full_name || t('newsPage.comments.admin');
+
+  return (
+    <div className="ml-8 mt-2">
+      <article className="relative overflow-hidden rounded-[12px] border border-emerald-200/70 bg-emerald-50/60 p-3">
+        <div className="absolute bottom-0 left-0 top-0 w-[3px] rounded-l-[12px] bg-emerald-400" />
+        <div className="flex items-start gap-2.5 pl-1.5">
+          {comment.author_avatar ? (
+            <img
+              src={comment.author_avatar}
+              alt={authorName}
+              className="h-7 w-7 shrink-0 rounded-full object-cover ring-2 ring-emerald-300/60"
+            />
+          ) : (
+            <div
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+              style={ADMIN_GRADIENT}
+            >
+              {authorName.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-emerald-800">{authorName}</span>
+                <span className="inline-flex items-center rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                  Quản trị viên
+                </span>
+              </div>
+              {comment.created_at && (
+                <span className="shrink-0 text-xs text-emerald-600/70">
+                  {new Date(comment.created_at).toLocaleDateString('vi-VN')}
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-xs leading-relaxed text-emerald-900/80">{comment.content}</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  );
+}
+
 function ReplyItem({ comment, t, onDelete, currentUser }) {
+  if (isAdminComment(comment)) {
+    return <AdminReplyItem comment={comment} t={t} />;
+  }
+
   const authorName =
-    comment.author_name || comment.user?.name || comment.user?.username ||
+    comment.user_name || comment.author_name || comment.user?.name || comment.user?.username ||
     t('newsPage.comments.anonymous');
   const isOwn =
     currentUser &&
@@ -129,14 +186,14 @@ function ReplyItem({ comment, t, onDelete, currentUser }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
-              <span className="text-foreground text-xs font-semibold">{authorName}</span>
+              <span className="text-xs font-semibold text-foreground">{authorName}</span>
               {comment.created_at && (
-                <span className="text-muted-foreground shrink-0 text-xs">
+                <span className="shrink-0 text-xs text-muted-foreground">
                   {new Date(comment.created_at).toLocaleDateString('vi-VN')}
                 </span>
               )}
             </div>
-            <p className="text-muted-foreground mt-1 text-xs leading-relaxed">{comment.content}</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{comment.content}</p>
             {isOwn && (
               <Button
                 variant="ghost"
@@ -265,7 +322,7 @@ export default function NewsCommentSection({ newsId, t }) {
                   isAuthenticated={isAuthenticated}
                   currentUser={user}
                 />
-                {(repliesMap[comment.id] || []).map((reply) => (
+                {(comment.replies?.length ? comment.replies : repliesMap[comment.id] || []).map((reply) => (
                   <ReplyItem
                     key={reply.id}
                     comment={reply}

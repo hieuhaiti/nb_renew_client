@@ -7,7 +7,12 @@ import { Input } from '@/components/ui/input';
 import useAuthStore from '@/stores/useAuthStore';
 import useChatbotStore from '@/features/map/store/useChatbotStore';
 import { useMapStore } from '@/features/map/store/useMapStore';
-import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
+import {
+  highlightPointOnMap,
+  executeChatbotMapAction,
+  clearAiMapOverlays,
+} from '@/features/map/utils/MapHelper';
+import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import { useGetDataPointById } from '@/services/api/tourism-points/tourismPointsApi';
 import { withBaseUrl } from '@/lib/utils';
 
@@ -58,13 +63,53 @@ export default function ChatbotPanel() {
   const bottomRef = useRef(null);
   const lastMapActionMsgRef = useRef(null);
   const [mapActionItems, setMapActionItems] = useState([]);
+  const [highlightItems, setHighlightItems] = useState([]);
 
   useEffect(() => {
     const lastBotMsg = [...messages].reverse().find((m) => m.role === 'assistant' && m.mapActions);
     if (!lastBotMsg || lastBotMsg.id === lastMapActionMsgRef.current) return;
     lastMapActionMsgRef.current = lastBotMsg.id;
-    const attachAction = lastBotMsg.mapActions.find((a) => a.action === 'attach_items');
+
+    const actions = lastBotMsg.mapActions;
+
+    const attachAction = actions.find((a) => a.action === 'attach_items');
     setMapActionItems(attachAction?.items ?? []);
+
+    const highlightAction = actions.find((a) => a.action === 'highlight');
+    const firstSpotId = highlightAction?.spot_ids?.[0];
+    setHighlightItems(firstSpotId ? [{ id: firstSpotId }] : []);
+
+    if (!mapRef) return;
+
+    actions.forEach((action) => executeChatbotMapAction(mapRef, action));
+
+    // filter_layer for subcategory layers (OCOP handled inside executeChatbotMapAction)
+    const filterActions = actions.filter((a) => a.action === 'filter_layer');
+    if (filterActions.length > 0) {
+      const { subcategories, selectedSubcategoryIds, toggleSubcategory } =
+        useDataLayerStore.getState();
+      filterActions.forEach(({ layers = [], visible = true }) => {
+        layers.forEach((layerName) => {
+          const lower = String(layerName).toLowerCase();
+          if (lower === 'ocop') return; // already handled above
+          const match = subcategories.find((sc) => {
+            const vi = (sc.name_vi || '').toLowerCase();
+            const en = (sc.name_en || '').toLowerCase();
+            return (
+              vi.includes(lower) ||
+              en.includes(lower) ||
+              lower.includes(vi) ||
+              lower.includes(en)
+            );
+          });
+          if (match) {
+            const isSelected = selectedSubcategoryIds.includes(match.id);
+            if (Boolean(visible) !== isSelected) toggleSubcategory(match.id);
+          }
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   useEffect(() => {
@@ -93,6 +138,7 @@ export default function ChatbotPanel() {
   };
 
   const handleSelectSession = async (id) => {
+    if (mapRef) clearAiMapOverlays(mapRef);
     await switchSession(id);
     setShowHistory(false);
   };
@@ -103,6 +149,7 @@ export default function ChatbotPanel() {
   };
 
   const handleNewChat = () => {
+    if (mapRef) clearAiMapOverlays(mapRef);
     startNewChat();
     setShowHistory(false);
   };
@@ -322,6 +369,9 @@ export default function ChatbotPanel() {
 
       {mapActionItems.map((item, i) => (
         <MapActionTrigger key={item.id} item={item} mapRef={mapRef} flyTo={i === 0} />
+      ))}
+      {highlightItems.map((item) => (
+        <MapActionTrigger key={`hl-${item.id}`} item={item} mapRef={mapRef} flyTo />
       ))}
 
       {/* History Overlay */}
