@@ -20,7 +20,7 @@ export const headerSidebar = [
     label: 'headerAside.chatbot',
     value: 'chatbot',
     component: ChatbotPanel,
-    authen: true,
+    authen: false,
   },
   {
     icon: Calendar,
@@ -73,7 +73,9 @@ export const resolveDefaultHeaderSidebar = (isAuthenticated) => {
   const currentSidebarConfig = headerSidebar.find((item) => item.value === currentHeaderSidebar);
 
   if (currentSidebarConfig?.authen && !isAuthenticated) {
-    const fallbackSidebarConfig = headerSidebar.find((item) => item.value === fallbackHeaderSidebar);
+    const fallbackSidebarConfig = headerSidebar.find(
+      (item) => item.value === fallbackHeaderSidebar
+    );
     if (fallbackSidebarConfig && (!fallbackSidebarConfig.authen || isAuthenticated)) {
       return fallbackHeaderSidebar;
     }

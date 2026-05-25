@@ -1,7 +1,6 @@
 ﻿import { useEffect, useRef, useState } from 'react';
-import { Bot, LogIn, Menu, MessageSquare, Plus, Send, Sparkles, Trash2, X } from 'lucide-react';
+import { Bot, Menu, MessageSquare, Plus, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,7 +33,6 @@ function MapActionTrigger({ item, mapRef, flyTo }) {
 
 export default function ChatbotPanel() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const language = i18n.language?.startsWith('vi') ? 'vi' : 'en';
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -125,30 +123,6 @@ export default function ChatbotPanel() {
     }),
   ];
 
-  if (!isAuthenticated) {
-    return (
-      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-4 text-center">
-        <div className="bg-primary/10 text-primary ring-primary/20 flex h-14 w-14 items-center justify-center rounded-2xl ring-1">
-          <Bot className="size-7" />
-        </div>
-        <div>
-          <p className="typo-section-title text-foreground">
-            {t('mapPage.chatbot.heading', { defaultValue: 'Chatbot đồng hành' })}
-          </p>
-          <p className="typo-body text-muted-foreground mt-1">
-            {t('mapPage.chatbot.loginRequired', {
-              defaultValue: 'Đăng nhập để sử dụng trợ lý AI cá nhân hoá.',
-            })}
-          </p>
-        </div>
-        <Button variant="ghost" type="button" className="rounded-full" onClick={() => navigate('/login')}>
-          <LogIn className="size-4" />
-          {t('common.login', { defaultValue: 'Đăng nhập' })}
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="relative flex h-full min-h-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
       {/* Header */}
@@ -171,14 +145,16 @@ export default function ChatbotPanel() {
               })}
             </p>
           </div>
-          <Button variant="ghost"
-            type="button"
-            onClick={handleOpenHistory}
-            className="text-muted-foreground hover:text-foreground hover:bg-muted shrink-0 rounded-xl p-1.5 transition-colors"
-            aria-label={t('mapPage.chatbot.historyTitle', { defaultValue: 'Lịch sử trò chuyện' })}
-          >
-            <Menu className="size-4.5" />
-          </Button>
+          {isAuthenticated && (
+            <Button variant="ghost"
+              type="button"
+              onClick={handleOpenHistory}
+              className="text-muted-foreground hover:text-foreground hover:bg-muted shrink-0 rounded-xl p-1.5 transition-colors"
+              aria-label={t('mapPage.chatbot.historyTitle', { defaultValue: 'Lịch sử trò chuyện' })}
+            >
+              <Menu className="size-4.5" />
+            </Button>
+          )}
         </div>
 
         {messages.length === 0 && !isLoading && (
@@ -349,7 +325,7 @@ export default function ChatbotPanel() {
       ))}
 
       {/* History Overlay */}
-      {showHistory && (
+      {isAuthenticated && showHistory && (
         <div className="bg-card absolute inset-0 z-10 flex flex-col overflow-hidden rounded-2xl border shadow-xl">
           {/* Overlay header */}
           <div className="flex shrink-0 items-center justify-between border-b px-4 py-3">

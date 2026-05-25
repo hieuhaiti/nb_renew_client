@@ -30,7 +30,8 @@
     "search_results": "Kết quả tìm kiếm",
     "search_no_results": "Không tìm thấy kết quả",
     "search_view_all": "Xem tất cả kết quả",
-    "tourism_point": "Điểm du lịch"
+    "tourism_point": "Điểm du lịch",
+    "my_feedbacks": "Phản ánh của tôi"
   },
   "theme": {
     "toggle": "Chuyển giao diện",
@@ -333,6 +334,23 @@
       "tags_title": "Chủ đề",
       "related_title": "Bài viết liên quan",
       "no_related": "Không tìm thấy bài viết liên quan"
+    },
+    "comments": {
+      "title": "Bình luận",
+      "empty": "Chưa có bình luận nào. Hãy là người đầu tiên chia sẻ!",
+      "anonymous": "Khách",
+      "reply": "Trả lời",
+      "delete": "Xoá",
+      "reply_placeholder": "Trả lời bình luận này...",
+      "cancel": "Huỷ",
+      "send": "Gửi",
+      "write": "Viết bình luận",
+      "placeholder": "Chia sẻ cảm nhận của bạn về bài viết này...",
+      "sending": "Đang gửi...",
+      "submit": "Đăng bình luận",
+      "login_prompt": "Đăng nhập để tham gia bình luận",
+      "login_btn": "Đăng nhập ngay",
+      "error": "Đã có lỗi xảy ra. Vui lòng thử lại."
     }
   },
   "auth": {
@@ -1368,5 +1386,96 @@
       "hashtag": "🏷 Hashtag"
     },
     "just_now": "Vừa xong"
+  },
+  "feedbackPage": {
+    "hero": {
+      "badge": "Phản ánh người dân",
+      "title": "Phản ánh & Kiến nghị",
+      "description": "Gửi phản ánh về các vấn đề môi trường, hạ tầng, du lịch tại Ninh Bình. Chúng tôi ghi nhận và xử lý mọi ý kiến từ người dân."
+    },
+    "stats": {
+      "total": "Phản ánh đã duyệt"
+    },
+    "filters": {
+      "search_placeholder": "Tìm kiếm phản ánh...",
+      "all_priorities": "Tất cả mức độ"
+    },
+    "toolbar": {
+      "refresh": "Làm mới"
+    },
+    "priority": {
+      "low": "Thấp",
+      "normal": "Bình thường",
+      "high": "Cao",
+      "critical": "Khẩn cấp"
+    },
+    "status": {
+      "pending": "Chờ xử lý",
+      "in_progress": "Đang xử lý",
+      "resolved": "Đã xử lý",
+      "rejected": "Từ chối",
+      "closed": "Đóng"
+    },
+    "card": {
+      "anonymous": "Ẩn danh"
+    },
+    "detail": {
+      "title": "Chi tiết phản ánh",
+      "description": "Thông tin đầy đủ về phản ánh của người dân",
+      "verified": "Đã xác minh thực địa",
+      "not_verified": "Chưa xác minh",
+      "fields": {
+        "title": "Tiêu đề",
+        "content": "Nội dung",
+        "priority": "Mức độ ưu tiên",
+        "status": "Trạng thái",
+        "location_verified": "Xác minh vị trí",
+        "submitted_by": "Người gửi",
+        "location": "Vị trí",
+        "admin_response": "Phản hồi từ cơ quan",
+        "images": "Ảnh đính kèm",
+        "created_at": "Ngày gửi"
+      }
+    },
+    "submit": {
+      "btn_label": "Gửi phản ánh",
+      "dialog_title": "Gửi phản ánh mới",
+      "dialog_desc": "Mô tả vấn đề bạn muốn phản ánh. Chúng tôi sẽ xem xét và xử lý trong thời gian sớm nhất.",
+      "auth_required_title": "Yêu cầu đăng nhập",
+      "auth_required_desc": "Vui lòng đăng nhập để gửi phản ánh.",
+      "cancel": "Hủy",
+      "submit": "Gửi phản ánh",
+      "submitting": "Đang gửi...",
+      "fields": {
+        "title": "Tiêu đề phản ánh",
+        "title_placeholder": "Ví dụ: Rác thải gần bến thuyền Tràng An",
+        "content": "Nội dung mô tả",
+        "content_placeholder": "Mô tả chi tiết vấn đề bạn muốn phản ánh...",
+        "priority": "Mức độ ưu tiên",
+        "location": "Vị trí (tùy chọn)",
+        "location_placeholder": "Ví dụ: Gần cổng vào khu du lịch Tràng An",
+        "location_mode_text": "Nhập địa chỉ",
+        "location_mode_geo": "Định vị tôi",
+        "locate_me": "Xác định vị trí của tôi",
+        "locating": "Đang định vị...",
+        "locate_acquired": "Đã xác định vị trí"
+      },
+      "location_error": "Không thể xác định vị trí. Vui lòng cấp quyền truy cập vị trí.",
+      "errors": {
+        "title_min": "Tiêu đề phải có ít nhất 10 ký tự",
+        "title_max": "Tiêu đề không được vượt quá 500 ký tự",
+        "content_min": "Nội dung phải có ít nhất 20 ký tự"
+      }
+    },
+    "pagination": {
+      "page": "Trang {{current}} / {{total}}"
+    },
+    "fab_tooltip_unauth": "Đăng nhập để gửi phản ánh",
+    "states": {
+      "empty_title": "Chưa có phản ánh nào",
+      "empty_desc": "Hãy là người đầu tiên gửi phản ánh về khu vực này.",
+      "error": "Không thể tải danh sách phản ánh. Vui lòng thử lại.",
+      "not_found": "Không tìm thấy phản ánh này."
+    }
   }
 }

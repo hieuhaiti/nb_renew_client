@@ -8,6 +8,8 @@ import {
   extractBotReply,
   extractMapActions,
 } from '@/services/api/chatbot/chatbotService';
+import useAuthStore from '@/stores/useAuthStore';
+import { getAnonymousId } from '@/lib/anonymousId';
 
 const useChatbotStore = create((set, get) => ({
   sessionId: null,
@@ -76,6 +78,9 @@ const useChatbotStore = create((set, get) => ({
     const trimmed = text?.trim();
     if (!trimmed || get().isSending) return;
 
+    const isAuthenticated = useAuthStore.getState().isAuthenticated;
+    const anonymousId = isAuthenticated ? null : getAnonymousId();
+
     const userMsg = {
       id: `user-${Date.now()}`,
       role: 'user',
@@ -87,7 +92,7 @@ const useChatbotStore = create((set, get) => ({
     try {
       let sid = get().sessionId;
       if (!sid) {
-        const session = await createChatSession(language);
+        const session = await createChatSession(language, anonymousId);
         sid = session.id;
         set((s) => ({
           sessionId: sid,
@@ -97,7 +102,7 @@ const useChatbotStore = create((set, get) => ({
         }));
       }
 
-      const data = await apiSendMessage(sid, trimmed, language);
+      const data = await apiSendMessage(sid, trimmed, language, anonymousId);
       const msgData = data?.message && typeof data.message === 'object' ? data.message : null;
       const botMsg = {
         id: msgData?.id ? String(msgData.id) : `bot-${Date.now()}`,

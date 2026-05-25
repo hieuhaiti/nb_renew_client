@@ -1250,3 +1250,142 @@ export function clearRadiusBuffer(map) {
   if (map.getLayer(RADIUS_BUFFER_FILL)) map.removeLayer(RADIUS_BUFFER_FILL);
   if (map.getSource(RADIUS_BUFFER_SOURCE)) map.removeSource(RADIUS_BUFFER_SOURCE);
 }
+
+// --- OCOP Products Layer ---
+
+const OCOP_SOURCE_ID = 'ocop-products';
+export const OCOP_LAYER_ID = 'ocop-products-point';
+const OCOP_POINT_LAYER_ID = OCOP_LAYER_ID;
+const OCOP_CLUSTER_LAYER_ID = 'ocop-products-cluster';
+const OCOP_CLUSTER_COUNT_LAYER_ID = 'ocop-products-cluster-count';
+const OCOP_MARKER_IMAGE_ID = 'ocop-marker';
+const OCOP_COLOR = '#16a34a';
+
+// Hexagonal badge pin with leaf — matches OCOP program visual identity
+function createOcopMarkerSvg() {
+  return `<svg width="52" height="66" viewBox="0 0 52 66" xmlns="http://www.w3.org/2000/svg">
+  <!-- drop shadow -->
+  <ellipse cx="26" cy="64" rx="8" ry="2" fill="rgba(0,0,0,0.18)"/>
+  <!-- pin tail -->
+  <path d="M20 46 L26 62 L32 46Z" fill="#14532d"/>
+  <!-- outer gold hexagon ring -->
+  <polygon points="26,4 45.1,15 45.1,37 26,48 6.9,37 6.9,15" fill="#fbbf24"/>
+  <!-- inner green hexagon -->
+  <polygon points="26,8 41.4,17 41.4,35 26,44 10.6,35 10.6,17" fill="#16a34a"/>
+  <!-- white inner hexagon -->
+  <polygon points="26,12 37.8,18.5 37.8,31.5 26,38 14.2,31.5 14.2,18.5" fill="white"/>
+  <!-- leaf stem -->
+  <line x1="26" y1="37" x2="26" y2="18" stroke="#15803d" stroke-width="2" stroke-linecap="round"/>
+  <!-- left leaf -->
+  <path d="M26 28 C20 27 17 21 19 14 C21.5 15.5 25 21 26 28Z" fill="#16a34a"/>
+  <!-- right leaf -->
+  <path d="M26 24 C32 23 35 17 33 10 C30.5 11.5 27 17 26 24Z" fill="#22c55e"/>
+  <!-- gold star accent bottom -->
+  <text x="26" y="37" font-family="Arial, sans-serif" font-size="6" fill="#fbbf24" text-anchor="middle">★</text>
+</svg>`;
+}
+
+export function addOrUpdateOcopLayer(map, featureCollection) {
+  if (!map || !featureCollection) return;
+
+  const source = map.getSource(OCOP_SOURCE_ID);
+  if (source) {
+    source.setData(featureCollection);
+  } else {
+    map.addSource(OCOP_SOURCE_ID, {
+      type: 'geojson',
+      data: featureCollection,
+      cluster: true,
+      clusterMaxZoom: SOURCE_CLUSTER_MAX_ZOOM,
+      clusterRadius: SOURCE_CLUSTER_RADIUS,
+    });
+  }
+
+  ensureLayer(map, {
+    id: OCOP_CLUSTER_LAYER_ID,
+    type: 'circle',
+    source: OCOP_SOURCE_ID,
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': OCOP_COLOR,
+      'circle-radius': CLUSTER_RADIUS_STEPS,
+      'circle-stroke-color': '#fbbf24',
+      'circle-stroke-width': 2.5,
+      'circle-opacity': CLUSTER_OPACITY,
+    },
+  });
+
+  ensureLayer(map, {
+    id: OCOP_CLUSTER_COUNT_LAYER_ID,
+    type: 'symbol',
+    source: OCOP_SOURCE_ID,
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': ['get', 'point_count_abbreviated'],
+      'text-size': CLUSTER_COUNT_TEXT_SIZE,
+      'text-font': MAP_LABEL_FONT,
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#14532d',
+      'text-halo-width': 1,
+    },
+  });
+
+  const addPointLayer = () => {
+    ensureLayer(map, {
+      id: OCOP_POINT_LAYER_ID,
+      type: 'symbol',
+      source: OCOP_SOURCE_ID,
+      filter: ['!', ['has', 'point_count']],
+      layout: {
+        'icon-image': OCOP_MARKER_IMAGE_ID,
+        'icon-size': POINT_ICON_SIZE_BY_ZOOM,
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-anchor': 'bottom',
+        'text-field': ['coalesce', ['get', 'name_vi'], ''],
+        'text-font': MAP_LABEL_FONT,
+        'text-size': POINT_TEXT_SIZE,
+        'text-offset': POINT_TEXT_OFFSET,
+        'text-anchor': 'top',
+        'text-padding': POINT_TEXT_PADDING,
+      },
+      paint: {
+        'icon-opacity': POINT_ICON_OPACITY,
+        'text-color': POINT_TEXT_COLOR,
+        'text-halo-color': POINT_TEXT_HALO_COLOR,
+        'text-halo-width': POINT_TEXT_HALO_WIDTH,
+        'text-opacity': POINT_TEXT_OPACITY,
+      },
+    });
+    if (map.getLayer(OCOP_POINT_LAYER_ID)) {
+      map.moveLayer(OCOP_POINT_LAYER_ID);
+    }
+  };
+
+  if (map.hasImage(OCOP_MARKER_IMAGE_ID)) {
+    addPointLayer();
+    return;
+  }
+
+  loadSvgStringAsImage(createOcopMarkerSvg(), (image, error) => {
+    if (!map.getSource(OCOP_SOURCE_ID)) return;
+    if (error || !image) {
+      console.warn('[MapHelper] Failed to load OCOP marker image', error);
+      return;
+    }
+    if (!map.hasImage(OCOP_MARKER_IMAGE_ID)) {
+      map.addImage(OCOP_MARKER_IMAGE_ID, image);
+    }
+    addPointLayer();
+  });
+}
+
+export function removeOcopLayer(map) {
+  if (!map) return;
+  [OCOP_POINT_LAYER_ID, OCOP_CLUSTER_COUNT_LAYER_ID, OCOP_CLUSTER_LAYER_ID].forEach((layerId) => {
+    if (map.getLayer(layerId)) map.removeLayer(layerId);
+  });
+  if (map.getSource(OCOP_SOURCE_ID)) map.removeSource(OCOP_SOURCE_ID);
+}

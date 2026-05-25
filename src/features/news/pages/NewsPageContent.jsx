@@ -48,7 +48,7 @@ function NewsCard({ item, navigate, locale, t }) {
   return (
     <article
       onClick={() => slug && navigate(`/news/${encodeURIComponent(String(slug))}`)}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border-border bg-card shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
+      className="group border-border bg-card flex cursor-pointer flex-col overflow-hidden rounded-[18px] shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
     >
       <div className="relative h-48 overflow-hidden">
         <img
@@ -76,7 +76,7 @@ function NewsCard({ item, navigate, locale, t }) {
         <p className="text-muted-foreground text-xs">{author}</p>
 
         <h3
-          className="text-foreground mt-1.5 line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-primary"
+          className="text-foreground group-hover:text-primary mt-1.5 line-clamp-2 text-sm leading-snug font-black transition-colors"
           title={title}
         >
           {title}
@@ -91,7 +91,7 @@ function NewsCard({ item, navigate, locale, t }) {
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border-border bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                className="border-border bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-[10px] font-medium"
               >
                 {tagLabel(tag)}
               </span>
@@ -100,7 +100,7 @@ function NewsCard({ item, navigate, locale, t }) {
         )}
 
         <div className="mt-auto flex items-center justify-end pt-3">
-          <span className="flex items-center gap-1 text-xs font-semibold text-primary group-hover:underline">
+          <span className="text-primary flex items-center gap-1 text-xs font-semibold group-hover:underline">
             {t('newsPage.actions.read_more')} <ArrowRight size={11} />
           </span>
         </div>
@@ -111,7 +111,7 @@ function NewsCard({ item, navigate, locale, t }) {
 
 function NewsCardSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-[18px] border-border bg-card">
+    <div className="border-border bg-card animate-pulse overflow-hidden rounded-[18px]">
       <div className="bg-muted h-48 w-full" />
       <div className="space-y-2 p-4">
         <div className="bg-muted h-3 w-1/3 rounded" />
@@ -212,11 +212,11 @@ export default function NewsPageContent() {
               </div>
 
               {/* Search bar */}
-              <div className="flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 bg-card/95 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
+              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
                   <Search
                     size={16}
-                    className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+                    className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <Input
                     type="text"
@@ -226,7 +226,7 @@ export default function NewsPageContent() {
                       setSearch(e.target.value);
                       setPage(1);
                     }}
-                    className="text-foreground h-11 w-full rounded-xl border-input bg-card pr-3 pl-9 text-sm outline-none focus:border-primary"
+                    className="text-foreground border-input bg-card focus:border-primary h-11 w-full rounded-xl pr-3 pl-9 text-sm outline-none"
                   />
                 </div>
                 <Select
@@ -236,7 +236,7 @@ export default function NewsPageContent() {
                     setPage(1);
                   }}
                 >
-                  <SelectTrigger className="text-foreground h-11 shrink-0 rounded-xl border-input bg-card px-3 text-sm focus:border-primary">
+                  <SelectTrigger className="text-foreground border-input bg-card focus:border-primary h-11 shrink-0 rounded-xl px-3 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -268,43 +268,7 @@ export default function NewsPageContent() {
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
           {/* Tag chips + toolbar */}
           <div className="mb-5 flex items-center justify-between gap-3">
-            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => {
-                  setTagFilter('');
-                  setPage(1);
-                }}
-                className={`h-auto rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
-                  !tagFilter
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
-                    : 'text-muted-foreground border-border bg-card hover:bg-muted'
-                }`}
-              >
-                {t('common.all')}
-              </Button>
-              {availableTags.map((tag) => (
-                <Button
-                  variant="ghost"
-                  key={tag}
-                  type="button"
-                  onClick={() => {
-                    setTagFilter(tagFilter === tag ? '' : tag);
-                    setPage(1);
-                  }}
-                  className={`h-auto rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
-                    tagFilter === tag
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
-                      : 'border-border bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  {tagLabel(tag)}
-                </Button>
-              ))}
-            </div>
-
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="ml-auto flex shrink-0 items-center gap-2">
               <p className="text-muted-foreground text-sm">
                 <strong className="text-foreground">{total}</strong>{' '}
                 {t('newsPage.list.title').toLowerCase()}
@@ -313,7 +277,7 @@ export default function NewsPageContent() {
                 variant="ghost"
                 type="button"
                 onClick={handleReset}
-                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
+                className="text-muted-foreground border-border bg-card hover:bg-muted flex h-8 items-center gap-1.5 rounded-[8px] px-3 text-xs font-semibold"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
                 {t('newsPage.actions.refresh')}
@@ -329,11 +293,11 @@ export default function NewsPageContent() {
               ))}
             </div>
           ) : isError ? (
-            <div className="text-muted-foreground rounded-[18px] border-border bg-card py-20 text-center">
+            <div className="text-muted-foreground border-border bg-card rounded-[18px] py-20 text-center">
               {t('newsPage.states.error')}
             </div>
           ) : items.length === 0 ? (
-            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border-border bg-card py-20">
+            <div className="text-muted-foreground border-border bg-card flex flex-col items-center justify-center rounded-[18px] py-20">
               <Inbox size={40} className="mb-3 opacity-30" />
               <p className="text-foreground text-sm font-semibold 2xl:text-base">
                 {t('newsPage.states.empty')}
@@ -356,11 +320,11 @@ export default function NewsPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
+                className="border-border bg-card hover:bg-muted flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-sm font-semibold disabled:opacity-40"
               >
                 <ChevronLeft size={15} /> {t('common.prev')}
               </Button>
-              <span className="rounded-full border-border bg-card px-4 py-1.5 text-sm font-semibold">
+              <span className="border-border bg-card rounded-full px-4 py-1.5 text-sm font-semibold">
                 {t('newsPage.pagination.page', { page: currentPage, totalPages })}
               </span>
               <Button
@@ -368,7 +332,7 @@ export default function NewsPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
+                className="border-border bg-card hover:bg-muted flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-sm font-semibold disabled:opacity-40"
               >
                 {t('common.next')} <ChevronRight size={15} />
               </Button>

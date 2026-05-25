@@ -25,6 +25,7 @@ import {
   Newspaper,
   CalendarDays,
   Gift,
+  MessageSquareText,
 } from 'lucide-react';
 
 /**
@@ -209,6 +210,19 @@ export default function Header() {
                     <Settings size={14} />
                     {t('common.settings')}
                   </Button>
+                  <Button
+                    id="header-my-feedback-btn"
+                    type="button"
+                    className="w-full justify-start"
+                    variant="ghost"
+                    onClick={() => {
+                      navigate('/feedback');
+                      setDropdownOpenIdx(null);
+                    }}
+                  >
+                    <MessageSquareText size={14} />
+                    {t('common.my_feedbacks')}
+                  </Button>
                   <div className="border-border my-1 border-t" />
                   <Button
                     id="header-logout-btn"
@@ -343,6 +357,19 @@ export default function Header() {
                   >
                     <Settings size={16} />
                     {t('common.settings')}
+                  </Button>
+                  <Button
+                    id="mobile-my-feedback-btn"
+                    type="button"
+                    variant="ghost"
+                    className="w-full justify-start font-bold"
+                    onClick={() => {
+                      navigate('/feedback');
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <MessageSquareText size={16} />
+                    {t('common.my_feedbacks')}
                   </Button>
                   <Button
                     id="mobile-logout-btn"

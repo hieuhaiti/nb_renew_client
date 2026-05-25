@@ -9,6 +9,7 @@ import { getLocaleFromLanguage } from '@/lib/utils';
 import NewsDetailHero from '@/features/news/components/NewsDetailHero';
 import NewsDetailBody from '@/features/news/components/NewsDetailBody';
 import NewsDetailSidebar from '@/features/news/components/NewsDetailSidebar';
+import NewsCommentSection from '@/features/news/components/NewsCommentSection';
 import { Button } from '@/components/ui/button';
 
 function formatDate(value, locale) {
@@ -134,6 +135,12 @@ export default function NewsDetailPageContent() {
               formatDate={formatDateMed}
             />
           </div>
+
+          {detail?.id && (
+            <div className="mt-5">
+              <NewsCommentSection newsId={detail.id} t={t} />
+            </div>
+          )}
         </div>
       </div>
     </RootLayout>

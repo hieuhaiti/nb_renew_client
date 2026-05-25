@@ -23,6 +23,7 @@ const NewsPage = lazy(() => import('@/features/news/pages/NewsPage'));
 const NewsDetailPage = lazy(() => import('@/features/news/pages/NewsDetailPage'));
 const VlogPage = lazy(() => import('@/features/vlog/pages/VlogPage'));
 const Vr360Page = lazy(() => import('@/features/vr360/pages/Vr360Page'));
+const FeedbackPage = lazy(() => import('@/features/feedback/pages/FeedbackPage'));
 
 // Error pages
 const NotFoundPage = lazy(() => import('@/pages/Errors/404NotFoundPage'));
@@ -60,6 +61,7 @@ export function AppRouter() {
           <Route path="/news/:slug" element={<NewsDetailPage />} />
           <Route path="/vlog" element={<VlogPage />} />
           <Route path="/vr360/:id" element={<Vr360Page />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
 
           {/* Error pages */}
           <Route path="/400" element={<BadRequestPage />} />

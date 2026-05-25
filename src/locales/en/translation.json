@@ -30,7 +30,8 @@
     "search_results": "Search Results",
     "search_no_results": "No results found",
     "search_view_all": "View all results",
-    "tourism_point": "Tourism Point"
+    "tourism_point": "Tourism Point",
+    "my_feedbacks": "My reports"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -365,6 +366,23 @@
       "tags_title": "Topics",
       "related_title": "Related articles",
       "no_related": "No related articles found"
+    },
+    "comments": {
+      "title": "Comments",
+      "empty": "No comments yet. Be the first to share your thoughts!",
+      "anonymous": "Guest",
+      "reply": "Reply",
+      "delete": "Delete",
+      "reply_placeholder": "Reply to this comment...",
+      "cancel": "Cancel",
+      "send": "Send",
+      "write": "Write a comment",
+      "placeholder": "Share your thoughts about this article...",
+      "sending": "Sending...",
+      "submit": "Post comment",
+      "login_prompt": "Sign in to join the conversation",
+      "login_btn": "Sign in",
+      "error": "Something went wrong. Please try again."
     }
   },
   "auth": {
@@ -1400,5 +1418,96 @@
       "hashtag": "🏷 Hashtag"
     },
     "just_now": "Just now"
+  },
+  "feedbackPage": {
+    "hero": {
+      "badge": "Citizen Feedback",
+      "title": "Reports & Suggestions",
+      "description": "Submit reports about environmental, infrastructure, and tourism issues in Ninh Binh. We review and act on every submission from the community."
+    },
+    "stats": {
+      "total": "Approved reports"
+    },
+    "filters": {
+      "search_placeholder": "Search reports...",
+      "all_priorities": "All priorities"
+    },
+    "toolbar": {
+      "refresh": "Refresh"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "status": {
+      "pending": "Pending",
+      "in_progress": "In progress",
+      "resolved": "Resolved",
+      "rejected": "Rejected",
+      "closed": "Closed"
+    },
+    "card": {
+      "anonymous": "Anonymous"
+    },
+    "detail": {
+      "title": "Feedback detail",
+      "description": "Full information about this citizen report",
+      "verified": "Field-verified",
+      "not_verified": "Not verified",
+      "fields": {
+        "title": "Title",
+        "content": "Description",
+        "priority": "Priority",
+        "status": "Status",
+        "location_verified": "Location verification",
+        "submitted_by": "Submitted by",
+        "location": "Location",
+        "admin_response": "Official response",
+        "images": "Attached images",
+        "created_at": "Submitted on"
+      }
+    },
+    "submit": {
+      "btn_label": "Submit report",
+      "dialog_title": "Submit a new report",
+      "dialog_desc": "Describe the issue you want to report. We will review and respond as soon as possible.",
+      "auth_required_title": "Login required",
+      "auth_required_desc": "Please log in to submit a report.",
+      "cancel": "Cancel",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "fields": {
+        "title": "Report title",
+        "title_placeholder": "E.g. Waste near Trang An boat dock",
+        "content": "Description",
+        "content_placeholder": "Describe the issue in detail...",
+        "priority": "Priority level",
+        "location": "Location (optional)",
+        "location_placeholder": "E.g. Near the entrance of Trang An tourist area",
+        "location_mode_text": "Type address",
+        "location_mode_geo": "Locate me",
+        "locate_me": "Get my current location",
+        "locating": "Locating...",
+        "locate_acquired": "Location acquired"
+      },
+      "location_error": "Could not get your location. Please enable location access.",
+      "errors": {
+        "title_min": "Title must be at least 10 characters",
+        "title_max": "Title must not exceed 500 characters",
+        "content_min": "Description must be at least 20 characters"
+      }
+    },
+    "pagination": {
+      "page": "Page {{current}} of {{total}}"
+    },
+    "fab_tooltip_unauth": "Log in to submit a report",
+    "states": {
+      "empty_title": "No reports yet",
+      "empty_desc": "Be the first to report an issue in this area.",
+      "error": "Could not load reports. Please try again.",
+      "not_found": "This report could not be found."
+    }
   }
 }

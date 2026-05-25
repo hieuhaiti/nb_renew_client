@@ -1,4 +1,5 @@
 import Header from '@/components/common/Header';
+import FeedbackFloatButton from '@/components/common/FeedbackFloatButton';
 
 /**
  * RootLayout — full-viewport shell.
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
     <div className="bg-background flex h-screen flex-col overflow-hidden">
       <Header />
       <main className="flex-1 overflow-y-auto scroll-smooth">{children}</main>
+      <FeedbackFloatButton />
     </div>
   );
 }

@@ -42,6 +42,7 @@ import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import MapBaseArea from '../components/MapBase';
 import ModalMarker from '@/features/map/components/ModalMarker';
 import ModalCarousel from '@/features/map/components/ModalCarousel';
+import OcopProductModal from '@/features/map/components/OcopProductModal';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
 import {
   clearHighlightedRouteLayers,
@@ -728,6 +729,7 @@ export default function MapPage() {
     <MapLayout>
       <ModalMarker />
       <ModalCarousel />
+      <OcopProductModal />
       <section className="bg-background h-full overflow-hidden p-3">
         <div className="mx-auto grid h-full min-h-0 w-full max-w-full grid-rows-[auto_1fr] gap-3">
           <MapToolbarCard
