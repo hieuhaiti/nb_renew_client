@@ -123,6 +123,23 @@ export function useGetSpotMedia({ spot_id, options = {} } = {}) {
   });
 }
 
+export function useGetSpotNearbyOcop({ slug, id, radius_km = 10, lang = 'vi', options = {} } = {}) {
+  const hasSlug = Boolean(slug);
+  const hasId = Boolean(id);
+  const qs = new URLSearchParams({ ocop: 'true', radius_km, lang });
+  const endpoint = hasSlug ? `spots/${slug}?${qs}` : `spots/id/${id}?${qs}`;
+
+  return useApiQuery(
+    ['spots', 'nearby-ocop', slug || id, radius_km, lang],
+    endpoint,
+    {
+      staleTime: 2 * 60 * 1000,
+      enabled: (hasSlug || hasId) && (options.enabled ?? true),
+      ...options,
+    }
+  );
+}
+
 export function useGetSpotAudioGuide({ spot_id, options = {} } = {}) {
   return useApiQuery(['spots', 'audio-guide', spot_id], `spots/${spot_id}/audio-guide`, {
     staleTime: 5 * 60 * 1000,

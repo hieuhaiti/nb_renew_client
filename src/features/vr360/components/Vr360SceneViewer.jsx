@@ -229,6 +229,23 @@ function loadAFrame() {
   });
 }
 
+function registerFaceCameraComponent() {
+  if (!window.AFRAME) return;
+  if (window.AFRAME.components['face-camera']) return;
+
+  window.AFRAME.registerComponent('face-camera', {
+    init() {
+      this._cameraPos = new window.AFRAME.THREE.Vector3();
+    },
+    tick() {
+      const camera = this.el.sceneEl?.camera;
+      if (!camera) return;
+      camera.getWorldPosition(this._cameraPos);
+      this.el.object3D.lookAt(this._cameraPos);
+    },
+  });
+}
+
 function clampVolume(value) {
   const next = Number(value);
   if (!Number.isFinite(next)) return 50;
@@ -404,7 +421,7 @@ function renderHotspots(root, hotspots, onClickRef, cursorProgressRef) {
         });
       }
 
-      labelEntity.setAttribute('look-at', '[camera]');
+      labelEntity.setAttribute('face-camera', '');
 
       const targetSceneId = hotspot.target_scene_id || hotspot.linked_scene_id;
       const targetSpotId = hotspot.linked_spot_id ?? hotspot.target_spot_id;
@@ -544,6 +561,7 @@ export default function Vr360SceneViewer({
     console.debug('[VR-DEBUG][mount] window.AFRAME at mount:', !!window.AFRAME, '| aframeReady state:', !!window.AFRAME);
     loadAFrame().then(() => {
       console.debug('[VR-DEBUG][loadAFrame] resolved → setAframeReady(true)');
+      registerFaceCameraComponent();
       setAframeReady(true);
     });
   }, []);

@@ -168,7 +168,7 @@ export default function Header() {
                 {user?.avatar_url ? (
                   <img
                     src={withBaseUrl(user.avatar_url)}
-                    alt="avatar"
+                    alt={user?.full_name || 'avatar'}
                     className="h-6 w-6 rounded-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
@@ -327,7 +327,7 @@ export default function Header() {
                       {user?.avatar_url ? (
                         <img
                           src={withBaseUrl(user.avatar_url)}
-                          alt="avatar"
+                          alt={user?.full_name || 'avatar'}
                           className="h-full w-full object-cover"
                           onError={(e) => {
                             e.target.onerror = null;
