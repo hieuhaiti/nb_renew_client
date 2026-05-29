@@ -1043,19 +1043,6 @@ export default function Vr360PageContent() {
                 </div>
               )}
 
-              {/* Description */}
-              {spotInfo?.description && (
-                <p
-                  style={{
-                    fontSize: '13px',
-                    color: C.muted,
-                    lineHeight: 1.7,
-                  }}
-                >
-                  {spotInfo.description}
-                </p>
-              )}
-
               {/* MiniMap */}
               <div style={{ flexShrink: 0 }}>
                 <div style={{ borderRadius: '22px', overflow: 'hidden', height: '260px' }}>

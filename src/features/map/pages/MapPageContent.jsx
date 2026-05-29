@@ -107,6 +107,7 @@ export default function MapPage() {
   const setEndLocation = useDirectionsStore((state) => state.setEndLocation);
   const clearDirections = useDirectionsStore((state) => state.clearDirections);
   const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
+  const tourSidebarOpenSeq = useTourPanelStore((state) => state.sidebarOpenSeq);
   const dataLayerCategoryId = useDataLayerStore((state) => state.categoryId);
   const dataLayerSubcategories = useDataLayerStore((state) => state.subcategories);
   const setSelectedSubcategoryIds = useDataLayerStore((state) => state.setSelectedSubcategoryIds);
@@ -560,6 +561,12 @@ export default function MapPage() {
     }
     if (prefillResult) handleSelectSearchResult(prefillResult);
   }, [location.state, setHighlightedRoute, setShowOnlyHighlightedRoute, setSelectedTour]);
+
+  useEffect(() => {
+    if (!tourSidebarOpenSeq) return;
+    setActiveSidebar('tour');
+    setActiveTab('tour');
+  }, [tourSidebarOpenSeq]);
 
   const handleSearch = () => {
     if (searchResults.length > 0) {

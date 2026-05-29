@@ -51,3 +51,9 @@ export const useOcopModalStore = create(set => ({
     openOcopModal: (data) => set({ isOpen: true, ocopData: data }),
     closeOcopModal: () => set({ isOpen: false, ocopData: null }),
 }));
+
+export const useTourSuggestModalStore = create(set => ({
+    isOpen: false,
+    openTourSuggestModal: () => set({ isOpen: true }),
+    closeTourSuggestModal: () => set({ isOpen: false }),
+}));

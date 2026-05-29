@@ -24,6 +24,8 @@ import { useGetAllTours } from '@/services/api/tours/tourApi';
 import { useGetSpotMedia } from '@/services/api/tourism-points/tourismPointsApi';
 import { withBaseUrl, formatVND } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import qrImage from '@/assets/image.png';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const PRIMARY_GRAD = 'linear-gradient(135deg,#12a9b7,#0e9f8f)';
 const ORANGE_GRAD = 'linear-gradient(135deg,#ff9f1c,#ffb703)';
@@ -508,19 +510,49 @@ export default function TourDetailPage() {
             <aside className="flex flex-col gap-[18px] xl:sticky xl:top-[86px]">
               <div className="border-border bg-card overflow-hidden rounded-[28px] shadow-(--ambient-shadow)">
                 <div
-                  className="border-border border-b p-5"
-                  style={{ background: 'linear-gradient(135deg,#fff8e6,#fff)' }}
+                  className="border-border border-b px-5 py-4"
+                  style={{ background: 'linear-gradient(135deg,#fff8e6,#fffdfa)' }}
                 >
-                  <small className="text-muted-foreground text-[13px] font-black">
-                    {t('tourPage.priceFrom')}
-                  </small>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <strong className="text-tertiary text-[34px] font-black">
-                      {ticketDisplay}
-                    </strong>
-                    <small className="text-muted-foreground text-[13px] font-black">
-                      / {t('tourPage.people')}
-                    </small>
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <span className="bg-secondary/10 text-secondary inline-flex items-center rounded-full px-3 py-1 text-[12px] font-black">
+                      {t('tourPage.priceFrom')}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                        <strong className="text-tertiary text-[36px] leading-none font-black">
+                          {ticketDisplay}
+                        </strong>
+                        <small className="text-muted-foreground text-[13px] font-black">
+                          / {t('tourPage.people')}
+                        </small>
+                      </div>
+                      <p className="text-muted-foreground mt-2 text-[12px] leading-[1.5] font-bold">
+                        Giá khởi điểm cho một hành khách, cập nhật theo tuyến và thời điểm đặt.
+                      </p>
+                    </div>
+
+                    <TooltipProvider delayDuration={120}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-white/70 bg-white p-2 shadow-[0_14px_35px_rgba(15,23,42,.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,.16)] sm:h-[92px] sm:w-[92px]"
+                          >
+                            <img
+                              src={qrImage}
+                              alt="QR"
+                              className="h-full w-full object-contain transition duration-300 group-hover:scale-[1.03]"
+                            />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" sideOffset={8}>
+                          Đặt vé chuyến đi
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </div>

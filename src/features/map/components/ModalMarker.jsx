@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import {
   MapPin,
   Camera,
@@ -13,6 +14,9 @@ import {
   Globe,
   Users,
   ShoppingBag,
+  Route,
+  Sparkles,
+  ArrowUpRight,
   XIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,9 +30,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
+import qrImage from '@/assets/image.png';
 import { useSpotDetailModalStore, useModalCarouselStore } from '@/features/map/store/useModalStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import {
@@ -38,6 +44,23 @@ import {
   useGetSpotNearbyOcop,
 } from '@/services/api/tourism-points/tourismPointsApi';
 import { useGetAframeScenes } from '@/services/api/vr360/aframeSceneService';
+import {
+  fetchPointById,
+  fetchTourStopsByTourId,
+  useTourPanelListQuery,
+} from '@/services/api/map/tourPanelService';
+import {
+  formatTourDurationLabel,
+  formatTourPriceLabel,
+  normalizeTourListPayload,
+} from '@/features/map/utils/tourPanelUtils';
+import {
+  createRouteFromPoints,
+  normalizeTourRoutePoint,
+} from '@/features/map/utils/highlightRouteUtils';
+import { useMapStore } from '@/features/map/store/useMapStore';
+import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
+import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
 
 function formatPrice(price, currency = 'VND') {
   const num = Number(price);
@@ -66,14 +89,107 @@ function haversineKm(lat1, lng1, lat2, lng2) {
   const dLat = (lat2 - lat1) * rad;
   const dLng = (lng2 - lng1) * rad;
   const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
+    Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function formatDist(km) {
   if (km < 1) return `${Math.round(km * 1000)} m`;
   return `${km.toFixed(1)} km`;
+}
+
+function sortStops(stops) {
+  const list = Array.isArray(stops) ? stops : [];
+  return list
+    .map((stop, index) => ({ stop, index }))
+    .sort((a, b) => {
+      const dayA = Number(a.stop?.day_number ?? 1);
+      const dayB = Number(b.stop?.day_number ?? 1);
+      if (dayA !== dayB) return dayA - dayB;
+
+      const orderA = Number(
+        a?.stop?.stop_order ?? a?.stop?.order_index ?? a?.stop?.index ?? a?.index + 1
+      );
+      const orderB = Number(
+        b?.stop?.stop_order ?? b?.stop?.order_index ?? b?.stop?.index ?? b?.index + 1
+      );
+      if (!Number.isNaN(orderA) && !Number.isNaN(orderB) && orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.index - b.index;
+    })
+    .map((item) => item.stop);
+}
+
+function normalizeStopInput(stop, index) {
+  if (stop && typeof stop === 'object') return stop;
+
+  const pointId = stop == null ? null : String(stop);
+  return {
+    id: pointId || `tour-stop-${index + 1}`,
+    point_id: pointId,
+    stop_order: index + 1,
+  };
+}
+
+function extractPointIdFromStop(stop) {
+  if (stop == null) return null;
+  if (typeof stop === 'string' || typeof stop === 'number') return String(stop);
+
+  return (
+    stop?.point_id ||
+    stop?.spot_id ||
+    stop?.spotId ||
+    stop?.tourism_point_id ||
+    stop?.destination_id ||
+    stop?.location_id ||
+    stop?.poi_id ||
+    stop?.id ||
+    stop?.spot?.id ||
+    null
+  );
+}
+
+function parseGeometryValue(value) {
+  if (!value) return null;
+  if (typeof value === 'object') return value;
+  if (typeof value !== 'string') return null;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
+function buildStopRouteCandidate(stop, pointDetail) {
+  const fallbackNameVi = stop?.title_vi || stop?.spot_name_vi || stop?.spot_name || '';
+  const fallbackNameEn = stop?.title_en || stop?.spot_name_en || stop?.spot_name || '';
+  const geometryFromStop =
+    parseGeometryValue(stop?.geom_json) || parseGeometryValue(stop?.geom) || stop?.geometry || null;
+  const resolvedPointId = extractPointIdFromStop(stop);
+
+  return {
+    ...(pointDetail || {}),
+    ...(stop || {}),
+    point_id:
+      stop?.point_id ||
+      stop?.spot_id ||
+      stop?.spot?.id ||
+      stop?.destination_id ||
+      stop?.location_id ||
+      resolvedPointId ||
+      pointDetail?.id ||
+      null,
+    name_vi: pointDetail?.name_vi || fallbackNameVi,
+    name_en: pointDetail?.name_en || fallbackNameEn,
+    name: pointDetail?.name || fallbackNameVi || fallbackNameEn,
+    address_vi: pointDetail?.address_vi || stop?.description_vi || '',
+    address_en: pointDetail?.address_en || stop?.description_en || '',
+    address: pointDetail?.address || stop?.description_vi || stop?.description_en || '',
+    geometry_data:
+      pointDetail?.geometry_data || pointDetail?.geometry || geometryFromStop || undefined,
+  };
 }
 
 function OcopStars({ count }) {
@@ -105,7 +221,7 @@ function OcopProductCard({ ocop, spotLat, spotLng }) {
       : null;
 
   return (
-    <div className="flex items-start gap-2.5 rounded-lg p-2 hover:bg-muted/50 transition-colors">
+    <div className="hover:bg-muted/50 flex items-start gap-2.5 rounded-lg p-2 transition-colors">
       <img
         src={imageUrl}
         alt={ocop.name}
@@ -116,12 +232,10 @@ function OcopProductCard({ ocop, spotLat, spotLng }) {
         }}
       />
       <div className="min-w-0 flex-1">
-        <p className="typo-meta font-medium line-clamp-2 leading-snug">{ocop.name}</p>
+        <p className="typo-meta line-clamp-2 leading-snug font-medium">{ocop.name}</p>
         <OcopStars count={ocop.star_rating} />
         <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          {price && (
-            <span className="typo-meta font-medium text-amber-600">{price}</span>
-          )}
+          {price && <span className="typo-meta font-medium text-amber-600">{price}</span>}
           {dist != null && (
             <span className="typo-meta text-muted-foreground">
               {t('mapPage.ocopPanel.distFrom')} {formatDist(dist)}
@@ -156,14 +270,12 @@ function OcopNearbyPanel({ spot, isModalOpen }) {
   const spotLng = spot?.lng ?? spot?.longitude;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="p-3 border-b shrink-0">
-        <div className="flex items-center gap-1.5 mb-2">
-          <ShoppingBag size={13} className="text-amber-500 shrink-0" />
-          <p className="typo-meta font-semibold text-foreground">
-            {t('mapPage.ocopPanel.title')}
-          </p>
+      <div className="shrink-0 border-b p-3">
+        <div className="mb-2 flex items-center gap-1.5">
+          <ShoppingBag size={13} className="shrink-0 text-amber-500" />
+          <p className="typo-meta text-foreground font-semibold">{t('mapPage.ocopPanel.title')}</p>
         </div>
         {/* Radius filter chips */}
         <div className="flex items-center gap-1">
@@ -171,10 +283,10 @@ function OcopNearbyPanel({ spot, isModalOpen }) {
             <button
               key={r}
               onClick={() => setRadiusKm(r)}
-              className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors ${
+              className={`rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${
                 radiusKm === r
                   ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-muted text-muted-foreground border-transparent hover:border-border'
+                  : 'bg-muted text-muted-foreground hover:border-border border-transparent'
               }`}
             >
               {r} km
@@ -186,7 +298,7 @@ function OcopNearbyPanel({ spot, isModalOpen }) {
       {/* Product list */}
       <div className="flex-1 overflow-y-auto">
         {isOcopLoading ? (
-          <div className="p-2 space-y-2">
+          <div className="space-y-2 p-2">
             {Array.from({ length: 4 }, (_, i) => (
               <div key={i} className="flex items-start gap-2.5 p-2">
                 <Skeleton className="h-14 w-14 shrink-0 rounded-md" />
@@ -199,7 +311,7 @@ function OcopNearbyPanel({ spot, isModalOpen }) {
             ))}
           </div>
         ) : ocopProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 py-10 px-4 text-center">
+          <div className="flex flex-col items-center justify-center gap-2 px-4 py-10 text-center">
             <ShoppingBag size={28} className="text-muted-foreground/40" />
             <p className="typo-meta text-muted-foreground">{t('mapPage.ocopPanel.noProducts')}</p>
           </div>
@@ -221,12 +333,22 @@ function OcopNearbyPanel({ spot, isModalOpen }) {
 }
 
 export default function ModalMarker() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const isEnglish = i18n.language?.startsWith('en');
+  const locale = isEnglish ? 'en-US' : 'vi-VN';
+  const routeLang = isEnglish ? 'en' : 'vi';
 
   const { isOpen, spotId, spotSlug, closeSpotModal } = useSpotDetailModalStore();
   const { openCarouselModal } = useModalCarouselStore();
-  const { setEndLocation, triggerFocusStart } = useDirectionsStore();
+  const openTourPanel = useMapPanelStore((state) => state.openTourPanel);
+  const setHighlightedRoute = useMapStore((state) => state.setHighlightedRoute);
+  const setShowOnlyHighlightedRoute = useMapStore((state) => state.setShowOnlyHighlightedRoute);
+  const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
+  const requestOpenTourSidebar = useTourPanelStore((state) => state.requestOpenTourSidebar);
+  const [routeLoadingTourId, setRouteLoadingTourId] = useState(null);
+
+  const { setEndLocation, triggerFocusStart, clearDirections } = useDirectionsStore();
 
   const hasSpotSlug = Boolean(spotSlug);
   const { data: spotDataBySlug, isLoading: isLoadingBySlug } = useGetDataPointBySlug({
@@ -246,12 +368,127 @@ export default function ModalMarker() {
   const mediaItems = mediaData?.data?.media ?? mediaData?.data ?? [];
 
   const { data: scenesData } = useGetAframeScenes({ spotId: isOpen ? spotId : null });
+  const { data: toursData, isLoading: isToursLoading } = useTourPanelListQuery(
+    {
+      limit: 5,
+    },
+    { enabled: isOpen }
+  );
+
+  const suggestedTours = useMemo(() => {
+    return normalizeTourListPayload(toursData, {
+      lang: isEnglish ? 'en' : 'vi',
+    }).slice(0, 5);
+  }, [isEnglish, toursData]);
+
   const hasVrTour = useMemo(() => {
     if (spot?.has_vr_360 === true) return true;
     const d = scenesData?.data ?? scenesData;
     const scenes = Array.isArray(d) ? d : d?.scenes || d?.items || [];
     return scenes.length > 0;
   }, [scenesData, spot?.has_vr_360]);
+
+  const handleOpenTourSuggestion = async (tour) => {
+    if (!tour?.id) return;
+
+    setRouteLoadingTourId(String(tour.id));
+    setSelectedTour({
+      ...tour,
+      cover_image_url: tour?.cover_image_url || tour?.main_image_url || null,
+    });
+
+    try {
+      const stops = await fetchTourStopsByTourId(tour.id);
+      const sortedStops = sortStops(stops);
+
+      if (sortedStops.length < 2) {
+        throw new Error(
+          t('mapPage.tourPanel.routeInsufficientStops', {
+            defaultValue: 'Tour cáº§n Ã­t nháº¥t 2 Ä‘iá»ƒm dá»«ng Ä‘á»ƒ hiá»ƒn thá»‹ chá»‰ Ä‘Æ°á»ng.',
+          })
+        );
+      }
+
+      const routePoints = (
+        await Promise.all(
+          sortedStops.map(async (rawStop, index) => {
+            const stop = normalizeStopInput(rawStop, index);
+            const pointId = extractPointIdFromStop(stop);
+            const embeddedPoint =
+              stop?.spot && typeof stop.spot === 'object'
+                ? stop.spot
+                : stop?.point && typeof stop.point === 'object'
+                  ? stop.point
+                  : null;
+
+            let pointDetail = embeddedPoint;
+            if (!pointDetail && pointId) {
+              try {
+                pointDetail = await fetchPointById(pointId);
+              } catch (_error) {
+                pointDetail = null;
+              }
+            }
+
+            const candidate = buildStopRouteCandidate(stop, pointDetail);
+            return normalizeTourRoutePoint(candidate, index, routeLang);
+          })
+        )
+      ).filter(Boolean);
+
+      if (routePoints.length < 2) {
+        throw new Error(
+          t('mapPage.tourPanel.routeInsufficientStops', {
+            defaultValue: 'Tour cáº§n Ã­t nháº¥t 2 Ä‘iá»ƒm dá»«ng Ä‘á»ƒ hiá»ƒn thá»‹ chá»‰ Ä‘Æ°á»ng.',
+          })
+        );
+      }
+
+      const routeResult = await createRouteFromPoints(routePoints, 'driving', routeLang);
+      if (!routeResult?.geometry?.coordinates?.length) {
+        throw new Error(
+          t('mapPage.tourPanel.routeFailed', {
+            defaultValue: 'KhÃ´ng thá»ƒ hiá»ƒn thá»‹ tuyáº¿n tour lÃºc nÃ y.',
+          })
+        );
+      }
+
+      openTourPanel({ tourId: tour.id, tourName: tour.name, stops: sortedStops });
+      clearDirections();
+      setHighlightedRoute({
+        type: 'tour',
+        tourId: tour.id,
+        tourSlug: tour.slug,
+        tourName: tour.name,
+        vehicle: 'driving',
+        points: routePoints,
+        geometry: routeResult.geometry,
+        routeProperties: routeResult.properties,
+        fullRoute: routeResult.fullRoute,
+        meta: {
+          tour_name: tour.name,
+          total_stops: routePoints.length,
+        },
+      });
+      setShowOnlyHighlightedRoute(true);
+      requestOpenTourSidebar();
+      closeSpotModal();
+      toast.success(
+        t('mapPage.tourPanel.routeReady', {
+          defaultValue: 'ÄÃ£ hiá»ƒn thá»‹ tuyáº¿n tour trÃªn báº£n Ä‘á»“.',
+        })
+      );
+    } catch (error) {
+      toast.error(
+        error?.message ||
+          t('mapPage.tourPanel.routeFailed', {
+            defaultValue: 'KhÃ´ng thá»ƒ hiá»ƒn thá»‹ tuyáº¿n tour lÃºc nÃ y.',
+          })
+      );
+    } finally {
+      setRouteLoadingTourId(null);
+    }
+  };
 
   const handleViewImages = () => {
     const images =
@@ -297,7 +534,13 @@ export default function ModalMarker() {
   const alertThreshold = spot?.alert_threshold_pct ?? 80;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && closeSpotModal()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (open) return;
+        closeSpotModal();
+      }}
+    >
       {/*
        * DialogContent is used as a transparent flex wrapper so the two cards
        * (main modal + OCOP panel) sit side-by-side while remaining centered
@@ -305,23 +548,124 @@ export default function ModalMarker() {
        */}
       <DialogContent
         showCloseButton={false}
-        className="flex flex-row items-stretch gap-3 bg-transparent border-0 shadow-none p-0 rounded-none w-full max-w-[calc(100%-2rem)] sm:w-auto sm:max-w-none"
+        className="flex w-full max-w-[calc(100%-2rem)] flex-row items-stretch gap-3 rounded-none border-0 bg-transparent p-0 shadow-none sm:w-auto sm:max-w-none"
       >
         <DialogHeader className="sr-only">
           <DialogTitle>{spot?.name || t('mapPage.destination.unknownName')}</DialogTitle>
           <DialogDescription>{t('mapPage.destination.title')}</DialogDescription>
         </DialogHeader>
 
-        {/* ── Main modal card (original layout preserved) ── */}
-        <div className="relative flex flex-col w-full max-w-md overflow-hidden rounded-2xl border bg-background shadow-lg">
+        {/* â”€â”€ Main modal card (original layout preserved) â”€â”€ */}
+        {/* left-side panel placeholder (removed TourSuggestModal) */}
+        <div className="bg-background hidden w-64 flex-col overflow-hidden rounded-2xl border shadow-lg sm:flex sm:max-h-150">
+          <div className="from-primary/10 via-primary/5 to-background border-b bg-gradient-to-br p-3">
+            <div className="mb-1.5 flex items-center gap-1.5">
+              <Sparkles size={13} className="text-primary shrink-0" />
+              <p className="typo-meta text-foreground font-semibold">
+                {t('mapPage.spotModal.suggestedTours.title', {
+                  defaultValue: 'Suggested routes',
+                })}
+              </p>
+            </div>
+            <p className="typo-meta text-muted-foreground line-clamp-2">
+              {t('mapPage.spotModal.suggestedTours.subtitle', {
+                defaultValue: 'Related to {{destination}}',
+                destination: spot?.name || t('mapPage.destination.unknownName'),
+              })}
+            </p>
+          </div>
+          <div className="flex-1 overflow-y-auto p-2">
+            {isToursLoading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <div key={index} className="space-y-1 rounded-xl border p-2">
+                    <Skeleton className="h-3 w-2/3" />
+                    <Skeleton className="h-3 w-1/2" />
+                    <Skeleton className="h-20 w-full rounded-lg" />
+                  </div>
+                ))}
+              </div>
+            ) : suggestedTours.length === 0 ? (
+              <div className="border-border/60 bg-muted/30 rounded-xl border border-dashed p-3 text-center">
+                <Route size={18} className="text-muted-foreground/60 mx-auto mb-1.5" />
+                <p className="typo-meta text-muted-foreground">
+                  {t('mapPage.spotModal.suggestedTours.empty', {
+                    defaultValue: 'No related tour routes found.',
+                  })}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {suggestedTours.map((tour) => {
+                  const isRouteLoading =
+                    routeLoadingTourId != null && String(routeLoadingTourId) === String(tour.id);
+                  return (
+                  <button
+                    key={tour.id}
+                    type="button"
+                    onClick={() => handleOpenTourSuggestion(tour)}
+                    disabled={isRouteLoading}
+                    className="group from-background via-background to-muted/20 hover:border-primary/40 hover:bg-muted/30 w-full rounded-xl border bg-gradient-to-br p-2 text-left transition-all"
+                  >
+                    <div className="mb-2 overflow-hidden rounded-lg">
+                      <img
+                        src={tour.main_image_url ? withBaseUrl(tour.main_image_url) : placeholderImg}
+                        alt={tour.name}
+                        className="h-24 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = placeholderImg;
+                        }}
+                      />
+                    </div>
+                    <div className="mb-1.5 flex items-start justify-between gap-2">
+                      <p className="typo-meta text-foreground line-clamp-2 font-semibold">{tour.name}</p>
+                      {tour.is_featured && (
+                        <Badge variant="secondary" className="px-1.5 py-0.5 text-[10px]">
+                          {t('mapPage.spotModal.suggestedTours.featured', {
+                            defaultValue: 'Featured',
+                          })}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="mb-2 flex flex-wrap gap-1">
+                      <span className="bg-muted text-muted-foreground rounded-md px-1.5 py-0.5 text-[10px]">
+                        {formatTourDurationLabel(tour, t)}
+                      </span>
+                      <span className="bg-primary/10 text-primary rounded-md px-1.5 py-0.5 text-[10px] font-medium">
+                        {formatTourPriceLabel(tour, locale)}
+                      </span>
+                    </div>
+                    <p className="typo-meta text-muted-foreground line-clamp-2">
+                      {tour.description ||
+                        t('mapPage.spotModal.suggestedTours.fallbackDescription', {
+                          defaultValue: 'Open this route on the map to view itinerary details.',
+                        })}
+                    </p>
+                    <span className="text-primary mt-2 inline-flex items-center gap-1 text-[11px] font-medium">
+                      {isRouteLoading
+                        ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Opening...' })
+                        : t('mapPage.spotModal.suggestedTours.openOnMap', {
+                            defaultValue: 'Open route on map',
+                          })}
+                      <ArrowUpRight size={12} />
+                    </span>
+                  </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="bg-background relative flex w-full flex-col overflow-hidden rounded-2xl border shadow-lg sm:w-2xl sm:flex-none">
           {/* Close button */}
-          <DialogClose className="absolute top-4 right-4 z-10 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+          <DialogClose className="ring-offset-background focus:ring-ring absolute top-4 right-4 z-10 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
             <XIcon />
             <span className="sr-only">Close</span>
           </DialogClose>
 
           {/* Scrollable inner content */}
-          <div className="overflow-y-auto max-h-[85vh] sm:max-h-150 flex flex-col">
+          <div className="flex max-h-[85vh] flex-col overflow-y-auto sm:max-h-150">
             {/* Hero image */}
             <div className="bg-muted relative h-48 w-full shrink-0">
               {isLoading ? (
@@ -337,16 +681,14 @@ export default function ModalMarker() {
                   }}
                 />
               )}
-              {spot?.category_color && (
-                <div
-                  className="absolute right-0 bottom-0 left-0 h-1"
-                  style={{ backgroundColor: spot.category_color }}
-                />
-              )}
+              <div
+                className="absolute right-0 bottom-0 left-0 h-1"
+                style={{ backgroundColor: spot?.category_color || '#f97316' }}
+              />
             </div>
 
             {/* Content */}
-            <div className="flex flex-col gap-3 p-4">
+            <div className="bg-sky-50/60 flex flex-col gap-3 p-4">
               {isLoading ? (
                 <div className="space-y-2">
                   <Skeleton className="h-6 w-3/4" />
@@ -355,85 +697,101 @@ export default function ModalMarker() {
                 </div>
               ) : spot ? (
                 <>
-                  {/* Title + category */}
-                  <div className="flex flex-col gap-1.5">
-                    <h2 className="typo-card-title line-clamp-2">{spot.name}</h2>
-                    {spot.category_name && (
-                      <Badge
-                        variant="secondary"
-                        className="w-fit text-sm"
-                        style={
-                          spot.category_color
-                            ? {
-                                backgroundColor: `${spot.category_color}20`,
-                                color: spot.category_color,
-                                borderColor: `${spot.category_color}40`,
-                              }
-                            : {}
-                        }
-                      >
-                        {spot.category_name}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Rating */}
-                  {ratingAvg > 0 && (
-                    <div className="flex items-center gap-1.5">
-                      <Star size={14} className="fill-gold text-gold" />
-                      <span className="typo-body font-semibold">{spot.rating_avg}</span>
-                      {spot.rating_count > 0 && (
-                        <span className="typo-meta text-muted-foreground">
-                          ({spot.rating_count} {t('mapPage.spotModal.reviews')})
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Address */}
-                  {spot.address && (
-                    <div className="flex items-start gap-2">
-                      <MapPin size={14} className="text-muted-foreground mt-0.5 shrink-0" />
-                      <p className="typo-meta text-muted-foreground line-clamp-2">{spot.address}</p>
-                    </div>
-                  )}
-
-                  {/* Opening hours + ticket */}
-                  <div className={`grid gap-2 ${openingHours ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                    {openingHours && (
-                      <div className="bg-muted/50 flex items-start gap-2 rounded-lg p-2">
-                        <Clock size={13} className="text-muted-foreground mt-0.5 shrink-0" />
-                        <div>
-                          <p className="typo-meta font-medium">
-                            {t('mapPage.spotModal.openingHours')}
-                          </p>
-                          <p className="typo-meta text-muted-foreground">{openingHours}</p>
-                        </div>
-                      </div>
-                    )}
-                    <div className="bg-muted/50 flex items-start gap-2 rounded-lg p-2">
-                      {ticketPriceAdult ? (
-                        <Ticket size={13} className="text-muted-foreground mt-0.5 shrink-0" />
-                      ) : (
-                        <DollarSign size={13} className="text-muted-foreground mt-0.5 shrink-0" />
-                      )}
-                      <div>
-                        <p className="typo-meta font-medium">{t('mapPage.spotModal.ticketPrice')}</p>
-                        {ticketPriceAdult ? (
-                          <>
-                            <p className="typo-meta text-muted-foreground">{ticketPriceAdult}</p>
-                            {ticketPriceChild && (
-                              <p className="typo-meta text-muted-foreground">
-                                {t('mapPage.spotModal.ticketChild')}: {ticketPriceChild}
-                              </p>
-                            )}
-                          </>
-                        ) : (
-                          <p className="typo-meta text-muted-foreground">
-                            {t('common.free', { defaultValue: 'Free' })}
-                          </p>
+                  {/* Main info + QR (two-column layout) */}
+                  <div className="bg-background/60 grid gap-3 rounded-xl border border-sky-100 p-3 sm:grid-cols-5">
+                    <div className="flex min-w-0 flex-col gap-2.5 sm:col-span-3">
+                      {/* Title + category */}
+                      <div className="flex min-w-0 flex-col gap-1.5">
+                        <h2 className="typo-card-title line-clamp-2">{spot.name}</h2>
+                        {spot.category_name && (
+                          <Badge
+                            variant="secondary"
+                            className="w-fit text-sm"
+                            style={
+                              spot.category_color
+                                ? {
+                                    backgroundColor: `${spot.category_color}20`,
+                                    color: spot.category_color,
+                                    borderColor: `${spot.category_color}40`,
+                                  }
+                                : {}
+                            }
+                          >
+                            {spot.category_name}
+                          </Badge>
                         )}
                       </div>
+
+                      {ratingAvg > 0 && (
+                        <div className="flex items-center gap-1.5">
+                          <Star size={14} className="fill-gold text-gold shrink-0" />
+                          <span className="typo-body font-semibold">{spot.rating_avg}</span>
+                          {spot.rating_count > 0 && (
+                            <span className="typo-meta text-muted-foreground">
+                              ({spot.rating_count} {t('mapPage.spotModal.reviews')})
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {spot.address && (
+                        <div className="flex items-start gap-2">
+                          <MapPin size={14} className="text-muted-foreground mt-0.5 shrink-0" />
+                          <p className="typo-meta text-muted-foreground line-clamp-2">{spot.address}</p>
+                        </div>
+                      )}
+
+                      {openingHours && (
+                        <div className="flex items-start gap-2">
+                          <Clock size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                          <div className="min-w-0">
+                            <p className="typo-meta font-medium">{t('mapPage.spotModal.openingHours')}</p>
+                            <p className="typo-meta text-muted-foreground">{openingHours}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-start gap-2">
+                        {ticketPriceAdult ? (
+                          <Ticket size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                        ) : (
+                          <DollarSign size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                        )}
+                        <div className="min-w-0">
+                          <p className="typo-meta font-medium">{t('mapPage.spotModal.ticketPrice')}</p>
+                          {ticketPriceAdult ? (
+                            <>
+                              <p className="typo-meta text-muted-foreground">{ticketPriceAdult}</p>
+                              {ticketPriceChild && (
+                                <p className="typo-meta text-muted-foreground">
+                                  {t('mapPage.spotModal.ticketChild')}: {ticketPriceChild}
+                                </p>
+                              )}
+                            </>
+                          ) : (
+                            <p className="typo-meta text-muted-foreground">
+                              {t('common.free', { defaultValue: 'Free' })}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-stretch justify-center sm:col-span-2">
+                      <TooltipProvider delayDuration={120}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-background flex h-full min-h-[188px] w-full cursor-pointer items-center justify-center rounded-lg border p-2 shadow-xs">
+                              <img src={qrImage} alt="QR" className="h-full w-full object-contain" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" sideOffset={8}>
+                            {t('mapPage.spotModal.scanToBook', {
+                              defaultValue: 'Scan to book tickets',
+                            })}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </div>
 
@@ -469,9 +827,9 @@ export default function ModalMarker() {
 
                   {/* Capacity indicator */}
                   {capacityPct != null && (
-                    <div className="flex items-center gap-2">
-                      <Users size={13} className="text-muted-foreground shrink-0" />
-                      <div className="flex flex-1 flex-col gap-0.5">
+                    <div className="flex items-start gap-2">
+                      <Users size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="flex flex-1 flex-col gap-1">
                         <div className="flex items-center justify-between">
                           <p className="typo-meta text-muted-foreground">
                             {t('mapPage.spotModal.capacity')}
@@ -492,15 +850,9 @@ export default function ModalMarker() {
                         </div>
                         <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
                           <div
-                            className="h-full rounded-full transition-all"
+                            className="h-full rounded-full bg-orange-400 transition-all"
                             style={{
                               width: `${Math.min(capacityPct, 100)}%`,
-                              backgroundColor:
-                                capacityPct >= alertThreshold
-                                  ? '#ef4444'
-                                  : capacityPct >= alertThreshold * 0.75
-                                    ? '#f59e0b'
-                                    : '#22c55e',
                             }}
                           />
                         </div>
@@ -546,7 +898,7 @@ export default function ModalMarker() {
                     size="sm"
                     variant="default"
                     onClick={handleVrTour}
-                    className="bg-green-500 text-secondary-foreground w-full gap-1.5"
+                    className="text-secondary-foreground w-full gap-1.5 bg-green-500"
                   >
                     <RectangleGoggles size={14} />
                     {t('mapPage.spotModal.vrTour')}
@@ -567,8 +919,8 @@ export default function ModalMarker() {
           </div>
         </div>
 
-        {/* ── OCOP panel card (desktop only, sits to the right) ── */}
-        <div className="hidden sm:flex flex-col w-64 overflow-hidden rounded-2xl border bg-background shadow-lg sm:max-h-150">
+        {/* â”€â”€ OCOP panel card (desktop only, sits to the right) â”€â”€ */}
+        <div className="bg-background hidden w-64 flex-col overflow-hidden rounded-2xl border shadow-lg sm:flex sm:max-h-150">
           <OcopNearbyPanel spot={spot} isModalOpen={isOpen} />
         </div>
       </DialogContent>

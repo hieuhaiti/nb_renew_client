@@ -60,8 +60,11 @@ export default function ChatbotPanel() {
   const [input, setInput] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [zoomImage, setZoomImage] = useState(null);
+  const [showQuickPromptMenu, setShowQuickPromptMenu] = useState(false);
   const bottomRef = useRef(null);
   const lastMapActionMsgRef = useRef(null);
+  const quickPromptMenuRef = useRef(null);
+  const quickPromptToggleRef = useRef(null);
   const [mapActionItems, setMapActionItems] = useState([]);
   const [highlightItems, setHighlightItems] = useState([]);
 
@@ -122,6 +125,23 @@ export default function ChatbotPanel() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isSending]);
 
+  useEffect(() => {
+    if (!showQuickPromptMenu) return;
+
+    const handleClickOutside = (event) => {
+      if (
+        quickPromptMenuRef.current?.contains(event.target) ||
+        quickPromptToggleRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+      setShowQuickPromptMenu(false);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showQuickPromptMenu]);
+
   const handleSend = (text) => {
     const msg = typeof text === 'string' ? text : input;
     if (!msg.trim() || isSending) return;
@@ -167,62 +187,83 @@ export default function ChatbotPanel() {
     }),
   ];
 
+  const handleQuickPromptSelect = (prompt) => {
+    setShowQuickPromptMenu(false);
+    handleSend(prompt);
+  };
+
   return (
-    <div className="relative flex h-full min-h-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+    <div className="relative flex h-full min-h-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3 max-[900px]:gap-2 max-[900px]:p-2">
       {/* Header */}
-      <div className="shrink-0 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
-        <div className="flex items-start gap-3">
-          <div className="bg-primary/10 text-primary ring-primary/20 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1">
-            <Bot className="size-5" />
+      <div className="relative shrink-0 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2 max-[900px]:px-2.5 max-[900px]:py-1.5">
+        <div className="flex items-start gap-3 max-[900px]:gap-2">
+          <div className="bg-primary/10 text-primary ring-primary/20 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl ring-1 max-[900px]:h-9 max-[900px]:w-9 max-[900px]:rounded-xl">
+            <Bot className="size-5 max-[900px]:size-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-md text-muted-foreground">
-              {t('mapPage.chatbot.title', { defaultValue: 'Trợ lý bản đồ' })}
-            </p>
-            <h3 className="text-foreground mt-1 text-lg font-bold">
+            <h3 className="text-foreground mt-1 text-lg font-bold max-[900px]:mt-0.5 max-[900px]:text-base">
               {t('mapPage.chatbot.heading', { defaultValue: 'Chatbot đồng hành' })}
             </h3>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {t('mapPage.chatbot.description', {
-                defaultValue:
-                  'Hỏi nhanh về tour, thời tiết, OCOP và nhận gợi ý lịch trình cá nhân hoá.',
-              })}
-            </p>
           </div>
-          {isAuthenticated && (
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={handleOpenHistory}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted shrink-0 rounded-xl p-1.5 transition-colors"
-              aria-label={t('mapPage.chatbot.historyTitle', { defaultValue: 'Lịch sử trò chuyện' })}
-            >
-              <Menu className="size-4.5" />
-            </Button>
-          )}
-        </div>
-
-        {messages.length === 0 && !isLoading && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {quickPrompts.map((prompt, i) => (
+          <div className="flex shrink-0 items-start gap-1.5">
+            {messages.length === 0 && !isLoading && (
               <Button
+                ref={quickPromptToggleRef}
                 variant="ghost"
-                key={i}
                 type="button"
                 disabled={isSending}
-                onClick={() => handleSend(prompt)}
-                className="typo-badge border-border/70 bg-muted/40 hover:bg-muted text-foreground rounded-full border px-2.5 py-1 transition-colors disabled:opacity-50"
+                onClick={() => setShowQuickPromptMenu((prev) => !prev)}
+                className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex rounded-xl p-1.5 transition-colors"
+                aria-label={t('mapPage.chatbot.quickPromptsLabel', { defaultValue: 'Gợi ý nhanh' })}
               >
-                {prompt}
+                <Sparkles className="size-4" />
               </Button>
-            ))}
+            )}
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={handleOpenHistory}
+                className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl p-1.5 transition-colors"
+                aria-label={t('mapPage.chatbot.historyTitle', {
+                  defaultValue: 'Lịch sử trò chuyện',
+                })}
+              >
+                <Menu className="size-4.5" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {showQuickPromptMenu && messages.length === 0 && !isLoading && (
+          <div
+            ref={quickPromptMenuRef}
+            className="bg-card border-border absolute top-[calc(100%+6px)] right-2 z-20 w-[min(320px,calc(100vw-72px))] rounded-xl border p-1.5 shadow-lg"
+          >
+            <div className="mb-1 px-2 py-1 text-xs font-medium text-[var(--event-panel-title)]">
+              {t('mapPage.chatbot.quickPromptsLabel', { defaultValue: 'Gợi ý nhanh' })}
+            </div>
+            <div className="max-h-52 space-y-1 overflow-y-auto">
+              {quickPrompts.map((prompt, i) => (
+                <Button
+                  key={i}
+                  type="button"
+                  variant="ghost"
+                  disabled={isSending}
+                  onClick={() => handleQuickPromptSelect(prompt)}
+                  className="text-foreground hover:bg-muted h-auto w-full justify-start rounded-lg px-2.5 py-2 text-left text-sm whitespace-normal"
+                >
+                  {prompt}
+                </Button>
+              ))}
+            </div>
           </div>
         )}
       </div>
 
       {/* Messages */}
-      <div className="bg-card flex min-h-0 flex-1 flex-col rounded-2xl border p-3 shadow-sm">
-        <div className="bg-muted/20 min-h-0 flex-1 overflow-y-auto rounded-xl border p-2 pr-1">
+      <div className="bg-card flex min-h-0 flex-1 flex-col rounded-2xl border p-3 shadow-sm max-[900px]:p-2">
+        <div className="bg-muted/20 min-h-0 flex-1 overflow-y-auto rounded-xl border p-2 pr-1 max-[900px]:p-1.5 max-[900px]:pr-1">
           {isLoading ? (
             <div className="flex h-full items-center justify-center">
               <p className="typo-meta text-muted-foreground">
@@ -238,13 +279,13 @@ export default function ChatbotPanel() {
               </p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 max-[900px]:space-y-1">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
                   className={msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'}
                 >
-                  <div className="max-w-[88%] space-y-1">
+                  <div className="max-w-[88%] space-y-1 max-[900px]:max-w-[92%] max-[900px]:space-y-0.5">
                     <div
                       className={
                         msg.role === 'user'
@@ -259,8 +300,8 @@ export default function ChatbotPanel() {
                     <div
                       className={
                         msg.role === 'user'
-                          ? 'typo-body bg-primary text-primary-foreground rounded-2xl px-3 py-2'
-                          : 'typo-body bg-card text-foreground rounded-2xl border px-3 py-2'
+                          ? 'typo-body bg-primary text-primary-foreground rounded-2xl px-3 py-2 break-words max-[900px]:px-2.5 max-[900px]:py-1.5'
+                          : 'typo-body bg-card text-foreground rounded-2xl border px-3 py-2 break-words max-[900px]:px-2.5 max-[900px]:py-1.5'
                       }
                     >
                       {msg.role === 'user' ? (
@@ -303,7 +344,7 @@ export default function ChatbotPanel() {
                     <div className="typo-caption text-muted-foreground">
                       {t('mapPage.chatbot.botLabel', { defaultValue: 'Trợ lý AI' })}
                     </div>
-                    <div className="typo-body bg-card text-muted-foreground rounded-2xl border px-3 py-2">
+                    <div className="typo-body bg-card text-muted-foreground rounded-2xl border px-3 py-2 break-words max-[900px]:px-2.5 max-[900px]:py-1.5">
                       <span className="inline-flex items-center gap-0.5">
                         <span className="animate-bounce" style={{ animationDelay: '0ms' }}>
                           •
@@ -332,12 +373,12 @@ export default function ChatbotPanel() {
         )}
 
         {/* Input bar */}
-        <div className="bg-muted/20 mt-2 shrink-0 rounded-2xl border p-3">
+        <div className="bg-muted/20 mt-2 shrink-0 rounded-2xl border p-3 max-[900px]:mt-1.5 max-[900px]:p-2">
           <div className="typo-overline text-muted-foreground flex items-center gap-2">
             <Sparkles className="size-3.5" />
             {t('mapPage.chatbot.cta', { defaultValue: 'Trò chuyện cùng chatbot' })}
           </div>
-          <div className="mt-3 flex gap-2">
+          <div className="mt-3 flex gap-2 max-[900px]:mt-2 max-[900px]:gap-1.5">
             <Input
               type="text"
               value={input}

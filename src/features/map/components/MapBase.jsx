@@ -4,7 +4,7 @@ import MapboxCompare from 'mapbox-gl-compare';
 import { useTranslation } from 'react-i18next';
 import { useSubcategoryLayerQuery } from '@/services/api/map/mapDataLayerService';
 import { useMapStore } from '../store/useMapStore';
-import { defaultLatLong, defaultZoom, pitchDefault } from '../constant/mapConstant';
+import { defaultLatLong, defaultZoom, mapDelta, pitchDefault } from '../constant/mapConstant';
 import { useMapStyleStore } from '../store/useMapStyleStore';
 import { getMapColorById } from '../constant/mapColor';
 import ResetControl from './control/ToolResetControl';
@@ -201,6 +201,13 @@ export default function MapBaseArea() {
     const handleSingleLoad = () => {
       setMapRef(map);
       useMapStore.getState().setMapRefObj(mapRef);
+
+      const center = map.getCenter();
+      const mapBounds = [
+        [center.lng - mapDelta, center.lat - mapDelta],
+        [center.lng + mapDelta, center.lat + mapDelta],
+      ];
+      map.setMaxBounds(mapBounds);
 
       map.addControl(new ToolViewModeControl(), 'right');
       map.addControl(new ToolBaseMap(), 'right');

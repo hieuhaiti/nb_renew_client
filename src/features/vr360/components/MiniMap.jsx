@@ -1,5 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { LocateFixed } from 'lucide-react';
 import { env } from '@/config/env';
 import { defaultLatLong, defaultZoom } from '@/features/map/constant/mapConstant';
 import { useFovStore } from '../store/useFovStore';
@@ -23,6 +24,9 @@ const LAYER_SPOTS_LABELS = 'tourism-spots-labels';
 const SOURCE_TC = 'tamchuc-points';
 const LAYER_TC_CIRCLE = 'tamchuc-points-circle';
 const LAYER_TC_LABEL = 'tamchuc-points-label';
+const SOURCE_GPS = 'gps-current-location';
+const LAYER_GPS = 'gps-current-location-circle';
+const DEFAULT_CENTER = [defaultLatLong.lng, defaultLatLong.lat];
 
 const TAM_CHUC_POINTS = [
   { id: 0, name: 'Toàn cảnh Chùa Tam Chúc', lon: 105.813644, lat: 20.570221 },
@@ -316,6 +320,70 @@ function buildScenesGeoJson(scenes, currentSceneIndex) {
   };
 }
 
+function buildGpsGeoJson(coords) {
+  if (!Array.isArray(coords) || coords.length < 2) return emptyFeatureCollection();
+
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: coords,
+        },
+        properties: {
+          name: 'Vị trí của tôi',
+        },
+      },
+    ],
+  };
+}
+
+function ensureGpsArtifacts(map, initialData) {
+  if (!map.getSource(SOURCE_GPS)) {
+    map.addSource(SOURCE_GPS, {
+      type: 'geojson',
+      data: initialData || emptyFeatureCollection(),
+    });
+  }
+
+  if (!map.getLayer(LAYER_GPS)) {
+    map.addLayer({
+      id: LAYER_GPS,
+      type: 'circle',
+      source: SOURCE_GPS,
+      paint: {
+        'circle-radius': 7,
+        'circle-color': '#2563eb',
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#ffffff',
+      },
+    });
+  }
+}
+
+function applyViewModeVisibility(map, mode) {
+  if (!map) return;
+
+  const isOverview = mode === 'overview';
+
+  if (map.getLayer(LAYER_SPOTS))
+    map.setLayoutProperty(LAYER_SPOTS, 'visibility', isOverview ? 'visible' : 'none');
+  if (map.getLayer(LAYER_SPOTS_LABELS))
+    map.setLayoutProperty(LAYER_SPOTS_LABELS, 'visibility', isOverview ? 'visible' : 'none');
+
+  if (map.getLayer(LAYER_POINTS))
+    map.setLayoutProperty(LAYER_POINTS, 'visibility', isOverview ? 'none' : 'visible');
+  if (map.getLayer(LAYER_LABELS))
+    map.setLayoutProperty(LAYER_LABELS, 'visibility', isOverview ? 'none' : 'visible');
+
+  if (map.getLayer(LAYER_TC_CIRCLE))
+    map.setLayoutProperty(LAYER_TC_CIRCLE, 'visibility', isOverview ? 'none' : 'visible');
+  if (map.getLayer(LAYER_TC_LABEL))
+    map.setLayoutProperty(LAYER_TC_LABEL, 'visibility', isOverview ? 'none' : 'visible');
+}
+
 export default function MiniMap({
   scenes = [],
   spots = [],
@@ -341,13 +409,15 @@ export default function MiniMap({
   const fovPolygonRef = useRef(null);
   const scenesGeoJsonRef = useRef(null);
   const spotsGeoJsonRef = useRef(null);
+  const gpsCoordsRef = useRef(null);
 
-  const viewModeRef = useRef('closeup');
+  const viewModeRef = useRef('overview'); // 'overview' | 'closeup'
   const tcActiveIdRef = useRef(-1);
   const headingRafRef = useRef(null);
   const pendingHeadingRef = useRef(null);
 
-  const [viewMode, setViewMode] = useState('closeup');
+  const [viewMode, setViewMode] = useState('overview'); // 'overview' | 'closeup'
+  const [isLocating, setIsLocating] = useState(false);
 
   const fovPolygon = useFovStore((state) => state.fovPolygon);
   const fovAngle = useFovStore((state) => state.fovAngle);
@@ -407,17 +477,28 @@ export default function MiniMap({
     if (source) source.setData(nextData || emptyFeatureCollection());
   }, []);
 
+  const updateGpsSourceData = useCallback((nextData) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const source = map.getSource(SOURCE_GPS);
+    if (source) source.setData(nextData || emptyFeatureCollection());
+  }, []);
+
   const switchToOverview = useCallback(() => {
     viewModeRef.current = 'overview';
     setViewMode('overview');
     const map = mapRef.current;
     if (!map) return;
-    if (map.getLayer(LAYER_TC_CIRCLE)) map.setLayoutProperty(LAYER_TC_CIRCLE, 'visibility', 'none');
-    if (map.getLayer(LAYER_TC_LABEL)) map.setLayoutProperty(LAYER_TC_LABEL, 'visibility', 'none');
-    const center = currentCenterRef.current;
-    if (center) {
-      map.flyTo({ center, zoom: 15, pitch: 0, essential: true, duration: 800 });
-    }
+    applyViewModeVisibility(map, 'overview');
+    const center = currentCenterRef.current || DEFAULT_CENTER;
+    const zoom = currentCenterRef.current ? 12 : defaultZoom;
+    map.flyTo({
+      center,
+      zoom,
+      pitch: 0,
+      essential: true,
+      duration: 800,
+    });
   }, []);
 
   const switchToCloseup = useCallback(() => {
@@ -425,10 +506,10 @@ export default function MiniMap({
     setViewMode('closeup');
     const map = mapRef.current;
     if (!map) return;
-    if (map.getLayer(LAYER_TC_CIRCLE)) map.setLayoutProperty(LAYER_TC_CIRCLE, 'visibility', 'visible');
-    if (map.getLayer(LAYER_TC_LABEL)) map.setLayoutProperty(LAYER_TC_LABEL, 'visibility', 'visible');
+    applyViewModeVisibility(map, 'closeup');
     const activePoint = TAM_CHUC_POINTS[tcActiveIdRef.current] ?? TAM_CHUC_POINTS[0];
-    if (activePoint) map.easeTo({ center: [activePoint.lon, activePoint.lat], zoom: 13, duration: 400 });
+    if (activePoint)
+      map.easeTo({ center: [activePoint.lon, activePoint.lat], zoom: 13, duration: 400 });
   }, []);
 
   useEffect(() => {
@@ -469,13 +550,13 @@ export default function MiniMap({
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    const initialCenter = currentCenterRef.current || [defaultLatLong.lng, defaultLatLong.lat];
+    const initialCenter = DEFAULT_CENTER;
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: mapStyle,
       center: initialCenter,
-      zoom: currentCenterRef.current ? 13 : defaultZoom,
+      zoom: defaultZoom,
       interactive: true,
       attributionControl: false,
     });
@@ -492,9 +573,12 @@ export default function MiniMap({
       ensureFovArtifacts(map, fovPolygonRef.current);
       ensurePointArtifacts(map, scenesGeoJsonRef.current);
       ensureTcArtifacts(map, buildTamChucGeoJson(tcActiveIdRef.current));
+      ensureGpsArtifacts(map, buildGpsGeoJson(gpsCoordsRef.current));
       updateSpotsSourceData(spotsGeoJsonRef.current);
       updateFovSourceData(fovPolygonRef.current);
       updatePointsSourceData(scenesGeoJsonRef.current);
+      updateGpsSourceData(buildGpsGeoJson(gpsCoordsRef.current));
+      applyViewModeVisibility(map, viewModeRef.current);
     };
 
     const handlePointClick = (event) => {
@@ -613,6 +697,46 @@ export default function MiniMap({
     updateSpotsSourceData(spotsGeoJson);
   }, [spotsGeoJson, updateSpotsSourceData]);
 
+  const handleLocateUser = () => {
+    if (!navigator?.geolocation || isLocating) return;
+    setIsLocating(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lng = Number(position?.coords?.longitude);
+        const lat = Number(position?.coords?.latitude);
+        if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+          setIsLocating(false);
+          return;
+        }
+
+        const coords = [lng, lat];
+        gpsCoordsRef.current = coords;
+        updateGpsSourceData(buildGpsGeoJson(coords));
+
+        const map = mapRef.current;
+        if (map) {
+          map.flyTo({
+            center: coords,
+            zoom: Math.max(map.getZoom(), 14),
+            essential: true,
+            duration: 700,
+          });
+        }
+
+        setIsLocating(false);
+      },
+      () => {
+        setIsLocating(false);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 10000,
+        timeout: 10000,
+      }
+    );
+  };
+
   // Đồng bộ TC layer khi scene đổi — giống highlightPoint() trong index.html
   useEffect(() => {
     const map = mapRef.current;
@@ -654,6 +778,40 @@ export default function MiniMap({
   }, [currentCenter, currentSpotCenter]);
 
   useEffect(() => {
+    const map = mapRef.current;
+    const targetCenter = currentSpotCenter || currentCenter;
+    if (!map || !targetCenter || viewModeRef.current !== 'overview') return;
+
+    const runFlyTo = () => {
+      map.flyTo({
+        center: targetCenter,
+        zoom: 12,
+        pitch: 0,
+        essential: true,
+        duration: 700,
+      });
+    };
+
+    if (map.loaded()) {
+      runFlyTo();
+      return;
+    }
+
+    const handleMapReady = () => {
+      if (!mapRef.current) return;
+      runFlyTo();
+    };
+
+    map.once('load', handleMapReady);
+    map.once('style.load', handleMapReady);
+
+    return () => {
+      map.off('load', handleMapReady);
+      map.off('style.load', handleMapReady);
+    };
+  }, [currentCenter, currentSpotCenter]);
+
+  useEffect(() => {
     if (!currentCenter) return;
     updateFovPolygon(currentCenter, heading, fovAngle, fovRadius);
   }, [currentCenter, heading, fovAngle, fovRadius, updateFovPolygon]);
@@ -672,14 +830,25 @@ export default function MiniMap({
       const center = currentCenterRef.current;
       if (!center) {
         if (flushCount === 0) {
-          console.warn('[VR-DEBUG][MiniMap] flushHeading: currentCenterRef is NULL — FOV polygon cannot be drawn. Check that scenes/spot have coordinates.');
+          console.warn(
+            '[VR-DEBUG][MiniMap] flushHeading: currentCenterRef is NULL — FOV polygon cannot be drawn. Check that scenes/spot have coordinates.'
+          );
         }
         return;
       }
 
       flushCount += 1;
       if (flushCount <= 3 || flushCount % 60 === 0) {
-        console.debug('[VR-DEBUG][MiniMap] flushHeading #' + flushCount + ' bearing:', nextBearing.toFixed(2), '| center:', center, '| fovAngle:', fovAngleRef.current, '| fovRadius:', fovRadiusRef.current);
+        console.debug(
+          '[VR-DEBUG][MiniMap] flushHeading #' + flushCount + ' bearing:',
+          nextBearing.toFixed(2),
+          '| center:',
+          center,
+          '| fovAngle:',
+          fovAngleRef.current,
+          '| fovRadius:',
+          fovRadiusRef.current
+        );
       }
 
       setHeading(nextBearing);
@@ -698,7 +867,10 @@ export default function MiniMap({
     };
 
     window.addEventListener('smooth-fov-update', handleSmoothFovUpdate);
-    console.debug('[VR-DEBUG][MiniMap] currentCenterRef at listener setup:', currentCenterRef.current);
+    console.debug(
+      '[VR-DEBUG][MiniMap] currentCenterRef at listener setup:',
+      currentCenterRef.current
+    );
 
     return () => {
       window.removeEventListener('smooth-fov-update', handleSmoothFovUpdate);
@@ -717,7 +889,7 @@ export default function MiniMap({
       <div className="absolute top-2 left-2 z-10 flex gap-1">
         <button
           onClick={switchToOverview}
-          className={`px-2 py-1 text-[11px] font-bold rounded shadow-sm transition-colors ${
+          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${
             viewMode === 'overview'
               ? 'bg-amber-500 text-white'
               : 'bg-white/90 text-gray-700 hover:bg-white'
@@ -725,15 +897,26 @@ export default function MiniMap({
         >
           Toàn cảnh
         </button>
+
         <button
           onClick={switchToCloseup}
-          className={`px-2 py-1 text-[11px] font-bold rounded shadow-sm transition-colors ${
+          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${
             viewMode === 'closeup'
               ? 'bg-blue-600 text-white'
               : 'bg-white/90 text-gray-700 hover:bg-white'
           }`}
         >
           Cận cảnh
+        </button>
+        <button
+          onClick={handleLocateUser}
+          disabled={isLocating}
+          className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${
+            isLocating ? 'bg-slate-300 text-slate-700' : 'bg-white/90 text-gray-700 hover:bg-white'
+          }`}
+        >
+          <LocateFixed size={12} />
+          {isLocating ? 'GPS...' : 'GPS'}
         </button>
       </div>
 
