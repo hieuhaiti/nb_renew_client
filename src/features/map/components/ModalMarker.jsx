@@ -2,21 +2,21 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import {
-  MapPin,
-  Camera,
-  Star,
-  Clock,
-  Ticket,
-  DollarSign,
-  Navigation,
-  RectangleGoggles,
-  Phone,
-  Globe,
-  Users,
-  ShoppingBag,
-  Route,
-  Sparkles,
   ArrowUpRight,
+  Camera,
+  Clock,
+  DollarSign,
+  Globe,
+  MapPin,
+  Navigation,
+  Phone,
+  RectangleGoggles,
+  Route,
+  ShoppingBag,
+  Sparkles,
+  Star,
+  Ticket,
+  Users,
   XIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -404,7 +404,7 @@ export default function ModalMarker() {
       if (sortedStops.length < 2) {
         throw new Error(
           t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cáº§n Ã­t nháº¥t 2 Ä‘iá»ƒm dá»«ng Ä‘á»ƒ hiá»ƒn thá»‹ chá»‰ Ä‘Æ°á»ng.',
+            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
           })
         );
       }
@@ -439,7 +439,7 @@ export default function ModalMarker() {
       if (routePoints.length < 2) {
         throw new Error(
           t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cáº§n Ã­t nháº¥t 2 Ä‘iá»ƒm dá»«ng Ä‘á»ƒ hiá»ƒn thá»‹ chá»‰ Ä‘Æ°á»ng.',
+            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
           })
         );
       }
@@ -448,7 +448,7 @@ export default function ModalMarker() {
       if (!routeResult?.geometry?.coordinates?.length) {
         throw new Error(
           t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'KhÃ´ng thá»ƒ hiá»ƒn thá»‹ tuyáº¿n tour lÃºc nÃ y.',
+            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
           })
         );
       }
@@ -475,14 +475,14 @@ export default function ModalMarker() {
       closeSpotModal();
       toast.success(
         t('mapPage.tourPanel.routeReady', {
-          defaultValue: 'ÄÃ£ hiá»ƒn thá»‹ tuyáº¿n tour trÃªn báº£n Ä‘á»“.',
+          defaultValue: 'Đã hiển thị tuyến tour trên bản đồ.',
         })
       );
     } catch (error) {
       toast.error(
         error?.message ||
           t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'KhÃ´ng thá»ƒ hiá»ƒn thá»‹ tuyáº¿n tour lÃºc nÃ y.',
+            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
           })
       );
     } finally {
@@ -548,17 +548,17 @@ export default function ModalMarker() {
        */}
       <DialogContent
         showCloseButton={false}
-        className="flex w-full max-w-[calc(100%-2rem)] flex-row items-stretch gap-3 rounded-none border-0 bg-transparent p-0 shadow-none sm:w-auto sm:max-w-none"
+        className="flex h-[90vh] max-h-[90vh] w-full max-w-[calc(100%-1rem)] flex-row items-stretch gap-2 rounded-none border-0 bg-transparent p-0 shadow-none sm:max-w-[calc(100%-2rem)] sm:gap-3 md:w-auto md:max-w-none"
       >
         <DialogHeader className="sr-only">
           <DialogTitle>{spot?.name || t('mapPage.destination.unknownName')}</DialogTitle>
           <DialogDescription>{t('mapPage.destination.title')}</DialogDescription>
         </DialogHeader>
 
-        {/* â”€â”€ Main modal card (original layout preserved) â”€â”€ */}
+        {/* Main modal card (original layout preserved) */}
         {/* left-side panel placeholder (removed TourSuggestModal) */}
-        <div className="bg-background hidden w-64 flex-col overflow-hidden rounded-2xl border shadow-lg sm:flex sm:max-h-150">
-          <div className="from-primary/10 via-primary/5 to-background border-b bg-gradient-to-br p-3">
+        <div className="bg-background hidden w-72 flex-col self-stretch overflow-hidden rounded-2xl border shadow-lg xl:flex">
+          <div className="from-primary/10 via-primary/5 to-background border-b bg-linear-to-br p-3">
             <div className="mb-1.5 flex items-center gap-1.5">
               <Sparkles size={13} className="text-primary shrink-0" />
               <p className="typo-meta text-foreground font-semibold">
@@ -600,64 +600,68 @@ export default function ModalMarker() {
                   const isRouteLoading =
                     routeLoadingTourId != null && String(routeLoadingTourId) === String(tour.id);
                   return (
-                  <button
-                    key={tour.id}
-                    type="button"
-                    onClick={() => handleOpenTourSuggestion(tour)}
-                    disabled={isRouteLoading}
-                    className="group from-background via-background to-muted/20 hover:border-primary/40 hover:bg-muted/30 w-full rounded-xl border bg-gradient-to-br p-2 text-left transition-all"
-                  >
-                    <div className="mb-2 overflow-hidden rounded-lg">
-                      <img
-                        src={tour.main_image_url ? withBaseUrl(tour.main_image_url) : placeholderImg}
-                        alt={tour.name}
-                        className="h-24 w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        onError={(event) => {
-                          event.currentTarget.onerror = null;
-                          event.currentTarget.src = placeholderImg;
-                        }}
-                      />
-                    </div>
-                    <div className="mb-1.5 flex items-start justify-between gap-2">
-                      <p className="typo-meta text-foreground line-clamp-2 font-semibold">{tour.name}</p>
-                      {tour.is_featured && (
-                        <Badge variant="secondary" className="px-1.5 py-0.5 text-[10px]">
-                          {t('mapPage.spotModal.suggestedTours.featured', {
-                            defaultValue: 'Featured',
+                    <button
+                      key={tour.id}
+                      type="button"
+                      onClick={() => handleOpenTourSuggestion(tour)}
+                      disabled={isRouteLoading}
+                      className="group from-background via-background to-muted/20 hover:border-primary/40 hover:bg-muted/30 w-full rounded-xl border bg-linear-to-br p-2 text-left transition-all"
+                    >
+                      <div className="mb-2 overflow-hidden rounded-lg">
+                        <img
+                          src={
+                            tour.main_image_url ? withBaseUrl(tour.main_image_url) : placeholderImg
+                          }
+                          alt={tour.name}
+                          className="h-24 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          onError={(event) => {
+                            event.currentTarget.onerror = null;
+                            event.currentTarget.src = placeholderImg;
+                          }}
+                        />
+                      </div>
+                      <div className="mb-1.5 flex items-start justify-between gap-2">
+                        <p className="typo-meta text-foreground line-clamp-2 min-w-0 flex-1 font-semibold">
+                          {tour.name}
+                        </p>
+                        {tour.is_featured && (
+                          <Badge variant="secondary" className="shrink-0 px-1.5 py-0.5 text-[10px]">
+                            {t('mapPage.spotModal.suggestedTours.featured', {
+                              defaultValue: 'Featured',
+                            })}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mb-2 flex flex-wrap gap-1">
+                        <span className="bg-muted text-muted-foreground rounded-md px-1.5 py-0.5 text-[10px]">
+                          {formatTourDurationLabel(tour, t)}
+                        </span>
+                        <span className="bg-primary/10 text-primary rounded-md px-1.5 py-0.5 text-[10px] font-medium">
+                          {formatTourPriceLabel(tour, locale)}
+                        </span>
+                      </div>
+                      <p className="typo-meta text-muted-foreground line-clamp-2">
+                        {tour.description ||
+                          t('mapPage.spotModal.suggestedTours.fallbackDescription', {
+                            defaultValue: 'Open this route on the map to view itinerary details.',
                           })}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="mb-2 flex flex-wrap gap-1">
-                      <span className="bg-muted text-muted-foreground rounded-md px-1.5 py-0.5 text-[10px]">
-                        {formatTourDurationLabel(tour, t)}
+                      </p>
+                      <span className="text-primary mt-2 inline-flex items-center gap-1 text-[11px] font-medium">
+                        {isRouteLoading
+                          ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Opening...' })
+                          : t('mapPage.spotModal.suggestedTours.openOnMap', {
+                              defaultValue: 'Open route on map',
+                            })}
+                        <ArrowUpRight size={12} />
                       </span>
-                      <span className="bg-primary/10 text-primary rounded-md px-1.5 py-0.5 text-[10px] font-medium">
-                        {formatTourPriceLabel(tour, locale)}
-                      </span>
-                    </div>
-                    <p className="typo-meta text-muted-foreground line-clamp-2">
-                      {tour.description ||
-                        t('mapPage.spotModal.suggestedTours.fallbackDescription', {
-                          defaultValue: 'Open this route on the map to view itinerary details.',
-                        })}
-                    </p>
-                    <span className="text-primary mt-2 inline-flex items-center gap-1 text-[11px] font-medium">
-                      {isRouteLoading
-                        ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Opening...' })
-                        : t('mapPage.spotModal.suggestedTours.openOnMap', {
-                            defaultValue: 'Open route on map',
-                          })}
-                      <ArrowUpRight size={12} />
-                    </span>
-                  </button>
+                    </button>
                   );
                 })}
               </div>
             )}
           </div>
         </div>
-        <div className="bg-background relative flex w-full flex-col overflow-hidden rounded-2xl border shadow-lg sm:w-2xl sm:flex-none">
+        <div className="bg-background relative flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border shadow-lg sm:w-[38rem] sm:flex-none lg:w-[42rem] xl:w-2xl">
           {/* Close button */}
           <DialogClose className="ring-offset-background focus:ring-ring absolute top-4 right-4 z-10 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
             <XIcon />
@@ -665,9 +669,9 @@ export default function ModalMarker() {
           </DialogClose>
 
           {/* Scrollable inner content */}
-          <div className="flex max-h-[85vh] flex-col overflow-y-auto sm:max-h-150">
+          <div className="flex flex-1 flex-col overflow-y-auto">
             {/* Hero image */}
-            <div className="bg-muted relative h-48 w-full shrink-0">
+            <div className="bg-muted relative h-56 w-full shrink-0">
               {isLoading ? (
                 <Skeleton className="h-full w-full rounded-none" />
               ) : (
@@ -688,187 +692,204 @@ export default function ModalMarker() {
             </div>
 
             {/* Content */}
-            <div className="bg-sky-50/60 flex flex-col gap-3 p-4">
-              {isLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-4 w-full" />
-                </div>
-              ) : spot ? (
-                <>
-                  {/* Main info + QR (two-column layout) */}
-                  <div className="bg-background/60 grid gap-3 rounded-xl border border-sky-100 p-3 sm:grid-cols-5">
-                    <div className="flex min-w-0 flex-col gap-2.5 sm:col-span-3">
-                      {/* Title + category */}
-                      <div className="flex min-w-0 flex-col gap-1.5">
-                        <h2 className="typo-card-title line-clamp-2">{spot.name}</h2>
-                        {spot.category_name && (
-                          <Badge
-                            variant="secondary"
-                            className="w-fit text-sm"
-                            style={
-                              spot.category_color
-                                ? {
-                                    backgroundColor: `${spot.category_color}20`,
-                                    color: spot.category_color,
-                                    borderColor: `${spot.category_color}40`,
-                                  }
-                                : {}
-                            }
-                          >
-                            {spot.category_name}
-                          </Badge>
-                        )}
-                      </div>
-
-                      {ratingAvg > 0 && (
-                        <div className="flex items-center gap-1.5">
-                          <Star size={14} className="fill-gold text-gold shrink-0" />
-                          <span className="typo-body font-semibold">{spot.rating_avg}</span>
-                          {spot.rating_count > 0 && (
-                            <span className="typo-meta text-muted-foreground">
-                              ({spot.rating_count} {t('mapPage.spotModal.reviews')})
-                            </span>
+            <div className="flex flex-1 flex-col justify-between bg-sky-50/60 p-4">
+              <div className="flex flex-col gap-3">
+                {isLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                ) : spot ? (
+                  <>
+                    {/* Main info + QR (two-column layout) */}
+                    <div className="bg-background/60 grid gap-3 rounded-xl border border-sky-100 p-3 sm:grid-cols-5">
+                      <div className="flex min-w-0 flex-col gap-2.5 sm:col-span-3">
+                        {/* Title + category */}
+                        <div className="flex min-w-0 flex-col gap-1.5">
+                          <h2 className="typo-card-title line-clamp-2">{spot.name}</h2>
+                          {spot.category_name && (
+                            <Badge
+                              variant="secondary"
+                              className="w-fit text-sm"
+                              style={
+                                spot.category_color
+                                  ? {
+                                      backgroundColor: `${spot.category_color}20`,
+                                      color: spot.category_color,
+                                      borderColor: `${spot.category_color}40`,
+                                    }
+                                  : {}
+                              }
+                            >
+                              {spot.category_name}
+                            </Badge>
                           )}
                         </div>
-                      )}
 
-                      {spot.address && (
-                        <div className="flex items-start gap-2">
-                          <MapPin size={14} className="text-muted-foreground mt-0.5 shrink-0" />
-                          <p className="typo-meta text-muted-foreground line-clamp-2">{spot.address}</p>
-                        </div>
-                      )}
+                        {ratingAvg > 0 && (
+                          <div className="flex items-center gap-1.5">
+                            <Star size={14} className="fill-gold text-gold shrink-0" />
+                            <span className="typo-body font-semibold">{spot.rating_avg}</span>
+                            {spot.rating_count > 0 && (
+                              <span className="typo-meta text-muted-foreground">
+                                ({spot.rating_count} {t('mapPage.spotModal.reviews')})
+                              </span>
+                            )}
+                          </div>
+                        )}
 
-                      {openingHours && (
+                        {spot.address && (
+                          <div className="flex items-start gap-2">
+                            <MapPin size={14} className="text-muted-foreground mt-0.5 shrink-0" />
+                            <p className="typo-meta text-muted-foreground line-clamp-2">
+                              {spot.address}
+                            </p>
+                          </div>
+                        )}
+
+                        {openingHours && (
+                          <div className="flex items-start gap-2">
+                            <Clock size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                            <div className="min-w-0">
+                              <p className="typo-meta font-medium">
+                                {t('mapPage.spotModal.openingHours')}
+                              </p>
+                              <p className="typo-meta text-muted-foreground">{openingHours}</p>
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex items-start gap-2">
-                          <Clock size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                          {ticketPriceAdult ? (
+                            <Ticket size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                          ) : (
+                            <DollarSign
+                              size={13}
+                              className="text-muted-foreground mt-0.5 shrink-0"
+                            />
+                          )}
                           <div className="min-w-0">
-                            <p className="typo-meta font-medium">{t('mapPage.spotModal.openingHours')}</p>
-                            <p className="typo-meta text-muted-foreground">{openingHours}</p>
+                            <p className="typo-meta font-medium">
+                              {t('mapPage.spotModal.ticketPrice')}
+                            </p>
+                            {ticketPriceAdult ? (
+                              <>
+                                <p className="typo-meta text-muted-foreground">
+                                  {ticketPriceAdult}
+                                </p>
+                                {ticketPriceChild && (
+                                  <p className="typo-meta text-muted-foreground">
+                                    {t('mapPage.spotModal.ticketChild')}: {ticketPriceChild}
+                                  </p>
+                                )}
+                              </>
+                            ) : (
+                              <p className="typo-meta text-muted-foreground">
+                                {t('common.free', { defaultValue: 'Free' })}
+                              </p>
+                            )}
                           </div>
                         </div>
-                      )}
+                      </div>
 
-                      <div className="flex items-start gap-2">
-                        {ticketPriceAdult ? (
-                          <Ticket size={13} className="text-muted-foreground mt-0.5 shrink-0" />
-                        ) : (
-                          <DollarSign size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="flex items-stretch justify-center sm:col-span-2">
+                        <TooltipProvider delayDuration={120}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="bg-background flex h-full min-h-47 w-full cursor-pointer items-center justify-center rounded-lg border p-2 shadow-xs">
+                                <img
+                                  src={qrImage}
+                                  alt="QR"
+                                  className="h-full w-full object-contain"
+                                />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" sideOffset={8}>
+                              {t('mapPage.spotModal.scanToBook', {
+                                defaultValue: 'Scan to book tickets',
+                              })}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
+
+                    {/* Contact info */}
+                    {(spot.phone || spot.website) && (
+                      <div className="flex flex-col gap-2">
+                        {spot.phone && (
+                          <div className="flex items-center gap-2">
+                            <Phone size={13} className="text-muted-foreground shrink-0" />
+                            <a
+                              href={`tel:${spot.phone}`}
+                              className="typo-meta text-muted-foreground hover:text-foreground"
+                            >
+                              {spot.phone}
+                            </a>
+                          </div>
                         )}
-                        <div className="min-w-0">
-                          <p className="typo-meta font-medium">{t('mapPage.spotModal.ticketPrice')}</p>
-                          {ticketPriceAdult ? (
-                            <>
-                              <p className="typo-meta text-muted-foreground">{ticketPriceAdult}</p>
-                              {ticketPriceChild && (
-                                <p className="typo-meta text-muted-foreground">
-                                  {t('mapPage.spotModal.ticketChild')}: {ticketPriceChild}
-                                </p>
-                              )}
-                            </>
-                          ) : (
+                        {spot.website && (
+                          <div className="flex items-center gap-2">
+                            <Globe size={13} className="text-muted-foreground shrink-0" />
+                            <a
+                              href={spot.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="typo-meta text-muted-foreground hover:text-foreground line-clamp-1"
+                            >
+                              {spot.website}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Capacity indicator */}
+                    {capacityPct != null && (
+                      <div className="flex items-start gap-2">
+                        <Users size={13} className="text-muted-foreground mt-0.5 shrink-0" />
+                        <div className="flex flex-1 flex-col gap-1">
+                          <div className="flex items-center justify-between">
                             <p className="typo-meta text-muted-foreground">
-                              {t('common.free', { defaultValue: 'Free' })}
+                              {t('mapPage.spotModal.capacity')}
                             </p>
-                          )}
+                            <p
+                              className="typo-meta font-medium"
+                              style={{
+                                color:
+                                  capacityPct >= alertThreshold
+                                    ? '#ef4444'
+                                    : capacityPct >= alertThreshold * 0.75
+                                      ? '#f59e0b'
+                                      : '#22c55e',
+                              }}
+                            >
+                              {Math.round(capacityPct)}%
+                            </p>
+                          </div>
+                          <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+                            <div
+                              className="h-full rounded-full bg-orange-400 transition-all"
+                              style={{
+                                width: `${Math.min(capacityPct, 100)}%`,
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
 
-                    <div className="flex items-stretch justify-center sm:col-span-2">
-                      <TooltipProvider delayDuration={120}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="bg-background flex h-full min-h-[188px] w-full cursor-pointer items-center justify-center rounded-lg border p-2 shadow-xs">
-                              <img src={qrImage} alt="QR" className="h-full w-full object-contain" />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" sideOffset={8}>
-                            {t('mapPage.spotModal.scanToBook', {
-                              defaultValue: 'Scan to book tickets',
-                            })}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </div>
-
-                  {/* Contact info */}
-                  {(spot.phone || spot.website) && (
-                    <div className="flex flex-col gap-2">
-                      {spot.phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone size={13} className="text-muted-foreground shrink-0" />
-                          <a
-                            href={`tel:${spot.phone}`}
-                            className="typo-meta text-muted-foreground hover:text-foreground"
-                          >
-                            {spot.phone}
-                          </a>
-                        </div>
-                      )}
-                      {spot.website && (
-                        <div className="flex items-center gap-2">
-                          <Globe size={13} className="text-muted-foreground shrink-0" />
-                          <a
-                            href={spot.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="typo-meta text-muted-foreground hover:text-foreground line-clamp-1"
-                          >
-                            {spot.website}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Capacity indicator */}
-                  {capacityPct != null && (
-                    <div className="flex items-start gap-2">
-                      <Users size={13} className="text-muted-foreground mt-0.5 shrink-0" />
-                      <div className="flex flex-1 flex-col gap-1">
-                        <div className="flex items-center justify-between">
-                          <p className="typo-meta text-muted-foreground">
-                            {t('mapPage.spotModal.capacity')}
-                          </p>
-                          <p
-                            className="typo-meta font-medium"
-                            style={{
-                              color:
-                                capacityPct >= alertThreshold
-                                  ? '#ef4444'
-                                  : capacityPct >= alertThreshold * 0.75
-                                    ? '#f59e0b'
-                                    : '#22c55e',
-                            }}
-                          >
-                            {Math.round(capacityPct)}%
-                          </p>
-                        </div>
-                        <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-                          <div
-                            className="h-full rounded-full bg-orange-400 transition-all"
-                            style={{
-                              width: `${Math.min(capacityPct, 100)}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Description */}
-                  {spot.description && (
-                    <p className="typo-body text-muted-foreground line-clamp-3">
-                      {spot.description}
-                    </p>
-                  )}
-                </>
-              ) : null}
-
+                    {/* Description */}
+                    {spot.description && (
+                      <p className="typo-body text-muted-foreground line-clamp-3">
+                        {spot.description}
+                      </p>
+                    )}
+                  </>
+                ) : null}
+              </div>
+              
               {/* Actions */}
               <div className="flex flex-col gap-2 pt-1">
                 <div className="grid grid-cols-2 gap-2">
@@ -919,8 +940,8 @@ export default function ModalMarker() {
           </div>
         </div>
 
-        {/* â”€â”€ OCOP panel card (desktop only, sits to the right) â”€â”€ */}
-        <div className="bg-background hidden w-64 flex-col overflow-hidden rounded-2xl border shadow-lg sm:flex sm:max-h-150">
+        {/* OCOP panel card (desktop only, sits to the right) */}
+        <div className="bg-background hidden w-64 flex-col self-stretch overflow-hidden rounded-2xl border shadow-lg lg:flex xl:w-72">
           <OcopNearbyPanel spot={spot} isModalOpen={isOpen} />
         </div>
       </DialogContent>
