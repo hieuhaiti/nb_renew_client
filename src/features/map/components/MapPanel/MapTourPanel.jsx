@@ -14,8 +14,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import mapboxgl from 'mapbox-gl';
 import { Button } from '@/components/ui/button';
+import { useGetTourCurrentCapacity } from '@/services/api/capacity/capacityService';
+import { clearHighlightedRouteLayers } from '@/features/map/utils/MapHelper';
+import { defaultLatLong, defaultZoom, pitchDefault } from '@/features/map/constant/mapConstant';
 import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import { useMapStore } from '@/features/map/store/useMapStore';
+import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
 import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { withBaseUrl } from '@/lib/utils';
@@ -165,6 +169,78 @@ function formatTicketPrice(priceLike, currency = 'VND', locale = 'vi-VN') {
   }).format(value);
 }
 
+const CAPACITY_STATUS_META = {
+  overloaded: {
+    labelVi: 'Quá tải',
+    labelEn: 'Overloaded',
+    toneClass: 'text-destructive',
+    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+  },
+  near_full: {
+    labelVi: 'Gần đầy',
+    labelEn: 'Near full',
+    toneClass: 'text-orange-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
+  },
+  busy: {
+    labelVi: 'Đông',
+    labelEn: 'Busy',
+    toneClass: 'text-warning',
+    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
+  },
+  moderate: {
+    labelVi: 'Vừa phải',
+    labelEn: 'Moderate',
+    toneClass: 'text-sky-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
+  },
+  normal: {
+    labelVi: 'Bình thường',
+    labelEn: 'Normal',
+    toneClass: 'text-emerald-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
+  },
+  low: {
+    labelVi: 'Thưa thớt',
+    labelEn: 'Low',
+    toneClass: 'text-emerald-500',
+    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+  },
+  unknown: {
+    labelVi: 'Chưa rõ',
+    labelEn: 'Unknown',
+    toneClass: 'text-muted-foreground',
+    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+  },
+};
+
+function getCapacityStatusMeta(status) {
+  const key = String(status || 'unknown').toLowerCase();
+  return CAPACITY_STATUS_META[key] || CAPACITY_STATUS_META.unknown;
+}
+
+function resolveStopCapacity(stop) {
+  const pctRaw = stop?.capacity_pct ?? stop?.spot?.current_capacity_pct ?? null;
+  const pct = Number(pctRaw);
+  const hasCapacityPct = Number.isFinite(pct);
+  const boundedPct = hasCapacityPct ? Math.max(0, Math.min(100, Math.round(pct))) : null;
+  const statusMeta = getCapacityStatusMeta(stop?.capacity_status);
+  const visitorCount = Number(stop?.visitor_count ?? stop?.spot?.current_visitor_count ?? 0);
+  const maxCapacity = Number(stop?.max_capacity ?? stop?.spot?.max_capacity ?? 0);
+  const hasVisitorCount = Number.isFinite(visitorCount) && visitorCount >= 0;
+  const hasMaxCapacity = Number.isFinite(maxCapacity) && maxCapacity > 0;
+
+  return {
+    boundedPct,
+    hasCapacityPct,
+    statusMeta,
+    visitorCount,
+    hasVisitorCount,
+    maxCapacity,
+    hasMaxCapacity,
+  };
+}
+
 function TourStopCard({ stop, day, order, accent, onFlyTo }) {
   const { t, i18n } = useTranslation();
   const isEnglish = String(i18n.resolvedLanguage || i18n.language || '').startsWith('en');
@@ -189,8 +265,15 @@ function TourStopCard({ stop, day, order, accent, onFlyTo }) {
 
   const rating = Number(spot?.rating_avg);
   const hasRating = Number.isFinite(rating) && rating > 0;
-  const capacityPct = Number(spot?.current_capacity_pct);
-  const hasCapacityPct = Number.isFinite(capacityPct);
+  const {
+    boundedPct: capacityPct,
+    hasCapacityPct,
+    statusMeta,
+    visitorCount,
+    hasVisitorCount,
+    maxCapacity,
+    hasMaxCapacity,
+  } = resolveStopCapacity(stop);
 
   const canFly = Boolean(coords && onFlyTo);
   const handleClick = canFly ? () => onFlyTo(coords) : undefined;
@@ -253,13 +336,80 @@ function TourStopCard({ stop, day, order, accent, onFlyTo }) {
           {hasCapacityPct ? (
             <span className="typo-meta border-border/70 bg-muted/70 text-foreground inline-flex items-center gap-1 rounded-md border px-2 py-1">
               <Users className="h-3.5 w-3.5" />
-              {capacityPct.toFixed(0)}%
+              {capacityPct}%
             </span>
           ) : null}
         </div>
+
+        {(hasCapacityPct || hasVisitorCount) && (
+          <div className="space-y-1.5 rounded-md border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-2">
+            <div className="flex items-center justify-between gap-2">
+              <p className="typo-meta text-muted-foreground">
+                {t('mapPage.tourPanel.stopCapacity', { defaultValue: 'Tải điểm dừng' })}
+              </p>
+              <span className={`typo-meta font-semibold ${statusMeta.toneClass}`}>
+                {isEnglish ? statusMeta.labelEn : statusMeta.labelVi}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between gap-2">
+              <span className="typo-meta text-muted-foreground inline-flex items-center gap-1">
+                <Users className="h-3 w-3 shrink-0" />
+                {hasMaxCapacity
+                  ? `${visitorCount} / ${maxCapacity}`
+                  : hasVisitorCount
+                    ? `${visitorCount}`
+                    : '--'}
+              </span>
+              <span className={`typo-meta font-semibold tabular-nums ${statusMeta.toneClass}`}>
+                {hasCapacityPct ? `${capacityPct}%` : '--'}
+              </span>
+            </div>
+
+            <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+              <div
+                className="h-full rounded-full transition-all"
+                style={{ width: `${capacityPct ?? 0}%`, ...statusMeta.barStyle }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </article>
   );
+}
+
+function mergeStopsWithCapacity(stops, capacityStops) {
+  if (!Array.isArray(stops) || stops.length === 0) return [];
+  const capacityList = Array.isArray(capacityStops) ? capacityStops : [];
+
+  const byStopId = new Map();
+  const bySpotId = new Map();
+
+  capacityList.forEach((item) => {
+    const stopId = item?.stop_id ? String(item.stop_id) : null;
+    const spotId = item?.spot_id ? String(item.spot_id) : null;
+
+    if (stopId) byStopId.set(stopId, item);
+    if (spotId) bySpotId.set(spotId, item);
+  });
+
+  return stops.map((stop) => {
+    const stopIdCandidates = [stop?.stop_id, stop?.id].filter(Boolean).map(String);
+    const spotIdCandidates = [stop?.spot_id, stop?.point_id, stop?.spot?.id]
+      .filter(Boolean)
+      .map(String);
+
+    const matchedByStop = stopIdCandidates.map((key) => byStopId.get(key)).find(Boolean) || null;
+    const matchedBySpot = spotIdCandidates.map((key) => bySpotId.get(key)).find(Boolean) || null;
+    const matched = matchedByStop || matchedBySpot;
+
+    if (!matched) return stop;
+    return {
+      ...stop,
+      ...matched,
+    };
+  });
 }
 
 function TourStopList({ stops, tourName, onFlyToStop }) {
@@ -418,7 +568,10 @@ function TourPanelBody({ tourName, stops, selectedTour, onClose, onFocusRoute, o
             size="icon-sm"
             aria-label={t('common.close', { defaultValue: 'Close' })}
             className="h-8 w-8 rounded-lg shadow-sm"
-            onClick={onClose}
+            onClick={(event) => {
+              event.stopPropagation();
+              onClose?.();
+            }}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -462,13 +615,51 @@ export default function MapTourPanel({
   panelWidthClass,
 }) {
   const { t } = useTranslation();
+  const clearPanel = useMapPanelStore((s) => s.clearPanel);
+  const tourId = useMapPanelStore((s) => s.tourId);
   const tourName = useMapPanelStore((s) => s.tourName);
   const tourStops = useMapPanelStore((s) => s.tourStops);
   const selectedTour = useTourPanelStore((s) => s.selectedTour);
   const highlightedRoute = useMapStore((s) => s.highlightedRoute);
+  const clearHighlightedRoute = useMapStore((s) => s.clearHighlightedRoute);
+  const setShowOnlyHighlightedRoute = useMapStore((s) => s.setShowOnlyHighlightedRoute);
   const mapRef = useMapStore((state) => state.mapRef);
   const mapRefObj = useMapStore((state) => state.mapRefObj);
+  const terrainState = useMapStyleStore((state) => state.terrainState);
   const resolvedPanelWidthClass = panelWidthClass || (embedded ? 'w-full' : 'w-80');
+  const { data: capacityData } = useGetTourCurrentCapacity(tourId, {
+    enabled: Boolean(tourId),
+    retry: 0,
+  });
+  const stopsWithCapacity = useMemo(
+    () => mergeStopsWithCapacity(tourStops, capacityData?.stops),
+    [tourStops, capacityData]
+  );
+
+  const handleClosePanel = () => {
+    const resolvedMap = mapRef || mapRefObj?.current?.single || null;
+    const mapRefObjCurrent = mapRefObj?.current;
+    const maps = [resolvedMap, mapRefObjCurrent?.single, mapRefObjCurrent?.split].filter(
+      (instance, index, all) => instance && all.indexOf(instance) === index
+    );
+
+    maps.forEach((mapInstance) => {
+      try {
+        clearHighlightedRouteLayers(mapInstance);
+      } catch (_err) {}
+      mapInstance?.flyTo?.({
+        center: defaultLatLong,
+        zoom: defaultZoom,
+        pitch: pitchDefault(terrainState),
+        bearing: 0,
+      });
+    });
+
+    clearHighlightedRoute();
+    setShowOnlyHighlightedRoute(false);
+    clearPanel();
+    onClose?.();
+  };
 
   const handleFlyToStop = (coords) => {
     const targetMap = mapRef || mapRefObj?.current?.single || null;
@@ -518,16 +709,18 @@ export default function MapTourPanel({
     if (embedded) {
       return (
         <div className={className}>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label={t('common.open', { defaultValue: 'Open' })}
-            className="border-border/80 bg-background/95 h-9 w-9 rounded-xl border shadow-sm backdrop-blur-sm"
-            onClick={onOpen}
-          >
-            <ArrowRight className="size-4" />
-          </Button>
+          <div className="pointer-events-auto">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t('common.open', { defaultValue: 'Open' })}
+              className="border-border/80 bg-background/95 h-9 w-9 rounded-xl border shadow-sm backdrop-blur-sm"
+              onClick={onOpen}
+            >
+              <ArrowRight className="size-4" />
+            </Button>
+          </div>
         </div>
       );
     }
@@ -552,13 +745,13 @@ export default function MapTourPanel({
     return (
       <div className={className}>
         <div
-          className={`relative flex h-fit max-h-full min-h-0 ${resolvedPanelWidthClass} border-border/80 bg-background/95 flex-col overflow-hidden rounded-xl border shadow-sm backdrop-blur-sm transition-all duration-300`}
+          className={`pointer-events-auto relative flex h-fit max-h-full min-h-0 ${resolvedPanelWidthClass} border-border/80 bg-background/95 flex-col overflow-hidden rounded-xl border shadow-sm backdrop-blur-sm transition-all duration-300`}
         >
           <TourPanelBody
             tourName={tourName}
-            stops={tourStops}
+            stops={stopsWithCapacity}
             selectedTour={selectedTour}
-            onClose={onClose}
+            onClose={handleClosePanel}
             onFocusRoute={handleFocusRoute}
             onFlyToStop={handleFlyToStop}
           />
@@ -574,9 +767,9 @@ export default function MapTourPanel({
       >
         <TourPanelBody
           tourName={tourName}
-          stops={tourStops}
+          stops={stopsWithCapacity}
           selectedTour={selectedTour}
-          onClose={onClose}
+          onClose={handleClosePanel}
           onFocusRoute={handleFocusRoute}
           onFlyToStop={handleFlyToStop}
         />

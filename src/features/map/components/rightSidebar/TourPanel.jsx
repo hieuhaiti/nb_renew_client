@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useDebounce } from 'use-debounce';
-import { Clock3, Eye, Map, MapPin, Search, Star, Trash2 } from 'lucide-react';
+import { Clock3, Eye, Map, MapPin, Search, Star, Trash2, Users } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,7 @@ import {
   fetchTourStopsByTourId,
   useTourPanelListQuery,
 } from '@/services/api/map/tourPanelService';
+import { useGetTourCurrentCapacity } from '@/services/api/capacity/capacityService';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
 import {
@@ -146,11 +147,124 @@ function buildStopRouteCandidate(stop, pointDetail) {
   };
 }
 
+const TOUR_CAPACITY_STATUS_META = {
+  overloaded: {
+    labelVi: 'Quá tải',
+    labelEn: 'Overloaded',
+    toneClass: 'text-destructive',
+    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+  },
+  near_full: {
+    labelVi: 'Gần đầy',
+    labelEn: 'Near full',
+    toneClass: 'text-orange-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
+  },
+  busy: {
+    labelVi: 'Đông',
+    labelEn: 'Busy',
+    toneClass: 'text-warning',
+    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
+  },
+  moderate: {
+    labelVi: 'Vừa phải',
+    labelEn: 'Moderate',
+    toneClass: 'text-sky-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
+  },
+  normal: {
+    labelVi: 'Bình thường',
+    labelEn: 'Normal',
+    toneClass: 'text-emerald-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
+  },
+  low: {
+    labelVi: 'Thưa thớt',
+    labelEn: 'Low',
+    toneClass: 'text-emerald-500',
+    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+  },
+  unknown: {
+    labelVi: 'Chưa rõ',
+    labelEn: 'Unknown',
+    toneClass: 'text-muted-foreground',
+    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+  },
+};
+
+function getTourCapacityStatusMeta(status) {
+  const key = String(status || 'unknown').toLowerCase();
+  return TOUR_CAPACITY_STATUS_META[key] ?? TOUR_CAPACITY_STATUS_META.unknown;
+}
+
+function TourCapacitySummary({ tourId, t, isVi }) {
+  const { data, isLoading, isError } = useGetTourCurrentCapacity(tourId, {
+    enabled: Boolean(tourId),
+    retry: 0,
+  });
+
+  const summary = data?.summary ?? null;
+  const rawPct = summary?.route_capacity_pct;
+  const hasPct = rawPct !== null && rawPct !== undefined && Number.isFinite(Number(rawPct));
+  const pct = hasPct ? Math.max(0, Math.min(100, Math.round(Number(rawPct)))) : null;
+  const statusMeta = getTourCapacityStatusMeta(summary?.status);
+  const currentVisitors = Number(summary?.total_current_visitors ?? 0);
+  const maxCapacity = Number(summary?.total_max_capacity ?? 0);
+  const hasTotal = maxCapacity > 0;
+
+  if (isLoading) {
+    return <Skeleton className="h-12 w-full rounded-md" />;
+  }
+
+  if (isError || !summary) {
+    return (
+      <div className="rounded-md border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-2">
+        <p className="typo-meta text-muted-foreground">
+          {t('mapPage.tourPanel.capacityNoData', {
+            defaultValue: 'Chưa có dữ liệu tải tuyến.',
+          })}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5 rounded-md border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-2">
+      <div className="flex items-center justify-between gap-2">
+        <p className="typo-meta text-muted-foreground">
+          {t('mapPage.tourPanel.routeCapacity', { defaultValue: 'Tải tuyến hiện tại' })}
+        </p>
+        <span className={cn('typo-meta font-semibold', statusMeta.toneClass)}>
+          {isVi ? statusMeta.labelVi : statusMeta.labelEn}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between gap-2">
+        <span className="typo-meta text-muted-foreground inline-flex items-center gap-1">
+          <Users className="h-3 w-3 shrink-0" />
+          {hasTotal ? `${currentVisitors} / ${maxCapacity}` : `${currentVisitors}`}
+        </span>
+        <span className={cn('typo-meta font-semibold tabular-nums', statusMeta.toneClass)}>
+          {pct != null ? `${pct}%` : '--'}
+        </span>
+      </div>
+
+      <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${pct ?? 0}%`, ...statusMeta.barStyle }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function TourPanel() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const lang = useLanguageStore((state) => state.lang);
   const locale = getLocaleFromLanguage(lang);
+  const isVi = String(lang || '').startsWith('vi');
 
   const filters = useTourPanelStore((state) => state.filters);
   const selectedTour = useTourPanelStore((state) => state.selectedTour);
@@ -188,7 +302,6 @@ export default function TourPanel() {
   const activeRouteTourId = highlightedRoute?.tourId ? String(highlightedRoute.tourId) : null;
   const handleOpenTourRoute = async (tour) => {
     if (!tour?.id) return;
-    console.log('[TOUR-DEBUG] handleOpenTourRoute START', { tourId: tour.id, tourName: tour.name });
 
     setSelectedTour({
       ...tour,
@@ -199,7 +312,6 @@ export default function TourPanel() {
     try {
       const stops = await fetchTourStopsByTourId(tour.id);
       const sortedStops = sortStops(stops);
-      console.log('[TOUR-DEBUG] stops fetched', { count: sortedStops.length });
 
       if (sortedStops.length < 2) {
         throw new Error(
@@ -235,10 +347,6 @@ export default function TourPanel() {
           })
         )
       ).filter(Boolean);
-      console.log('[TOUR-DEBUG] routePoints resolved', {
-        count: routePoints.length,
-        points: routePoints.map((p) => ({ name: p?.name, lat: p?.lat, lng: p?.lng })),
-      });
 
       if (routePoints.length < 2) {
         throw new Error(
@@ -253,9 +361,6 @@ export default function TourPanel() {
         'driving',
         lang === 'en' ? 'en' : 'vi'
       );
-      console.log('[TOUR-DEBUG] routeResult', {
-        coordCount: routeResult?.geometry?.coordinates?.length,
-      });
       if (!routeResult?.geometry?.coordinates?.length) {
         throw new Error(
           t('mapPage.tourPanel.routeFailed', {
@@ -264,10 +369,8 @@ export default function TourPanel() {
         );
       }
 
-      console.log('[TOUR-DEBUG] calling openTourPanel');
       openTourPanel({ tourId: tour.id, tourName: tour.name, stops: sortedStops });
       clearDirections();
-      console.log('[TOUR-DEBUG] calling setHighlightedRoute');
       setHighlightedRoute({
         type: 'tour',
         tourId: tour.id,
@@ -283,9 +386,7 @@ export default function TourPanel() {
           total_stops: routePoints.length,
         },
       });
-      console.log('[TOUR-DEBUG] calling setShowOnlyHighlightedRoute(true)');
       setShowOnlyHighlightedRoute(true);
-      console.log('[TOUR-DEBUG] handleOpenTourRoute DONE');
 
       toast.success(
         t('mapPage.tourPanel.routeReady', {
@@ -512,6 +613,8 @@ export default function TourPanel() {
                     <div className="typo-body text-foreground font-semibold">
                       {formatTourPriceLabel(tour, locale)}
                     </div>
+
+                    <TourCapacitySummary tourId={tour.id} t={t} isVi={isVi} />
                   </div>
 
                   <div className="flex flex-wrap gap-1.5">

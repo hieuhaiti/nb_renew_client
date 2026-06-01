@@ -2,7 +2,7 @@
 import mapboxgl from 'mapbox-gl';
 import { LocateFixed } from 'lucide-react';
 import { env } from '@/config/env';
-import { defaultLatLong, defaultZoom } from '@/features/map/constant/mapConstant';
+import { defaultLatLong, defaultZoom, mapDelta } from '@/features/map/constant/mapConstant';
 import { useFovStore } from '../store/useFovStore';
 import { normalizeBearing } from '../utils/fovHelpers';
 import FOVControls from './FOVControls';
@@ -560,6 +560,13 @@ export default function MiniMap({
       interactive: true,
       attributionControl: false,
     });
+
+    const center = map.getCenter();
+    const mapBounds = [
+      [center.lng - mapDelta, center.lat - mapDelta],
+      [center.lng + mapDelta, center.lat + mapDelta],
+    ];
+    map.setMaxBounds(mapBounds);
 
     mapRef.current = map;
     popupRef.current = new mapboxgl.Popup({

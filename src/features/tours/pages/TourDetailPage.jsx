@@ -11,7 +11,7 @@ import {
   CheckCircle2,
   XCircle,
   CalendarCheck,
-  Map,
+  Map as MapIcon,
   Route,
 } from 'lucide-react';
 import RootLayout from '@/components/layout/RootLayout';
@@ -22,6 +22,7 @@ import { useModalCarouselStore } from '@/features/map/store/useModalStore';
 import { useTourDetailPageModel } from '@/features/tours/hooks/useTourDetailPageModel';
 import { useGetAllTours } from '@/services/api/tours/tourApi';
 import { useGetSpotMedia } from '@/services/api/tourism-points/tourismPointsApi';
+import { useGetTourCurrentCapacity } from '@/services/api/capacity/capacityService';
 import { withBaseUrl, formatVND } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import qrImage from '@/assets/image.png';
@@ -136,6 +137,152 @@ function groupStopsByDay(stops) {
     }));
 }
 
+const CAPACITY_STATUS_META = {
+  overloaded: {
+    labelVi: 'Quá tải',
+    labelEn: 'Overloaded',
+    toneClass: 'text-destructive',
+    badgeClass:
+      'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
+    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+  },
+  near_full: {
+    labelVi: 'Gần đầy',
+    labelEn: 'Near full',
+    toneClass: 'text-orange-600',
+    badgeClass:
+      'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
+  },
+  busy: {
+    labelVi: 'Đông',
+    labelEn: 'Busy',
+    toneClass: 'text-warning',
+    badgeClass:
+      'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
+    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
+  },
+  moderate: {
+    labelVi: 'Vừa phải',
+    labelEn: 'Moderate',
+    toneClass: 'text-sky-600',
+    badgeClass:
+      'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
+  },
+  normal: {
+    labelVi: 'Bình thường',
+    labelEn: 'Normal',
+    toneClass: 'text-emerald-600',
+    badgeClass:
+      'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
+  },
+  low: {
+    labelVi: 'Thưa thớt',
+    labelEn: 'Low',
+    toneClass: 'text-emerald-500',
+    badgeClass:
+      'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
+    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+  },
+  unknown: {
+    labelVi: 'Chưa rõ',
+    labelEn: 'Unknown',
+    toneClass: 'text-muted-foreground',
+    badgeClass: 'border-border/40 bg-muted/60 text-muted-foreground',
+    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+  },
+};
+
+function getCapacityStatusMeta(status) {
+  const key = String(status || 'unknown').toLowerCase();
+  return CAPACITY_STATUS_META[key] || CAPACITY_STATUS_META.unknown;
+}
+
+function resolveStopCapacityPct(stop) {
+  const direct = stop?.capacity_pct ?? stop?.occupancy_pct;
+  if (direct != null && Number.isFinite(Number(direct))) {
+    return Math.min(Math.round(Number(direct)), 100);
+  }
+  const current = Number(stop?.visitor_count ?? stop?.current_visitors ?? 0);
+  const max = Number(stop?.max_capacity ?? stop?.capacity ?? 0);
+  if (max <= 0) return null;
+  return Math.min(Math.round((current / max) * 100), 100);
+}
+
+function resolveStopCapacityStatus(stop, pct) {
+  const raw = String(stop?.capacity_status ?? stop?.status ?? '')
+    .trim()
+    .toLowerCase();
+  if (CAPACITY_STATUS_META[raw]) return raw;
+  if (!Number.isFinite(pct)) return 'unknown';
+  if (pct >= 100) return 'overloaded';
+  if (pct >= 85) return 'near_full';
+  if (pct >= 70) return 'busy';
+  if (pct >= 40) return 'moderate';
+  if (pct > 0) return 'normal';
+  return 'low';
+}
+
+function resolveSummaryCapacityPct(summary) {
+  const direct =
+    summary?.route_capacity_pct ?? summary?.avg_capacity_pct ?? summary?.bottleneck_capacity_pct;
+  if (direct != null && Number.isFinite(Number(direct))) {
+    return Math.min(Math.round(Number(direct)), 100);
+  }
+  const current = Number(summary?.total_current_visitors ?? 0);
+  const max = Number(summary?.total_max_capacity ?? 0);
+  if (max <= 0) return null;
+  return Math.min(Math.round((current / max) * 100), 100);
+}
+
+function resolveSummaryCapacityStatus(summary, pct) {
+  const raw = String(summary?.status ?? summary?.bottleneck_stop?.capacity_status ?? '')
+    .trim()
+    .toLowerCase();
+  if (CAPACITY_STATUS_META[raw]) return raw;
+  if (!Number.isFinite(pct)) return 'unknown';
+  if (pct >= 100) return 'overloaded';
+  if (pct >= 85) return 'near_full';
+  if (pct >= 70) return 'busy';
+  if (pct >= 40) return 'moderate';
+  if (pct > 0) return 'normal';
+  return 'low';
+}
+
+function mergeStopsWithCapacity(stops, capacityStops) {
+  if (!Array.isArray(stops) || stops.length === 0) return [];
+  const capacityList = Array.isArray(capacityStops) ? capacityStops : [];
+
+  const byStopId = new Map();
+  const bySpotId = new Map();
+
+  capacityList.forEach((item) => {
+    const stopId = item?.stop_id ? String(item.stop_id) : null;
+    const spotId = item?.spot_id ? String(item.spot_id) : null;
+
+    if (stopId) byStopId.set(stopId, item);
+    if (spotId) bySpotId.set(spotId, item);
+  });
+
+  return stops.map((stop) => {
+    const stopIdCandidates = [stop?.stop_id, stop?.id].filter(Boolean).map(String);
+    const spotIdCandidates = [stop?.spot_id, stop?.point_id, stop?.spot?.id]
+      .filter(Boolean)
+      .map(String);
+    const matchedByStop = stopIdCandidates.map((key) => byStopId.get(key)).find(Boolean) || null;
+    const matchedBySpot = spotIdCandidates.map((key) => bySpotId.get(key)).find(Boolean) || null;
+    const matched = matchedByStop || matchedBySpot;
+
+    if (!matched) return stop;
+    return {
+      ...stop,
+      ...matched,
+    };
+  });
+}
+
 function StarRow({ rating, size = 16 }) {
   const full = Math.floor(rating);
   const half = rating - full >= 0.5;
@@ -186,6 +333,10 @@ function RelatedTourCard({ tour, onOpen, t }) {
 export default function TourDetailPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.startsWith('en') ? 'en' : 'vi';
+  const numberFormatter = useMemo(
+    () => new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'vi-VN'),
+    [lang]
+  );
   const {
     navigate,
     isLoading,
@@ -206,13 +357,22 @@ export default function TourDetailPage() {
   } = useTourDetailPageModel(t);
 
   const { data: relatedData } = useGetAllTours({ page: 1, limit: 4 });
+  const { data: tourCapacityData } = useGetTourCurrentCapacity(tour?.id, {
+    enabled: Boolean(tour?.id),
+    retry: 0,
+  });
+  const capacitySummary = tourCapacityData?.summary ?? null;
   const relatedTours = useMemo(() => {
     const list = relatedData?.tours || [];
     return list.filter((t) => t.slug !== tour?.slug).slice(0, 3);
   }, [relatedData, tour]);
 
   const coverImg = safeImagesMapped[0] || placeholderImg;
-  const dayGroups = useMemo(() => groupStopsByDay(tourStops), [tourStops]);
+  const tourStopsWithCapacity = useMemo(
+    () => mergeStopsWithCapacity(tourStops, tourCapacityData?.stops),
+    [tourStops, tourCapacityData]
+  );
+  const dayGroups = useMemo(() => groupStopsByDay(tourStopsWithCapacity), [tourStopsWithCapacity]);
   const tourDescription =
     lang === 'en'
       ? tour?.description_en || tour?.description_vi || ''
@@ -304,7 +464,7 @@ export default function TourDetailPage() {
                   onClick={handleOpenMap}
                   className="text-secondary bg-card inline-flex items-center gap-2 rounded-full px-4.5 py-3 font-black"
                 >
-                  <Map size={14} /> {t('tourPage.viewRouteOnMap')}
+                  <MapIcon size={14} /> {t('tourPage.viewRouteOnMap')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -369,9 +529,9 @@ export default function TourDetailPage() {
                     },
                     {
                       icon: <MapPin size={18} />,
-                      label: `${tourStops.length} điểm dừng`,
+                      label: `${tourStopsWithCapacity.length} điểm dừng`,
                       sub:
-                        tourStops
+                        tourStopsWithCapacity
                           .slice(0, 2)
                           .map((s) => s.title_vi || s.spot_name)
                           .join(', ') || 'Ninh Bình',
@@ -431,28 +591,75 @@ export default function TourDetailPage() {
                             {tour.duration_days === 1 ? '08:00 - 17:30' : `Ngày ${group.day}`}
                           </span>
                         </div>
-                        {group.stops.map((stop, stopIdx) => (
-                          <div
-                            key={stop.id || stopIdx}
-                            className="grid grid-cols-[72px_1fr_auto] items-start gap-3 border-t px-4 py-3.75 md:grid-cols-[86px_1fr_auto]"
-                          >
-                            <div className="bg-secondary/10 text-secondary rounded-[14px] p-2.5 text-center text-[12px] font-black">
-                              {stop.displayTime}
+                        {group.stops.map((stop, stopIdx) => {
+                          const capacityPct = resolveStopCapacityPct(stop);
+                          const capacityStatus = resolveStopCapacityStatus(stop, capacityPct);
+                          const capacityMeta = getCapacityStatusMeta(capacityStatus);
+                          const hasCapacityInfo =
+                            Number.isFinite(Number(stop?.capacity_pct)) ||
+                            Number.isFinite(Number(stop?.occupancy_pct)) ||
+                            Number.isFinite(Number(stop?.visitor_count)) ||
+                            Number.isFinite(Number(stop?.current_visitors));
+
+                          return (
+                            <div
+                              key={stop.id || stopIdx}
+                              className="grid grid-cols-[72px_1fr_auto] items-start gap-3 border-t px-4 py-3.75 md:grid-cols-[86px_1fr_auto]"
+                            >
+                              <div className="bg-secondary/10 text-secondary rounded-[14px] p-2.5 text-center text-[12px] font-black">
+                                {stop.displayTime}
+                              </div>
+                              <div>
+                                <h4 className="text-foreground mb-1 font-black">
+                                  {stop.title_vi || stop.spot_name || `Điểm ${stopIdx + 1}`}
+                                </h4>
+                                <p className="text-muted-foreground text-[13px] leading-[1.6]">
+                                  {stop.description_vi || ''}
+                                  {stop.planned_duration_min
+                                    ? ` (${stop.planned_duration_min} phút)`
+                                    : ''}
+                                </p>
+                                {hasCapacityInfo && (
+                                  <div className="mt-1 space-y-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span className="text-muted-foreground text-[12px] font-bold">
+                                        {Number.isFinite(Number(stop?.visitor_count))
+                                          ? `Tải: ${Number(stop.visitor_count)}`
+                                          : Number.isFinite(Number(stop?.current_visitors))
+                                            ? `Tải: ${Number(stop.current_visitors)}`
+                                            : 'Tải: --'}
+                                        {Number.isFinite(Number(stop?.max_capacity)) &&
+                                        Number(stop.max_capacity) > 0
+                                          ? ` / ${Number(stop.max_capacity)}`
+                                          : ''}
+                                      </span>
+                                      <span
+                                        className={`text-[12px] font-bold ${capacityMeta.toneClass}`}
+                                      >
+                                        {lang === 'en'
+                                          ? capacityMeta.labelEn
+                                          : capacityMeta.labelVi}
+                                        {Number.isFinite(capacityPct) ? ` · ${capacityPct}%` : ''}
+                                      </span>
+                                    </div>
+                                    {Number.isFinite(capacityPct) && (
+                                      <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+                                        <div
+                                          className="h-full rounded-full transition-all duration-500"
+                                          style={{
+                                            width: `${capacityPct}%`,
+                                            ...capacityMeta.barStyle,
+                                          }}
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                              <StopMediaTrigger stop={stop} t={t} />
                             </div>
-                            <div>
-                              <h4 className="text-foreground mb-1 font-black">
-                                {stop.title_vi || stop.spot_name || `Điểm ${stopIdx + 1}`}
-                              </h4>
-                              <p className="text-muted-foreground text-[13px] leading-[1.6]">
-                                {stop.description_vi || ''}
-                                {stop.planned_duration_min
-                                  ? ` (${stop.planned_duration_min} phút)`
-                                  : ''}
-                              </p>
-                            </div>
-                            <StopMediaTrigger stop={stop} t={t} />
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     ))}
                   </div>

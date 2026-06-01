@@ -663,7 +663,7 @@ export default function ModalMarker() {
         </div>
         <div className="bg-background relative flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border shadow-lg sm:w-[38rem] sm:flex-none lg:w-[42rem] xl:w-2xl">
           {/* Close button */}
-          <DialogClose className="ring-offset-background focus:ring-ring absolute top-4 right-4 z-10 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+          <DialogClose className="absolute top-4 right-4 z-10 rounded-xs border border-white/80 bg-white opacity-90 shadow-sm transition-opacity [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
             <XIcon />
             <span className="sr-only">Close</span>
           </DialogClose>
@@ -889,7 +889,7 @@ export default function ModalMarker() {
                   </>
                 ) : null}
               </div>
-              
+
               {/* Actions */}
               <div className="flex flex-col gap-2 pt-1">
                 <div className="grid grid-cols-2 gap-2">

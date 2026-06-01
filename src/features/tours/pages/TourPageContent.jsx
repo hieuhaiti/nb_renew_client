@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import RootLayout from '@/components/layout/RootLayout';
 import { useGetAllTours } from '@/services/api/tours/tourApi';
+import { useGetTourCurrentCapacity } from '@/services/api/capacity/capacityService';
 import { useDebounce } from 'use-debounce';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import { uiConfig } from '@/config/ui';
@@ -36,6 +37,95 @@ const PAGE_SIZE = 12;
 const PRICE_MIN_VALUE = 0;
 const PRICE_MAX_VALUE = 5000000;
 const PRICE_STEP = 50000;
+
+const CAPACITY_STATUS_META = {
+  overloaded: {
+    labelVi: 'Quá tải',
+    labelEn: 'Overloaded',
+    toneClass: 'text-destructive',
+    badgeClass:
+      'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
+    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+  },
+  near_full: {
+    labelVi: 'Gần đầy',
+    labelEn: 'Near full',
+    toneClass: 'text-orange-600',
+    badgeClass:
+      'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
+  },
+  busy: {
+    labelVi: 'Đông',
+    labelEn: 'Busy',
+    toneClass: 'text-warning',
+    badgeClass:
+      'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
+    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
+  },
+  moderate: {
+    labelVi: 'Vừa phải',
+    labelEn: 'Moderate',
+    toneClass: 'text-sky-600',
+    badgeClass:
+      'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
+  },
+  normal: {
+    labelVi: 'Bình thường',
+    labelEn: 'Normal',
+    toneClass: 'text-emerald-600',
+    badgeClass:
+      'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
+  },
+  low: {
+    labelVi: 'Thưa thớt',
+    labelEn: 'Low',
+    toneClass: 'text-emerald-500',
+    badgeClass:
+      'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
+    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+  },
+  unknown: {
+    labelVi: 'Chưa rõ',
+    labelEn: 'Unknown',
+    toneClass: 'text-muted-foreground',
+    badgeClass: 'border-border/40 bg-muted/60 text-muted-foreground',
+    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+  },
+};
+
+function getCapacityStatusMeta(status) {
+  const key = String(status || 'unknown').toLowerCase();
+  return CAPACITY_STATUS_META[key] || CAPACITY_STATUS_META.unknown;
+}
+
+function resolveSummaryCapacityPct(summary) {
+  const direct =
+    summary?.route_capacity_pct ?? summary?.avg_capacity_pct ?? summary?.bottleneck_capacity_pct;
+  if (direct != null && Number.isFinite(Number(direct))) {
+    return Math.min(Math.round(Number(direct)), 100);
+  }
+  const current = Number(summary?.total_current_visitors ?? 0);
+  const max = Number(summary?.total_max_capacity ?? 0);
+  if (max <= 0) return null;
+  return Math.min(Math.round((current / max) * 100), 100);
+}
+
+function resolveSummaryCapacityStatus(summary, pct) {
+  const raw = String(summary?.status ?? summary?.bottleneck_stop?.capacity_status ?? '')
+    .trim()
+    .toLowerCase();
+  if (CAPACITY_STATUS_META[raw]) return raw;
+  if (!Number.isFinite(pct)) return 'unknown';
+  if (pct >= 100) return 'overloaded';
+  if (pct >= 85) return 'near_full';
+  if (pct >= 70) return 'busy';
+  if (pct >= 40) return 'moderate';
+  if (pct > 0) return 'normal';
+  return 'low';
+}
 
 const clampPrice = (value) => {
   const parsed = Number(value);
@@ -66,6 +156,29 @@ function TourCard({ tour, onOpen, t, lang }) {
   const rating = Number(tour?.rating_avg ?? 0);
   const description = getTourDescription(tour, lang);
   const startLocation = getTourStartLocation(tour, lang);
+  const numberFormatter = useMemo(
+    () => new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'vi-VN'),
+    [lang]
+  );
+  const { data: tourCapacityData } = useGetTourCurrentCapacity(tour?.id, {
+    enabled: Boolean(tour?.id),
+    retry: 0,
+  });
+  const capacitySummary = tourCapacityData?.summary ?? null;
+  const summaryPct = capacitySummary ? resolveSummaryCapacityPct(capacitySummary) : null;
+  const summaryStatus = capacitySummary
+    ? resolveSummaryCapacityStatus(capacitySummary, summaryPct)
+    : 'unknown';
+  const summaryMeta = getCapacityStatusMeta(summaryStatus);
+  const totalCurrent = Number(capacitySummary?.total_current_visitors ?? 0);
+  const totalMax = Number(capacitySummary?.total_max_capacity ?? 0);
+  const totalObserved = Number(capacitySummary?.total_observed_visitors ?? 0);
+  const hasTotalMax = totalMax > 0;
+  const capacityText = hasTotalMax
+    ? `${numberFormatter.format(totalCurrent)} / ${numberFormatter.format(totalMax)} người`
+    : totalObserved > 0
+      ? `${numberFormatter.format(totalObserved)} người`
+      : `${numberFormatter.format(totalCurrent)} người`;
 
   return (
     <article
@@ -90,7 +203,7 @@ function TourCard({ tour, onOpen, t, lang }) {
         </span>
       </div>
       <div className="p-[17px]">
-        <h3 className="text-foreground mb-2 line-clamp-2 text-[17px] leading-[1.45] font-black">
+        <h3 className="text-foreground mb-2 truncate text-[17px] leading-[1.45] font-black">
           {name}
         </h3>
         <p className="text-muted-foreground mb-3 line-clamp-2 text-[13px] leading-[1.6]">
@@ -130,6 +243,32 @@ function TourCard({ tour, onOpen, t, lang }) {
               </>
             )}
           </div>
+        </div>
+        <div className="bg-muted/40 mb-3 rounded-[14px] border border-dashed p-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-foreground text-[12px] font-black">
+              {t('tourPage.routeCapacitySummary', { defaultValue: 'Tải tuyến' })}
+            </span>
+            <span
+              className={`rounded-full border px-2 py-0.5 text-[11px] font-black ${summaryMeta.badgeClass}`}
+            >
+              {lang === 'en' ? summaryMeta.labelEn : summaryMeta.labelVi}
+            </span>
+          </div>
+          <div className="mt-1 flex items-center justify-between gap-2">
+            <span className="text-muted-foreground text-[11px] font-bold">{capacityText}</span>
+            <span className={`text-[11px] font-bold ${summaryMeta.toneClass}`}>
+              {Number.isFinite(summaryPct) ? `${summaryPct}%` : '--'}
+            </span>
+          </div>
+          {Number.isFinite(summaryPct) && (
+            <div className="bg-muted mt-2 h-1.5 w-full overflow-hidden rounded-full">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${summaryPct}%`, ...summaryMeta.barStyle }}
+              />
+            </div>
+          )}
         </div>
         <div className="flex items-center justify-between gap-2">
           <div>

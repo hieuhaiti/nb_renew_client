@@ -11,6 +11,21 @@ export function useGetCurrentCapacity(options = {}) {
   });
 }
 
+// GET /capacity/tours/:tourId/current
+export function useGetTourCurrentCapacity(tourId, options = {}) {
+  return useApiQuery(
+    ['capacity', 'tour-current', tourId ?? null],
+    `capacity/tours/${tourId}/current`,
+    {
+      staleTime: 60 * 1000,
+      enabled: Boolean(tourId) && (options.enabled ?? true),
+      select: (res) => res?.metadata ?? res?.data?.metadata ?? res?.data ?? res ?? null,
+      ...options,
+    },
+    false
+  );
+}
+
 // GET /capacity/current/geojson
 export function useGetCapacityGeoJson(options = {}) {
   return useApiQuery(['capacity', 'current', 'geojson'], 'capacity/current/geojson', {
