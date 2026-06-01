@@ -30,7 +30,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import RootLayout from '@/components/layout/RootLayout';
 import LoadingInline from '@/components/common/LoadingInline';
 import placeholderImg from '@/assets/images/placeholder.png';
@@ -91,17 +97,81 @@ const QUICK_ICON_MAP = {
 };
 
 const FEATURE_CARDS = [
-  { icon: <MapPinned size={22} />, bg: ICON_GRADS[0], titleKey: 'home.feature_cards.map.title', descKey: 'home.feature_cards.map.desc', path: '/map', sidebar: 'tour' },
-  { icon: <CloudLightning size={22} />, bg: ICON_GRADS[1], titleKey: 'home.feature_cards.weather.title', descKey: 'home.feature_cards.weather.desc', path: '/map', sidebar: 'event' },
-  { icon: <Users size={22} />, bg: ICON_GRADS[2], titleKey: 'home.feature_cards.capacity.title', descKey: 'home.feature_cards.capacity.desc', path: '/map', sidebar: 'capacity' },
-  { icon: <Satellite size={22} />, bg: ICON_GRADS[3], titleKey: 'home.feature_cards.satellite.title', descKey: 'home.feature_cards.satellite.desc', path: '/map', sidebar: 'satellite' },
+  {
+    icon: <MapPinned size={22} />,
+    bg: ICON_GRADS[0],
+    titleKey: 'home.feature_cards.map.title',
+    descKey: 'home.feature_cards.map.desc',
+    path: '/map',
+    sidebar: 'tour',
+  },
+  {
+    icon: <CloudLightning size={22} />,
+    bg: ICON_GRADS[1],
+    titleKey: 'home.feature_cards.weather.title',
+    descKey: 'home.feature_cards.weather.desc',
+    path: '/map',
+    sidebar: 'event',
+  },
+  {
+    icon: <Users size={22} />,
+    bg: ICON_GRADS[2],
+    titleKey: 'home.feature_cards.capacity.title',
+    descKey: 'home.feature_cards.capacity.desc',
+    path: '/map',
+    sidebar: 'capacity',
+  },
+  {
+    icon: <Satellite size={22} />,
+    bg: ICON_GRADS[3],
+    titleKey: 'home.feature_cards.satellite.title',
+    descKey: 'home.feature_cards.satellite.desc',
+    path: '/map',
+    sidebar: 'satellite',
+  },
 ];
 
 const ROLE_CARDS = [
-  { icon: <MapPin size={22} />, bg: ICON_GRADS[0], titleKey: 'home.role_cards.tourist.title', itemKeys: ['home.role_cards.tourist.item_1', 'home.role_cards.tourist.item_2', 'home.role_cards.tourist.item_3'] },
-  { icon: <CalendarDays size={22} />, bg: ICON_GRADS[1], titleKey: 'home.role_cards.business.title', itemKeys: ['home.role_cards.business.item_1', 'home.role_cards.business.item_2', 'home.role_cards.business.item_3'] },
-  { icon: <FileText size={22} />, bg: ICON_GRADS[2], titleKey: 'home.role_cards.manager.title', itemKeys: ['home.role_cards.manager.item_1', 'home.role_cards.manager.item_2', 'home.role_cards.manager.item_3'] },
-  { icon: <Satellite size={22} />, bg: ICON_GRADS[3], titleKey: 'home.role_cards.admin.title', itemKeys: ['home.role_cards.admin.item_1', 'home.role_cards.admin.item_2', 'home.role_cards.admin.item_3'] },
+  {
+    icon: <MapPin size={22} />,
+    bg: ICON_GRADS[0],
+    titleKey: 'home.role_cards.tourist.title',
+    itemKeys: [
+      'home.role_cards.tourist.item_1',
+      'home.role_cards.tourist.item_2',
+      'home.role_cards.tourist.item_3',
+    ],
+  },
+  {
+    icon: <CalendarDays size={22} />,
+    bg: ICON_GRADS[1],
+    titleKey: 'home.role_cards.business.title',
+    itemKeys: [
+      'home.role_cards.business.item_1',
+      'home.role_cards.business.item_2',
+      'home.role_cards.business.item_3',
+    ],
+  },
+  {
+    icon: <FileText size={22} />,
+    bg: ICON_GRADS[2],
+    titleKey: 'home.role_cards.manager.title',
+    itemKeys: [
+      'home.role_cards.manager.item_1',
+      'home.role_cards.manager.item_2',
+      'home.role_cards.manager.item_3',
+    ],
+  },
+  {
+    icon: <Satellite size={22} />,
+    bg: ICON_GRADS[3],
+    titleKey: 'home.role_cards.admin.title',
+    itemKeys: [
+      'home.role_cards.admin.item_1',
+      'home.role_cards.admin.item_2',
+      'home.role_cards.admin.item_3',
+    ],
+  },
 ];
 
 /* ─── Skeleton ─────────────────────────────────────── */
@@ -109,9 +179,7 @@ function HomePageSkeleton() {
   return (
     <div className="overflow-hidden" aria-busy="true">
       {/* Hero */}
-      <section
-        className="grid items-center gap-7 px-5 pt-7 pb-[22px] min-h-[calc(100vh-76px)] md:px-[5vw] lg:grid-cols-[1.05fr_.95fr]"
-      >
+      <section className="grid items-start gap-7 px-5 pt-7 pb-[22px] md:grid-cols-[1.1fr_.9fr] md:px-[5vw] lg:min-h-[calc(100vh-76px)] lg:grid-cols-[1.05fr_.95fr] lg:items-center">
         <div className="space-y-5">
           <Skeleton className="h-9 w-52 rounded-full" />
           <div className="space-y-2">
@@ -131,9 +199,9 @@ function HomePageSkeleton() {
             ))}
           </div>
         </div>
-        <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_.72fr]">
-          <Skeleton className="min-h-[300px] rounded-[34px] sm:min-h-[420px] lg:min-h-[560px]" />
-          <div className="flex flex-col gap-4">
+        <div className="grid items-stretch gap-4 xl:grid-cols-[1fr_.72fr]">
+          <Skeleton className="min-h-[300px] rounded-[34px] sm:min-h-[360px] md:min-h-[400px] lg:min-h-[560px]" />
+          <div className="hidden flex-col gap-4 xl:flex">
             <Skeleton className="h-52 rounded-[28px]" />
             <Skeleton className="h-44 rounded-[28px]" />
             <Skeleton className="h-36 rounded-[28px]" />
@@ -166,7 +234,7 @@ function HomePageSkeleton() {
           </div>
           <Skeleton className="h-10 w-40 rounded-full" />
         </div>
-        <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
+        <div className="grid gap-4 md:grid-cols-[1.1fr_.9fr] lg:grid-cols-[1.1fr_.9fr]">
           <div className="grid gap-4 sm:grid-cols-2">
             <Skeleton className="col-span-2 h-72.5 rounded-[26px]" />
             <Skeleton className="h-52 rounded-[26px]" />
@@ -179,7 +247,7 @@ function HomePageSkeleton() {
 
       {/* Role */}
       <section className="px-5 py-[42px] md:px-[5vw]">
-        <div className="grid gap-4 lg:grid-cols-[.8fr_1.2fr]">
+        <div className="grid gap-4 md:grid-cols-[.8fr_1.2fr] lg:grid-cols-[.8fr_1.2fr]">
           <Skeleton className="h-70 rounded-[32px]" />
           <div className="grid grid-cols-2 gap-4">
             {[...Array(4)].map((_, i) => (
@@ -198,7 +266,7 @@ function HomePageSkeleton() {
           </div>
           <Skeleton className="h-10 w-36 rounded-full" />
         </div>
-        <div className="grid gap-4 lg:grid-cols-[1.3fr_.7fr]">
+        <div className="grid gap-4 md:grid-cols-[1.3fr_.7fr] lg:grid-cols-[1.3fr_.7fr]">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {[...Array(4)].map((_, i) => (
               <Skeleton key={i} className="h-33.75 rounded-[24px]" />
@@ -478,8 +546,7 @@ export default function HomePageContent() {
 
   /* ── design tokens (theme-aligned) ── */
   // Card: bg-card border-border, radius and shadow mapped to theme
-  const glassCard =
-    'bg-card border border-border rounded-[28px] p-4.5 shadow-(--ambient-shadow)';
+  const glassCard = 'bg-card border border-border rounded-[28px] p-4.5 shadow-(--ambient-shadow)';
   const sectionPad = 'px-5 py-[42px] md:px-[5vw]';
   const sectionSmall = 'mb-1 text-xs font-black uppercase tracking-widest text-secondary';
   const sectionH2 = 'font-black tracking-tight leading-[1.15] text-foreground';
@@ -511,9 +578,7 @@ export default function HomePageContent() {
         {/* ══════════════════════════════════════════
             HERO
         ══════════════════════════════════════════ */}
-        <section
-          className="grid items-center gap-7 px-5 pt-7 pb-[22px] md:px-[5vw] lg:min-h-[calc(100vh-76px)] lg:grid-cols-[1.05fr_.95fr]"
-        >
+        <section className="grid items-start gap-7 px-5 pt-7 pb-[22px] md:grid-cols-[1.1fr_.9fr] md:px-[5vw] lg:min-h-[calc(100vh-76px)] lg:grid-cols-[1.05fr_.95fr] lg:items-center">
           {/* ── Left ── */}
           <div>
             {/* Badge */}
@@ -538,10 +603,8 @@ export default function HomePageContent() {
             </p>
 
             {/* Search box */}
-            <div
-              className="border-border bg-card relative mb-4 rounded-[28px] border p-3.5 shadow-(--ambient-shadow-strong)"
-            >
-              <div className="grid grid-cols-[1fr_auto] gap-2.5 sm:grid-cols-[1.1fr_.82fr_.82fr_auto]">
+            <div className="border-border bg-card relative mb-4 rounded-[28px] border p-3.5 shadow-(--ambient-shadow-strong)">
+              <div className="grid grid-cols-[1fr_auto] gap-2.5 sm:grid-cols-[1.1fr_.82fr_.82fr_auto] md:grid-cols-[1fr_auto] xl:grid-cols-[1.1fr_.82fr_.82fr_auto]">
                 {/* Keyword */}
                 <label className="border-border bg-muted text-muted-foreground flex items-center gap-2.5 rounded-[18px] border px-3.5 py-3">
                   <Search size={15} className="text-secondary shrink-0" />
@@ -572,14 +635,15 @@ export default function HomePageContent() {
 
                 {/* Category */}
                 {/* TODO: connect category filter to search API – currently mock options */}
-                <label className="border-border bg-muted text-muted-foreground hidden items-center gap-2.5 rounded-[18px] border px-3.5 py-3 sm:flex">
-                  <ArrowRight size={14} className="text-secondary shrink-0" />
+                <label className="border-border bg-muted text-muted-foreground hidden items-center gap-2.5 rounded-[18px] border px-3.5 py-3 sm:flex md:hidden xl:flex">
                   <Select defaultValue="experience_type">
                     <SelectTrigger className="h-auto border-0 bg-transparent px-0 text-[14px] font-bold shadow-none">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="experience_type">{t('home.filters.experience_type')}</SelectItem>
+                      <SelectItem value="experience_type">
+                        {t('home.filters.experience_type')}
+                      </SelectItem>
                       <SelectItem value="nature">{t('home.filters.nature')}</SelectItem>
                       <SelectItem value="culture">{t('home.filters.culture')}</SelectItem>
                       <SelectItem value="cuisine">{t('home.filters.cuisine')}</SelectItem>
@@ -590,8 +654,7 @@ export default function HomePageContent() {
 
                 {/* Radius */}
                 {/* TODO: connect radius filter to geo-search API – currently mock options */}
-                <label className="border-border bg-muted text-muted-foreground hidden items-center gap-2.5 rounded-[18px] border px-3.5 py-3 sm:flex">
-                  <MapPin size={14} className="text-secondary shrink-0" />
+                <label className="border-border bg-muted text-muted-foreground hidden items-center gap-2.5 rounded-[18px] border px-3.5 py-3 sm:flex md:hidden xl:flex">
                   <Select defaultValue="radius">
                     <SelectTrigger className="h-auto border-0 bg-transparent px-0 text-[14px] font-bold shadow-none">
                       <SelectValue />
@@ -704,14 +767,14 @@ export default function HomePageContent() {
           </div>
 
           {/* ── Right: dashboard ── */}
-          <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_.72fr]">
+          <div className="grid items-stretch gap-4 xl:grid-cols-[1fr_.72fr]">
             {/* Map preview — click to open full map */}
             <div
               role="button"
               tabIndex={0}
               onClick={() => navigate('/map')}
               onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/map')}
-              className="focus-visible:ring-ring relative min-h-[300px] cursor-pointer overflow-hidden rounded-[34px] border border-white/80 shadow-(--ambient-shadow-strong) focus-visible:ring-2 focus-visible:outline-none sm:min-h-[420px] lg:min-h-[560px]"
+              className="focus-visible:ring-ring relative min-h-[300px] cursor-pointer overflow-hidden rounded-[34px] border border-white/80 shadow-(--ambient-shadow-strong) focus-visible:ring-2 focus-visible:outline-none sm:min-h-[360px] md:min-h-[420px] lg:min-h-[560px]"
               style={{
                 background:
                   'linear-gradient(135deg,rgba(10,68,88,.18),rgba(16,185,129,.15)),' +
@@ -769,7 +832,9 @@ export default function HomePageContent() {
               {/* Map info */}
               {/* TODO: '65%' crowd load & '4 tuyến' are mock – replace with live crowd-density API */}
               <div className="bg-card/96 absolute right-[18px] bottom-[18px] left-[18px] rounded-[24px] p-4 shadow-[var(--ambient-shadow-strong)]">
-                <h3 className="text-foreground mb-2 text-[15px] font-black">{t('home.hero.map_status_title')}</h3>
+                <h3 className="text-foreground mb-2 text-[15px] font-black">
+                  {t('home.hero.map_status_title')}
+                </h3>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { val: '65%', label: t('home.hero.map_crowd_label') },
@@ -790,7 +855,7 @@ export default function HomePageContent() {
             </div>
 
             {/* Side stack */}
-            <div className="hidden lg:flex flex-col gap-4">
+            <div className="hidden flex-col gap-4 xl:flex">
               {/* Weather */}
               <div
                 className={glassCard}
@@ -925,13 +990,18 @@ export default function HomePageContent() {
               {t('home.quick_access.see_all')}
             </Button>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-5">
             {FEATURE_CARDS.map((card, i) => (
               <Button
                 key={i}
                 type="button"
                 variant="outline"
-                onClick={() => navigate(card.path, card.sidebar ? { state: { activeSidebar: card.sidebar } } : undefined)}
+                onClick={() =>
+                  navigate(
+                    card.path,
+                    card.sidebar ? { state: { activeSidebar: card.sidebar } } : undefined
+                  )
+                }
                 className={`border-border bg-card relative h-auto min-h-[170px] w-full flex-col items-start justify-start gap-0 overflow-hidden rounded-[22px] p-4 text-left whitespace-normal shadow-[var(--ambient-shadow)] sm:min-h-[188px] sm:rounded-[24px] sm:p-5 lg:rounded-[26px] lg:p-[22px] ${cardHover}`}
               >
                 <div
@@ -976,7 +1046,7 @@ export default function HomePageContent() {
           </div>
 
           {/* Masonry */}
-          <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
+          <div className="grid gap-4 md:grid-cols-[1.1fr_.9fr] lg:grid-cols-[1.1fr_.9fr]">
             {/* Destination grid */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {/* Big card */}
@@ -1133,7 +1203,7 @@ export default function HomePageContent() {
 
           {/* VR Banner */}
           <div
-            className="mt-5 grid items-center gap-5 overflow-hidden rounded-[32px] p-[34px] shadow-[var(--ambient-shadow-strong)] lg:grid-cols-[1fr_auto]"
+            className="mt-5 grid items-center gap-5 overflow-hidden rounded-[32px] p-[34px] shadow-[var(--ambient-shadow-strong)] md:grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto]"
             style={{
               background:
                 "linear-gradient(135deg,rgba(16,185,129,.94),rgba(11,102,195,.9)),url('https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1400&q=80') center/cover",
@@ -1162,7 +1232,7 @@ export default function HomePageContent() {
             ROLE SECTION
         ══════════════════════════════════════════ */}
         <section className={sectionPad}>
-          <div className="grid gap-4 lg:grid-cols-[.8fr_1.2fr]">
+          <div className="grid gap-4 md:grid-cols-[.8fr_1.2fr] lg:grid-cols-[.8fr_1.2fr]">
             {/* Role intro */}
             <div
               className="rounded-[32px] p-[30px] text-white shadow-[var(--ambient-shadow-strong)]"
@@ -1171,7 +1241,7 @@ export default function HomePageContent() {
               <Badge className="mb-3 gap-1.5 border border-white/25 bg-white/15 text-[12px] text-white">
                 <Users size={12} /> {t('home.role_section.badge')}
               </Badge>
-              <h2 className="mb-3 text-[30px] leading-[1.2] font-black sm:text-[34px]">
+              <h2 className="mb-3 text-[30px] leading-[1.2] font-black md:text-[26px] lg:text-[34px]">
                 {t('home.role_section.title')}
               </h2>
               <p className="text-[14px] leading-[1.7] text-white/85">
@@ -1192,7 +1262,9 @@ export default function HomePageContent() {
                   >
                     {role.icon}
                   </div>
-                  <h3 className="text-foreground mb-2 text-[17px] font-black">{t(role.titleKey)}</h3>
+                  <h3 className="text-foreground mb-2 text-[17px] font-black">
+                    {t(role.titleKey)}
+                  </h3>
                   <ul
                     className="text-muted-foreground space-y-0.5 pl-4 text-[13px] leading-[1.8]"
                     style={{ listStyleType: 'disc' }}
@@ -1228,7 +1300,7 @@ export default function HomePageContent() {
           </div>
 
           {/* Content hub */}
-          <div className="grid gap-4 lg:grid-cols-[1.3fr_.7fr]">
+          <div className="grid gap-4 md:grid-cols-[1.3fr_.7fr] lg:grid-cols-[1.3fr_.7fr]">
             {/* News grid 2×2 */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {newsList.map((item) => (
@@ -1240,10 +1312,10 @@ export default function HomePageContent() {
                 >
                   <article
                     onClick={() => handleOpenNewsDetail(item)}
-                    className="grid grid-cols-1 gap-3.5 p-4 text-left sm:grid-cols-[130px_1fr]"
+                    className="grid grid-cols-1 gap-3.5 p-4 text-left lg:grid-cols-[130px_1fr]"
                   >
                     <div
-                      className="h-[115px] rounded-[18px] bg-cover bg-center"
+                      className="h-[160px] rounded-[18px] bg-cover bg-center lg:h-[115px]"
                       style={{
                         backgroundImage: `url('${
                           item.thumbnail_url
@@ -1421,7 +1493,7 @@ export default function HomePageContent() {
                     <img
                       src={withBaseUrl(product.cover_image_url)}
                       alt={product.name || ''}
-                      className="h-[190px] w-full sm:w-[72%] rounded-[18px] object-cover"
+                      className="h-[190px] w-full rounded-[18px] object-cover sm:w-[72%]"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = placeholderImg;
