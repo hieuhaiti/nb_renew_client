@@ -1090,11 +1090,11 @@
       "incidentLegend": "Loại sự cố"
     },
     "spotModal": {
-      "reviews": "đánh giá",
+      "reviews": "Đánh giá",
       "openingHours": "Giờ mở cửa",
       "ticketPrice": "Vé",
       "viewImages": "Ảnh",
-      "review": "Đánh giá",
+      "viewDetail": "Xem chi tiết",
       "directions": "Xem chỉ đường",
       "vrTour": "Tour VR 360°",
       "noDescription": "Không có mô tả",

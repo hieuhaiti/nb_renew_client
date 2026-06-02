@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
-import { withBaseUrl } from '@/lib/utils';
+import { cn, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import qrImage from '@/assets/image.png';
 import { useSpotDetailModalStore, useModalCarouselStore } from '@/features/map/store/useModalStore';
@@ -61,6 +61,9 @@ import {
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
+import { getCapacityStatusMeta, resolveCapacityStatus } from '@/features/map/utils/capacityStatus';
+
+const QR_BOOKING_URL = 'https://dulichninhbinh.com.vn/';
 
 function formatPrice(price, currency = 'VND') {
   const num = Number(price);
@@ -206,7 +209,7 @@ function OcopStars({ count }) {
   );
 }
 
-function OcopProductCard({ ocop, spotLat, spotLng }) {
+function OcopProductCard({ ocop, spotLat, spotLng, onClick }) {
   const { t } = useTranslation();
   const imageUrl = ocop.cover_image_url ? withBaseUrl(ocop.cover_image_url) : placeholderImg;
   const price = ocop.price_vnd
@@ -221,7 +224,11 @@ function OcopProductCard({ ocop, spotLat, spotLng }) {
       : null;
 
   return (
-    <div className="hover:bg-muted/50 flex items-start gap-2.5 rounded-lg p-2 transition-colors">
+    <button
+      type="button"
+      onClick={() => onClick?.(ocop)}
+      className="hover:bg-muted/50 focus-visible:ring-ring flex w-full items-start gap-2.5 rounded-lg p-2 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
+    >
       <img
         src={imageUrl}
         alt={ocop.name}
@@ -246,11 +253,37 @@ function OcopProductCard({ ocop, spotLat, spotLng }) {
           <p className="typo-meta text-muted-foreground line-clamp-1">{ocop.producer_name}</p>
         )}
       </div>
-    </div>
+    </button>
   );
 }
 
-function OcopNearbyPanel({ spot, isModalOpen }) {
+function getOcopCoordinates(ocop) {
+  const lat = ocop?.lat ?? ocop?.latitude;
+  const lng = ocop?.lng ?? ocop?.longitude;
+
+  if (lat != null && lng != null) {
+    const parsedLat = Number(lat);
+    const parsedLng = Number(lng);
+    if (Number.isFinite(parsedLat) && Number.isFinite(parsedLng)) return [parsedLng, parsedLat];
+  }
+
+  const geometry =
+    parseGeometryValue(ocop?.geometry) ||
+    parseGeometryValue(ocop?.geom) ||
+    parseGeometryValue(ocop?.geom_json) ||
+    parseGeometryValue(ocop?.geometry_data);
+  const coordinates = geometry?.type === 'Point' ? geometry.coordinates : geometry?.coordinates;
+
+  if (Array.isArray(coordinates) && coordinates.length >= 2) {
+    const parsedLng = Number(coordinates[0]);
+    const parsedLat = Number(coordinates[1]);
+    if (Number.isFinite(parsedLat) && Number.isFinite(parsedLng)) return [parsedLng, parsedLat];
+  }
+
+  return null;
+}
+
+function OcopNearbyPanel({ spot, isModalOpen, onSelectOcop }) {
   const { t, i18n } = useTranslation();
   const [radiusKm, setRadiusKm] = useState(10);
 
@@ -323,6 +356,7 @@ function OcopNearbyPanel({ spot, isModalOpen }) {
                 ocop={ocop}
                 spotLat={spotLat != null ? Number(spotLat) : null}
                 spotLng={spotLng != null ? Number(spotLng) : null}
+                onClick={onSelectOcop}
               />
             ))}
           </div>
@@ -342,6 +376,8 @@ export default function ModalMarker() {
   const { isOpen, spotId, spotSlug, closeSpotModal } = useSpotDetailModalStore();
   const { openCarouselModal } = useModalCarouselStore();
   const openTourPanel = useMapPanelStore((state) => state.openTourPanel);
+  const mapRef = useMapStore((state) => state.mapRef);
+  const mapRefObj = useMapStore((state) => state.mapRefObj);
   const setHighlightedRoute = useMapStore((state) => state.setHighlightedRoute);
   const setShowOnlyHighlightedRoute = useMapStore((state) => state.setShowOnlyHighlightedRoute);
   const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
@@ -525,13 +561,49 @@ export default function ModalMarker() {
     closeSpotModal();
   };
 
+  const handleSelectOcop = (ocop) => {
+    const coordinates = getOcopCoordinates(ocop);
+    if (!coordinates) {
+      toast.error(
+        t('mapPage.ocopPanel.missingCoordinates', {
+          defaultValue: 'Không tìm thấy tọa độ sản phẩm OCOP này.',
+        })
+      );
+      return;
+    }
+
+    const mapRefObjCurrent = mapRefObj?.current;
+    const maps = [mapRef, mapRefObjCurrent?.single, mapRefObjCurrent?.split].filter(
+      (map, index, list) => map && list.indexOf(map) === index
+    );
+
+    maps.forEach((map) => {
+      map.flyTo({
+        center: coordinates,
+        zoom: Math.max(map.getZoom?.() ?? 0, 15),
+        pitch: 45,
+        bearing: 0,
+        essential: true,
+        duration: 1600,
+      });
+    });
+
+    closeSpotModal();
+  };
+
   const openingHours = spot ? getOpeningHours(spot.opening_hours) : null;
   const ticketPriceAdult = spot ? formatPrice(spot.ticket_price_adult, spot.ticket_currency) : null;
   const ticketPriceChild = spot ? formatPrice(spot.ticket_price_child, spot.ticket_currency) : null;
   const ratingAvg = spot ? parseFloat(spot.rating_avg) : 0;
   const hasMedia = Array.isArray(mediaItems) && mediaItems.length > 0;
-  const capacityPct = spot?.current_capacity_pct != null ? Number(spot.current_capacity_pct) : null;
-  const alertThreshold = spot?.alert_threshold_pct ?? 80;
+  const capacityRawPct =
+    spot?.current_capacity_pct != null ? Number(spot.current_capacity_pct) : null;
+  const capacityPct = Number.isFinite(capacityRawPct) ? capacityRawPct : null;
+  const capacityStatus = resolveCapacityStatus(
+    spot?.status ?? spot?.capacity_status ?? spot?.current_capacity_status,
+    capacityPct
+  );
+  const capacityStatusMeta = getCapacityStatusMeta(capacityStatus);
 
   return (
     <Dialog
@@ -797,13 +869,22 @@ export default function ModalMarker() {
                         <TooltipProvider delayDuration={120}>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="bg-background flex h-full min-h-47 w-full cursor-pointer items-center justify-center rounded-lg border p-2 shadow-xs">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  window.open(QR_BOOKING_URL, '_blank', 'noopener,noreferrer')
+                                }
+                                className="bg-background focus-visible:ring-ring flex h-full min-h-47 w-full cursor-pointer items-center justify-center rounded-lg border p-2 shadow-xs focus-visible:ring-2 focus-visible:outline-none"
+                                aria-label={t('mapPage.spotModal.scanToBook', {
+                                  defaultValue: 'Scan to book tickets',
+                                })}
+                              >
                                 <img
                                   src={qrImage}
                                   alt="QR"
                                   className="h-full w-full object-contain"
                                 />
-                              </div>
+                              </button>
                             </TooltipTrigger>
                             <TooltipContent side="top" sideOffset={8}>
                               {t('mapPage.spotModal.scanToBook', {
@@ -855,24 +936,20 @@ export default function ModalMarker() {
                               {t('mapPage.spotModal.capacity')}
                             </p>
                             <p
-                              className="typo-meta font-medium"
-                              style={{
-                                color:
-                                  capacityPct >= alertThreshold
-                                    ? '#ef4444'
-                                    : capacityPct >= alertThreshold * 0.75
-                                      ? '#f59e0b'
-                                      : '#22c55e',
-                              }}
+                              className={cn(
+                                'typo-meta font-medium tabular-nums',
+                                capacityStatusMeta.toneClass
+                              )}
                             >
                               {Math.round(capacityPct)}%
                             </p>
                           </div>
                           <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
                             <div
-                              className="h-full rounded-full bg-orange-400 transition-all"
+                              className="h-full rounded-full transition-all"
                               style={{
                                 width: `${Math.min(capacityPct, 100)}%`,
+                                ...capacityStatusMeta.barStyle,
                               }}
                             />
                           </div>
@@ -911,7 +988,7 @@ export default function ModalMarker() {
                     className="gap-1.5"
                   >
                     <Star size={14} className="fill-current" />
-                    {t('mapPage.spotModal.review')}
+                    {t('mapPage.spotModal.viewDetail')}
                   </Button>
                 </div>
                 {hasVrTour && (
@@ -942,7 +1019,7 @@ export default function ModalMarker() {
 
         {/* OCOP panel card (desktop only, sits to the right) */}
         <div className="bg-background hidden w-64 flex-col self-stretch overflow-hidden rounded-2xl border shadow-lg lg:flex xl:w-72">
-          <OcopNearbyPanel spot={spot} isModalOpen={isOpen} />
+          <OcopNearbyPanel spot={spot} isModalOpen={isOpen} onSelectOcop={handleSelectOcop} />
         </div>
       </DialogContent>
     </Dialog>

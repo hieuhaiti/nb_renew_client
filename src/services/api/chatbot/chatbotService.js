@@ -17,8 +17,10 @@ export async function createChatSession(language = 'vi', anonymousId = null) {
 }
 
 /** GET /chatbot/sessions  →  { items: [...], pagination: {...} } */
-export async function listChatSessions() {
-  const res = await apiClient.get('/chatbot/sessions');
+export async function listChatSessions(anonymousId = null) {
+  const res = await apiClient.get('/chatbot/sessions', {
+    headers: anonHeaders(anonymousId),
+  });
   const payload = res.data?.data ?? res.data;
   return Array.isArray(payload) ? payload : (payload?.items ?? []);
 }
@@ -47,8 +49,10 @@ export async function sendMessage(sessionId, message, language = 'vi', anonymous
 }
 
 /** DELETE /chatbot/sessions/:id */
-export async function deleteChatSession(sessionId) {
-  const res = await apiClient.delete(`/chatbot/sessions/${sessionId}`);
+export async function deleteChatSession(sessionId, anonymousId = null) {
+  const res = await apiClient.delete(`/chatbot/sessions/${sessionId}`, {
+    headers: anonHeaders(anonymousId),
+  });
   return res.data;
 }
 

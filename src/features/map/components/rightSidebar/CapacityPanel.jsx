@@ -6,86 +6,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  useGetCurrentCapacity,
-  useCapacityStream,
-} from '@/services/api/capacity/capacityService';
+import { useGetCurrentCapacity, useCapacityStream } from '@/services/api/capacity/capacityService';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
-const STATUS_META = {
-  overloaded: {
-    activeBadgeClass:
-      'border-border/60 bg-destructive text-white hover:bg-destructive/80 hover:text-white',
-    badgeClass:
-      'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
-    // red-400 → red-700
-    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
-    labelVi: 'Quá tải',
-    labelEn: 'Overloaded',
-  },
-  near_full: {
-    activeBadgeClass:
-      'border-border/60 bg-orange-500 text-white hover:bg-orange-500/80 hover:text-white',
-    badgeClass:
-      'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
-    // tertiary-1 (amber) → quaternary (coral-red)
-    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
-    labelVi: 'Gần đầy',
-    labelEn: 'Near full',
-  },
-  busy: {
-    activeBadgeClass: 'border-border/60 bg-warning text-white hover:bg-warning/80 hover:text-white',
-    badgeClass:
-      'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
-    // gold → tertiary-2 (warm amber-orange)
-    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
-    labelVi: 'Đông',
-    labelEn: 'Busy',
-  },
-  moderate: {
-    activeBadgeClass: 'border-border/60 bg-sky-500 text-white hover:bg-sky-500/80 hover:text-white',
-    badgeClass:
-      'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
-    // primary-1 (sky) → primary-2 (deep blue)
-    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
-    labelVi: 'Vừa phải',
-    labelEn: 'Moderate',
-  },
-  normal: {
-    activeBadgeClass:
-      'border-border/60 bg-emerald-500 text-white hover:bg-emerald-500/80 hover:text-white',
-    badgeClass:
-      'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
-    // secondary-1 (teal) → secondary-2 (forest green)
-    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
-    labelVi: 'Bình thường',
-    labelEn: 'Normal',
-  },
-  low: {
-    activeBadgeClass:
-      'border-border/60 bg-emerald-500 text-white hover:bg-emerald-500/80 hover:text-white',
-    badgeClass:
-      'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
-    // lighter teal → secondary-1
-    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
-    labelVi: 'Thưa thớt',
-    labelEn: 'Low',
-  },
-};
-
-const FALLBACK_META = STATUS_META.normal;
-
-function getStatusMeta(status) {
-  return STATUS_META[status] ?? FALLBACK_META;
-}
-
-function getStatusLabel(status, isVi) {
-  const meta = getStatusMeta(status);
-  return isVi ? meta.labelVi : meta.labelEn;
-}
+import {
+  CAPACITY_STATUS_META,
+  getCapacityStatusLabel,
+  getCapacityStatusMeta,
+  resolveCapacityStatus,
+} from '@/features/map/utils/capacityStatus';
 
 function getViewOnMapVariant(status) {
   switch (status) {
@@ -116,14 +47,7 @@ function resolveCapacityPct(item) {
 }
 
 function resolveStatus(item, pct) {
-  const raw = String(item.status ?? item.capacity_status ?? '').trim();
-  if (STATUS_META[raw]) return raw;
-  if (pct >= 100) return 'overloaded';
-  if (pct >= 85) return 'near_full';
-  if (pct >= 70) return 'busy';
-  if (pct >= 40) return 'moderate';
-  if (pct > 0) return 'normal';
-  return 'low';
+  return resolveCapacityStatus(item.status ?? item.capacity_status, pct);
 }
 
 function normalizeItem(raw, defaultName) {
@@ -241,7 +165,7 @@ export default function CapacityPanel() {
   }, [items]);
 
   const presentStatuses = useMemo(
-    () => Object.keys(statusCounts).filter((s) => statusCounts[s] > 0),
+    () => Object.keys(CAPACITY_STATUS_META).filter((s) => s !== 'unknown' && statusCounts[s] > 0),
     [statusCounts]
   );
 
@@ -341,7 +265,7 @@ export default function CapacityPanel() {
           </Button>
 
           {presentStatuses.map((status) => {
-            const meta = getStatusMeta(status);
+            const meta = getCapacityStatusMeta(status);
             const isActive = statusFilter === status;
             return (
               <Button
@@ -354,7 +278,7 @@ export default function CapacityPanel() {
                   isActive ? meta.activeBadgeClass : meta.badgeClass
                 )}
               >
-                {getStatusLabel(status, isVi)}
+                {getCapacityStatusLabel(status, isVi)}
                 <span className="opacity-90">{statusCounts[status]}</span>
               </Button>
             );
@@ -388,7 +312,7 @@ export default function CapacityPanel() {
             </p>
 
             {filtered.map((item) => {
-              const meta = getStatusMeta(item.status);
+              const meta = getCapacityStatusMeta(item.status);
               const hasCoords = typeof item.lat === 'number' && typeof item.lng === 'number';
               const capacityText =
                 item.max > 0
@@ -398,7 +322,7 @@ export default function CapacityPanel() {
               return (
                 <article
                   key={item.id}
-                  className="w-full min-w-0 overflow-hidden space-y-2 rounded-xl border border-primary/60 bg-primary/5 p-3 shadow-sm transition-colors hover:bg-primary/10 hover:border-primary/80"
+                  className="border-primary/60 bg-primary/5 hover:bg-primary/10 hover:border-primary/80 w-full min-w-0 space-y-2 overflow-hidden rounded-xl border p-3 shadow-sm transition-colors"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <h4
@@ -408,7 +332,7 @@ export default function CapacityPanel() {
                       {item.name}
                     </h4>
                     <Badge variant="outline" className={cn('typo-badge shrink-0', meta.badgeClass)}>
-                      {getStatusLabel(item.status, isVi)}
+                      {getCapacityStatusLabel(item.status, isVi)}
                     </Badge>
                   </div>
 

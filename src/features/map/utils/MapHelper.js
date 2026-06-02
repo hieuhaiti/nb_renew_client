@@ -69,7 +69,7 @@ const CLUSTER_COUNT_TEXT_HALO_WIDTH = 1.5;
 const POINT_ICON_OPACITY = 0.95;
 const POINT_ICON_SIZE_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 0.9, 12, 1, 16, 1.12];
 const POINT_TEXT_SIZE = 13;
-const POINT_TEXT_OFFSET = [0, 1.9];
+const POINT_TEXT_OFFSET = [0, 0.5];
 const POINT_TEXT_PADDING = 2;
 const POINT_TEXT_COLOR = 'black';
 const POINT_TEXT_HALO_COLOR = 'white';
@@ -1397,7 +1397,11 @@ const aiPopupsRegistry = new WeakMap();
 const aiRouteRegistry = new WeakMap();
 let aiRouteIdCounter = 0;
 
-const OCOP_ALL_LAYER_IDS = [OCOP_POINT_LAYER_ID, OCOP_CLUSTER_LAYER_ID, OCOP_CLUSTER_COUNT_LAYER_ID];
+const OCOP_ALL_LAYER_IDS = [
+  OCOP_POINT_LAYER_ID,
+  OCOP_CLUSTER_LAYER_ID,
+  OCOP_CLUSTER_COUNT_LAYER_ID,
+];
 
 function getAiMarkerList(map) {
   if (!aiMarkersRegistry.has(map)) aiMarkersRegistry.set(map, []);
@@ -1527,9 +1531,11 @@ export function executeChatbotMapAction(map, action) {
     case 'show_popup': {
       const [lng, lat] = action.center ?? [];
       if (lng == null || lat == null) break;
-      const popup = new mapboxgl.Popup({ closeButton: true, offset: 14, maxWidth: '300px' }).setLngLat(
-        [Number(lng), Number(lat)]
-      );
+      const popup = new mapboxgl.Popup({
+        closeButton: true,
+        offset: 14,
+        maxWidth: '300px',
+      }).setLngLat([Number(lng), Number(lat)]);
       if (action.html) popup.setHTML(action.html);
       else if (action.text) popup.setText(action.text);
       popup.addTo(map);

@@ -30,6 +30,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 const PRIMARY_GRAD = 'linear-gradient(135deg,#12a9b7,#0e9f8f)';
 const ORANGE_GRAD = 'linear-gradient(135deg,#ff9f1c,#ffb703)';
+const QR_BOOKING_URL = 'https://dulichninhbinh.com.vn/';
 
 function resolveStopSpotId(stop) {
   return (
@@ -746,7 +747,11 @@ export default function TourDetailPage() {
                         <TooltipTrigger asChild>
                           <button
                             type="button"
+                            onClick={() =>
+                              window.open(QR_BOOKING_URL, '_blank', 'noopener,noreferrer')
+                            }
                             className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-white/70 bg-white p-2 shadow-[0_14px_35px_rgba(15,23,42,.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,.16)] sm:h-[92px] sm:w-[92px]"
+                            aria-label="Đặt vé chuyến đi"
                           >
                             <img
                               src={qrImage}

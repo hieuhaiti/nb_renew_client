@@ -25,27 +25,27 @@
   --popover: #ffffff;
   --popover-foreground: #171c1f;
 
-  /* High-emphasis brand/action */
-  --primary: #0b66c3;
-  --primary-foreground: #ffffff;
-  --primary-hover: #004b9b;
-  --primary-soft: #eef7ff;
-  --primary-soft-foreground: #0477bf;
-  /* Primary gradient stops - 1 = brightest, 3 = deepest */
-  --primary-1: #0b66c3;
-  --primary-2: #0ea5e9;
-  --primary-3: #06b6d4;
-
   /* Lower-emphasis filled surfaces */
-  --secondary: #10b981;
-  --secondary-foreground: #ffffff;
-  --secondary-hover: #059669;
-  --secondary-soft: #def8ed;
-  --secondary-soft-foreground: #067a51;
+  --primary: #10b981;
+  --primary-foreground: #ffffff;
+  --primary-hover: #059669;
+  --primary-soft: #def8ed;
+  --primary-soft-foreground: #067a51;
   /* Secondary gradient stops */
-  --secondary-1: #10b981;
-  --secondary-2: #059669;
-  --secondary-3: #067a51;
+  --primary-1: #10b981;
+  --primary-2: #059669;
+  --primary-3: #067a51;
+
+  /* High-emphasis brand/action */
+  --secondary: #0b66c3;
+  --secondary-foreground: #ffffff;
+  --secondary-hover: #004b9b;
+  --secondary-soft: #eef7ff;
+  --secondary-soft-foreground: #0477bf;
+  /* Primary gradient stops - 1 = brightest, 3 = deepest */
+  --secondary-1: #0b66c3;
+  --secondary-2: #0ea5e9;
+  --secondary-3: #06b6d4;
 
   /* Tertiary - Sunset Sand */
   --tertiary: #f59e0b;

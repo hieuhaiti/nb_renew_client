@@ -10,6 +10,12 @@ import {
 } from '@/services/api/chatbot/chatbotService';
 import useAuthStore from '@/stores/useAuthStore';
 import { getAnonymousId } from '@/lib/anonymousId';
+import { tokenManager } from '@/lib/tokenManager';
+
+function resolveAnonymousId() {
+  const hasAccessToken = !!tokenManager.getAccessToken();
+  return hasAccessToken ? null : getAnonymousId();
+}
 
 const useChatbotStore = create((set, get) => ({
   sessionId: null,
@@ -24,7 +30,8 @@ const useChatbotStore = create((set, get) => ({
     if (sessionId) return;
     set({ isLoading: true, error: null });
     try {
-      const sessions = await listChatSessions();
+      const anonymousId = resolveAnonymousId();
+      const sessions = await listChatSessions(anonymousId);
       set({ sessions });
       if (sessions.length === 0) {
         set({ isLoading: false });
@@ -40,7 +47,8 @@ const useChatbotStore = create((set, get) => ({
 
   async loadAllSessions() {
     try {
-      const sessions = await listChatSessions();
+      const anonymousId = resolveAnonymousId();
+      const sessions = await listChatSessions(anonymousId);
       set({ sessions });
     } catch (_err) {}
   },
@@ -58,7 +66,8 @@ const useChatbotStore = create((set, get) => ({
 
   async deleteSession(id) {
     try {
-      await deleteChatSession(id);
+      const anonymousId = resolveAnonymousId();
+      await deleteChatSession(id, anonymousId);
     } catch (_err) {}
     const { sessionId, sessions } = get();
     const remaining = sessions.filter((s) => s.id !== id);
@@ -79,7 +88,7 @@ const useChatbotStore = create((set, get) => ({
     if (!trimmed || get().isSending) return;
 
     const isAuthenticated = useAuthStore.getState().isAuthenticated;
-    const anonymousId = isAuthenticated ? null : getAnonymousId();
+    const anonymousId = isAuthenticated ? resolveAnonymousId() : getAnonymousId();
 
     const userMsg = {
       id: `user-${Date.now()}`,
@@ -96,9 +105,7 @@ const useChatbotStore = create((set, get) => ({
         sid = session.id;
         set((s) => ({
           sessionId: sid,
-          sessions: s.sessions.some((x) => x.id === sid)
-            ? s.sessions
-            : [session, ...s.sessions],
+          sessions: s.sessions.some((x) => x.id === sid) ? s.sessions : [session, ...s.sessions],
         }));
       }
 
@@ -122,7 +129,14 @@ const useChatbotStore = create((set, get) => ({
   },
 
   clearSession() {
-    set({ sessionId: null, sessions: [], messages: [], isSending: false, isLoading: false, error: null });
+    set({
+      sessionId: null,
+      sessions: [],
+      messages: [],
+      isSending: false,
+      isLoading: false,
+      error: null,
+    });
   },
 }));
 
