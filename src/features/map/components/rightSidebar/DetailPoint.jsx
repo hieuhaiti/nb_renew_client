@@ -228,8 +228,8 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
     const matched = list.find((c) => String(c.id) === String(destination.category_id));
     if (!matched) return null;
     return lang === 'en'
-      ? matched.name_en || matched.name_vi || matched.name || null
-      : matched.name_vi || matched.name_en || matched.name || null;
+      ? matched.name || matched.name_en || matched.name_vi || null
+      : matched.name || matched.name_vi || matched.name_en || null;
   }, [categoriesData, destination.category_id, lang]);
 
   const detailDescription = destination?.description || '';

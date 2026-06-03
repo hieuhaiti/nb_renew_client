@@ -2,6 +2,7 @@ import axios from 'axios';
 import { tokenManager } from '@/lib/tokenManager';
 import { env } from '@/config/env';
 import useAuthStore from '@/stores/useAuthStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 
 const BASE_URL = env.apiBaseUrlBE;
 
@@ -37,6 +38,54 @@ function isAuthEndpoint(url = '') {
   return AUTH_ENDPOINTS.some((e) => url.includes(e));
 }
 
+function hasLangInUrl(url = '') {
+  if (!url || typeof url !== 'string') return false;
+
+  try {
+    const parsed = new URL(url, BASE_URL || 'http://localhost');
+    return parsed.searchParams.has('lang');
+  } catch {
+    return url.includes('lang=');
+  }
+}
+
+function hasLangInParams(params) {
+  if (!params) return false;
+  if (params instanceof URLSearchParams) return params.has('lang');
+  if (typeof params === 'string') return new URLSearchParams(params).has('lang');
+  if (typeof params === 'object') return Object.prototype.hasOwnProperty.call(params, 'lang');
+  return false;
+}
+
+function withLangParam(params, lang) {
+  if (params instanceof URLSearchParams) {
+    const nextParams = new URLSearchParams(params);
+    nextParams.set('lang', lang);
+    return nextParams;
+  }
+
+  if (typeof params === 'string') {
+    const nextParams = new URLSearchParams(params);
+    nextParams.set('lang', lang);
+    return nextParams;
+  }
+
+  return { ...(params || {}), lang };
+}
+
+function attachLangToGetRequest(config) {
+  const method = String(config?.method || 'get').toLowerCase();
+  if (method !== 'get') return config;
+
+  const lang = useLanguageStore.getState().lang || 'vi';
+  if (hasLangInUrl(config.url) || hasLangInParams(config.params)) return config;
+
+  return {
+    ...config,
+    params: withLangParam(config.params, lang),
+  };
+}
+
 // ─── SHARED REFRESH LOGIC ────────────────────────────────────────────────────
 let isRefreshing = false;
 let refreshQueue = [];
@@ -67,6 +116,7 @@ async function doRefresh() {
   const {
     accessToken,
     refreshToken: newRefresh,
+    tokenType,
     expiresIn,
     refreshExpiresIn,
   } = refreshRes.data?.data || {};
@@ -75,20 +125,63 @@ async function doRefresh() {
 
   tokenManager.setAccessToken(accessToken, expiresIn);
   if (newRefresh) tokenManager.setRefreshToken(newRefresh, refreshExpiresIn);
+  if (tokenType) tokenManager.setTokenType(tokenType);
   if (expiresIn) tokenManager.setTokenExpiresIn(expiresIn);
   if (refreshExpiresIn) tokenManager.setRefreshExpiresIn(refreshExpiresIn);
 
   return accessToken;
 }
 
+async function refreshAccessTokenForRequest(config) {
+  config.headers = config.headers || {};
+
+  if (tokenManager.isRefreshTokenExpired()) {
+    clearSession();
+    return Promise.reject({
+      status: 401,
+      message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      isAuthRequest: false,
+    });
+  }
+
+  if (isRefreshing) {
+    const newToken = await new Promise((resolve, reject) => {
+      refreshQueue.push({ resolve, reject });
+    });
+    config.headers['Authorization'] = `Bearer ${newToken}`;
+    return config;
+  }
+
+  isRefreshing = true;
+  try {
+    const newToken = await doRefresh();
+    processQueue(null, newToken);
+    config.headers['Authorization'] = `Bearer ${newToken}`;
+    return config;
+  } catch (err) {
+    processQueue(err, null);
+    clearSession();
+    return Promise.reject({
+      status: 401,
+      message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      isAuthRequest: false,
+    });
+  } finally {
+    isRefreshing = false;
+  }
+}
+
 // ─── REQUEST INTERCEPTOR: proactive refresh + attach Bearer token ─────────────
 apiClient.interceptors.request.use(
   async (config) => {
+    config = attachLangToGetRequest(config);
     const url = config.url || '';
     if (isAuthEndpoint(url)) return config;
 
     const token = tokenManager.getAccessToken();
-    if (!token) return config;
+    if (!token) {
+      return tokenManager.getRefreshToken() ? refreshAccessTokenForRequest(config) : config;
+    }
 
     // Proactive refresh: send a fresh token instead of waiting for a 401 round-trip
     if (tokenManager.isAccessTokenExpired(30)) {
@@ -129,6 +222,7 @@ apiClient.interceptors.request.use(
     }
 
     const tokenType = tokenManager.getTokenType() || 'Bearer';
+    config.headers = config.headers || {};
     config.headers['Authorization'] = `${tokenType} ${token}`;
     return config;
   },

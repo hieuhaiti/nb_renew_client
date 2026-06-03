@@ -169,9 +169,13 @@ export const tokenManager = {
     refreshToken,
     accessExpiresIn = null,
     refreshExpiresIn = null,
+    tokenType = null,
   ) {
     this.setAccessToken(accessToken, accessExpiresIn);
     this.setRefreshToken(refreshToken, refreshExpiresIn);
+    if (tokenType) this.setTokenType(tokenType);
+    if (accessExpiresIn) this.setTokenExpiresIn(accessExpiresIn);
+    if (refreshExpiresIn) this.setRefreshExpiresIn(refreshExpiresIn);
   },
 
   // Get full authorization header value

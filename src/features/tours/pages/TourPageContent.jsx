@@ -134,17 +134,17 @@ const clampPrice = (value) => {
 };
 
 function getTourName(tour, lang = 'vi') {
-  if (lang === 'en') return tour?.name_en || tour?.name || tour?.name_vi || '';
-  return tour?.name_vi || tour?.name || tour?.name_en || '';
+  if (lang === 'en') return tour?.name || tour?.name_en || tour?.name_vi || '';
+  return tour?.name || tour?.name_vi || tour?.name_en || '';
 }
 function getTourDescription(tour, lang = 'vi') {
-  if (lang === 'en') return tour?.description_en || tour?.description_vi || tour?.description || '';
-  return tour?.description_vi || tour?.description_en || tour?.description || '';
+  if (lang === 'en') return tour?.description || tour?.description_en || tour?.description_vi || '';
+  return tour?.description || tour?.description_vi || tour?.description_en || '';
 }
 function getTourStartLocation(tour, lang = 'vi') {
   if (lang === 'en')
-    return tour?.start_location_en || tour?.start_location_vi || tour?.start_location || '';
-  return tour?.start_location_vi || tour?.start_location_en || tour?.start_location || '';
+    return tour?.start_location || tour?.start_location_en || tour?.start_location_vi || '';
+  return tour?.start_location || tour?.start_location_vi || tour?.start_location_en || '';
 }
 function getTourImage(tour) {
   return withBaseUrl(tour?.cover_image_url || '') || placeholderImg;

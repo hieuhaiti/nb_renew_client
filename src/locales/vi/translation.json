@@ -924,6 +924,14 @@
       "routePrototype": "Tích hợp chỉ đường đang ở chế độ thử nghiệm",
       "vrPrototype": "Tích hợp xem trước VR360 đang ở chế độ thử nghiệm"
     },
+    "layerData": {
+      "title": "Lớp dữ liệu",
+      "selectCategory": "Chọn danh mục",
+      "selectAll": "Chọn tất cả",
+      "clearAll": "Xóa tất cả",
+      "empty": "Không có lớp dữ liệu phù hợp",
+      "error": "Không thể tải lớp dữ liệu"
+    },
     "destination": {
       "title": "Điểm đến",
       "unknownName": "Điểm đến không xác định",
@@ -1066,6 +1074,7 @@
       "placeholder": "Nhập câu hỏi về điểm đến, tour hoặc thời tiết..",
       "youLabel": "Bạn",
       "botLabel": "Trợ lý AI",
+      "emptyState": "Hãy bắt đầu cuộc trò chuyện hoặc chọn gợi ý phía trên.",
       "quickPrompts": {
         "dayTour": "Gợi ý tour 1 ngày",
         "lessCrowded": "Điểm nào ít đông đúc hơn?",
@@ -1097,7 +1106,7 @@
       "viewDetail": "Xem chi tiết",
       "directions": "Xem chỉ đường",
       "vrTour": "Tour VR 360°",
-      "view3D": "Xem ảnh 3D",
+      "view3D": "Xem mô hình 3D",
       "noDescription": "Không có mô tả",
       "capacity": "Sức chứa",
       "currentVisitors": "Du khách hiện tại",

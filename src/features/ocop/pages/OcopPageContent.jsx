@@ -54,7 +54,7 @@ function getCategoryColor(key) {
 }
 
 function getProductName(p) {
-  return p?.name_vi || p?.name_en || p?.name || '—';
+  return p?.name || p?.name_vi || p?.name_en || '—';
 }
 
 function getProductStars(p) {
@@ -75,7 +75,7 @@ function OcopCard({ item, navigate, t }) {
   return (
     <article
       onClick={() => item?.id && navigate(`/ocop/${item.id}`)}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border-border bg-card shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
+      className="group border-border bg-card flex cursor-pointer flex-col overflow-hidden rounded-[18px] shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
     >
       <div className="relative h-48 overflow-hidden">
         <img
@@ -102,7 +102,7 @@ function OcopCard({ item, navigate, t }) {
 
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="text-foreground line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-primary"
+          className="text-foreground group-hover:text-primary line-clamp-2 text-sm leading-snug font-black transition-colors"
           title={name}
         >
           {name}
@@ -125,7 +125,7 @@ function OcopCard({ item, navigate, t }) {
 
         {item?.certification_no && (
           <div className="text-muted-foreground mt-2 flex items-center gap-1 text-xs">
-            <ShieldCheck size={11} className="shrink-0 text-secondary" />
+            <ShieldCheck size={11} className="text-secondary shrink-0" />
             <span className="truncate">{item.certification_no}</span>
           </div>
         )}
@@ -134,18 +134,18 @@ function OcopCard({ item, navigate, t }) {
           <div>
             {priceLabel ? (
               <>
-                <div className="text-sm font-black text-primary 2xl:text-base">{priceLabel}</div>
+                <div className="text-primary text-sm font-black 2xl:text-base">{priceLabel}</div>
                 {item?.unit && (
                   <div className="text-muted-foreground text-[10px]">/ {item.unit}</div>
                 )}
               </>
             ) : (
-              <div className="text-sm font-semibold text-secondary">
+              <div className="text-secondary text-sm font-semibold">
                 {t('ocopPage.card.view_detail')}
               </div>
             )}
           </div>
-          <span className="flex items-center gap-1 text-xs font-semibold text-primary group-hover:underline">
+          <span className="text-primary flex items-center gap-1 text-xs font-semibold group-hover:underline">
             {t('ocopPage.card.view_detail')} <ArrowRight size={11} />
           </span>
         </div>
@@ -156,7 +156,7 @@ function OcopCard({ item, navigate, t }) {
 
 function OcopCardSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-[18px] border-border bg-card">
+    <div className="border-border bg-card animate-pulse overflow-hidden rounded-[18px]">
       <div className="bg-muted h-48 w-full" />
       <div className="space-y-2 p-4">
         <div className="bg-muted h-4 w-3/4 rounded" />
@@ -254,11 +254,11 @@ export default function OcopPageContent() {
               </div>
 
               {/* Search bar */}
-              <div className="flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 bg-card/95 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
+              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
                   <Search
                     size={16}
-                    className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+                    className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <Input
                     type="text"
@@ -268,7 +268,7 @@ export default function OcopPageContent() {
                       setSearch(e.target.value);
                       setPage(1);
                     }}
-                    className="text-foreground h-11 w-full rounded-xl border-input bg-card pr-3 pl-9 text-sm outline-none focus:border-primary"
+                    className="text-foreground border-input bg-card focus:border-primary h-11 w-full rounded-xl pr-3 pl-9 text-sm outline-none"
                   />
                 </div>
                 <Select
@@ -278,7 +278,7 @@ export default function OcopPageContent() {
                     setPage(1);
                   }}
                 >
-                  <SelectTrigger className="text-foreground h-11 shrink-0 rounded-xl border-input bg-card px-3 text-sm focus:border-primary">
+                  <SelectTrigger className="text-foreground border-input bg-card focus:border-primary h-11 shrink-0 rounded-xl px-3 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -360,7 +360,7 @@ export default function OcopPageContent() {
                 variant="ghost"
                 type="button"
                 onClick={handleReset}
-                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
+                className="text-muted-foreground border-border bg-card hover:bg-muted flex h-8 items-center gap-1.5 rounded-[8px] px-3 text-xs font-semibold"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
                 {t('ocopPage.toolbar.refresh')}
@@ -376,11 +376,11 @@ export default function OcopPageContent() {
               ))}
             </div>
           ) : isError ? (
-            <div className="text-muted-foreground rounded-[18px] border-border bg-card py-20 text-center">
+            <div className="text-muted-foreground border-border bg-card rounded-[18px] py-20 text-center">
               {t('ocopPage.states.error')}
             </div>
           ) : products.length === 0 ? (
-            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border-border bg-card py-20">
+            <div className="text-muted-foreground border-border bg-card flex flex-col items-center justify-center rounded-[18px] py-20">
               <Inbox size={40} className="mb-3 opacity-30" />
               <p className="text-foreground text-sm font-semibold 2xl:text-base">
                 {t('ocopPage.states.empty_title')}
@@ -403,11 +403,11 @@ export default function OcopPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
+                className="border-border bg-card hover:bg-muted flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-sm font-semibold disabled:opacity-40"
               >
                 <ChevronLeft size={15} /> {t('ocopPage.pagination.prev')}
               </Button>
-              <span className="rounded-full border-border bg-card px-4 py-1.5 text-sm font-semibold">
+              <span className="border-border bg-card rounded-full px-4 py-1.5 text-sm font-semibold">
                 {t('ocopPage.pagination.page', { current: page, total: totalPages })}
               </span>
               <Button
@@ -415,7 +415,7 @@ export default function OcopPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
+                className="border-border bg-card hover:bg-muted flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-sm font-semibold disabled:opacity-40"
               >
                 {t('ocopPage.pagination.next')} <ChevronRight size={15} />
               </Button>

@@ -70,12 +70,7 @@ export function useFeaturedSpotsQuery(params = {}, options = {}) {
   const endpoint = `spots/featured${query.toString() ? `?${query.toString()}` : ''}`;
 
   return useApiQuery(
-    [
-      'map',
-      'featured',
-      'spots',
-      params?.limit || 8,
-    ],
+    ['map', 'featured', 'spots', params?.limit || 8],
     endpoint,
     {
       staleTime: 2 * 60 * 1000,
@@ -117,27 +112,37 @@ export function normalizeSpotsSearchResults(payload) {
             ? item.coordinates
             : Number.isFinite(Number(item?.longitude)) && Number.isFinite(Number(item?.latitude))
               ? [Number(item.longitude), Number(item.latitude)]
-            : null;
+              : null;
 
       return {
         id: item?.id ?? properties?.id ?? `search-${index}`,
         slug: item?.slug ?? properties?.slug ?? null,
-        name: toDisplayText(item?.name_vi || item?.name_en || item?.name || properties?.name_vi || properties?.name) || 'Unknown destination',
+        name:
+          toDisplayText(
+            item?.name ||
+              properties?.name ||
+              item?.name_vi ||
+              item?.name_en ||
+              properties?.name_vi ||
+              properties?.name_en
+          ) || 'Unknown destination',
         description: toDisplayText(
-          item?.description_vi ||
+          item?.description ||
+            properties?.description ||
+            item?.description_vi ||
             item?.description_en ||
-            item?.description ||
             properties?.description_vi ||
-            properties?.description
+            properties?.description_en
         ),
         category_id: item?.category_id ?? properties?.category_id ?? null,
         subcategory_id: item?.subcategory_id ?? properties?.subcategory_id ?? null,
         address: toDisplayText(
-          item?.address_vi ||
+          item?.address ||
+            properties?.address ||
+            item?.address_vi ||
             item?.address_en ||
-            item?.address ||
             properties?.address_vi ||
-            properties?.address
+            properties?.address_en
         ),
         primary_image:
           item?.primary_image ||

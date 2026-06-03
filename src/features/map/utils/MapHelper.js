@@ -152,23 +152,20 @@ function toFeature(input, fallbackId) {
   delete topLevelProps.geometry_data;
   delete topLevelProps.geojson;
   delete topLevelProps.properties;
-
-  const mergedProperties = {
+  const rawProperties = {
     ...topLevelProps,
     ...(isObject(input.properties) ? input.properties : {}),
-    id: input.id,
-    slug: input.slug,
-    name: toDisplayText(input.name) || toDisplayText(input.name_vi) || toDisplayText(input.name_en),
-    name_vi: input.name_vi,
-    name_en: input.name_en,
-    description: input.description || input.description_vi || input.description_en,
-    description_vi: input.description_vi,
-    description_en: input.description_en,
-    address: input.address || input.address_vi || input.address_en,
-    address_vi: input.address_vi,
-    address_en: input.address_en,
-    category_id: input.category_id,
-    subcategory_id: input.subcategory_id,
+  };
+
+  const mergedProperties = {
+    ...rawProperties,
+    id: input.id ?? rawProperties.id,
+    slug: input.slug ?? rawProperties.slug,
+    name: toDisplayText(rawProperties.name),
+    description: toDisplayText(rawProperties.description),
+    address: toDisplayText(rawProperties.address),
+    category_id: rawProperties.category_id,
+    subcategory_id: rawProperties.subcategory_id,
   };
   const normalizedProperties = withCapacityProgressProperties(mergedProperties);
 
@@ -486,23 +483,11 @@ export function mapFeatureToDestination(feature) {
   return {
     id: resolvedId,
     slug: resolvedSlug,
-    name:
-      toDisplayText(properties.name_vi) ||
-      toDisplayText(properties.name_en) ||
-      toDisplayText(properties.name) ||
-      'Unknown destination',
-    description:
-      toDisplayText(properties.description_vi) ||
-      toDisplayText(properties.description_en) ||
-      toDisplayText(properties.description) ||
-      '',
+    name: toDisplayText(properties.name) || 'Unknown destination',
+    description: toDisplayText(properties.description) || '',
     category_id: properties.category_id ?? null,
     subcategory_id: properties.subcategory_id ?? null,
-    address:
-      toDisplayText(properties.address_vi) ||
-      toDisplayText(properties.address_en) ||
-      toDisplayText(properties.address) ||
-      '',
+    address: toDisplayText(properties.address) || '',
     opening_hours: properties.opening_hours ?? null,
     main_image_url:
       properties.primary_image ||
@@ -612,6 +597,7 @@ export function addOrUpdateSubcategoryLayer(
 
   const ensurePointLayer = (markerImageBaseId) => {
     const iconImageExpression = buildStatusIconExpression(markerImageBaseId);
+    const textFieldExpression = ['coalesce', ['get', 'name'], ''];
 
     ensureLayer(map, {
       id: pointLayerId,
@@ -624,7 +610,7 @@ export function addOrUpdateSubcategoryLayer(
         'icon-allow-overlap': true,
         'icon-ignore-placement': true,
         'icon-anchor': 'bottom',
-        'text-field': ['coalesce', ['get', 'name'], ''],
+        'text-field': textFieldExpression,
         'text-font': MAP_LABEL_FONT,
         'text-size': POINT_TEXT_SIZE,
         'text-offset': POINT_TEXT_OFFSET,
@@ -642,6 +628,7 @@ export function addOrUpdateSubcategoryLayer(
 
     if (map.getLayer(pointLayerId)) {
       map.setLayoutProperty(pointLayerId, 'icon-image', iconImageExpression);
+      map.setLayoutProperty(pointLayerId, 'text-field', textFieldExpression);
       map.setPaintProperty(pointLayerId, 'icon-opacity', POINT_ICON_OPACITY);
       map.setPaintProperty(pointLayerId, 'text-opacity', POINT_TEXT_OPACITY);
       map.moveLayer(pointLayerId);
@@ -1344,7 +1331,7 @@ export function addOrUpdateOcopLayer(map, featureCollection) {
         'icon-allow-overlap': true,
         'icon-ignore-placement': true,
         'icon-anchor': 'bottom',
-        'text-field': ['coalesce', ['get', 'name_vi'], ''],
+        'text-field': ['coalesce', ['get', 'name'], ['get', 'name_vi'], ['get', 'name_en'], ''],
         'text-font': MAP_LABEL_FONT,
         'text-size': POINT_TEXT_SIZE,
         'text-offset': POINT_TEXT_OFFSET,

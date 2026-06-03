@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { LocateFixed } from 'lucide-react';
 import { env } from '@/config/env';
@@ -6,12 +6,9 @@ import { defaultLatLong, defaultZoom, mapDelta } from '@/features/map/constant/m
 import { useFovStore } from '../store/useFovStore';
 import { normalizeBearing } from '../utils/fovHelpers';
 import FOVControls from './FOVControls';
-
 mapboxgl.accessToken = env.mapboxToken;
-
 const MAP_STYLE =
   env.minimapMapboxStyle_Satellite || env.minimapMapboxStyle_Street || env.mapboxStyle_Street;
-
 const SOURCE_FOV = 'fov';
 const LAYER_FOV_FILL = 'fov-fill';
 const LAYER_FOV_OUTLINE = 'fov-outline';
@@ -30,34 +27,90 @@ const DEFAULT_CENTER = [defaultLatLong.lng, defaultLatLong.lat];
 const DEFAULT_FOV_ANGLE = 80;
 const MIN_FOV_ANGLE = 30;
 const MAX_FOV_ANGLE = 120;
-
 const TAM_CHUC_POINTS = [
-  { id: 0, name: 'Toàn cảnh Chùa Tam Chúc', lon: 105.813644, lat: 20.570221 },
-  { id: 1, name: 'Quang cảnh giữa hồ', lon: 105.802141, lat: 20.559819 },
-  { id: 2, name: 'Đình Tam Chúc', lon: 105.810591, lat: 20.563899 },
-  { id: 3, name: 'Phía sau Tam Quan Nội', lon: 105.792921, lat: 20.550073 },
-  { id: 4, name: 'Trung tâm Tam Quan Nội', lon: 105.795188, lat: 20.552453 },
-  { id: 5, name: 'Tổng quan Tam Quan Nội', lon: 105.798021, lat: 20.555202 },
-  { id: 6, name: 'Tổng quan Chùa Ba Sao', lon: 105.780935, lat: 20.558702 },
-  { id: 7, name: 'Cảnh quan phía Tây 2', lon: 105.799395, lat: 20.568123 },
-  { id: 8, name: 'Cảnh quan phía Tây 1', lon: 105.806941, lat: 20.575695 },
-  { id: 9, name: 'Cổng vào chùa Tam Chúc', lon: 105.819089, lat: 20.565783 },
-  { id: 10, name: 'Trục đường tiến vào 2', lon: 105.821317, lat: 20.578552 },
-  { id: 11, name: 'Trục đường tiến vào 1', lon: 105.829817, lat: 20.584428 },
+  {
+    id: 0,
+    name: 'Toàn cảnh Chùa Tam Chúc',
+    lon: 105.813644,
+    lat: 20.570221,
+  },
+  {
+    id: 1,
+    name: 'Quang cảnh giữa hồ',
+    lon: 105.802141,
+    lat: 20.559819,
+  },
+  {
+    id: 2,
+    name: 'Đình Tam Chúc',
+    lon: 105.810591,
+    lat: 20.563899,
+  },
+  {
+    id: 3,
+    name: 'Phía sau Tam Quan Nội',
+    lon: 105.792921,
+    lat: 20.550073,
+  },
+  {
+    id: 4,
+    name: 'Trung tâm Tam Quan Nội',
+    lon: 105.795188,
+    lat: 20.552453,
+  },
+  {
+    id: 5,
+    name: 'Tổng quan Tam Quan Nội',
+    lon: 105.798021,
+    lat: 20.555202,
+  },
+  {
+    id: 6,
+    name: 'Tổng quan Chùa Ba Sao',
+    lon: 105.780935,
+    lat: 20.558702,
+  },
+  {
+    id: 7,
+    name: 'Cảnh quan phía Tây 2',
+    lon: 105.799395,
+    lat: 20.568123,
+  },
+  {
+    id: 8,
+    name: 'Cảnh quan phía Tây 1',
+    lon: 105.806941,
+    lat: 20.575695,
+  },
+  {
+    id: 9,
+    name: 'Cổng vào chùa Tam Chúc',
+    lon: 105.819089,
+    lat: 20.565783,
+  },
+  {
+    id: 10,
+    name: 'Trục đường tiến vào 2',
+    lon: 105.821317,
+    lat: 20.578552,
+  },
+  {
+    id: 11,
+    name: 'Trục đường tiến vào 1',
+    lon: 105.829817,
+    lat: 20.584428,
+  },
 ];
-
 function parseGeometryValue(value) {
   if (!value) return null;
   if (typeof value === 'object') return value;
   if (typeof value !== 'string') return null;
-
   try {
     return JSON.parse(value);
   } catch {
     return null;
   }
 }
-
 function toCoords(value) {
   if (!Array.isArray(value) || value.length < 2) return null;
   const lng = Number(value[0]);
@@ -65,10 +118,8 @@ function toCoords(value) {
   if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
   return [lng, lat];
 }
-
 function getSceneCoords(scene) {
   if (!scene || typeof scene !== 'object') return null;
-
   const fromGeojson =
     parseGeometryValue(scene?.geojson)?.coordinates ||
     parseGeometryValue(scene?.geometry_data)?.coordinates ||
@@ -76,30 +127,24 @@ function getSceneCoords(scene) {
     scene?.coordinates ||
     scene?.location?.coordinates ||
     null;
-
   const direct = toCoords(fromGeojson);
   if (direct) return direct;
-
   const lng = Number(scene?.longitude ?? scene?.lng ?? scene?.lon);
   const lat = Number(scene?.latitude ?? scene?.lat);
   if (Number.isFinite(lng) && Number.isFinite(lat)) return [lng, lat];
-
   return null;
 }
-
 function getSceneCameraFov(scene) {
   const fov = Number(scene?.camera_fov);
   if (!Number.isFinite(fov)) return null;
   return Math.max(MIN_FOV_ANGLE, Math.min(MAX_FOV_ANGLE, fov));
 }
-
 function emptyFeatureCollection() {
   return {
     type: 'FeatureCollection',
     features: [],
   };
 }
-
 function ensureFovArtifacts(map, initialData) {
   if (!map.getSource(SOURCE_FOV)) {
     map.addSource(SOURCE_FOV, {
@@ -107,7 +152,6 @@ function ensureFovArtifacts(map, initialData) {
       data: initialData || emptyFeatureCollection(),
     });
   }
-
   if (!map.getLayer(LAYER_FOV_FILL)) {
     map.addLayer({
       id: LAYER_FOV_FILL,
@@ -119,7 +163,6 @@ function ensureFovArtifacts(map, initialData) {
       },
     });
   }
-
   if (!map.getLayer(LAYER_FOV_OUTLINE)) {
     map.addLayer({
       id: LAYER_FOV_OUTLINE,
@@ -133,7 +176,6 @@ function ensureFovArtifacts(map, initialData) {
     });
   }
 }
-
 function ensureSpotArtifacts(map, initialData) {
   if (!map.getSource(SOURCE_SPOTS)) {
     map.addSource(SOURCE_SPOTS, {
@@ -141,7 +183,6 @@ function ensureSpotArtifacts(map, initialData) {
       data: initialData || emptyFeatureCollection(),
     });
   }
-
   if (!map.getLayer(LAYER_SPOTS)) {
     map.addLayer({
       id: LAYER_SPOTS,
@@ -156,7 +197,6 @@ function ensureSpotArtifacts(map, initialData) {
       },
     });
   }
-
   if (!map.getLayer(LAYER_SPOTS_LABELS)) {
     map.addLayer({
       id: LAYER_SPOTS_LABELS,
@@ -177,7 +217,6 @@ function ensureSpotArtifacts(map, initialData) {
     });
   }
 }
-
 function buildSpotsGeoJson(spots, currentSpotIds = new Set()) {
   const features = (Array.isArray(spots) ? spots : [])
     .map((spot) => {
@@ -188,10 +227,12 @@ function buildSpotsGeoJson(spots, currentSpotIds = new Set()) {
       const isCurrent =
         (resolvedId != null && currentSpotIds.has(String(resolvedId))) ||
         (resolvedSlug != null && currentSpotIds.has(String(resolvedSlug)));
-
       return {
         type: 'Feature',
-        geometry: { type: 'Point', coordinates },
+        geometry: {
+          type: 'Point',
+          coordinates,
+        },
         properties: {
           id: resolvedId,
           slug: resolvedSlug,
@@ -201,9 +242,11 @@ function buildSpotsGeoJson(spots, currentSpotIds = new Set()) {
       };
     })
     .filter(Boolean);
-  return { type: 'FeatureCollection', features };
+  return {
+    type: 'FeatureCollection',
+    features,
+  };
 }
-
 function ensurePointArtifacts(map, initialData) {
   if (!map.getSource(SOURCE_POINTS)) {
     map.addSource(SOURCE_POINTS, {
@@ -211,7 +254,6 @@ function ensurePointArtifacts(map, initialData) {
       data: initialData || emptyFeatureCollection(),
     });
   }
-
   if (!map.getLayer(LAYER_POINTS)) {
     map.addLayer({
       id: LAYER_POINTS,
@@ -225,7 +267,6 @@ function ensurePointArtifacts(map, initialData) {
       },
     });
   }
-
   if (!map.getLayer(LAYER_LABELS)) {
     map.addLayer({
       id: LAYER_LABELS,
@@ -246,29 +287,38 @@ function ensurePointArtifacts(map, initialData) {
     });
   }
 }
-
 function buildTamChucGeoJson(activeId = -1) {
   return {
     type: 'FeatureCollection',
     features: TAM_CHUC_POINTS.map((p) => ({
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [p.lon, p.lat] },
-      properties: { id: p.id, name: p.name, active: p.id === activeId },
+      geometry: {
+        type: 'Point',
+        coordinates: [p.lon, p.lat],
+      },
+      properties: {
+        id: p.id,
+        name: p.name,
+        active: p.id === activeId,
+      },
     })),
   };
 }
-
 function ensureTcArtifacts(map, initialData) {
   if (!map.getSource(SOURCE_TC)) {
-    map.addSource(SOURCE_TC, { type: 'geojson', data: initialData || buildTamChucGeoJson() });
+    map.addSource(SOURCE_TC, {
+      type: 'geojson',
+      data: initialData || buildTamChucGeoJson(),
+    });
   }
-
   if (!map.getLayer(LAYER_TC_CIRCLE)) {
     map.addLayer({
       id: LAYER_TC_CIRCLE,
       type: 'circle',
       source: SOURCE_TC,
-      layout: { visibility: 'visible' },
+      layout: {
+        visibility: 'visible',
+      },
       paint: {
         'circle-radius': ['case', ['boolean', ['get', 'active'], false], 7, 5],
         'circle-color': ['case', ['boolean', ['get', 'active'], false], '#00ffd5', '#ff3b30'],
@@ -277,7 +327,6 @@ function ensureTcArtifacts(map, initialData) {
       },
     });
   }
-
   if (!map.getLayer(LAYER_TC_LABEL)) {
     map.addLayer({
       id: LAYER_TC_LABEL,
@@ -300,13 +349,11 @@ function ensureTcArtifacts(map, initialData) {
     });
   }
 }
-
 function buildScenesGeoJson(scenes, currentSceneIndex) {
   const features = (Array.isArray(scenes) ? scenes : [])
     .map((scene, index) => {
       const coordinates = getSceneCoords(scene);
       if (!coordinates) return null;
-
       return {
         type: 'Feature',
         geometry: {
@@ -322,16 +369,13 @@ function buildScenesGeoJson(scenes, currentSceneIndex) {
       };
     })
     .filter(Boolean);
-
   return {
     type: 'FeatureCollection',
     features,
   };
 }
-
 function buildGpsGeoJson(coords) {
   if (!Array.isArray(coords) || coords.length < 2) return emptyFeatureCollection();
-
   return {
     type: 'FeatureCollection',
     features: [
@@ -348,7 +392,6 @@ function buildGpsGeoJson(coords) {
     ],
   };
 }
-
 function ensureGpsArtifacts(map, initialData) {
   if (!map.getSource(SOURCE_GPS)) {
     map.addSource(SOURCE_GPS, {
@@ -356,7 +399,6 @@ function ensureGpsArtifacts(map, initialData) {
       data: initialData || emptyFeatureCollection(),
     });
   }
-
   if (!map.getLayer(LAYER_GPS)) {
     map.addLayer({
       id: LAYER_GPS,
@@ -371,28 +413,22 @@ function ensureGpsArtifacts(map, initialData) {
     });
   }
 }
-
 function applyViewModeVisibility(map, mode) {
   if (!map) return;
-
   const isOverview = mode === 'overview';
-
   if (map.getLayer(LAYER_SPOTS))
     map.setLayoutProperty(LAYER_SPOTS, 'visibility', isOverview ? 'visible' : 'none');
   if (map.getLayer(LAYER_SPOTS_LABELS))
     map.setLayoutProperty(LAYER_SPOTS_LABELS, 'visibility', isOverview ? 'visible' : 'none');
-
   if (map.getLayer(LAYER_POINTS))
     map.setLayoutProperty(LAYER_POINTS, 'visibility', isOverview ? 'none' : 'visible');
   if (map.getLayer(LAYER_LABELS))
     map.setLayoutProperty(LAYER_LABELS, 'visibility', isOverview ? 'none' : 'visible');
-
   if (map.getLayer(LAYER_TC_CIRCLE))
     map.setLayoutProperty(LAYER_TC_CIRCLE, 'visibility', isOverview ? 'none' : 'visible');
   if (map.getLayer(LAYER_TC_LABEL))
     map.setLayoutProperty(LAYER_TC_LABEL, 'visibility', isOverview ? 'none' : 'visible');
 }
-
 export default function MiniMap({
   scenes = [],
   spots = [],
@@ -407,7 +443,6 @@ export default function MiniMap({
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const popupRef = useRef(null);
-
   const onSelectSceneRef = useRef(onSelectScene);
   const onSelectSpotRef = useRef(onSelectSpot);
   const scenesRef = useRef(scenes);
@@ -419,15 +454,12 @@ export default function MiniMap({
   const scenesGeoJsonRef = useRef(null);
   const spotsGeoJsonRef = useRef(null);
   const gpsCoordsRef = useRef(null);
-
   const viewModeRef = useRef('overview'); // 'overview' | 'closeup'
   const tcActiveIdRef = useRef(-1);
   const headingRafRef = useRef(null);
   const pendingHeadingRef = useRef(null);
-
   const [viewMode, setViewMode] = useState('overview'); // 'overview' | 'closeup'
   const [isLocating, setIsLocating] = useState(false);
-
   const fovPolygon = useFovStore((state) => state.fovPolygon);
   const fovAngle = useFovStore((state) => state.fovAngle);
   const fovRadius = useFovStore((state) => state.fovRadius);
@@ -437,29 +469,23 @@ export default function MiniMap({
   const setScenes = useFovStore((state) => state.setScenes);
   const setCurrentSceneIndex = useFovStore((state) => state.setCurrentSceneIndex);
   const updateFovPolygon = useFovStore((state) => state.updateFovPolygon);
-
   const scenesGeoJson = useMemo(
     () => buildScenesGeoJson(scenes, currentSceneIndex),
     [scenes, currentSceneIndex]
   );
-
   const currentScene = useMemo(
     () => (Array.isArray(scenes) ? scenes[currentSceneIndex] : null),
     [scenes, currentSceneIndex]
   );
-
   const currentCenter = useMemo(() => {
     return getSceneCoords(currentScene);
   }, [currentScene]);
-
   const currentSceneCameraFov = useMemo(() => {
     return getSceneCameraFov(currentScene);
   }, [currentScene]);
-
   const currentSpotCenter = useMemo(() => {
     return getSceneCoords(currentSpot);
   }, [currentSpot]);
-
   const currentSpotIds = useMemo(() => {
     const ids = new Set();
     const id = currentSpot?.id ?? currentSpot?.spot_id ?? currentSpot?.point_id;
@@ -468,80 +494,34 @@ export default function MiniMap({
     if (slug != null) ids.add(String(slug));
     return ids;
   }, [currentSpot]);
-
   const spotsGeoJson = useMemo(
     () => buildSpotsGeoJson(spots, currentSpotIds),
     [spots, currentSpotIds]
   );
-
-  useEffect(() => {
-    console.debug('[VR-DEBUG][fovSync][MiniMap] scene input changed', {
-      scenesCount: Array.isArray(scenes) ? scenes.length : 0,
-      currentSceneIndex,
-      sceneId: currentScene?.id ?? null,
-      sceneName: currentScene?.name ?? currentScene?.slug ?? null,
-      rawCameraFov: currentScene?.camera_fov ?? null,
-      resolvedCameraFov: currentSceneCameraFov,
-      storeFovAngle: fovAngle,
-      heading,
-      fovRadius,
-      currentCenter,
-      currentSpotCenter,
-    });
-
-    if (Array.isArray(scenes) && scenes.length > 0 && !currentScene) {
-      console.warn('[VR-DEBUG][fovSync][MiniMap] currentScene is missing for index', {
-        currentSceneIndex,
-        scenesCount: scenes.length,
-      });
-    }
-
-    if (currentScene && currentScene.camera_fov == null) {
-      console.warn('[VR-DEBUG][fovSync][MiniMap] scene has no camera_fov from API', {
-        sceneId: currentScene?.id ?? null,
-        availableKeys: Object.keys(currentScene || {}),
-      });
-    }
-  }, [
-    scenes,
-    currentScene,
-    currentSceneIndex,
-    currentSceneCameraFov,
-    fovAngle,
-    heading,
-    fovRadius,
-    currentCenter,
-    currentSpotCenter,
-  ]);
-
   const updateFovSourceData = useCallback((nextData) => {
     const map = mapRef.current;
     if (!map) return;
     const source = map.getSource(SOURCE_FOV);
     if (source) source.setData(nextData || emptyFeatureCollection());
   }, []);
-
   const updatePointsSourceData = useCallback((nextData) => {
     const map = mapRef.current;
     if (!map) return;
     const source = map.getSource(SOURCE_POINTS);
     if (source) source.setData(nextData || emptyFeatureCollection());
   }, []);
-
   const updateSpotsSourceData = useCallback((nextData) => {
     const map = mapRef.current;
     if (!map) return;
     const source = map.getSource(SOURCE_SPOTS);
     if (source) source.setData(nextData || emptyFeatureCollection());
   }, []);
-
   const updateGpsSourceData = useCallback((nextData) => {
     const map = mapRef.current;
     if (!map) return;
     const source = map.getSource(SOURCE_GPS);
     if (source) source.setData(nextData || emptyFeatureCollection());
   }, []);
-
   const switchToOverview = useCallback(() => {
     viewModeRef.current = 'overview';
     setViewMode('overview');
@@ -558,7 +538,6 @@ export default function MiniMap({
       duration: 800,
     });
   }, []);
-
   const switchToCloseup = useCallback(() => {
     viewModeRef.current = 'closeup';
     setViewMode('closeup');
@@ -567,17 +546,18 @@ export default function MiniMap({
     applyViewModeVisibility(map, 'closeup');
     const activePoint = TAM_CHUC_POINTS[tcActiveIdRef.current] ?? TAM_CHUC_POINTS[0];
     if (activePoint)
-      map.easeTo({ center: [activePoint.lon, activePoint.lat], zoom: 13, duration: 400 });
+      map.easeTo({
+        center: [activePoint.lon, activePoint.lat],
+        zoom: 13,
+        duration: 400,
+      });
   }, []);
-
   useEffect(() => {
     onSelectSceneRef.current = onSelectScene;
   }, [onSelectScene]);
-
   useEffect(() => {
     onSelectSpotRef.current = onSelectSpot;
   }, [onSelectSpot]);
-
   useEffect(() => {
     scenesRef.current = scenes;
     spotsRef.current = spots;
@@ -587,7 +567,6 @@ export default function MiniMap({
     fovPolygonRef.current = fovPolygon;
     scenesGeoJsonRef.current = scenesGeoJson;
     spotsGeoJsonRef.current = spotsGeoJson;
-
     setScenes(scenes);
     setCurrentSceneIndex(currentSceneIndex);
   }, [
@@ -604,12 +583,9 @@ export default function MiniMap({
     setScenes,
     setCurrentSceneIndex,
   ]);
-
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-
     const initialCenter = DEFAULT_CENTER;
-
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: mapStyle,
@@ -618,21 +594,18 @@ export default function MiniMap({
       interactive: true,
       attributionControl: false,
     });
-
     const center = map.getCenter();
     const mapBounds = [
       [center.lng - mapDelta, center.lat - mapDelta],
       [center.lng + mapDelta, center.lat + mapDelta],
     ];
     map.setMaxBounds(mapBounds);
-
     mapRef.current = map;
     popupRef.current = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: false,
       offset: 8,
     });
-
     const initializeArtifacts = () => {
       ensureSpotArtifacts(map, spotsGeoJsonRef.current);
       ensureFovArtifacts(map, fovPolygonRef.current);
@@ -645,7 +618,6 @@ export default function MiniMap({
       updateGpsSourceData(buildGpsGeoJson(gpsCoordsRef.current));
       applyViewModeVisibility(map, viewModeRef.current);
     };
-
     const handlePointClick = (event) => {
       const feature = event?.features?.[0];
       if (!feature) return;
@@ -655,7 +627,6 @@ export default function MiniMap({
       const selectedScene = scenesRef.current?.[nextIndex] ?? null;
       onSelectSceneRef.current?.(selectedScene, nextIndex);
     };
-
     const handleSpotClick = (event) => {
       const feature = event?.features?.[0];
       if (!feature) return;
@@ -666,7 +637,6 @@ export default function MiniMap({
         ) ?? null;
       onSelectSpotRef.current?.(spot);
     };
-
     const handleTcPointClick = (event) => {
       const feature = event?.features?.[0];
       if (!feature) return;
@@ -679,7 +649,6 @@ export default function MiniMap({
       setCurrentSceneIndex(pointId);
       onSelectSceneRef.current?.(selectedScene, pointId);
     };
-
     const handlePointMouseEnter = (event) => {
       map.getCanvas().style.cursor = 'pointer';
       const feature = event?.features?.[0];
@@ -688,7 +657,6 @@ export default function MiniMap({
       const name = feature.properties?.name || 'Point';
       popupRef.current?.setLngLat(coordinates).setText(name).addTo(map);
     };
-
     const handleSpotMouseEnter = (event) => {
       map.getCanvas().style.cursor = 'pointer';
       const feature = event?.features?.[0];
@@ -697,7 +665,6 @@ export default function MiniMap({
       const name = feature.properties?.name || 'Điểm du lịch';
       popupRef.current?.setLngLat(coordinates).setText(name).addTo(map);
     };
-
     const handleTcMouseEnter = (event) => {
       map.getCanvas().style.cursor = 'pointer';
       const feature = event?.features?.[0];
@@ -706,12 +673,10 @@ export default function MiniMap({
       const name = feature.properties?.name || 'Điểm tham quan';
       popupRef.current?.setLngLat(coordinates).setText(name).addTo(map);
     };
-
     const handlePointMouseLeave = () => {
       map.getCanvas().style.cursor = '';
       popupRef.current?.remove();
     };
-
     map.on('load', initializeArtifacts);
     map.on('style.load', initializeArtifacts);
     map.on('click', LAYER_POINTS, handlePointClick);
@@ -723,7 +688,6 @@ export default function MiniMap({
     map.on('mouseleave', LAYER_POINTS, handlePointMouseLeave);
     map.on('mouseleave', LAYER_SPOTS, handlePointMouseLeave);
     map.on('mouseleave', LAYER_TC_CIRCLE, handlePointMouseLeave);
-
     return () => {
       map.off('load', initializeArtifacts);
       map.off('style.load', initializeArtifacts);
@@ -736,36 +700,28 @@ export default function MiniMap({
       map.off('mouseleave', LAYER_POINTS, handlePointMouseLeave);
       map.off('mouseleave', LAYER_SPOTS, handlePointMouseLeave);
       map.off('mouseleave', LAYER_TC_CIRCLE, handlePointMouseLeave);
-
       if (headingRafRef.current) {
         window.cancelAnimationFrame(headingRafRef.current);
         headingRafRef.current = null;
       }
-
       popupRef.current?.remove();
       popupRef.current = null;
-
       map.remove();
       mapRef.current = null;
     };
   }, []);
-
   useEffect(() => {
     updateFovSourceData(fovPolygon);
   }, [fovPolygon, updateFovSourceData]);
-
   useEffect(() => {
     updatePointsSourceData(scenesGeoJson);
   }, [scenesGeoJson, updatePointsSourceData]);
-
   useEffect(() => {
     updateSpotsSourceData(spotsGeoJson);
   }, [spotsGeoJson, updateSpotsSourceData]);
-
   const handleLocateUser = () => {
     if (!navigator?.geolocation || isLocating) return;
     setIsLocating(true);
-
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const lng = Number(position?.coords?.longitude);
@@ -774,11 +730,9 @@ export default function MiniMap({
           setIsLocating(false);
           return;
         }
-
         const coords = [lng, lat];
         gpsCoordsRef.current = coords;
         updateGpsSourceData(buildGpsGeoJson(coords));
-
         const map = mapRef.current;
         if (map) {
           map.flyTo({
@@ -788,7 +742,6 @@ export default function MiniMap({
             duration: 700,
           });
         }
-
         setIsLocating(false);
       },
       () => {
@@ -811,42 +764,42 @@ export default function MiniMap({
     if (source) source.setData(buildTamChucGeoJson(currentSceneIndex));
     if (viewModeRef.current !== 'closeup') return;
     const p = TAM_CHUC_POINTS[currentSceneIndex];
-    if (p && map.loaded()) map.easeTo({ center: [p.lon, p.lat], duration: 400 });
+    if (p && map.loaded())
+      map.easeTo({
+        center: [p.lon, p.lat],
+        duration: 400,
+      });
   }, [currentSceneIndex]);
-
   useEffect(() => {
     const map = mapRef.current;
     const targetCenter = currentSpotCenter || currentCenter;
     if (!map || !targetCenter || viewModeRef.current !== 'closeup') return;
-
     const runEaseTo = () => {
-      map.easeTo({ center: targetCenter, zoom: Math.max(map.getZoom(), 13), duration: 400 });
+      map.easeTo({
+        center: targetCenter,
+        zoom: Math.max(map.getZoom(), 13),
+        duration: 400,
+      });
     };
-
     if (map.loaded()) {
       runEaseTo();
       return;
     }
-
     const handleMapReady = () => {
       if (!mapRef.current) return;
       runEaseTo();
     };
-
     map.once('load', handleMapReady);
     map.once('style.load', handleMapReady);
-
     return () => {
       map.off('load', handleMapReady);
       map.off('style.load', handleMapReady);
     };
   }, [currentCenter, currentSpotCenter]);
-
   useEffect(() => {
     const map = mapRef.current;
     const targetCenter = currentSpotCenter || currentCenter;
     if (!map || !targetCenter || viewModeRef.current !== 'overview') return;
-
     const runFlyTo = () => {
       map.flyTo({
         center: targetCenter,
@@ -856,63 +809,35 @@ export default function MiniMap({
         duration: 700,
       });
     };
-
     if (map.loaded()) {
       runFlyTo();
       return;
     }
-
     const handleMapReady = () => {
       if (!mapRef.current) return;
       runFlyTo();
     };
-
     map.once('load', handleMapReady);
     map.once('style.load', handleMapReady);
-
     return () => {
       map.off('load', handleMapReady);
       map.off('style.load', handleMapReady);
     };
   }, [currentCenter, currentSpotCenter]);
-
   useEffect(() => {
     if (!currentCenter) return;
     updateFovPolygon(currentCenter, heading, fovAngle, fovRadius);
   }, [currentCenter, heading, fovAngle, fovRadius, updateFovPolygon]);
-
   useEffect(() => {
     if (!Number.isFinite(currentSceneCameraFov)) {
-      console.warn('[VR-DEBUG][fovSync][MiniMap] skip camera_fov sync: invalid camera_fov', {
-        sceneId: currentScene?.id ?? null,
-        rawCameraFov: currentScene?.camera_fov ?? null,
-        resolvedCameraFov: currentSceneCameraFov,
-      });
       return;
     }
-
     const targetCenter = currentCenter || currentSpotCenter;
-    console.debug('[VR-DEBUG][fovSync][MiniMap] apply camera_fov to FOV store/polygon', {
-      sceneId: currentScene?.id ?? null,
-      rawCameraFov: currentScene?.camera_fov ?? null,
-      resolvedCameraFov: currentSceneCameraFov,
-      previousStoreFovAngle: fovAngleRef.current,
-      targetCenter,
-      heading,
-      fovRadius,
-    });
-
     setFovAngle(currentSceneCameraFov);
     if (targetCenter) {
       updateFovPolygon(targetCenter, heading, currentSceneCameraFov, fovRadius);
       return;
     }
-
-    console.warn('[VR-DEBUG][fovSync][MiniMap] camera_fov applied but polygon not updated: no center', {
-      sceneId: currentScene?.id ?? null,
-      currentCenter,
-      currentSpotCenter,
-    });
   }, [
     currentScene,
     currentSceneCameraFov,
@@ -923,63 +848,28 @@ export default function MiniMap({
     setFovAngle,
     updateFovPolygon,
   ]);
-
   useEffect(() => {
-    console.debug('[VR-DEBUG][MiniMap] smooth-fov-update listener registered');
-
-    let flushCount = 0;
-
     const flushHeading = () => {
       headingRafRef.current = null;
       const nextBearing = pendingHeadingRef.current;
       pendingHeadingRef.current = null;
       if (!Number.isFinite(nextBearing)) return;
-
       const center = currentCenterRef.current;
       if (!center) {
-        if (flushCount === 0) {
-          console.warn(
-            '[VR-DEBUG][MiniMap] flushHeading: currentCenterRef is NULL — FOV polygon cannot be drawn. Check that scenes/spot have coordinates.'
-          );
-        }
         return;
       }
-
-      flushCount += 1;
-      if (flushCount <= 3 || flushCount % 60 === 0) {
-        console.debug(
-          '[VR-DEBUG][MiniMap] flushHeading #' + flushCount + ' bearing:',
-          nextBearing.toFixed(2),
-          '| center:',
-          center,
-          '| fovAngle:',
-          fovAngleRef.current,
-          '| fovRadius:',
-          fovRadiusRef.current
-        );
-      }
-
       setHeading(nextBearing);
       updateFovPolygon(center, nextBearing, fovAngleRef.current, fovRadiusRef.current);
     };
-
     const handleSmoothFovUpdate = (event) => {
       const detail = event?.detail || {};
       const nextBearing = Number(detail?.bearing ?? detail?.heading);
       if (!Number.isFinite(nextBearing)) return;
-
       pendingHeadingRef.current = normalizeBearing(nextBearing);
-
       if (headingRafRef.current) return;
       headingRafRef.current = window.requestAnimationFrame(flushHeading);
     };
-
     window.addEventListener('smooth-fov-update', handleSmoothFovUpdate);
-    console.debug(
-      '[VR-DEBUG][MiniMap] currentCenterRef at listener setup:',
-      currentCenterRef.current
-    );
-
     return () => {
       window.removeEventListener('smooth-fov-update', handleSmoothFovUpdate);
       if (headingRafRef.current) {
@@ -989,7 +879,6 @@ export default function MiniMap({
       pendingHeadingRef.current = null;
     };
   }, [setHeading, updateFovPolygon]);
-
   return (
     <div className={`relative h-full w-full ${className}`}>
       <div ref={containerRef} className="h-full w-full" />
@@ -997,31 +886,21 @@ export default function MiniMap({
       <div className="absolute top-2 left-2 z-10 flex gap-1">
         <button
           onClick={switchToOverview}
-          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${
-            viewMode === 'overview'
-              ? 'bg-amber-500 text-white'
-              : 'bg-white/90 text-gray-700 hover:bg-white'
-          }`}
+          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'overview' ? 'bg-amber-500 text-white' : 'bg-white/90 text-gray-700 hover:bg-white'}`}
         >
           Toàn cảnh
         </button>
 
         <button
           onClick={switchToCloseup}
-          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${
-            viewMode === 'closeup'
-              ? 'bg-blue-600 text-white'
-              : 'bg-white/90 text-gray-700 hover:bg-white'
-          }`}
+          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'closeup' ? 'bg-blue-600 text-white' : 'bg-white/90 text-gray-700 hover:bg-white'}`}
         >
           Cận cảnh
         </button>
         <button
           onClick={handleLocateUser}
           disabled={isLocating}
-          className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${
-            isLocating ? 'bg-slate-300 text-slate-700' : 'bg-white/90 text-gray-700 hover:bg-white'
-          }`}
+          className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${isLocating ? 'bg-slate-300 text-slate-700' : 'bg-white/90 text-gray-700 hover:bg-white'}`}
         >
           <LocateFixed size={12} />
           {isLocating ? 'GPS...' : 'GPS'}

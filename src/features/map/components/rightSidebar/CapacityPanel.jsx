@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetCurrentCapacity, useCapacityStream } from '@/services/api/capacity/capacityService';
+import { withLanguageQueryKey } from '@/services/useApi';
 import { useMapStore } from '@/features/map/store/useMapStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -56,7 +58,7 @@ function normalizeItem(raw, defaultName) {
   const coords = raw.geojson?.coordinates;
   return {
     id: raw.spot_id ?? raw.id,
-    name: raw.name_vi ?? raw.name_en ?? raw.name ?? raw.spot_name ?? defaultName,
+    name: raw.name ?? raw.name_vi ?? raw.name_en ?? raw.spot_name ?? defaultName,
     current: Number(raw.visitor_count ?? raw.current_visitors ?? 0),
     max: raw.max_capacity != null ? Number(raw.max_capacity) : 0,
     pct,
@@ -123,6 +125,7 @@ function CapacityRowSkeleton() {
 export default function CapacityPanel() {
   const { t, i18n } = useTranslation();
   const isVi = i18n.language?.startsWith('vi');
+  const lang = useLanguageStore((state) => state.lang);
   const mapRef = useMapStore((state) => state.mapRef);
 
   const [statusFilter, setStatusFilter] = useState('all');
@@ -136,8 +139,10 @@ export default function CapacityPanel() {
 
   useEffect(() => {
     if (!sseData?.spot_id) return;
-    queryClient.setQueryData(['capacity', 'current'], (old) => patchCapacityCache(old, sseData));
-  }, [sseData, queryClient]);
+    queryClient.setQueryData(withLanguageQueryKey(['capacity', 'current'], lang), (old) =>
+      patchCapacityCache(old, sseData)
+    );
+  }, [lang, sseData, queryClient]);
 
   const items = useMemo(() => {
     const raw = data?.data?.capacity ?? data?.data?.spots ?? data?.data?.items ?? data?.data ?? [];

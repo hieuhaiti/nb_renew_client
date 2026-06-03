@@ -153,7 +153,10 @@ export default function MapPage() {
       .map((cat) => ({
         id: cat.id,
         code: cat.code,
-        label: lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en,
+        label:
+          lang === 'en'
+            ? cat.name || cat.name_en || cat.name_vi
+            : cat.name || cat.name_vi || cat.name_en,
         raw: cat,
       }));
   }, [categoriesData, lang]);
@@ -529,7 +532,14 @@ export default function MapPage() {
     const prefillTourPanel = location.state?.prefillTourPanel;
     const prefillRoute = location.state?.highlightedRoute;
     const prefillActiveSidebar = location.state?.activeSidebar;
-    if (!prefillKeyword && !prefillResult && !prefillRoute && !prefillTourPanel && !prefillActiveSidebar) return;
+    if (
+      !prefillKeyword &&
+      !prefillResult &&
+      !prefillRoute &&
+      !prefillTourPanel &&
+      !prefillActiveSidebar
+    )
+      return;
 
     prefillHandledRef.current = true;
     if (prefillKeyword) setKeyword(prefillKeyword);
@@ -817,7 +827,7 @@ export default function MapPage() {
                   {showLeftPanelRail && activePanel === 'direction' && (
                     <MapDirectionPanel
                       embedded
-                      className="h-full min-h-0 pointer-events-none"
+                      className="pointer-events-none h-full min-h-0"
                       isOpen={isPanelOpen}
                       onOpen={() => setPanelOpen(true)}
                       onClose={() => setPanelOpen(false)}
@@ -827,7 +837,7 @@ export default function MapPage() {
                   {showLeftPanelRail && activePanel === 'tour' && (
                     <MapTourPanel
                       embedded
-                      className="h-full min-h-0 pointer-events-none"
+                      className="pointer-events-none h-full min-h-0"
                       isOpen={isPanelOpen}
                       onOpen={() => setPanelOpen(true)}
                       onClose={() => setPanelOpen(false)}

@@ -55,11 +55,11 @@ function getTypeStyle(type) {
 }
 
 function getFestivalName(f) {
-  return f?.name_vi || f?.name_en || f?.name || '—';
+  return f?.name || f?.name_vi || f?.name_en || '—';
 }
 
 function getFestivalDescription(f) {
-  return f?.description_vi || f?.description_en || f?.description || '';
+  return f?.description || f?.description_vi || f?.description_en || '';
 }
 
 function formatDateRange(start, end, locale) {
@@ -100,7 +100,7 @@ function FestivalCard({ festival, navigate, locale, t }) {
   return (
     <article
       onClick={() => festival?.id && navigate(`/festival/${festival.id}`)}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border-border bg-card shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
+      className="group border-border bg-card flex cursor-pointer flex-col overflow-hidden rounded-[18px] shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
     >
       <div className="relative h-52 overflow-hidden">
         <img
@@ -128,7 +128,7 @@ function FestivalCard({ festival, navigate, locale, t }) {
         )}
 
         {daysUntil && (
-          <span className="absolute right-3 bottom-3 rounded-full bg-tertiary/90 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
+          <span className="bg-tertiary/90 absolute right-3 bottom-3 rounded-full px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
             {daysUntil}
           </span>
         )}
@@ -141,7 +141,7 @@ function FestivalCard({ festival, navigate, locale, t }) {
 
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="text-foreground line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-primary"
+          className="text-foreground group-hover:text-primary line-clamp-2 text-sm leading-snug font-black transition-colors"
           title={name}
         >
           {name}
@@ -165,7 +165,7 @@ function FestivalCard({ festival, navigate, locale, t }) {
                 {festival.spot_name}
               </span>
             )}
-            <span className="ml-auto flex items-center gap-1 text-xs font-semibold text-primary group-hover:underline">
+            <span className="text-primary ml-auto flex items-center gap-1 text-xs font-semibold group-hover:underline">
               {t('festivalPage.card.view_detail')} <ArrowRight size={11} />
             </span>
           </div>
@@ -177,7 +177,7 @@ function FestivalCard({ festival, navigate, locale, t }) {
 
 function FestivalCardSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-[18px] border-border bg-card">
+    <div className="border-border bg-card animate-pulse overflow-hidden rounded-[18px]">
       <div className="bg-muted h-52 w-full" />
       <div className="space-y-2 p-4">
         <div className="bg-muted h-4 w-3/4 rounded" />
@@ -291,11 +291,11 @@ export default function FestivalPageContent() {
               </div>
 
               {/* Search bar */}
-              <div className="flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 bg-card/95 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
+              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
                   <Search
                     size={16}
-                    className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+                    className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <Input
                     type="text"
@@ -305,7 +305,7 @@ export default function FestivalPageContent() {
                       setKeyword(e.target.value);
                       setPage(1);
                     }}
-                    className="text-foreground h-11 w-full rounded-xl border-input bg-card pr-3 pl-9 text-sm outline-none focus:border-primary"
+                    className="text-foreground border-input bg-card focus:border-primary h-11 w-full rounded-xl pr-3 pl-9 text-sm outline-none"
                   />
                 </div>
                 <Select
@@ -315,7 +315,7 @@ export default function FestivalPageContent() {
                     setPage(1);
                   }}
                 >
-                  <SelectTrigger className="text-foreground h-11 shrink-0 rounded-xl border-input bg-card px-3 text-sm focus:border-primary">
+                  <SelectTrigger className="text-foreground border-input bg-card focus:border-primary h-11 shrink-0 rounded-xl px-3 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -393,7 +393,7 @@ export default function FestivalPageContent() {
                 variant="ghost"
                 type="button"
                 onClick={handleReset}
-                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
+                className="text-muted-foreground border-border bg-card hover:bg-muted flex h-8 items-center gap-1.5 rounded-[8px] px-3 text-xs font-semibold"
               >
                 <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
                 {t('festivalPage.toolbar.refresh')}
@@ -409,11 +409,11 @@ export default function FestivalPageContent() {
               ))}
             </div>
           ) : isError ? (
-            <div className="text-muted-foreground rounded-[18px] border-border bg-card py-20 text-center">
+            <div className="text-muted-foreground border-border bg-card rounded-[18px] py-20 text-center">
               {t('festivalPage.states.error')}
             </div>
           ) : festivals.length === 0 ? (
-            <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border-border bg-card py-20">
+            <div className="text-muted-foreground border-border bg-card flex flex-col items-center justify-center rounded-[18px] py-20">
               <Inbox size={40} className="mb-3 opacity-30" />
               <p className="text-foreground text-sm font-semibold 2xl:text-base">
                 {t('festivalPage.states.empty_title')}
@@ -442,11 +442,11 @@ export default function FestivalPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
+                className="border-border bg-card hover:bg-muted flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-sm font-semibold disabled:opacity-40"
               >
                 <ChevronLeft size={15} /> {t('festivalPage.pagination.prev')}
               </Button>
-              <span className="rounded-full border-border bg-card px-4 py-1.5 text-sm font-semibold">
+              <span className="border-border bg-card rounded-full px-4 py-1.5 text-sm font-semibold">
                 {t('festivalPage.pagination.page', { current: page, total: totalPages })}
               </span>
               <Button
@@ -454,7 +454,7 @@ export default function FestivalPageContent() {
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="flex h-9 items-center gap-1.5 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted disabled:opacity-40"
+                className="border-border bg-card hover:bg-muted flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-sm font-semibold disabled:opacity-40"
               >
                 {t('festivalPage.pagination.next')} <ChevronRight size={15} />
               </Button>

@@ -19,10 +19,10 @@ function getLocalizedField(item, baseField, lang = 'vi') {
   const base = item?.[baseField];
 
   if (lang === 'en') {
-    return toText(en) || toText(vi) || toText(base);
+    return toText(base) || toText(en) || toText(vi);
   }
 
-  return toText(vi) || toText(en) || toText(base);
+  return toText(base) || toText(vi) || toText(en);
 }
 
 export function getPointCoordinates(input) {
@@ -63,11 +63,7 @@ export function normalizeTourRoutePoint(rawPoint, index = 0, lang = 'vi') {
   const dayNumber = toNumber(rawPoint?.day_number) ?? 1;
 
   const spotId =
-    rawPoint?.spot_id ||
-    rawPoint?.spot?.id ||
-    rawPoint?.point_id ||
-    rawPoint?.id ||
-    null;
+    rawPoint?.spot_id || rawPoint?.spot?.id || rawPoint?.point_id || rawPoint?.id || null;
 
   return {
     id: rawPoint?.id ?? rawPoint?.point_id ?? rawPoint?.spot_id ?? `tour-point-${index + 1}`,
@@ -180,7 +176,12 @@ export function buildHighlightRoutePointsFeatureCollection(points) {
           id: point.id,
           point_id: point.point_id ?? point.id,
           spot_id: point.spot_id ?? point.point_id ?? point.id,
-          slug: point.slug || point.data?.slug || point.data?.spot_slug || point.data?.spot?.slug || null,
+          slug:
+            point.slug ||
+            point.data?.slug ||
+            point.data?.spot_slug ||
+            point.data?.spot?.slug ||
+            null,
           stop_order: point.stopOrder,
           step_number: stepNumber,
           name: point.data.name,

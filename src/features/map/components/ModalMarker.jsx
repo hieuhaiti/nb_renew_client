@@ -62,15 +62,15 @@ import { useMapStore } from '@/features/map/store/useMapStore';
 import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
 import { getCapacityStatusMeta, resolveCapacityStatus } from '@/features/map/utils/capacityStatus';
-
 const QR_BOOKING_URL = 'https://dulichninhbinh.com.vn/';
-
 function formatPrice(price, currency = 'VND') {
   const num = Number(price);
   if (Number.isNaN(num) || num === 0) return null;
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency }).format(num);
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency,
+  }).format(num);
 }
-
 function getOpeningHours(opening_hours) {
   if (!opening_hours) return null;
   if (typeof opening_hours === 'string') {
@@ -85,7 +85,6 @@ function getOpeningHours(opening_hours) {
     return opening_hours?.default || opening_hours?.daily || null;
   return null;
 }
-
 function haversineKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const rad = Math.PI / 180;
@@ -95,21 +94,21 @@ function haversineKm(lat1, lng1, lat2, lng2) {
     Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
-
 function formatDist(km) {
   if (km < 1) return `${Math.round(km * 1000)} m`;
   return `${km.toFixed(1)} km`;
 }
-
 function sortStops(stops) {
   const list = Array.isArray(stops) ? stops : [];
   return list
-    .map((stop, index) => ({ stop, index }))
+    .map((stop, index) => ({
+      stop,
+      index,
+    }))
     .sort((a, b) => {
       const dayA = Number(a.stop?.day_number ?? 1);
       const dayB = Number(b.stop?.day_number ?? 1);
       if (dayA !== dayB) return dayA - dayB;
-
       const orderA = Number(
         a?.stop?.stop_order ?? a?.stop?.order_index ?? a?.stop?.index ?? a?.index + 1
       );
@@ -123,10 +122,8 @@ function sortStops(stops) {
     })
     .map((item) => item.stop);
 }
-
 function normalizeStopInput(stop, index) {
   if (stop && typeof stop === 'object') return stop;
-
   const pointId = stop == null ? null : String(stop);
   return {
     id: pointId || `tour-stop-${index + 1}`,
@@ -134,11 +131,9 @@ function normalizeStopInput(stop, index) {
     stop_order: index + 1,
   };
 }
-
 function extractPointIdFromStop(stop) {
   if (stop == null) return null;
   if (typeof stop === 'string' || typeof stop === 'number') return String(stop);
-
   return (
     stop?.point_id ||
     stop?.spot_id ||
@@ -152,26 +147,22 @@ function extractPointIdFromStop(stop) {
     null
   );
 }
-
 function parseGeometryValue(value) {
   if (!value) return null;
   if (typeof value === 'object') return value;
   if (typeof value !== 'string') return null;
-
   try {
     return JSON.parse(value);
   } catch {
     return null;
   }
 }
-
 function buildStopRouteCandidate(stop, pointDetail) {
   const fallbackNameVi = stop?.title_vi || stop?.spot_name_vi || stop?.spot_name || '';
   const fallbackNameEn = stop?.title_en || stop?.spot_name_en || stop?.spot_name || '';
   const geometryFromStop =
     parseGeometryValue(stop?.geom_json) || parseGeometryValue(stop?.geom) || stop?.geometry || null;
   const resolvedPointId = extractPointIdFromStop(stop);
-
   return {
     ...(pointDetail || {}),
     ...(stop || {}),
@@ -194,35 +185,37 @@ function buildStopRouteCandidate(stop, pointDetail) {
       pointDetail?.geometry_data || pointDetail?.geometry || geometryFromStop || undefined,
   };
 }
-
 function OcopStars({ count }) {
   return (
     <div className="flex items-center gap-0.5">
-      {Array.from({ length: 5 }, (_, i) => (
-        <Star
-          key={i}
-          size={10}
-          className={i < count ? 'fill-amber-400 text-amber-400' : 'fill-muted text-muted'}
-        />
-      ))}
+      {Array.from(
+        {
+          length: 5,
+        },
+        (_, i) => (
+          <Star
+            key={i}
+            size={10}
+            className={i < count ? 'fill-amber-400 text-amber-400' : 'fill-muted text-muted'}
+          />
+        )
+      )}
     </div>
   );
 }
-
 function OcopProductCard({ ocop, spotLat, spotLng, onClick }) {
   const { t } = useTranslation();
   const imageUrl = ocop.cover_image_url ? withBaseUrl(ocop.cover_image_url) : placeholderImg;
   const price = ocop.price_vnd
-    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-        Number(ocop.price_vnd)
-      )
+    ? new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+      }).format(Number(ocop.price_vnd))
     : null;
-
   const dist =
     spotLat != null && spotLng != null && ocop.lat != null && ocop.lng != null
       ? haversineKm(spotLat, spotLng, Number(ocop.lat), Number(ocop.lng))
       : null;
-
   return (
     <button
       type="button"
@@ -256,52 +249,44 @@ function OcopProductCard({ ocop, spotLat, spotLng, onClick }) {
     </button>
   );
 }
-
 function getOcopCoordinates(ocop) {
   const lat = ocop?.lat ?? ocop?.latitude;
   const lng = ocop?.lng ?? ocop?.longitude;
-
   if (lat != null && lng != null) {
     const parsedLat = Number(lat);
     const parsedLng = Number(lng);
     if (Number.isFinite(parsedLat) && Number.isFinite(parsedLng)) return [parsedLng, parsedLat];
   }
-
   const geometry =
     parseGeometryValue(ocop?.geometry) ||
     parseGeometryValue(ocop?.geom) ||
     parseGeometryValue(ocop?.geom_json) ||
     parseGeometryValue(ocop?.geometry_data);
   const coordinates = geometry?.type === 'Point' ? geometry.coordinates : geometry?.coordinates;
-
   if (Array.isArray(coordinates) && coordinates.length >= 2) {
     const parsedLng = Number(coordinates[0]);
     const parsedLat = Number(coordinates[1]);
     if (Number.isFinite(parsedLat) && Number.isFinite(parsedLng)) return [parsedLng, parsedLat];
   }
-
   return null;
 }
-
 function OcopNearbyPanel({ spot, isModalOpen, onSelectOcop }) {
   const { t, i18n } = useTranslation();
   const [radiusKm, setRadiusKm] = useState(10);
-
   const spotSlug = spot?.slug;
   const spotId = spot?.id;
-
   const { data: ocopData, isLoading: isOcopLoading } = useGetSpotNearbyOcop({
     slug: spotSlug,
     id: spotSlug ? null : spotId,
     radius_km: radiusKm,
     lang: i18n.language?.startsWith('en') ? 'en' : 'vi',
-    options: { enabled: isModalOpen && (Boolean(spotSlug) || Boolean(spotId)) },
+    options: {
+      enabled: isModalOpen && (Boolean(spotSlug) || Boolean(spotId)),
+    },
   });
-
   const ocopProducts = ocopData?.data?.spot?.ocop_products ?? [];
   const spotLat = spot?.lat ?? spot?.latitude;
   const spotLng = spot?.lng ?? spot?.longitude;
-
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
@@ -316,11 +301,7 @@ function OcopNearbyPanel({ spot, isModalOpen, onSelectOcop }) {
             <button
               key={r}
               onClick={() => setRadiusKm(r)}
-              className={`cursor-pointer rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${
-                radiusKm === r
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-muted text-muted-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary border-transparent'
-              }`}
+              className={`cursor-pointer rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${radiusKm === r ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary border-transparent'}`}
             >
               {r} km
             </button>
@@ -332,16 +313,21 @@ function OcopNearbyPanel({ spot, isModalOpen, onSelectOcop }) {
       <div className="flex-1 overflow-y-auto">
         {isOcopLoading ? (
           <div className="space-y-2 p-2">
-            {Array.from({ length: 4 }, (_, i) => (
-              <div key={i} className="flex items-start gap-2.5 p-2">
-                <Skeleton className="h-14 w-14 shrink-0 rounded-md" />
-                <div className="flex-1 space-y-1.5">
-                  <Skeleton className="h-3 w-full" />
-                  <Skeleton className="h-3 w-2/3" />
-                  <Skeleton className="h-3 w-1/2" />
+            {Array.from(
+              {
+                length: 4,
+              },
+              (_, i) => (
+                <div key={i} className="flex items-start gap-2.5 p-2">
+                  <Skeleton className="h-14 w-14 shrink-0 rounded-md" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-2/3" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         ) : ocopProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 px-4 py-10 text-center">
@@ -365,14 +351,12 @@ function OcopNearbyPanel({ spot, isModalOpen, onSelectOcop }) {
     </div>
   );
 }
-
 export default function ModalMarker() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const isEnglish = i18n.language?.startsWith('en');
   const locale = isEnglish ? 'en-US' : 'vi-VN';
   const routeLang = isEnglish ? 'en' : 'vi';
-
   const { isOpen, spotId, spotSlug, closeSpotModal } = useSpotDetailModalStore();
   const { openCarouselModal } = useModalCarouselStore();
   const openTourPanel = useMapPanelStore((state) => state.openTourPanel);
@@ -383,9 +367,7 @@ export default function ModalMarker() {
   const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
   const requestOpenTourSidebar = useTourPanelStore((state) => state.requestOpenTourSidebar);
   const [routeLoadingTourId, setRouteLoadingTourId] = useState(null);
-
   const { setEndLocation, triggerFocusStart, clearDirections } = useDirectionsStore();
-
   const hasSpotSlug = Boolean(spotSlug);
   const { data: spotDataBySlug, isLoading: isLoadingBySlug } = useGetDataPointBySlug({
     slug: spotSlug,
@@ -396,47 +378,45 @@ export default function ModalMarker() {
   const spotData = hasSpotSlug ? spotDataBySlug : spotDataById;
   const isLoading = hasSpotSlug ? isLoadingBySlug : isLoadingById;
   const spot = spotData?.data?.spot ?? spotData?.data ?? null;
-
   const { data: mediaData } = useGetSpotMedia({
     spot_id: spotId,
-    options: { enabled: isOpen && !!spotId },
+    options: {
+      enabled: isOpen && !!spotId,
+    },
   });
   const mediaItems = mediaData?.data?.media ?? mediaData?.data ?? [];
-
-  const { data: scenesData } = useGetAframeScenes({ spotId: isOpen ? spotId : null });
+  const { data: scenesData } = useGetAframeScenes({
+    spotId: isOpen ? spotId : null,
+  });
   const { data: toursData, isLoading: isToursLoading } = useTourPanelListQuery(
     {
       limit: 5,
     },
-    { enabled: isOpen }
+    {
+      enabled: isOpen,
+    }
   );
-
   const suggestedTours = useMemo(() => {
     return normalizeTourListPayload(toursData, {
       lang: isEnglish ? 'en' : 'vi',
     }).slice(0, 5);
   }, [isEnglish, toursData]);
-
   const hasVrTour = useMemo(() => {
     if (spot?.has_vr_360 === true) return true;
     const d = scenesData?.data ?? scenesData;
     const scenes = Array.isArray(d) ? d : d?.scenes || d?.items || [];
     return scenes.length > 0;
   }, [scenesData, spot?.has_vr_360]);
-
   const handleOpenTourSuggestion = async (tour) => {
     if (!tour?.id) return;
-
     setRouteLoadingTourId(String(tour.id));
     setSelectedTour({
       ...tour,
       cover_image_url: tour?.cover_image_url || tour?.main_image_url || null,
     });
-
     try {
       const stops = await fetchTourStopsByTourId(tour.id);
       const sortedStops = sortStops(stops);
-
       if (sortedStops.length < 2) {
         throw new Error(
           t('mapPage.tourPanel.routeInsufficientStops', {
@@ -444,7 +424,6 @@ export default function ModalMarker() {
           })
         );
       }
-
       const routePoints = (
         await Promise.all(
           sortedStops.map(async (rawStop, index) => {
@@ -456,7 +435,6 @@ export default function ModalMarker() {
                 : stop?.point && typeof stop.point === 'object'
                   ? stop.point
                   : null;
-
             let pointDetail = embeddedPoint;
             if (!pointDetail && pointId) {
               try {
@@ -465,13 +443,11 @@ export default function ModalMarker() {
                 pointDetail = null;
               }
             }
-
             const candidate = buildStopRouteCandidate(stop, pointDetail);
             return normalizeTourRoutePoint(candidate, index, routeLang);
           })
         )
       ).filter(Boolean);
-
       if (routePoints.length < 2) {
         throw new Error(
           t('mapPage.tourPanel.routeInsufficientStops', {
@@ -479,7 +455,6 @@ export default function ModalMarker() {
           })
         );
       }
-
       const routeResult = await createRouteFromPoints(routePoints, 'driving', routeLang);
       if (!routeResult?.geometry?.coordinates?.length) {
         throw new Error(
@@ -488,8 +463,11 @@ export default function ModalMarker() {
           })
         );
       }
-
-      openTourPanel({ tourId: tour.id, tourName: tour.name, stops: sortedStops });
+      openTourPanel({
+        tourId: tour.id,
+        tourName: tour.name,
+        stops: sortedStops,
+      });
       clearDirections();
       setHighlightedRoute({
         type: 'tour',
@@ -525,7 +503,6 @@ export default function ModalMarker() {
       setRouteLoadingTourId(null);
     }
   };
-
   const handleViewImages = () => {
     const images =
       Array.isArray(mediaItems) && mediaItems.length > 0
@@ -533,11 +510,9 @@ export default function ModalMarker() {
         : spot?.primary_image
           ? [withBaseUrl(spot.primary_image)]
           : [];
-
     if (!images.length) return;
     openCarouselModal(images);
   };
-
   const handleGetDirections = () => {
     if (!spot) return;
     setEndLocation({
@@ -548,19 +523,16 @@ export default function ModalMarker() {
     triggerFocusStart();
     closeSpotModal();
   };
-
   const handleReview = () => {
     navigate(`/tourism-point/point/${spotSlug ?? spotId}`);
     closeSpotModal();
   };
-
   const handleVrTour = () => {
     const resolvedSpotId = spotId ?? spot?.id ?? spot?.spot_id ?? spot?.point_id;
     if (!resolvedSpotId) return;
     navigate(`/vr360/${resolvedSpotId}`);
     closeSpotModal();
   };
-
   const handleSelectOcop = (ocop) => {
     const coordinates = getOcopCoordinates(ocop);
     if (!coordinates) {
@@ -571,12 +543,10 @@ export default function ModalMarker() {
       );
       return;
     }
-
     const mapRefObjCurrent = mapRefObj?.current;
     const maps = [mapRef, mapRefObjCurrent?.single, mapRefObjCurrent?.split].filter(
       (map, index, list) => map && list.indexOf(map) === index
     );
-
     maps.forEach((map) => {
       map.flyTo({
         center: coordinates,
@@ -587,10 +557,8 @@ export default function ModalMarker() {
         duration: 1600,
       });
     });
-
     closeSpotModal();
   };
-
   const openingHours = spot ? getOpeningHours(spot.opening_hours) : null;
   const ticketPriceAdult = spot ? formatPrice(spot.ticket_price_adult, spot.ticket_currency) : null;
   const ticketPriceChild = spot ? formatPrice(spot.ticket_price_child, spot.ticket_currency) : null;
@@ -604,7 +572,6 @@ export default function ModalMarker() {
     capacityPct
   );
   const capacityStatusMeta = getCapacityStatusMeta(capacityStatus);
-
   return (
     <Dialog
       open={isOpen}
@@ -649,13 +616,18 @@ export default function ModalMarker() {
           <div className="flex-1 overflow-y-auto p-2">
             {isToursLoading ? (
               <div className="space-y-2">
-                {Array.from({ length: 5 }, (_, index) => (
-                  <div key={index} className="space-y-1 rounded-xl border p-2">
-                    <Skeleton className="h-3 w-2/3" />
-                    <Skeleton className="h-3 w-1/2" />
-                    <Skeleton className="h-20 w-full rounded-lg" />
-                  </div>
-                ))}
+                {Array.from(
+                  {
+                    length: 5,
+                  },
+                  (_, index) => (
+                    <div key={index} className="space-y-1 rounded-xl border p-2">
+                      <Skeleton className="h-3 w-2/3" />
+                      <Skeleton className="h-3 w-1/2" />
+                      <Skeleton className="h-20 w-full rounded-lg" />
+                    </div>
+                  )
+                )}
               </div>
             ) : suggestedTours.length === 0 ? (
               <div className="border-border/60 bg-muted/30 rounded-xl border border-dashed p-3 text-center">
@@ -720,7 +692,9 @@ export default function ModalMarker() {
                       </p>
                       <span className="text-primary mt-2 inline-flex items-center gap-1 text-[11px] font-medium transition-transform duration-200 group-hover:translate-x-0.5">
                         {isRouteLoading
-                          ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Opening...' })
+                          ? t('mapPage.tourPanel.loadingRoute', {
+                              defaultValue: 'Opening...',
+                            })
                           : t('mapPage.spotModal.suggestedTours.openOnMap', {
                               defaultValue: 'Open route on map',
                             })}
@@ -759,7 +733,9 @@ export default function ModalMarker() {
               )}
               <div
                 className="absolute right-0 bottom-0 left-0 h-1"
-                style={{ backgroundColor: spot?.category_color || '#f97316' }}
+                style={{
+                  backgroundColor: spot?.category_color || '#f97316',
+                }}
               />
             </div>
 
@@ -858,7 +834,9 @@ export default function ModalMarker() {
                               </>
                             ) : (
                               <p className="typo-meta text-muted-foreground">
-                                {t('common.free', { defaultValue: 'Free' })}
+                                {t('common.free', {
+                                  defaultValue: 'Free',
+                                })}
                               </p>
                             )}
                           </div>
@@ -1016,7 +994,7 @@ export default function ModalMarker() {
                     size="sm"
                     variant="default"
                     onClick={handleVrTour}
-                    className="text-secondary-foreground w-full gap-1.5 bg-amber-500"
+                    className="text-secondary-foreground w-full gap-1.5 bg-amber-500 hover:bg-amber-600"
                   >
                     <RectangleGoggles size={14} />
                     {t('mapPage.spotModal.vrTour')}

@@ -192,7 +192,9 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
               const colorCode = item.color_hex || '#94a3b8';
               const iconUrl = withBaseUrl(item.icon_url);
               const itemName =
-                lang === 'en' ? item.name_en || item.name_vi : item.name_vi || item.name_en;
+                lang === 'en'
+                  ? item.name || item.name_en || item.name_vi
+                  : item.name || item.name_vi || item.name_en;
               const checkboxId = `map-layer-subcategory-${item.id}`;
 
               return (

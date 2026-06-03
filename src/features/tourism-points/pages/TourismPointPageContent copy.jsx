@@ -149,7 +149,7 @@ export default function TourismPointPage() {
     return [];
   }, [activeData]);
 
-  const paginationFromApi = nearMe ? null : (data?.data?.pagination || null);
+  const paginationFromApi = nearMe ? null : data?.data?.pagination || null;
   const total = paginationFromApi?.total ?? points.length;
   const pages =
     paginationFromApi?.totalPages ?? Math.max(1, Math.ceil(total / (currentSettings.limit || 12)));
@@ -159,7 +159,7 @@ export default function TourismPointPage() {
       new Map(
         categories.map((c) => [
           String(c.id),
-          lang === 'en' ? c.name_en || c.name_vi : c.name_vi || c.name_en,
+          lang === 'en' ? c.name || c.name_en || c.name_vi : c.name || c.name_vi || c.name_en,
         ])
       ),
     [categories, lang]
@@ -204,13 +204,13 @@ export default function TourismPointPage() {
 
   const getPointName = (point) =>
     lang === 'en'
-      ? point?.name_en || point?.name_vi || point?.name || ''
-      : point?.name_vi || point?.name_en || point?.name || '';
+      ? point?.name || point?.name_en || point?.name_vi || ''
+      : point?.name || point?.name_vi || point?.name_en || '';
 
   const getPointAddress = (point) =>
     lang === 'en'
-      ? point?.address_en || point?.address_vi || point?.address || ''
-      : point?.address_vi || point?.address_en || point?.address || '';
+      ? point?.address || point?.address_en || point?.address_vi || ''
+      : point?.address || point?.address_vi || point?.address_en || '';
 
   const searchResults = useMemo(() => points.slice(0, 7), [points]);
   const shouldShowOverlay = isInputFocused && query.trim().length > 0;
@@ -259,7 +259,11 @@ export default function TourismPointPage() {
   };
 
   const catName = (cat) =>
-    cat ? (lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en) : '';
+    cat
+      ? lang === 'en'
+        ? cat.name || cat.name_en || cat.name_vi
+        : cat.name || cat.name_vi || cat.name_en
+      : '';
 
   const quickBtnCls = (active) =>
     `flex items-center gap-1.5 rounded-full border px-[14px] py-[9px] text-[13px] font-extrabold transition-colors cursor-pointer ${
@@ -314,8 +318,8 @@ export default function TourismPointPage() {
                 },
               ].map(({ val, key }) => (
                 <div key={key} className="rounded-[20px] bg-white/[.92] p-4 backdrop-blur-md">
-                  <b className="block text-[24px] font-black text-secondary">{val}</b>
-                  <span className="text-[12px] font-extrabold text-muted-foreground">
+                  <b className="text-secondary block text-[24px] font-black">{val}</b>
+                  <span className="text-muted-foreground text-[12px] font-extrabold">
                     {t(`tourismPointPage.${key}`)}
                   </span>
                 </div>
@@ -336,7 +340,7 @@ export default function TourismPointPage() {
             <div className="flex flex-wrap items-center gap-2 rounded-[24px] border bg-white p-[14px] shadow-[0_4px_18px_rgba(6,38,70,.06)] md:flex-nowrap">
               {/* Search */}
               <div className="relative min-w-0 flex-[1.5]">
-                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
                   size="toolbar"
                   value={query}
@@ -367,7 +371,7 @@ export default function TourismPointPage() {
                         <LoadingInline size="small" />
                       </div>
                     ) : searchResults.length === 0 ? (
-                      <div className="flex flex-col items-center gap-2 px-3 py-6 text-sm text-muted-foreground">
+                      <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-sm">
                         <MapPin className="h-5 w-5 opacity-70" />
                         <p>{t('mapPage.toolbar.searchNoResult')}</p>
                       </div>
@@ -381,16 +385,16 @@ export default function TourismPointPage() {
                             className="h-auto w-full justify-start gap-3 rounded-lg px-2.5 py-2"
                             onClick={() => handleSelectResult(item)}
                           >
-                            <MapPin className="h-4 w-4 shrink-0 text-secondary" />
+                            <MapPin className="text-secondary h-4 w-4 shrink-0" />
                             <div className="min-w-0 flex-1 text-left">
-                              <p className="truncate text-sm font-semibold text-foreground">
+                              <p className="text-foreground truncate text-sm font-semibold">
                                 {getPointName(item)}
                               </p>
-                              <p className="truncate text-sm text-muted-foreground">
+                              <p className="text-muted-foreground truncate text-sm">
                                 {getPointAddress(item) || t('mapPage.destination.noAddress')}
                               </p>
                             </div>
-                            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                            <ArrowUpRight className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
                           </Button>
                         ))}
                       </div>
@@ -461,7 +465,7 @@ export default function TourismPointPage() {
               </div>
 
               {/* View switch */}
-              <div className="flex shrink-0 items-center gap-1 rounded-[13px] bg-muted p-1">
+              <div className="bg-muted flex shrink-0 items-center gap-1 rounded-[13px] p-1">
                 {[
                   { mode: 'grid', Icon: LayoutGrid },
                   { mode: 'list', Icon: List },
@@ -471,7 +475,7 @@ export default function TourismPointPage() {
                     onClick={() => setCurrentSettings({ viewMode: mode })}
                     className={`flex h-8 w-8 items-center justify-center rounded-[10px] transition-colors ${
                       currentSettings.viewMode === mode
-                        ? 'bg-secondary text-white shadow-sm hover:bg-secondary/90 hover:text-white'
+                        ? 'bg-secondary hover:bg-secondary/90 text-white shadow-sm hover:text-white'
                         : 'text-muted-foreground hover:bg-white'
                     }`}
                   >
@@ -485,7 +489,7 @@ export default function TourismPointPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 shrink-0 rounded-[13px] border px-3 text-muted-foreground hover:border-secondary hover:text-secondary"
+                className="text-muted-foreground hover:border-secondary hover:text-secondary h-8 shrink-0 rounded-[13px] border px-3"
                 onClick={() => navigate('/map')}
               >
                 <MapIcon size={14} />
@@ -502,31 +506,33 @@ export default function TourismPointPage() {
             <aside className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-1">
               {/* Quick filter card */}
               <div className="rounded-[24px] border bg-white p-[18px] shadow-[0_10px_28px_rgba(7,29,54,.08)]">
-                <h3 className="mb-3.5 flex items-center gap-2 text-[17px] font-black text-foreground">
+                <h3 className="text-foreground mb-3.5 flex items-center gap-2 text-[17px] font-black">
                   <SlidersHorizontal size={16} className="text-secondary" />
                   {t('tourismPointPage.quick_filters')}
                 </h3>
                 <div className="flex flex-col gap-3">
                   {/* Category dropdown */}
                   <div className="flex flex-col gap-1">
-                    <span className="px-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                    <span className="text-muted-foreground px-1 text-[11px] font-bold tracking-wide uppercase">
                       {t('tourismPointPage.category')}
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="flex w-full items-center justify-between rounded-[14px] border bg-muted px-3 py-[10px] text-[13px] font-extrabold text-foreground transition-colors hover:border-secondary hover:text-secondary">
+                        <button className="bg-muted text-foreground hover:border-secondary hover:text-secondary flex w-full items-center justify-between rounded-[14px] border px-3 py-[10px] text-[13px] font-extrabold transition-colors">
                           <span className="flex items-center gap-2">
                             {selectedCat ? (
                               <>
                                 <span
                                   className="inline-block h-2 w-2 shrink-0 rounded-full"
-                                  style={{ background: selectedCat.color_hex || 'var(--secondary)' }}
+                                  style={{
+                                    background: selectedCat.color_hex || 'var(--secondary)',
+                                  }}
                                 />
                                 {catName(selectedCat)}
                               </>
                             ) : (
                               <>
-                                <span className="inline-block h-2 w-2 rounded-full bg-secondary" />
+                                <span className="bg-secondary inline-block h-2 w-2 rounded-full" />
                                 {t('tourismPointPage.all')}
                               </>
                             )}
@@ -536,12 +542,12 @@ export default function TourismPointPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start" className="w-56">
                         <DropdownMenuItem
-                          className={!selectedCategoryId ? 'font-extrabold text-secondary' : ''}
+                          className={!selectedCategoryId ? 'text-secondary font-extrabold' : ''}
                           onClick={() => handleCategoryChange('all')}
                         >
                           {t('tourismPointPage.all')}
                           {!isLoading && !selectedCategoryId && total > 0 && (
-                            <span className="ml-auto text-xs text-secondary">{total}</span>
+                            <span className="text-secondary ml-auto text-xs">{total}</span>
                           )}
                         </DropdownMenuItem>
                         {categories.map((cat) => (
@@ -549,7 +555,7 @@ export default function TourismPointPage() {
                             key={cat.id}
                             className={
                               Number(currentSettings.selectedCategory) === Number(cat.id)
-                                ? 'font-extrabold text-secondary'
+                                ? 'text-secondary font-extrabold'
                                 : ''
                             }
                             onClick={() => handleCategoryChange(String(cat.id))}
@@ -568,14 +574,14 @@ export default function TourismPointPage() {
                   {/* Subcategory dropdown */}
                   {selectedCategoryId > 0 && subcategories.length > 0 && (
                     <div className="flex flex-col gap-1">
-                      <span className="px-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                      <span className="text-muted-foreground px-1 text-[11px] font-bold tracking-wide uppercase">
                         {t('tourismPointPage.subcategory')}
                       </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="flex w-full items-center justify-between rounded-[14px] border bg-muted px-3 py-[10px] text-[13px] font-extrabold text-foreground transition-colors hover:border-secondary hover:text-secondary">
+                          <button className="bg-muted text-foreground hover:border-secondary hover:text-secondary flex w-full items-center justify-between rounded-[14px] border px-3 py-[10px] text-[13px] font-extrabold transition-colors">
                             <span className="flex items-center gap-2">
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-secondary/60" />
+                              <span className="bg-secondary/60 inline-block h-1.5 w-1.5 rounded-full" />
                               {selectedSub ? catName(selectedSub) : t('tourismPointPage.all')}
                             </span>
                             <ChevronDown size={13} className="shrink-0 opacity-60" />
@@ -583,12 +589,14 @@ export default function TourismPointPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-56">
                           <DropdownMenuItem
-                            className={!selectedSubcategoryId ? 'font-extrabold text-secondary' : ''}
+                            className={
+                              !selectedSubcategoryId ? 'text-secondary font-extrabold' : ''
+                            }
                             onClick={() => setCurrentSettings({ selectedSubcategory: 0, page: 1 })}
                           >
                             {t('tourismPointPage.all')}
                             {selectedCategoryTotal > 0 && (
-                              <span className="ml-auto text-xs text-secondary">
+                              <span className="text-secondary ml-auto text-xs">
                                 {selectedCategoryTotal}
                               </span>
                             )}
@@ -600,7 +608,7 @@ export default function TourismPointPage() {
                                 key={sub.id}
                                 className={
                                   Number(selectedSubcategoryId) === Number(sub.id)
-                                    ? 'font-extrabold text-secondary'
+                                    ? 'text-secondary font-extrabold'
                                     : ''
                                 }
                                 onClick={() =>
@@ -609,7 +617,7 @@ export default function TourismPointPage() {
                               >
                                 {catName(sub)}
                                 {count > 0 && (
-                                  <span className="ml-auto text-xs text-muted-foreground">
+                                  <span className="text-muted-foreground ml-auto text-xs">
                                     {count}
                                   </span>
                                 )}
@@ -623,12 +631,12 @@ export default function TourismPointPage() {
 
                   {/* Featured dropdown */}
                   <div className="flex flex-col gap-1">
-                    <span className="px-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                    <span className="text-muted-foreground px-1 text-[11px] font-bold tracking-wide uppercase">
                       {t('tourismPointPage.is_featured_label')}
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="flex w-full items-center justify-between rounded-[14px] border bg-muted px-3 py-[10px] text-[13px] font-extrabold text-foreground transition-colors hover:border-secondary hover:text-secondary">
+                        <button className="bg-muted text-foreground hover:border-secondary hover:text-secondary flex w-full items-center justify-between rounded-[14px] border px-3 py-[10px] text-[13px] font-extrabold transition-colors">
                           <span className="flex items-center gap-2">
                             <Star size={12} className="text-amber-400" />
                             {isFeaturedLabel()}
@@ -639,7 +647,7 @@ export default function TourismPointPage() {
                       <DropdownMenuContent align="start" className="w-56">
                         <DropdownMenuItem
                           className={
-                            !currentSettings.isFeatured ? 'font-extrabold text-secondary' : ''
+                            !currentSettings.isFeatured ? 'text-secondary font-extrabold' : ''
                           }
                           onClick={() => setCurrentSettings({ isFeatured: '', page: 1 })}
                         >
@@ -648,7 +656,7 @@ export default function TourismPointPage() {
                         <DropdownMenuItem
                           className={
                             currentSettings.isFeatured === 'true'
-                              ? 'font-extrabold text-secondary'
+                              ? 'text-secondary font-extrabold'
                               : ''
                           }
                           onClick={() => setCurrentSettings({ isFeatured: 'true', page: 1 })}
@@ -658,7 +666,7 @@ export default function TourismPointPage() {
                         <DropdownMenuItem
                           className={
                             currentSettings.isFeatured === 'false'
-                              ? 'font-extrabold text-secondary'
+                              ? 'text-secondary font-extrabold'
                               : ''
                           }
                           onClick={() => setCurrentSettings({ isFeatured: 'false', page: 1 })}
@@ -676,18 +684,18 @@ export default function TourismPointPage() {
             <section>
               {/* Content head */}
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3.5">
-                <h2 className="text-[25px] font-black text-foreground">
+                <h2 className="text-foreground text-[25px] font-black">
                   {selectedCat ? catName(selectedCat) : t('tourismPointPage.featured_list')}
                 </h2>
                 <div className="flex items-center gap-2">
-                  <span className="hidden text-sm text-muted-foreground sm:inline">
+                  <span className="text-muted-foreground hidden text-sm sm:inline">
                     <strong className="text-foreground">{points.length}</strong>
                     {' / '}
                     {total} {t('tourismPointPage.results')}
                   </span>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="flex h-[38px] items-center gap-1.5 rounded-[14px] border bg-white px-3 text-[13px] font-extrabold text-foreground transition-colors hover:border-secondary hover:text-secondary">
+                      <button className="text-foreground hover:border-secondary hover:text-secondary flex h-[38px] items-center gap-1.5 rounded-[14px] border bg-white px-3 text-[13px] font-extrabold transition-colors">
                         {currentSettings.limit} {t('tourismPointPage.per_page')}
                         <ChevronDown size={12} />
                       </button>
@@ -696,7 +704,7 @@ export default function TourismPointPage() {
                       {PAGE_SIZE_OPTIONS.map((n) => (
                         <DropdownMenuItem
                           key={n}
-                          className={`justify-center ${currentSettings.limit === n ? 'font-extrabold text-secondary' : ''}`}
+                          className={`justify-center ${currentSettings.limit === n ? 'text-secondary font-extrabold' : ''}`}
                           onClick={() => setCurrentSettings({ limit: n, page: 1 })}
                         >
                           {n}
@@ -770,9 +778,9 @@ export default function TourismPointPage() {
                   {t('tourismPointPage.errorLoading')}
                 </div>
               ) : points.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
                   <Inbox size={48} className="mb-4 opacity-30" />
-                  <h3 className="mb-1 text-[18px] font-black text-foreground">
+                  <h3 className="text-foreground mb-1 text-[18px] font-black">
                     {t('tourismPointPage.no_results')}
                   </h3>
                   <p className="text-[13px]">{t('tourismPointPage.tryDifferentKeyword')}</p>
@@ -820,7 +828,7 @@ export default function TourismPointPage() {
                     onClick={() =>
                       setCurrentSettings({ page: Math.max(1, currentSettings.page - 1) })
                     }
-                    className="flex h-[38px] min-w-[90px] cursor-pointer items-center justify-center gap-1 rounded-full border bg-white px-4 text-[13px] font-black text-secondary transition-colors hover:bg-secondary hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    className="text-secondary hover:bg-secondary flex h-[38px] min-w-[90px] cursor-pointer items-center justify-center gap-1 rounded-full border bg-white px-4 text-[13px] font-black transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <ChevronLeft size={14} />
                     {t('common.prev')}
@@ -840,8 +848,8 @@ export default function TourismPointPage() {
                         onClick={() => setCurrentSettings({ page: p })}
                         className={`flex h-[38px] w-[38px] items-center justify-center rounded-[12px] border text-[13px] font-black transition-colors ${
                           p === currentSettings.page
-                            ? 'border-transparent bg-secondary text-white hover:bg-secondary/90 hover:text-white'
-                            : 'bg-white text-foreground hover:border-secondary hover:text-secondary'
+                            ? 'bg-secondary hover:bg-secondary/90 border-transparent text-white hover:text-white'
+                            : 'text-foreground hover:border-secondary hover:text-secondary bg-white'
                         }`}
                       >
                         {p}
@@ -854,7 +862,7 @@ export default function TourismPointPage() {
                     onClick={() =>
                       setCurrentSettings({ page: Math.min(pages, currentSettings.page + 1) })
                     }
-                    className="flex h-[38px] min-w-[90px] cursor-pointer items-center justify-center gap-1 rounded-full border bg-white px-4 text-[13px] font-black text-secondary transition-colors hover:bg-secondary hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    className="text-secondary hover:bg-secondary flex h-[38px] min-w-[90px] cursor-pointer items-center justify-center gap-1 rounded-full border bg-white px-4 text-[13px] font-black transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {t('common.next')}
                     <ChevronRight size={14} />

@@ -161,7 +161,7 @@ export default function TourismPointPage() {
       new Map(
         categories.map((c) => [
           String(c.id),
-          lang === 'en' ? c.name_en || c.name_vi : c.name_vi || c.name_en,
+          lang === 'en' ? c.name || c.name_en || c.name_vi : c.name || c.name_vi || c.name_en,
         ])
       ),
     [categories, lang]
@@ -206,13 +206,13 @@ export default function TourismPointPage() {
 
   const getPointName = (point) =>
     lang === 'en'
-      ? point?.name_en || point?.name_vi || point?.name || ''
-      : point?.name_vi || point?.name_en || point?.name || '';
+      ? point?.name || point?.name_en || point?.name_vi || ''
+      : point?.name || point?.name_vi || point?.name_en || '';
 
   const getPointAddress = (point) =>
     lang === 'en'
-      ? point?.address_en || point?.address_vi || point?.address || ''
-      : point?.address_vi || point?.address_en || point?.address || '';
+      ? point?.address || point?.address_en || point?.address_vi || ''
+      : point?.address || point?.address_vi || point?.address_en || '';
 
   const searchResults = useMemo(() => points.slice(0, 7), [points]);
   const shouldShowOverlay = isInputFocused && query.trim().length > 0;
@@ -261,7 +261,11 @@ export default function TourismPointPage() {
   };
 
   const catName = (cat) =>
-    cat ? (lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en) : '';
+    cat
+      ? lang === 'en'
+        ? cat.name || cat.name_en || cat.name_vi
+        : cat.name || cat.name_vi || cat.name_en
+      : '';
 
   const quickBtnCls = (active) =>
     `flex items-center gap-1.5 rounded-full border px-[14px] py-[9px] text-[13px] font-extrabold transition-colors cursor-pointer ${
@@ -272,7 +276,9 @@ export default function TourismPointPage() {
 
   const filterRowCls = (active) =>
     `flex w-full items-center justify-between rounded-[14px] px-3 py-[11px] text-[13px] font-extrabold transition-colors text-left ${
-      active ? 'bg-secondary/10 text-secondary hover:bg-secondary/20 hover:text-secondary' : 'bg-muted text-foreground hover:bg-muted/80'
+      active
+        ? 'bg-secondary/10 text-secondary hover:bg-secondary/20 hover:text-secondary'
+        : 'bg-muted text-foreground hover:bg-muted/80'
     }`;
 
   const selectedCat = categories.find((c) => Number(c.id) === selectedCategoryId);
@@ -338,7 +344,7 @@ export default function TourismPointPage() {
           }}
         >
           <div className="w-full">
-            <div className="border border-border bg-card rounded-[24px] p-3 shadow-(--ambient-shadow) sm:p-3.5">
+            <div className="border-border bg-card rounded-[24px] border p-3 shadow-(--ambient-shadow) sm:p-3.5">
               {/* Always-visible row */}
               <div className="flex items-center gap-2">
                 {/* Search */}
@@ -368,7 +374,7 @@ export default function TourismPointPage() {
                     </Button>
                   )}
                   {shouldShowOverlay && (
-                    <div className="border border-border bg-card absolute top-full right-0 left-0 z-50 mt-2 max-h-72 overflow-auto rounded-xl shadow-lg">
+                    <div className="border-border bg-card absolute top-full right-0 left-0 z-50 mt-2 max-h-72 overflow-auto rounded-xl border shadow-lg">
                       {activeIsLoading ? (
                         <div className="flex items-center justify-center px-3 py-6">
                           <LoadingInline size="small" />
@@ -474,7 +480,7 @@ export default function TourismPointPage() {
                   type="button"
                   variant="ghost"
                   onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-                  className={`md:hidden h-9 shrink-0 rounded-[13px] border px-3 text-sm font-bold transition-colors ${
+                  className={`h-9 shrink-0 rounded-[13px] border px-3 text-sm font-bold transition-colors md:hidden ${
                     mobileFilterOpen
                       ? 'border-secondary text-secondary bg-secondary/5 hover:text-secondary hover:bg-secondary/10'
                       : 'border-border text-muted-foreground hover:border-secondary hover:text-secondary'
@@ -495,7 +501,7 @@ export default function TourismPointPage() {
                       onClick={() => setCurrentSettings({ viewMode: mode })}
                       className={`flex h-8 w-8 items-center justify-center rounded-[10px] transition-colors ${
                         currentSettings.viewMode === mode
-                          ? 'bg-secondary text-white shadow-sm hover:bg-secondary/90 hover:text-white'
+                          ? 'bg-secondary hover:bg-secondary/90 text-white shadow-sm hover:text-white'
                           : 'text-muted-foreground hover:bg-card'
                       }`}
                     >
@@ -519,7 +525,7 @@ export default function TourismPointPage() {
 
               {/* Mobile filter panel — revealed by toggle */}
               {mobileFilterOpen && (
-                <div className="mt-2.5 flex flex-col gap-2 border-t border-border pt-2.5 md:hidden">
+                <div className="border-border mt-2.5 flex flex-col gap-2 border-t pt-2.5 md:hidden">
                   <Select
                     value={selectedCategoryId ? String(selectedCategoryId) : 'all'}
                     onValueChange={handleCategoryChange}
@@ -634,8 +640,7 @@ export default function TourismPointPage() {
                     </Button>
 
                     {categories.map((cat) => {
-                      const isActive =
-                        Number(currentSettings.selectedCategory) === Number(cat.id);
+                      const isActive = Number(currentSettings.selectedCategory) === Number(cat.id);
                       return (
                         <React.Fragment key={cat.id}>
                           <Button
@@ -662,8 +667,7 @@ export default function TourismPointPage() {
                               {subcategories.map((sub) => {
                                 const isSubActive =
                                   Number(selectedSubcategoryId) === Number(sub.id);
-                                const count =
-                                  subcategoryCountById.get(String(sub.id)) ?? 0;
+                                const count = subcategoryCountById.get(String(sub.id)) ?? 0;
                                 return (
                                   <Button
                                     variant="ghost"
@@ -839,7 +843,7 @@ export default function TourismPointPage() {
                         onClick={() => setCurrentSettings({ page: p })}
                         className={`flex h-[38px] w-[38px] items-center justify-center rounded-[12px] border text-[13px] font-black transition-colors ${
                           p === currentSettings.page
-                            ? 'bg-secondary border-transparent text-white hover:bg-secondary/90 hover:text-white'
+                            ? 'bg-secondary hover:bg-secondary/90 border-transparent text-white hover:text-white'
                             : 'text-foreground hover:border-secondary hover:text-secondary bg-card'
                         }`}
                       >

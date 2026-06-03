@@ -14,15 +14,15 @@ export function TourismPointSkeletonCard({ isFeatured }) {
 }
 
 function getPointName(point) {
-  return point?.name_vi || point?.name_en || point?.name || '';
+  return point?.name || point?.name_vi || point?.name_en || '';
 }
 
 function getPointDescription(point) {
-  return point?.description_vi || point?.description_en || point?.description || '';
+  return point?.description || point?.description_vi || point?.description_en || '';
 }
 
 function getPointAddress(point) {
-  return point?.address_vi || point?.address_en || point?.address || '';
+  return point?.address || point?.address_vi || point?.address_en || '';
 }
 
 function getPointImage(point) {
@@ -104,7 +104,8 @@ export function TourismPointFeaturedCard({
         <span className="bg-primary/80 absolute top-3.5 left-3.5 rounded-full border border-white/30 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
           {categoryName}
         </span>
-        <Button variant="ghost"
+        <Button
+          variant="ghost"
           type="button"
           onClick={onToggleLike}
           className="text-primary absolute top-3.5 right-3.5 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-white/75 bg-white/90"
@@ -163,13 +164,15 @@ export function TourismPointFeaturedCard({
               : t('tourismPointPage.free', 'Miễn phí')}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost"
+            <Button
+              variant="ghost"
               className="h-10.5 rounded-full px-4.5 text-sm font-bold text-white hover:text-white"
               style={BTN_GRADIENT}
             >
               {t('tourismPointPage.view_detail', 'Xem chi tiết')}
             </Button>
-            <Button variant="ghost"
+            <Button
+              variant="ghost"
               type="button"
               onClick={onToggleLike}
               className="flex h-10.5 w-10.5 items-center justify-center rounded-full border border-[#9db8d2] bg-white text-[#52647a] hover:text-[#52647a]"
@@ -259,7 +262,8 @@ export function TourismPointStandardCard({
         <span className="bg-primary/80 absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
           {categoryName}
         </span>
-        <Button variant="ghost"
+        <Button
+          variant="ghost"
           type="button"
           onClick={onToggleLike}
           className="text-primary absolute top-3 right-3 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-white/75 bg-white/90"
@@ -305,5 +309,3 @@ export function TourismPointStandardCard({
     </div>
   );
 }
-
-

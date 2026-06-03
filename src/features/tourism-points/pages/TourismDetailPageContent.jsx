@@ -128,7 +128,7 @@ const normalizeServiceKey = (service) => {
 };
 const normalizeServiceLabel = (service, key) => {
   if (service && typeof service === 'object') {
-    return service?.name_vi || service?.name_en || service?.name || service?.label || key;
+    return service?.name || service?.name_vi || service?.name_en || service?.label || key;
   }
   if (typeof service === 'string' && service.trim()) return service;
   return key.replace(/[_-]+/g, ' ').trim();
@@ -439,7 +439,7 @@ export default function TourismDetailPage() {
         : null;
     const coordinates = coordinatesFromInput || fallbackCoordinates;
     const resolvedDescription = stripHtmlTags(
-      attraction?.description_vi || attraction?.description_en || attraction?.description || ''
+      attraction?.description || attraction?.description_vi || attraction?.description_en || ''
     );
 
     const selectedSearchResult = {
@@ -562,7 +562,7 @@ export default function TourismDetailPage() {
       : t('tourism.free', 'Miễn phí');
 
   const plainDescription = stripHtmlTags(
-    attraction?.description_vi || attraction?.description_en || attraction?.description
+    attraction?.description || attraction?.description_vi || attraction?.description_en
   );
 
   const attractionGeo = attraction?.geojson?.coordinates;
@@ -601,14 +601,16 @@ export default function TourismDetailPage() {
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
           {/* Breadcrumb */}
           <nav className="mb-4 flex items-center gap-2 text-[13px] font-extrabold text-[#42627a]">
-            <Button variant="ghost"
+            <Button
+              variant="ghost"
               onClick={() => navigate('/')}
               className="flex items-center gap-1 transition-colors hover:text-[#08aeb9]"
             >
               {t('common.home', 'Trang chủ')}
             </Button>
             <ChevronRight className="h-3 w-3 text-[#08aeb9]" />
-            <Button variant="ghost"
+            <Button
+              variant="ghost"
               onClick={() => navigate('/tourism-point')}
               className="transition-colors hover:text-[#08aeb9]"
             >
@@ -751,4 +753,3 @@ export default function TourismDetailPage() {
     </RootLayout>
   );
 }
-

@@ -59,7 +59,7 @@
       "vlog_title": "Vlog & Experiences",
       "vlog_desc": "Get inspired by real videos, traveller reviews and community 360° content",
       "vlog_cta": "Visit vlog page",
-      "chatbot_title": "AI Travel Companion",
+      "chatbot_title": "AI Travel Agent",
       "chatbot_desc": "Ask about tours, weather, OCOP and get personalised itinerary suggestions",
       "chatbot_cta": "Chat with the assistant",
       "lead": "The homepage is designed to be bright, clear, and rich in real information: destinations, events, tours, cuisine, OCOP, digital maps, and community content",
@@ -924,6 +924,14 @@
       "routePrototype": "Directions integration is in prototype mode",
       "vrPrototype": "VR360 preview integration is in prototype mode"
     },
+    "layerData": {
+      "title": "Data layers",
+      "selectCategory": "Please select a category to load data layers.",
+      "selectAll": "Select all",
+      "clearAll": "Clear",
+      "empty": "No matching data layers available.",
+      "error": "Unable to load data layers."
+    },
     "destination": {
       "title": "Destination",
       "unknownName": "Unknown destination",
@@ -1060,12 +1068,13 @@
     },
     "chatbot": {
       "title": "Map assistant",
-      "heading": "AI Travel Companion",
+      "heading": "AI Travel Agent",
       "description": "Ask about tours, weather, OCOP and get personalised itinerary suggestions",
       "cta": "Chat with the assistant",
       "placeholder": "Enter a question about destinations, tours, or weather..",
       "youLabel": "You",
       "botLabel": "AI Assistant",
+      "emptyState": "Start the conversation or select a quick prompt above.",
       "quickPrompts": {
         "dayTour": "Suggest a 1-day tour",
         "lessCrowded": "Which places are less crowded?",
@@ -1097,7 +1106,7 @@
       "viewDetail": "View details",
       "directions": "Get directions",
       "vrTour": "VR Tour 360°",
-      "view3D": "View 3D Image",
+      "view3D": "View 3D Model",
       "noDescription": "No description available",
       "capacity": "Capacity",
       "currentVisitors": "Current visitors",

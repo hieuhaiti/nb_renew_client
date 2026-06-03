@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import cameraDroneIcon from '@/assets/hotspot/camera-drone.png';
 import { useTranslation } from 'react-i18next';
 import { cn, withBaseUrl } from '@/lib/utils';
@@ -18,14 +18,20 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
-
 const AFRAME_CDN = 'https://aframe.io/releases/1.5.0/aframe.min.js';
 const AFRAME_TEXT_FONT = 'https://cdn.aframe.io/fonts/Roboto-msdf.json';
 const AFRAME_TEXT_FONT_IMAGE = 'https://cdn.aframe.io/fonts/Roboto-msdf.png';
-const DEFAULT_CAMERA_POSITION = { x: 0, y: 1.6, z: 0 };
-const DEFAULT_CAMERA_ROTATION = { x: 0, y: 0, z: 0 };
+const DEFAULT_CAMERA_POSITION = {
+  x: 0,
+  y: 1.6,
+  z: 0,
+};
+const DEFAULT_CAMERA_ROTATION = {
+  x: 0,
+  y: 0,
+  z: 0,
+};
 const DEFAULT_FOV = 80;
-
 const LABEL_MAX_WIDTH = 720;
 const LABEL_FONT_SIZE = 50;
 const LABEL_MAX_LINES = 3;
@@ -37,7 +43,6 @@ const LABEL_TEXT_COLOR = '#ffffff';
 const LABEL_BG_COLOR = 'rgba(15, 23, 42, 0.72)';
 const LABEL_PLANE_BASE_WIDTH = 2.4;
 const LABEL_Y_OFFSET = 0.38;
-
 function normalizeLabel(value) {
   const safe = String(value || '')
     .replace(/\s+/g, ' ')
@@ -45,7 +50,6 @@ function normalizeLabel(value) {
     .trim();
   return safe || '-';
 }
-
 function roundRectPath(ctx, x, y, width, height, radius) {
   const safeRadius = Math.min(radius, width / 2, height / 2);
   ctx.beginPath();
@@ -56,36 +60,28 @@ function roundRectPath(ctx, x, y, width, height, radius) {
   ctx.arcTo(x, y, x + width, y, safeRadius);
   ctx.closePath();
 }
-
 function splitLabelLines(ctx, label, maxWidth, maxLines) {
   const words = normalizeLabel(label).split(' ');
   const lines = [];
   let currentLine = '';
-
   for (let i = 0; i < words.length; i += 1) {
     const word = words[i];
     const candidate = currentLine ? `${currentLine} ${word}` : word;
     const candidateWidth = ctx.measureText(candidate).width;
-
     if (candidateWidth <= maxWidth || !currentLine) {
       currentLine = candidate;
       continue;
     }
-
     lines.push(currentLine);
     currentLine = word;
-
     if (lines.length >= maxLines - 1) break;
   }
-
   if (lines.length < maxLines && currentLine) {
     lines.push(currentLine);
   }
-
   if (lines.length > maxLines) {
     return lines.slice(0, maxLines);
   }
-
   if (lines.length === maxLines && words.join(' ') !== lines.join(' ')) {
     let last = lines[maxLines - 1];
     while (last.length > 1 && ctx.measureText(`${last}...`).width > maxWidth) {
@@ -93,69 +89,53 @@ function splitLabelLines(ctx, label, maxWidth, maxLines) {
     }
     lines[maxLines - 1] = `${last}...`;
   }
-
   return lines;
 }
-
 function createVietnameseLabelTexture(label) {
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   if (!context) return null;
-
   const pixelRatio = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   const logicalWidth = LABEL_MAX_WIDTH;
-
   context.font = `600 ${LABEL_FONT_SIZE}px "Be Vietnam Pro", "Noto Sans", Arial, sans-serif`;
   const maxTextWidth = logicalWidth - LABEL_PADDING_X * 2;
   const lines = splitLabelLines(context, label, maxTextWidth, LABEL_MAX_LINES);
   const logicalHeight = LABEL_PADDING_Y * 2 + lines.length * LABEL_LINE_HEIGHT;
-
   canvas.width = Math.ceil(logicalWidth * pixelRatio);
   canvas.height = Math.ceil(logicalHeight * pixelRatio);
-
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, logicalWidth, logicalHeight);
-
   roundRectPath(context, 0, 0, logicalWidth, logicalHeight, LABEL_BORDER_RADIUS);
   context.fillStyle = LABEL_BG_COLOR;
   context.fill();
-
   context.font = `600 ${LABEL_FONT_SIZE}px "Be Vietnam Pro", "Noto Sans", Arial, sans-serif`;
   context.fillStyle = LABEL_TEXT_COLOR;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-
   const centerX = logicalWidth / 2;
   const contentHeight = lines.length * LABEL_LINE_HEIGHT;
   const startY = (logicalHeight - contentHeight) / 2 + LABEL_LINE_HEIGHT / 2;
-
   lines.forEach((line, lineIndex) => {
     context.fillText(line, centerX, startY + lineIndex * LABEL_LINE_HEIGHT);
   });
-
   return {
     canvas,
     width: logicalWidth,
     height: logicalHeight,
   };
 }
-
 function createHotspotLabel(label) {
   const THREE = window.AFRAME?.THREE || window.THREE;
   if (!THREE) return null;
-
   const texturePayload = createVietnameseLabelTexture(label);
   if (!texturePayload) return null;
-
   const texture = new THREE.CanvasTexture(texturePayload.canvas);
   texture.minFilter = THREE.LinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = false;
   texture.needsUpdate = true;
-
   const planeWidth = LABEL_PLANE_BASE_WIDTH;
   const planeHeight = (texturePayload.height / texturePayload.width) * planeWidth;
-
   const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
   const material = new THREE.MeshBasicMaterial({
     map: texture,
@@ -164,7 +144,6 @@ function createHotspotLabel(label) {
     depthWrite: false,
     side: THREE.DoubleSide,
   });
-
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(0, LABEL_Y_OFFSET, 0);
   mesh.renderOrder = 1000;
@@ -173,10 +152,8 @@ function createHotspotLabel(label) {
     material.map?.dispose();
     material.dispose();
   };
-
   return mesh;
 }
-
 function disposeLabelObject(entity) {
   const labelObject = entity?.getObject3D?.('hotspot-label');
   if (labelObject?.userData?.disposeLabel) {
@@ -186,7 +163,6 @@ function disposeLabelObject(entity) {
     entity.removeObject3D('hotspot-label');
   }
 }
-
 function disposeHotspotEntity(entity) {
   if (!entity) return;
   const labelEntity = entity.firstElementChild;
@@ -194,45 +170,36 @@ function disposeHotspotEntity(entity) {
     disposeLabelObject(labelEntity);
   }
 }
-
 function loadAFrame() {
   return new Promise((resolve) => {
     if (window.AFRAME) {
-      console.debug('[VR-DEBUG][loadAFrame] window.AFRAME already defined — skipping CDN load');
       resolve();
       return;
     }
-
-    console.debug('[VR-DEBUG][loadAFrame] window.AFRAME undefined — injecting CDN script', AFRAME_CDN);
-    const t0 = performance.now();
-
     const existing = document.querySelector(`script[src="${AFRAME_CDN}"]`);
     if (existing) {
-      console.debug('[VR-DEBUG][loadAFrame] CDN script tag exists, waiting for its load event');
-      existing.addEventListener('load', () => {
-        console.debug(`[VR-DEBUG][loadAFrame] existing script loaded in ${(performance.now() - t0).toFixed(0)}ms`);
-        resolve();
-      }, { once: true });
+      existing.addEventListener(
+        'load',
+        () => {
+          resolve();
+        },
+        {
+          once: true,
+        }
+      );
       return;
     }
-
     const script = document.createElement('script');
     script.src = AFRAME_CDN;
     script.onload = () => {
-      console.debug(`[VR-DEBUG][loadAFrame] CDN script loaded in ${(performance.now() - t0).toFixed(0)}ms`);
       resolve();
-    };
-    script.onerror = () => {
-      console.error('[VR-DEBUG][loadAFrame] CDN script FAILED to load', AFRAME_CDN);
     };
     document.head.appendChild(script);
   });
 }
-
 function registerFaceCameraComponent() {
   if (!window.AFRAME) return;
   if (window.AFRAME.components['face-camera']) return;
-
   window.AFRAME.registerComponent('face-camera', {
     init() {
       this._cameraPos = new window.AFRAME.THREE.Vector3();
@@ -245,28 +212,19 @@ function registerFaceCameraComponent() {
     },
   });
 }
-
 function clampVolume(value) {
   const next = Number(value);
   if (!Number.isFinite(next)) return 50;
   return Math.min(100, Math.max(0, next));
 }
-
 function toRadians(degree) {
   return (Number(degree) * Math.PI) / 180;
 }
-
-function toDegrees(radian) {
-  return (Number(radian) * 180) / Math.PI;
-}
-
 function normalizeBearing(degree) {
   const safe = Number.isFinite(Number(degree)) ? Number(degree) : 0;
   return ((safe % 360) + 360) % 360;
 }
-
 const RESET_NORTH_EVENT = 'vr360-reset-north';
-
 function latLonToXYZ(targetLat, targetLon, centerLat, centerLon, radius = 9.5) {
   const R = 6371;
   const lat1 = (centerLat * Math.PI) / 180;
@@ -277,7 +235,7 @@ function latLonToXYZ(targetLat, targetLon, centerLat, centerLon, radius = 9.5) {
   const distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const y = Math.sin(dLon) * Math.cos(lat2);
   const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-  const bearing = (((Math.atan2(y, x) * 180) / Math.PI) + 360) % 360;
+  const bearing = ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
   const brRad = (bearing * Math.PI) / 180;
   return {
     x: radius * Math.sin(brRad),
@@ -287,12 +245,14 @@ function latLonToXYZ(targetLat, targetLon, centerLat, centerLon, radius = 9.5) {
     distance,
   };
 }
-
 function getNearbySpotCoords(spot) {
   let geom = spot?.geometry;
   if (!geom && spot?.geometry_data) {
     try {
-      geom = typeof spot.geometry_data === 'string' ? JSON.parse(spot.geometry_data) : spot.geometry_data;
+      geom =
+        typeof spot.geometry_data === 'string'
+          ? JSON.parse(spot.geometry_data)
+          : spot.geometry_data;
     } catch {
       geom = null;
     }
@@ -306,41 +266,45 @@ function getNearbySpotCoords(spot) {
   if (Number.isFinite(lon) && Number.isFinite(lat)) return [lon, lat];
   return null;
 }
-
 function renderNearbySpots(root, nearbySpots, spotCoordinates, onClickRef, cursorProgressRef) {
   while (root.firstChild) root.removeChild(root.firstChild);
   if (!nearbySpots?.length || !spotCoordinates) return;
-
   const [centerLng, centerLat] = spotCoordinates;
-
   nearbySpots.forEach((spot) => {
     const coords = getNearbySpotCoords(spot);
     if (!coords) return;
     const [lon, lat] = coords;
-
     const coord3 = latLonToXYZ(lat, lon, centerLat, centerLng);
     const s = Math.max(0.25, Math.min(0.5, 0.4 / (1 + coord3.distance * 0.3)));
     const sF = (s * 1.3).toFixed(3);
     const facingAngle = ((360 - coord3.bearing) % 360).toFixed(1);
-
     const group = document.createElement('a-entity');
     group.setAttribute('position', `${coord3.x.toFixed(3)} ${coord3.y} ${coord3.z.toFixed(3)}`);
-
     const body = document.createElement('a-entity');
     body.setAttribute('rotation', `0 ${facingAngle} 0`);
     body.setAttribute('scale', `${s} ${s} ${s}`);
-    body.setAttribute('animation__focus', `property: scale; to: ${sF} ${sF} ${sF}; startEvents: mouseenter; dur: 300; easing: easeOutElastic`);
-    body.setAttribute('animation__unfocus', `property: scale; to: ${s} ${s} ${s}; startEvents: mouseleave; dur: 400; easing: easeOutCubic`);
-
+    body.setAttribute(
+      'animation__focus',
+      `property: scale; to: ${sF} ${sF} ${sF}; startEvents: mouseenter; dur: 300; easing: easeOutElastic`
+    );
+    body.setAttribute(
+      'animation__unfocus',
+      `property: scale; to: ${s} ${s} ${s}; startEvents: mouseleave; dur: 400; easing: easeOutCubic`
+    );
     const pulseRing = document.createElement('a-ring');
     pulseRing.setAttribute('radius-inner', '0.2');
     pulseRing.setAttribute('radius-outer', '0.5');
     pulseRing.setAttribute('color', '#FFD700');
     pulseRing.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.7');
-    pulseRing.setAttribute('animation__scale', 'property: scale; from: 1 1 1; to: 4 4 4; dur: 1800; loop: true; easing: easeInOutSine');
-    pulseRing.setAttribute('animation__opacity', 'property: material.opacity; from: 0.7; to: 0; dur: 1800; loop: true; easing: easeInOutSine');
+    pulseRing.setAttribute(
+      'animation__scale',
+      'property: scale; from: 1 1 1; to: 4 4 4; dur: 1800; loop: true; easing: easeInOutSine'
+    );
+    pulseRing.setAttribute(
+      'animation__opacity',
+      'property: material.opacity; from: 0.7; to: 0; dur: 1800; loop: true; easing: easeInOutSine'
+    );
     body.appendChild(pulseRing);
-
     const outerRing = document.createElement('a-ring');
     outerRing.setAttribute('position', '0 0 0.001');
     outerRing.setAttribute('radius-inner', '0.7');
@@ -348,7 +312,6 @@ function renderNearbySpots(root, nearbySpots, spotCoordinates, onClickRef, curso
     outerRing.setAttribute('color', '#FFEB3B');
     outerRing.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.85');
     body.appendChild(outerRing);
-
     const icon = document.createElement('a-image');
     icon.setAttribute('src', cameraDroneIcon);
     icon.setAttribute('width', '0.35');
@@ -358,11 +321,13 @@ function renderNearbySpots(root, nearbySpots, spotCoordinates, onClickRef, curso
       'property: position; to: 0 0.05 0; dir: alternate; dur: 1500; loop: true; easing: easeInOutSine'
     );
     body.appendChild(icon);
-
     const clickTarget = document.createElement('a-circle');
     clickTarget.setAttribute('radius', '1.0');
     clickTarget.setAttribute('position', '0 0 0.002');
-    clickTarget.setAttribute('material', 'transparent: true; opacity: 0; depthTest: false; depthWrite: false');
+    clickTarget.setAttribute(
+      'material',
+      'transparent: true; opacity: 0; depthTest: false; depthWrite: false'
+    );
     clickTarget.classList.add('hs-click-target');
     clickTarget.addEventListener('click', () => {
       onClickRef.current?.(spot);
@@ -370,9 +335,14 @@ function renderNearbySpots(root, nearbySpots, spotCoordinates, onClickRef, curso
     clickTarget.addEventListener('mouseenter', () => {
       const ring = cursorProgressRef?.current;
       if (!ring) return;
-      ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0.8; transparent: true');
-      ring.setAttribute('animation__progress',
-        'property: geometry.thetaLength; from: 0; to: 360; dur: 1500; easing: linear');
+      ring.setAttribute(
+        'material',
+        'color: #00ff00; shader: flat; opacity: 0.8; transparent: true'
+      );
+      ring.setAttribute(
+        'animation__progress',
+        'property: geometry.thetaLength; from: 0; to: 360; dur: 1500; easing: linear'
+      );
     });
     clickTarget.addEventListener('mouseleave', () => {
       const ring = cursorProgressRef?.current;
@@ -382,29 +352,28 @@ function renderNearbySpots(root, nearbySpots, spotCoordinates, onClickRef, curso
       ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0; transparent: true');
     });
     body.appendChild(clickTarget);
-
     group.appendChild(body);
     root.appendChild(group);
   });
 }
-
 function renderHotspots(root, hotspots, onClickRef, cursorProgressRef) {
   while (root.firstChild) {
     disposeHotspotEntity(root.firstChild);
     root.removeChild(root.firstChild);
   }
-
   hotspots
     .filter((hotspot) => hotspot.is_active !== false && hotspot.visible !== false)
     .forEach((hotspot) => {
-      const pos = hotspot.position || { x: 0, y: 1.6, z: -3 };
+      const pos = hotspot.position || {
+        x: 0,
+        y: 1.6,
+        z: -3,
+      };
       const entity = document.createElement('a-entity');
       entity.setAttribute('position', `${pos.x ?? 0} ${pos.y ?? 1.6} ${pos.z ?? -3}`);
-
       const labelEntity = document.createElement('a-entity');
       const label = normalizeLabel(hotspot.name);
       const labelMesh = createHotspotLabel(label);
-
       if (labelMesh) {
         labelEntity.setObject3D('hotspot-label', labelMesh);
       } else {
@@ -420,15 +389,12 @@ function renderHotspots(root, hotspots, onClickRef, cursorProgressRef) {
           negate: false,
         });
       }
-
       labelEntity.setAttribute('face-camera', '');
-
       const targetSceneId = hotspot.target_scene_id || hotspot.linked_scene_id;
       const targetSpotId = hotspot.linked_spot_id ?? hotspot.target_spot_id;
       const targetSpotSlug = hotspot.target_spot_slug;
       const hasNavigation = Boolean(targetSceneId || targetSpotId || targetSpotSlug);
       const hasSceneNav = Boolean(targetSceneId);
-
       const dot = document.createElement('a-entity');
       dot.setAttribute('geometry', 'primitive: sphere; radius: 0.1');
       dot.setAttribute(
@@ -436,7 +402,6 @@ function renderHotspots(root, hotspots, onClickRef, cursorProgressRef) {
         `color: ${hasSceneNav ? '#f59e0b' : '#94a3b8'}; opacity: 0.9; transparent: true; depthTest: false`
       );
       entity.appendChild(dot);
-
       if (hasNavigation) {
         const clickSphere = document.createElement('a-entity');
         clickSphere.setAttribute('geometry', 'primitive: sphere; radius: 0.22');
@@ -451,30 +416,35 @@ function renderHotspots(root, hotspots, onClickRef, cursorProgressRef) {
         clickSphere.addEventListener('mouseenter', () => {
           const ring = cursorProgressRef?.current;
           if (!ring) return;
-          ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0.8; transparent: true');
-          ring.setAttribute('animation__progress',
-            'property: geometry.thetaLength; from: 0; to: 360; dur: 1500; easing: linear');
+          ring.setAttribute(
+            'material',
+            'color: #00ff00; shader: flat; opacity: 0.8; transparent: true'
+          );
+          ring.setAttribute(
+            'animation__progress',
+            'property: geometry.thetaLength; from: 0; to: 360; dur: 1500; easing: linear'
+          );
         });
         clickSphere.addEventListener('mouseleave', () => {
           const ring = cursorProgressRef?.current;
           if (!ring) return;
           ring.removeAttribute('animation__progress');
           ring.setAttribute('geometry', 'thetaLength: 0');
-          ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0; transparent: true');
+          ring.setAttribute(
+            'material',
+            'color: #00ff00; shader: flat; opacity: 0; transparent: true'
+          );
         });
         entity.appendChild(clickSphere);
       }
-
       entity.appendChild(labelEntity);
       root.appendChild(entity);
     });
 }
-
 function getNarrationRawUrl(scene) {
   if (!scene) return '';
   return scene.narration_audio_url || scene.ambient_sound_url || '';
 }
-
 export default function Vr360SceneViewer({
   scene,
   hotspots = [],
@@ -502,7 +472,6 @@ export default function Vr360SceneViewer({
   const initialCameraYawRef = useRef(0);
   const latestImageUrlRef = useRef(null);
   const isNarrationAutoPlayRef = useRef(true);
-
   const [aframeReady, setAframeReady] = useState(!!window.AFRAME);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraReadyVersion, setCameraReadyVersion] = useState(0);
@@ -515,16 +484,13 @@ export default function Vr360SceneViewer({
   const fovAngle = useFovStore((state) => state.fovAngle);
   const setFovAngle = useFovStore((state) => state.setFovAngle);
   const fovAngleRef = useRef(fovAngle);
-
   useEffect(() => {
     fovAngleRef.current = fovAngle;
   }, [fovAngle]);
-
   const onHotspotClickRef = useRef(onHotspotClick);
   useEffect(() => {
     onHotspotClickRef.current = onHotspotClick;
   }, [onHotspotClick]);
-
   const nearbyHotspotsRootRef = useRef(null);
   const cursorProgressRef = useRef(null);
   const isVrModeRef = useRef(false);
@@ -532,28 +498,28 @@ export default function Vr360SceneViewer({
   const nearbySpotsPropRef = useRef(nearbySpots);
   const spotCoordinatesPropRef = useRef(spotCoordinates);
   const hotspotsPropRef = useRef(hotspots);
-  useEffect(() => { onNearbySpotClickRef.current = onNearbySpotClick; }, [onNearbySpotClick]);
-  useEffect(() => { nearbySpotsPropRef.current = nearbySpots; });
-  useEffect(() => { spotCoordinatesPropRef.current = spotCoordinates; });
-  useEffect(() => { hotspotsPropRef.current = hotspots; });
-
+  useEffect(() => {
+    onNearbySpotClickRef.current = onNearbySpotClick;
+  }, [onNearbySpotClick]);
+  useEffect(() => {
+    nearbySpotsPropRef.current = nearbySpots;
+  });
+  useEffect(() => {
+    spotCoordinatesPropRef.current = spotCoordinates;
+  });
+  useEffect(() => {
+    hotspotsPropRef.current = hotspots;
+  });
   const narrationRawUrl = getNarrationRawUrl(scene);
   const narrationUrl = useMemo(
     () => (narrationRawUrl ? withBaseUrl(narrationRawUrl) || narrationRawUrl : ''),
     [narrationRawUrl]
   );
-
   const hasNarration = Boolean(narrationUrl);
-
   const applySceneCamera = useCallback(() => {
     if (!scene || !aCameraRef.current) {
-      console.warn('[VR-DEBUG][cameraRotation] skip applySceneCamera', {
-        hasScene: Boolean(scene),
-        hasCamera: Boolean(aCameraRef.current),
-      });
       return;
     }
-
     const camera = aCameraRef.current;
     const camPos = scene.camera_position || DEFAULT_CAMERA_POSITION;
     const camRot = scene.camera_rotation || DEFAULT_CAMERA_ROTATION;
@@ -561,10 +527,8 @@ export default function Vr360SceneViewer({
     const rotY = Number(camRot.y ?? 0);
     const rotZ = Number(camRot.z ?? 0);
     initialCameraYawRef.current = rotY;
-
     camera.setAttribute('position', `${camPos.x ?? 0} ${camPos.y ?? 1.6} ${camPos.z ?? 0}`);
     camera.setAttribute('rotation', `${rotX} ${rotY} ${rotZ}`);
-
     const lookControls = camera.components?.['look-controls'];
     if (lookControls?.yawObject && lookControls?.pitchObject) {
       lookControls.yawObject.rotation.y = toRadians(rotY);
@@ -573,50 +537,29 @@ export default function Vr360SceneViewer({
         lookControls.pitchObject.rotation.z = toRadians(rotZ);
       }
     }
-
     const initialBearing = 0;
     lastHeadingRef.current = null;
     window.dispatchEvent(
       new CustomEvent('smooth-fov-update', {
-        detail: { bearing: initialBearing },
+        detail: {
+          bearing: initialBearing,
+        },
       })
     );
-
-    console.debug('[VR-DEBUG][cameraRotation] applied scene camera rotation', {
-      sceneId: scene?.id ?? null,
-      camera_rotation: camRot,
-      aframeRotationAttr: camera.getAttribute('rotation'),
-      hasLookControls: Boolean(lookControls),
-      hasYawObject: Boolean(lookControls?.yawObject),
-      yawDeg: lookControls?.yawObject?.rotation
-        ? toDegrees(lookControls.yawObject.rotation.y)
-        : null,
-      initialCameraYaw: initialCameraYawRef.current,
-      emittedBearing: initialBearing,
-      note: 'MiniMap stays north; camera_rotation.y is the camera center offset, not a panorama/hotspot rotation.',
-    });
   }, [scene]);
-
   useEffect(() => {
-    console.debug('[VR-DEBUG][mount] window.AFRAME at mount:', !!window.AFRAME, '| aframeReady state:', !!window.AFRAME);
     loadAFrame().then(() => {
-      console.debug('[VR-DEBUG][loadAFrame] resolved → setAframeReady(true)');
       registerFaceCameraComponent();
       setAframeReady(true);
     });
   }, []);
-
   useEffect(() => {
-    console.debug('[VR-DEBUG][sceneCreate] aframeReady:', aframeReady, '| containerRef:', !!containerRef.current, '| aSceneRef already exists:', !!aSceneRef.current);
     if (!aframeReady || !containerRef.current) return;
     if (aSceneRef.current) return;
-
-    console.debug('[VR-DEBUG][sceneCreate] Creating a-scene now. latestImageUrl at creation time:', latestImageUrlRef.current);
     const container = containerRef.current;
     const aScene = document.createElement('a-scene');
     aScene.setAttribute('embedded', '');
     aScene.setAttribute('vr-mode-ui', 'enabled: true');
-
     if (!document.getElementById('vr-btn-fix')) {
       const s = document.createElement('style');
       s.id = 'vr-btn-fix';
@@ -630,45 +573,39 @@ export default function Vr360SceneViewer({
     );
     aScene.style.height = '100%';
     aScene.style.width = '100%';
-
     const aSky = document.createElement('a-sky');
     aSky.setAttribute('crossorigin', 'anonymous');
     aSky.setAttribute('segments-width', '32');
     aSky.setAttribute('segments-height', '16');
     aScene.appendChild(aSky);
-
     const hotspotsRoot = document.createElement('a-entity');
     aScene.appendChild(hotspotsRoot);
-
     const nearbyHotspotsRoot = document.createElement('a-entity');
     aScene.appendChild(nearbyHotspotsRoot);
-
     const aCamera = document.createElement('a-camera');
     aCamera.setAttribute('look-controls', 'enabled: true');
     aCamera.setAttribute('cursor', 'rayOrigin: mouse');
     aCamera.setAttribute('raycaster', 'objects: .hs-click-target');
-
     const aCursor = document.createElement('a-entity');
     aCursor.setAttribute('cursor', 'fuse: true; fuseTimeout: 1500');
     aCursor.setAttribute('position', '0 0 -0.5');
     aCursor.setAttribute('geometry', 'primitive: ring; radiusInner: 0.008; radiusOuter: 0.012');
     aCursor.setAttribute('material', 'color: #00ffff; shader: flat; opacity: 0.9');
     aCursor.setAttribute('raycaster', 'objects: .hs-click-target; far: 20');
-
     const aCursorProgress = document.createElement('a-ring');
     aCursorProgress.setAttribute('radius-inner', '0.014');
     aCursorProgress.setAttribute('radius-outer', '0.018');
-    aCursorProgress.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0; transparent: true');
+    aCursorProgress.setAttribute(
+      'material',
+      'color: #00ff00; shader: flat; opacity: 0; transparent: true'
+    );
     aCursorProgress.setAttribute('theta-start', '0');
     aCursorProgress.setAttribute('theta-length', '0');
     aCursorProgress.setAttribute('position', '0 0 0.001');
     aCursor.appendChild(aCursorProgress);
     cursorProgressRef.current = aCursorProgress;
-
     aCamera.appendChild(aCursor);
-
     aScene.appendChild(aCamera);
-
     aSkyRef.current = aSky;
     hotspotsRootRef.current = hotspotsRoot;
     nearbyHotspotsRootRef.current = nearbyHotspotsRoot;
@@ -677,7 +614,6 @@ export default function Vr360SceneViewer({
     setCameraReady(true);
     setCameraReadyVersion((version) => version + 1);
     container.appendChild(aScene);
-
     aScene.addEventListener('enter-vr', () => {
       isVrModeRef.current = true;
       aCamera.setAttribute('look-controls', 'enabled: true; touchEnabled: false');
@@ -686,37 +622,33 @@ export default function Vr360SceneViewer({
       isVrModeRef.current = false;
       aCamera.setAttribute('look-controls', 'enabled: true; touchEnabled: true');
     });
-
     const applyPendingImage = () => {
       const url = latestImageUrlRef.current;
-      console.debug('[VR-DEBUG][applyPendingImage] called. url:', url, '| aSkyRef:', !!aSkyRef.current, '| aScene.hasLoaded:', aScene.hasLoaded);
       if (url && aSkyRef.current) {
         aSkyRef.current.setAttribute('src', url);
         aSkyRef.current.setAttribute('color', '#ffffff');
-        console.debug('[VR-DEBUG][applyPendingImage] setAttribute src done →', url);
-      } else {
-        console.warn('[VR-DEBUG][applyPendingImage] SKIPPED — url empty or aSkyRef null', { url, aSky: !!aSkyRef.current });
       }
     };
-    console.debug('[VR-DEBUG][sceneCreate] aScene.hasLoaded at appendChild time:', aScene.hasLoaded);
     if (aScene.hasLoaded) {
       applyPendingImage();
     } else {
-      aScene.addEventListener('loaded', () => {
-        console.debug('[VR-DEBUG][sceneCreate] a-scene "loaded" event fired');
-        applyPendingImage();
-        setCameraReady(true);
-        setCameraReadyVersion((version) => version + 1);
-      }, { once: true });
+      aScene.addEventListener(
+        'loaded',
+        () => {
+          applyPendingImage();
+          setCameraReady(true);
+          setCameraReadyVersion((version) => version + 1);
+        },
+        {
+          once: true,
+        }
+      );
     }
-
     aCamera.addEventListener('componentinitialized', (event) => {
       if (event?.detail?.name !== 'look-controls') return;
-      console.debug('[VR-DEBUG][cameraRotation] look-controls initialized');
       setCameraReady(true);
       setCameraReadyVersion((version) => version + 1);
     });
-
     renderHotspots(hotspotsRoot, hotspotsPropRef.current, onHotspotClickRef, cursorProgressRef);
     renderNearbySpots(
       nearbyHotspotsRoot,
@@ -725,7 +657,6 @@ export default function Vr360SceneViewer({
       onNearbySpotClickRef,
       cursorProgressRef
     );
-
     return () => {
       try {
         container.removeChild(aScene);
@@ -739,84 +670,51 @@ export default function Vr360SceneViewer({
       aCameraRef.current = null;
     };
   }, [aframeReady]);
-
   useEffect(() => {
     if (!scene) return;
-
     const rawUrl = scene.equirectangular_image_url;
     const imageUrl = rawUrl ? withBaseUrl(rawUrl) || rawUrl : '';
-
     latestImageUrlRef.current = imageUrl;
-
-    console.debug('[VR-DEBUG][imageLoad] effect triggered. scene.id:', scene?.id, '| rawUrl:', rawUrl, '| resolvedUrl:', imageUrl, '| aSkyRef ready:', !!aSkyRef.current, '| aframeReady:', aframeReady);
-
     if (imageUrl) {
       setIsSceneImageLoading(true);
-      const t0 = performance.now();
       const image = new Image();
       image.crossOrigin = 'anonymous';
       image.decoding = 'async';
-
       image.onload = () => {
-        const elapsed = (performance.now() - t0).toFixed(0);
-        console.debug(`[VR-DEBUG][imageLoad] onload fired in ${elapsed}ms | aSkyRef ready:`, !!aSkyRef.current, '| url:', imageUrl);
         if (aSkyRef.current) {
           aSkyRef.current.setAttribute('src', imageUrl);
           aSkyRef.current.setAttribute('color', '#ffffff');
-          console.debug('[VR-DEBUG][imageLoad] setAttribute src → applied to a-sky');
-        } else {
-          console.warn('[VR-DEBUG][imageLoad] onload fired but aSkyRef is NULL — image cannot be applied yet. Will rely on applyPendingImage via loaded event.');
         }
         setIsSceneImageLoading(false);
       };
-
-      image.onerror = (err) => {
-        console.error('[VR-DEBUG][imageLoad] image load ERROR', { url: imageUrl, err });
+      image.onerror = () => {
         setIsSceneImageLoading(false);
       };
-
       image.src = imageUrl;
-      console.debug('[VR-DEBUG][imageLoad] new Image().src set, fetching…');
-
       return () => {
         image.onload = null;
         image.onerror = null;
       };
     }
-
-    console.debug('[VR-DEBUG][imageLoad] no imageUrl — clearing sky');
     setIsSceneImageLoading(false);
     if (aSkyRef.current) {
       aSkyRef.current.removeAttribute('src');
       aSkyRef.current.setAttribute('color', '#1a1a2e');
     }
   }, [scene?.id, scene?.equirectangular_image_url]);
-
   useEffect(() => {
     applySceneCamera();
   }, [applySceneCamera, cameraReady, cameraReadyVersion]);
-
   useEffect(() => {
     const sceneFov = Number(scene?.camera_fov);
     const nextFov = Number.isFinite(sceneFov) ? sceneFov : DEFAULT_FOV;
-    console.debug('[VR-DEBUG][fovSync][SceneViewer] apply scene camera_fov to FOV store', {
-      sceneId: scene?.id ?? null,
-      rawCameraFov: scene?.camera_fov ?? null,
-      resolvedFov: nextFov,
-      previousStoreFovAngle: fovAngleRef.current,
-    });
     setFovAngle(nextFov);
   }, [scene?.id, scene?.camera_fov, setFovAngle]);
-
   useEffect(() => {
     const cameraEl = aCameraRef.current;
     if (!cameraEl) return;
-
     const currentFov = Number(fovAngle) || Number(scene?.camera_fov) || DEFAULT_FOV;
     const cameraObj = cameraEl.getObject3D('camera');
-
-    console.debug('[VR-DEBUG][fovUpdate] fovAngle:', fovAngle, '| resolved:', currentFov, '| THREE camera fov before:', cameraObj?.fov ?? 'null(not ready)');
-
     // Chỉ dùng setAttribute — KHÔNG dùng animation__fov cùng lúc.
     // animation__fov chạy 300ms từ old→new, nhưng setAttribute đã jump ngay lập tức
     // → 2 mechanism xung đột, camera giật qua lại giữa 2 giá trị.
@@ -824,22 +722,14 @@ export default function Vr360SceneViewer({
 
     // Direct THREE update để render ngay lập tức, không chờ A-Frame component tick
     if (cameraObj) {
-      const prevFov = cameraObj.fov;
       cameraObj.fov = currentFov;
       cameraObj.updateProjectionMatrix();
-      console.debug('[VR-DEBUG][fovUpdate] THREE camera fov:', prevFov, '→', cameraObj.fov);
-    } else {
-      // Camera chưa ready (initial mount) — setAttribute sẽ được A-Frame apply khi camera init xong
-      console.debug('[VR-DEBUG][fovUpdate] THREE camera not ready yet, setAttribute(fov) queued by A-Frame');
     }
   }, [fovAngle, scene?.id, scene?.camera_fov]);
-
   useEffect(() => {
     const root = hotspotsRootRef.current;
     if (!root) return;
-
     renderHotspots(root, hotspots, onHotspotClickRef, cursorProgressRef);
-
     return () => {
       while (root.firstChild) {
         disposeHotspotEntity(root.firstChild);
@@ -847,13 +737,11 @@ export default function Vr360SceneViewer({
       }
     };
   }, [hotspots, scene?.id]);
-
   useEffect(() => {
     const root = nearbyHotspotsRootRef.current;
     if (!root) return;
     renderNearbySpots(root, nearbySpots, spotCoordinates, onNearbySpotClickRef, cursorProgressRef);
   }, [nearbySpots, spotCoordinates, scene?.id]);
-
   useEffect(() => {
     const sceneVolume = Number(scene?.ambient_sound_volume);
     if (Number.isFinite(sceneVolume)) {
@@ -864,32 +752,25 @@ export default function Vr360SceneViewer({
     setIsNarrationAutoPlay(nextAutoPlay);
     setIsNarrationMuted(false);
   }, [scene?.id]);
-
   useEffect(() => {
     if (narrationAudioRef.current) {
       narrationAudioRef.current.pause();
       narrationAudioRef.current.src = '';
       narrationAudioRef.current = null;
     }
-
     setIsNarrationPlaying(false);
-
     if (!narrationUrl) return;
-
     const audio = new Audio(narrationUrl);
     audio.preload = 'auto';
     audio.loop = !scene?.narration_audio_url && Boolean(scene?.ambient_sound_loop);
     audio.volume = clampVolume(narrationVolume) / 100;
     audio.muted = isNarrationMuted;
-
     const handlePlay = () => setIsNarrationPlaying(true);
     const handlePause = () => setIsNarrationPlaying(false);
     const handleEnd = () => setIsNarrationPlaying(false);
-
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
     audio.addEventListener('ended', handleEnd);
-
     narrationAudioRef.current = audio;
 
     // Đọc từ ref thay vì state để tránh audio effect bị re-run khi autoplay thay đổi
@@ -898,7 +779,6 @@ export default function Vr360SceneViewer({
         setIsNarrationPlaying(false);
       });
     }
-
     return () => {
       // Reset ngay khi cleanup, không chờ 'pause' event vì listener sẽ bị xóa ngay sau
       setIsNarrationPlaying(false);
@@ -911,47 +791,34 @@ export default function Vr360SceneViewer({
         narrationAudioRef.current = null;
       }
     };
-  }, [
-    narrationUrl,
-    scene?.id,
-    scene?.ambient_sound_loop,
-    scene?.narration_audio_url,
-  ]);
-
+  }, [narrationUrl, scene?.id, scene?.ambient_sound_loop, scene?.narration_audio_url]);
   useEffect(() => {
     const audio = narrationAudioRef.current;
     if (!audio) return;
     audio.volume = clampVolume(narrationVolume) / 100;
     audio.muted = isNarrationMuted;
   }, [narrationVolume, isNarrationMuted]);
-
   const handleTogglePlay = useCallback(() => {
     const audio = narrationAudioRef.current;
     if (!audio) return;
-
     if (audio.paused) {
       audio.play().catch(() => {
         setIsNarrationPlaying(false);
       });
       return;
     }
-
     audio.pause();
   }, []);
-
   useEffect(() => {
     if (!narrationToggleRef) return;
     narrationToggleRef.current = handleTogglePlay;
   }, [narrationToggleRef, handleTogglePlay]);
-
   const handleToggleMute = useCallback(() => {
     setIsNarrationMuted((prev) => !prev);
   }, []);
-
   const handleResetView = useCallback(() => {
     const cameraEl = aCameraRef.current;
     if (!cameraEl) return;
-
     const baseYaw = initialCameraYawRef.current;
     cameraEl.setAttribute('rotation', `0 ${baseYaw} 0`);
     const lookControls = cameraEl.components?.['look-controls'];
@@ -964,22 +831,20 @@ export default function Vr360SceneViewer({
         lookControls.pitchObject.rotation.z = 0;
       }
     }
-
     lastHeadingRef.current = 0;
-    window.dispatchEvent(new CustomEvent('smooth-fov-update', { detail: { bearing: 0 } }));
+    window.dispatchEvent(
+      new CustomEvent('smooth-fov-update', {
+        detail: {
+          bearing: 0,
+        },
+      })
+    );
   }, []);
-
   useEffect(() => {
-    console.debug('[VR-DEBUG][emitHeading] effect triggered. scene:', scene?.id, '| aCameraRef ready:', !!aCameraRef.current, '| cameraReady:', cameraReady, '| cameraReadyVersion:', cameraReadyVersion, '| aframeReady:', aframeReady);
     if (!scene || !aCameraRef.current || !cameraReady) {
-      console.warn('[VR-DEBUG][emitHeading] Early return — scene:', !!scene, '| aCameraRef:', !!aCameraRef.current, '| cameraReady:', cameraReady, '→ RAF NOT started yet');
       return undefined;
     }
-
-    console.debug('[VR-DEBUG][emitHeading] Starting RAF heading loop for scene', scene?.id);
     let isAlive = true;
-    let frameCount = 0;
-
     const emitHeading = () => {
       if (!isAlive) return;
       if (isVrModeRef.current) {
@@ -988,53 +853,36 @@ export default function Vr360SceneViewer({
       }
       const cameraEl = aCameraRef.current;
       if (!cameraEl) return;
-
       const lookControls = cameraEl.components?.['look-controls'];
       let nextHeading = null;
-      let source = 'none';
-
       if (lookControls?.yawObject?.rotation) {
         const yawRad = lookControls.yawObject.rotation.y;
-        const yawDeg = toDegrees(yawRad);
+        const yawDeg = (yawRad * 180) / Math.PI;
         const yawDelta = yawDeg - initialCameraYawRef.current;
         nextHeading = normalizeBearing(-yawDelta);
-        source = 'yawObject';
-
-        // Log chi tiết mỗi 120 frame (~2s) để debug góc lệch
-        frameCount += 1;
-        if (frameCount % 120 === 0) {
-          const aframeDeclaredRotY = Number(cameraEl.getAttribute('rotation')?.y);
-          console.debug('[VR-DEBUG][emitHeading] yawRad:', yawRad.toFixed(4), '| yawDeg:', yawDeg.toFixed(2), '| initialCameraYaw:', initialCameraYawRef.current.toFixed(2), '| bearing=-(yaw-initial)→normalized:', nextHeading.toFixed(2), '| aframe rotation.y attr:', aframeDeclaredRotY.toFixed(2), '| look right → yaw delta < 0 → bearing > 0 (CW) ✓');
-        }
       } else {
         const rotY = Number(cameraEl.getAttribute('rotation')?.y);
         if (Number.isFinite(rotY)) {
           const yawDelta = rotY - initialCameraYawRef.current;
           nextHeading = normalizeBearing(-yawDelta);
-          source = 'getAttribute(rotation)';
-        }
-        if (frameCount === 0) {
-          console.warn('[VR-DEBUG][emitHeading] look-controls.yawObject not available — fallback to getAttribute(rotation). source:', source, '| lookControls:', !!lookControls, '| yawObject:', !!lookControls?.yawObject);
         }
       }
-
       if (nextHeading != null) {
         const prevHeading = lastHeadingRef.current;
         if (prevHeading == null || Math.abs(prevHeading - nextHeading) > 0.2) {
           lastHeadingRef.current = nextHeading;
           window.dispatchEvent(
             new CustomEvent('smooth-fov-update', {
-              detail: { bearing: nextHeading },
+              detail: {
+                bearing: nextHeading,
+              },
             })
           );
         }
       }
-
       headingRafRef.current = window.requestAnimationFrame(emitHeading);
     };
-
     headingRafRef.current = window.requestAnimationFrame(emitHeading);
-
     return () => {
       isAlive = false;
       if (headingRafRef.current) {
@@ -1044,22 +892,18 @@ export default function Vr360SceneViewer({
       lastHeadingRef.current = null;
     };
   }, [scene?.id, aframeReady, cameraReady, cameraReadyVersion]);
-
   useEffect(() => {
     const handleResetNorthRequest = () => {
       handleResetView();
     };
-
     window.addEventListener(RESET_NORTH_EVENT, handleResetNorthRequest);
     return () => {
       window.removeEventListener(RESET_NORTH_EVENT, handleResetNorthRequest);
     };
   }, [handleResetView]);
-
   if (!aframeReady) {
     return <Skeleton className={cn('h-full w-full', className)} />;
   }
-
   if (!scene) {
     return (
       <div
@@ -1073,7 +917,6 @@ export default function Vr360SceneViewer({
       </div>
     );
   }
-
   return (
     <div className={cn('relative h-full w-full', className)}>
       <div ref={containerRef} className="h-full w-full" />

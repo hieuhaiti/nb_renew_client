@@ -55,7 +55,13 @@ export default function Login() {
       const payload = res.data || res;
 
       if (payload.accessToken || payload.token) {
-        tokenManager.setTokens(payload.accessToken || payload.token, payload.refreshToken || null);
+        tokenManager.setTokens(
+          payload.accessToken || payload.token,
+          payload.refreshToken || null,
+          payload.expiresIn || null,
+          payload.refreshExpiresIn || null,
+          payload.tokenType || 'Bearer'
+        );
       }
       setUser(payload.user || payload);
       toast.success(t('auth.login.success'));

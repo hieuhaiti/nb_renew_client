@@ -31,10 +31,8 @@ import {
   Users,
 } from 'lucide-react';
 import { withBaseUrl } from '@/lib/utils';
-
 const SCENE_PREVIEW =
   'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=300&q=80';
-
 const C = {
   primary: '#0f9f8f',
   primaryDark: '#05796d',
@@ -45,7 +43,6 @@ const C = {
   light: '#f5fbff',
   border: '#e2edf5',
 };
-
 const panelStyle = {
   background: 'rgba(255,255,255,0.96)',
   border: `1px solid ${C.border}`,
@@ -55,7 +52,6 @@ const panelStyle = {
   display: 'flex',
   flexDirection: 'column',
 };
-
 const panelHeadStyle = {
   padding: '16px 18px',
   borderBottom: `1px solid ${C.border}`,
@@ -73,12 +69,10 @@ function normalizeList(data) {
   if (Array.isArray(payload)) return payload;
   return payload?.items || payload?.spots || payload?.scenes || payload?.hotspots || [];
 }
-
 function toNumber(value) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
-
 function parseGeometryValue(value) {
   if (!value) return null;
   if (typeof value === 'object') return value;
@@ -89,7 +83,6 @@ function parseGeometryValue(value) {
     return null;
   }
 }
-
 function getCoordinatesFromSpot(spot) {
   if (!spot || typeof spot !== 'object') return null;
   const geometry =
@@ -139,7 +132,11 @@ function SceneCard({ scene, index, isSelected, onClick }) {
         outline: 'none',
       }}
     >
-      <div style={{ position: 'relative' }}>
+      <div
+        style={{
+          position: 'relative',
+        }}
+      >
         <div
           style={{
             height: '74px',
@@ -167,7 +164,11 @@ function SceneCard({ scene, index, isSelected, onClick }) {
           </span>
         )}
       </div>
-      <div style={{ minWidth: 0 }}>
+      <div
+        style={{
+          minWidth: 0,
+        }}
+      >
         <span
           style={{
             fontSize: '11px',
@@ -212,7 +213,6 @@ function SceneCard({ scene, index, isSelected, onClick }) {
     </article>
   );
 }
-
 function SceneCardSkeleton() {
   return (
     <div
@@ -225,16 +225,45 @@ function SceneCardSkeleton() {
         borderRadius: '18px',
       }}
     >
-      <Skeleton style={{ height: '74px', borderRadius: '14px' }} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '4px' }}>
-        <Skeleton style={{ height: '12px', width: '60px', borderRadius: '6px' }} />
-        <Skeleton style={{ height: '16px', width: '100%', borderRadius: '6px' }} />
-        <Skeleton style={{ height: '12px', width: '80%', borderRadius: '6px' }} />
+      <Skeleton
+        style={{
+          height: '74px',
+          borderRadius: '14px',
+        }}
+      />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+          paddingTop: '4px',
+        }}
+      >
+        <Skeleton
+          style={{
+            height: '12px',
+            width: '60px',
+            borderRadius: '6px',
+          }}
+        />
+        <Skeleton
+          style={{
+            height: '16px',
+            width: '100%',
+            borderRadius: '6px',
+          }}
+        />
+        <Skeleton
+          style={{
+            height: '12px',
+            width: '80%',
+            borderRadius: '6px',
+          }}
+        />
       </div>
     </div>
   );
 }
-
 function MetaBox({ label, value }) {
   return (
     <div
@@ -256,11 +285,18 @@ function MetaBox({ label, value }) {
       >
         {value ?? '-'}
       </b>
-      <span style={{ fontSize: '12px', color: C.muted, fontWeight: 700 }}>{label}</span>
+      <span
+        style={{
+          fontSize: '12px',
+          color: C.muted,
+          fontWeight: 700,
+        }}
+      >
+        {label}
+      </span>
     </div>
   );
 }
-
 function LegendBadge({ children }) {
   return (
     <span
@@ -278,7 +314,6 @@ function LegendBadge({ children }) {
     </span>
   );
 }
-
 function ActionBtn({ primary, onClick, icon, children }) {
   return (
     <button
@@ -318,7 +353,6 @@ function ActionBtn({ primary, onClick, icon, children }) {
 
 function NoSpotEmptyState({ onBack }) {
   const { t } = useTranslation();
-
   return (
     <div
       style={{
@@ -343,13 +377,34 @@ function NoSpotEmptyState({ onBack }) {
           justifyContent: 'center',
         }}
       >
-        <Box style={{ width: '36px', height: '36px', color: C.primary, opacity: 0.5 }} />
+        <Box
+          style={{
+            width: '36px',
+            height: '36px',
+            color: C.primary,
+            opacity: 0.5,
+          }}
+        />
       </div>
       <div>
-        <h2 style={{ fontSize: '22px', fontWeight: 800, color: C.text, marginBottom: '8px' }}>
+        <h2
+          style={{
+            fontSize: '22px',
+            fontWeight: 800,
+            color: C.text,
+            marginBottom: '8px',
+          }}
+        >
           {t('vr360.no_spot_title')}
         </h2>
-        <p style={{ fontSize: '14px', color: C.muted, lineHeight: 1.6, maxWidth: '340px' }}>
+        <p
+          style={{
+            fontSize: '14px',
+            color: C.muted,
+            lineHeight: 1.6,
+            maxWidth: '340px',
+          }}
+        >
           {t('vr360.no_spot_desc')}
         </p>
       </div>
@@ -372,7 +427,12 @@ function NoSpotEmptyState({ onBack }) {
           boxShadow: '0 12px 26px rgba(15,159,143,.25)',
         }}
       >
-        <ArrowLeft style={{ width: '16px', height: '16px' }} />
+        <ArrowLeft
+          style={{
+            width: '16px',
+            height: '16px',
+          }}
+        />
         {t('vr360.back_to_map')}
       </button>
     </div>
@@ -390,7 +450,6 @@ export default function Vr360PageContent() {
   const narrationToggleRef = useRef(null);
   const [mobilePanelTab, setMobilePanelTab] = useState('scenes');
   const sceneListScrollRef = useRef(null);
-
   const entrySpotId = useMemo(
     () =>
       routeSpotId ??
@@ -399,7 +458,6 @@ export default function Vr360PageContent() {
       location.state?.spot?.spot_id,
     [routeSpotId, location.state]
   );
-
   const [selectedSpotId, setSelectedSpotId] = useState(() =>
     routeSpotId ? String(routeSpotId) : null
   );
@@ -415,41 +473,21 @@ export default function Vr360PageContent() {
 
   // ── data queries ────────────────────────────────────────────────────────────
   const activeSpotId = selectedSpotId || entrySpotId;
-
-  const spotsQuery = useGetAllDataPoints({ limit: 100 });
+  const spotsQuery = useGetAllDataPoints({
+    limit: 100,
+  });
   const spots = useMemo(() => normalizeList(spotsQuery.data), [spotsQuery.data]);
-
-  const spotInfoQuery = useGetDataPointById({ point_id: activeSpotId });
+  const spotInfoQuery = useGetDataPointById({
+    point_id: activeSpotId,
+  });
   const spotInfo = useMemo(() => {
     const payload = spotInfoQuery.data?.data ?? spotInfoQuery.data;
     return payload?.spot ?? payload ?? null;
   }, [spotInfoQuery.data]);
-
-  const scenesQuery = useGetAframeScenes({ spotId: selectedSpotId });
+  const scenesQuery = useGetAframeScenes({
+    spotId: activeSpotId,
+  });
   const scenes = useMemo(() => normalizeList(scenesQuery.data), [scenesQuery.data]);
-
-  useEffect(() => {
-    console.debug('[VR-DEBUG][fovSync][Vr360Page] aframe scenes query normalized', {
-      selectedSpotId,
-      isLoading: scenesQuery.isLoading,
-      isSuccess: scenesQuery.isSuccess,
-      rawDataShape: {
-        hasData: Boolean(scenesQuery.data),
-        dataIsArray: Array.isArray(scenesQuery.data),
-        nestedDataIsArray: Array.isArray(scenesQuery.data?.data),
-        nestedScenesIsArray: Array.isArray(scenesQuery.data?.data?.scenes),
-      },
-      scenesCount: scenes.length,
-      scenes: scenes.map((scene, index) => ({
-        index,
-        id: scene?.id ?? null,
-        name: scene?.name ?? scene?.slug ?? null,
-        camera_fov: scene?.camera_fov ?? null,
-        hasCoordinates: Boolean(scene?.coordinates || scene?.geojson || scene?.geometry_data),
-      })),
-    });
-  }, [selectedSpotId, scenesQuery.data, scenesQuery.isLoading, scenesQuery.isSuccess, scenes]);
-
   const selectedSpot = useMemo(() => {
     if (selectedSpotId == null) return null;
     return (
@@ -457,7 +495,6 @@ export default function Vr360PageContent() {
       null
     );
   }, [spots, selectedSpotId]);
-
   const selectedScene = useMemo(() => {
     if (!scenes.length) return null;
     if (selectedSceneId != null) {
@@ -465,26 +502,21 @@ export default function Vr360PageContent() {
     }
     return scenes.find((s) => s.is_main) ?? scenes[0];
   }, [scenes, selectedSceneId]);
-
   const selectedSceneIndex = useMemo(() => {
     if (!selectedScene?.id) return -1;
     return scenes.findIndex((s) => String(s.id) === String(selectedScene.id));
   }, [scenes, selectedScene?.id]);
-
   const canGoPrevScene = selectedSceneIndex > 0;
   const canGoNextScene = selectedSceneIndex > -1 && selectedSceneIndex < scenes.length - 1;
-
   const hotspotsQuery = useGetAframeSceneHotspots({
-    spotId: selectedSpotId,
+    spotId: activeSpotId,
     sceneId: selectedScene?.id,
   });
   const hotspots = useMemo(() => normalizeList(hotspotsQuery.data), [hotspotsQuery.data]);
-
   const spotCoordinates = useMemo(
     () => getCoordinatesFromSpot(spotInfo) || getCoordinatesFromSpot(selectedSpot),
     [spotInfo, selectedSpot]
   );
-
   const nearbyQuery = useGetNearbyPoints({
     lat: spotCoordinates?.[1] ?? null,
     lng: spotCoordinates?.[0] ?? null,
@@ -498,7 +530,6 @@ export default function Vr360PageContent() {
       (pt) => String(pt?.id ?? pt?.spot_id) !== String(selectedSpotId)
     );
   }, [nearbyQuery.data, selectedSpotId]);
-
   const miniMapScenes = useMemo(
     () =>
       scenes.map((scene) => ({
@@ -507,13 +538,14 @@ export default function Vr360PageContent() {
       })),
     [scenes, spotCoordinates]
   );
-
   const currentSpot = spotInfo || selectedSpot;
-
   useEffect(() => {
     if (!selectedScene?.id || !sceneListScrollRef.current) return;
     const card = sceneListScrollRef.current.querySelector(`[data-scene-id="${selectedScene.id}"]`);
-    card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
   }, [selectedScene?.id]);
 
   // ── prefetch adjacent scenes ─────────────────────────────────────────────
@@ -536,45 +568,39 @@ export default function Vr360PageContent() {
     if (!canGoPrevScene) return;
     setSelectedSceneId(scenes[selectedSceneIndex - 1]?.id ?? null);
   }, [canGoPrevScene, scenes, selectedSceneIndex]);
-
   const handleGoNextScene = useCallback(() => {
     if (!canGoNextScene) return;
     setSelectedSceneId(scenes[selectedSceneIndex + 1]?.id ?? null);
   }, [canGoNextScene, scenes, selectedSceneIndex]);
-
   const handleNearbySpotClick = useCallback((spot) => {
     const id = spot?.id ?? spot?.spot_id;
     if (!id) return;
     setSelectedSpotId(String(id));
     setSelectedSceneId(null);
   }, []);
-
   const handleHotspotClick = useCallback(
     (hotspot) => {
       const targetSceneId = hotspot?.target_scene_id || hotspot?.linked_scene_id;
-      const targetSpotId = hotspot?.linked_spot_id ?? hotspot?.target_spot_id;
-      const targetSpotSlug = hotspot?.target_spot_slug;
+      const targetSpotId = hotspot?.target_spot_id ?? hotspot?.linked_spot_id;
+
+      if (targetSceneId) {
+        setSelectedSceneId(String(targetSceneId));
+        return;
+      }
 
       if (targetSpotId) {
         setSelectedSpotId(String(targetSpotId));
         setSelectedSceneId(null);
-        return;
       }
-      if (targetSpotSlug) {
-        const target = spots.find((s) => s.slug === targetSpotSlug);
-        if (target?.id) {
-          setSelectedSpotId(String(target.id));
-          setSelectedSceneId(null);
-          return;
-        }
-      }
-      if (targetSceneId) setSelectedSceneId(String(targetSceneId));
     },
-    [spots]
+    [scenes]
   );
-
   const handleOpenMap = useCallback(() => {
-    navigate('/map', { state: { spotId: spotInfo?.id ?? selectedSpotId } });
+    navigate('/map', {
+      state: {
+        spotId: spotInfo?.id ?? selectedSpotId,
+      },
+    });
   }, [navigate, spotInfo?.id, selectedSpotId]);
 
   // ── derived display values ───────────────────────────────────────────────
@@ -599,7 +625,6 @@ export default function Vr360PageContent() {
       </RootLayout>
     );
   }
-
   return (
     <RootLayout>
       <div className="bg-background h-full">
@@ -661,7 +686,12 @@ export default function Vr360PageContent() {
                   padding: '2px 0',
                 }}
               >
-                <ArrowLeft style={{ width: '14px', height: '14px' }} />
+                <ArrowLeft
+                  style={{
+                    width: '14px',
+                    height: '14px',
+                  }}
+                />
                 {t('vr360.back_to_map')}
               </button>
               <h3
@@ -675,7 +705,13 @@ export default function Vr360PageContent() {
                   margin: 0,
                 }}
               >
-                <Layers style={{ width: '18px', height: '18px', color: C.primary }} />
+                <Layers
+                  style={{
+                    width: '18px',
+                    height: '18px',
+                    color: C.primary,
+                  }}
+                />
                 {t('vr360.scene_list_title')}
               </h3>
             </div>
@@ -794,7 +830,12 @@ export default function Vr360PageContent() {
               )}
 
               {/* Scene cards */}
-              <div style={{ display: 'grid', gap: '12px' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gap: '12px',
+                }}
+              >
                 {scenesQuery.isLoading ? (
                   [1, 2, 3].map((i) => <SceneCardSkeleton key={i} />)
                 ) : scenes.length === 0 ? (
@@ -837,7 +878,12 @@ export default function Vr360PageContent() {
               minHeight: '480px',
             }}
           >
-            <div style={{ flex: 1, minHeight: 0 }}>
+            <div
+              style={{
+                flex: 1,
+                minHeight: 0,
+              }}
+            >
               <Vr360SceneViewer
                 scene={selectedScene}
                 hotspots={hotspots}
@@ -878,10 +924,23 @@ export default function Vr360PageContent() {
                     gap: '6px',
                   }}
                 >
-                  <MousePointer2 style={{ width: '14px', height: '14px', color: C.primary }} />
+                  <MousePointer2
+                    style={{
+                      width: '14px',
+                      height: '14px',
+                      color: C.primary,
+                    }}
+                  />
                   {t('vr360.drag_hint')}
                 </h3>
-                <p style={{ fontSize: '12px', color: C.muted }}>{t('vr360.hotspot_hint')}</p>
+                <p
+                  style={{
+                    fontSize: '12px',
+                    color: C.muted,
+                  }}
+                >
+                  {t('vr360.hotspot_hint')}
+                </p>
               </div>
             </div>
           </section>
@@ -943,7 +1002,13 @@ export default function Vr360PageContent() {
           </div>
 
           {/* ══ RIGHT: spot info ══════════════════════════════════════════════ */}
-          <aside className="vr360-right" style={{ ...panelStyle, overflow: 'hidden auto' }}>
+          <aside
+            className="vr360-right"
+            style={{
+              ...panelStyle,
+              overflow: 'hidden auto',
+            }}
+          >
             <div style={panelHeadStyle}>
               <h3
                 style={{
@@ -955,7 +1020,13 @@ export default function Vr360PageContent() {
                   gap: '8px',
                 }}
               >
-                <Info style={{ width: '18px', height: '18px', color: C.primary }} />
+                <Info
+                  style={{
+                    width: '18px',
+                    height: '18px',
+                    color: C.primary,
+                  }}
+                />
                 {t('vr360.spot_info_title')}
               </h3>
             </div>
@@ -972,7 +1043,12 @@ export default function Vr360PageContent() {
             >
               {/* Info hero */}
               {spotInfoQuery.isLoading ? (
-                <Skeleton style={{ height: '120px', borderRadius: '22px' }} />
+                <Skeleton
+                  style={{
+                    height: '120px',
+                    borderRadius: '22px',
+                  }}
+                />
               ) : (
                 <div
                   style={{
@@ -1005,7 +1081,13 @@ export default function Vr360PageContent() {
                       {spotInfo.category_name}
                     </span>
                   )}
-                  <h2 style={{ fontSize: '20px', fontWeight: 800, lineHeight: 1.25 }}>
+                  <h2
+                    style={{
+                      fontSize: '20px',
+                      fontWeight: 800,
+                      lineHeight: 1.25,
+                    }}
+                  >
                     {spotInfo?.name ?? selectedScene?.name ?? t('vr360.loading')}
                   </h2>
                 </div>
@@ -1013,17 +1095,41 @@ export default function Vr360PageContent() {
 
               {/* Meta grid */}
               {spotInfoQuery.isLoading ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '10px' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2,1fr)',
+                    gap: '10px',
+                  }}
+                >
                   {[1, 2, 3, 4].map((i) => (
-                    <Skeleton key={i} style={{ height: '60px', borderRadius: '16px' }} />
+                    <Skeleton
+                      key={i}
+                      style={{
+                        height: '60px',
+                        borderRadius: '16px',
+                      }}
+                    />
                   ))}
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '10px' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2,1fr)',
+                    gap: '10px',
+                  }}
+                >
                   <MetaBox
                     label={t('vr360.rating_label')}
                     value={
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
                         <Star
                           style={{
                             width: '14px',
@@ -1047,7 +1153,12 @@ export default function Vr360PageContent() {
                           fontSize: '14px',
                         }}
                       >
-                        <Clock style={{ width: '13px', height: '13px' }} />
+                        <Clock
+                          style={{
+                            width: '13px',
+                            height: '13px',
+                          }}
+                        />
                         {openingHours}
                       </span>
                     }
@@ -1055,8 +1166,19 @@ export default function Vr360PageContent() {
                   <MetaBox
                     label={t('vr360.current_capacity_label')}
                     value={
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Users style={{ width: '14px', height: '14px' }} />
+                      <span
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        <Users
+                          style={{
+                            width: '14px',
+                            height: '14px',
+                          }}
+                        />
                         {capacityDisplay}
                       </span>
                     }
@@ -1066,8 +1188,18 @@ export default function Vr360PageContent() {
               )}
 
               {/* MiniMap */}
-              <div style={{ flexShrink: 0 }}>
-                <div style={{ borderRadius: '22px', overflow: 'hidden', height: '260px' }}>
+              <div
+                style={{
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    borderRadius: '22px',
+                    overflow: 'hidden',
+                    height: '260px',
+                  }}
+                >
                   <MiniMap
                     scenes={miniMapScenes}
                     spots={spots}
@@ -1091,7 +1223,14 @@ export default function Vr360PageContent() {
               <ActionBtn
                 primary
                 onClick={handleOpenMap}
-                icon={<Map style={{ width: '15px', height: '15px' }} />}
+                icon={
+                  <Map
+                    style={{
+                      width: '15px',
+                      height: '15px',
+                    }}
+                  />
+                }
               >
                 {t('vr360.open_map')}
               </ActionBtn>
@@ -1113,7 +1252,12 @@ export default function Vr360PageContent() {
                   }}
                 >
                   <MapPin
-                    style={{ width: '14px', height: '14px', flexShrink: 0, marginTop: '2px' }}
+                    style={{
+                      width: '14px',
+                      height: '14px',
+                      flexShrink: 0,
+                      marginTop: '2px',
+                    }}
                   />
                   {spotInfo.address}
                 </div>
