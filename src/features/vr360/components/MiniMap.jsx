@@ -27,6 +27,9 @@ const LAYER_TC_LABEL = 'tamchuc-points-label';
 const SOURCE_GPS = 'gps-current-location';
 const LAYER_GPS = 'gps-current-location-circle';
 const DEFAULT_CENTER = [defaultLatLong.lng, defaultLatLong.lat];
+const DEFAULT_FOV_ANGLE = 80;
+const MIN_FOV_ANGLE = 30;
+const MAX_FOV_ANGLE = 120;
 
 const TAM_CHUC_POINTS = [
   { id: 0, name: 'Toàn cảnh Chùa Tam Chúc', lon: 105.813644, lat: 20.570221 },
@@ -82,6 +85,12 @@ function getSceneCoords(scene) {
   if (Number.isFinite(lng) && Number.isFinite(lat)) return [lng, lat];
 
   return null;
+}
+
+function getSceneCameraFov(scene) {
+  const fov = Number(scene?.camera_fov);
+  if (!Number.isFinite(fov)) return null;
+  return Math.max(MIN_FOV_ANGLE, Math.min(MAX_FOV_ANGLE, fov));
 }
 
 function emptyFeatureCollection() {
@@ -404,7 +413,7 @@ export default function MiniMap({
   const scenesRef = useRef(scenes);
   const spotsRef = useRef(spots);
   const currentCenterRef = useRef(null);
-  const fovAngleRef = useRef(80);
+  const fovAngleRef = useRef(DEFAULT_FOV_ANGLE);
   const fovRadiusRef = useRef(250);
   const fovPolygonRef = useRef(null);
   const scenesGeoJsonRef = useRef(null);
@@ -424,6 +433,7 @@ export default function MiniMap({
   const fovRadius = useFovStore((state) => state.fovRadius);
   const heading = useFovStore((state) => state.heading);
   const setHeading = useFovStore((state) => state.setHeading);
+  const setFovAngle = useFovStore((state) => state.setFovAngle);
   const setScenes = useFovStore((state) => state.setScenes);
   const setCurrentSceneIndex = useFovStore((state) => state.setCurrentSceneIndex);
   const updateFovPolygon = useFovStore((state) => state.updateFovPolygon);
@@ -433,10 +443,18 @@ export default function MiniMap({
     [scenes, currentSceneIndex]
   );
 
+  const currentScene = useMemo(
+    () => (Array.isArray(scenes) ? scenes[currentSceneIndex] : null),
+    [scenes, currentSceneIndex]
+  );
+
   const currentCenter = useMemo(() => {
-    const scene = Array.isArray(scenes) ? scenes[currentSceneIndex] : null;
-    return getSceneCoords(scene);
-  }, [scenes, currentSceneIndex]);
+    return getSceneCoords(currentScene);
+  }, [currentScene]);
+
+  const currentSceneCameraFov = useMemo(() => {
+    return getSceneCameraFov(currentScene);
+  }, [currentScene]);
 
   const currentSpotCenter = useMemo(() => {
     return getSceneCoords(currentSpot);
@@ -455,6 +473,46 @@ export default function MiniMap({
     () => buildSpotsGeoJson(spots, currentSpotIds),
     [spots, currentSpotIds]
   );
+
+  useEffect(() => {
+    console.debug('[VR-DEBUG][fovSync][MiniMap] scene input changed', {
+      scenesCount: Array.isArray(scenes) ? scenes.length : 0,
+      currentSceneIndex,
+      sceneId: currentScene?.id ?? null,
+      sceneName: currentScene?.name ?? currentScene?.slug ?? null,
+      rawCameraFov: currentScene?.camera_fov ?? null,
+      resolvedCameraFov: currentSceneCameraFov,
+      storeFovAngle: fovAngle,
+      heading,
+      fovRadius,
+      currentCenter,
+      currentSpotCenter,
+    });
+
+    if (Array.isArray(scenes) && scenes.length > 0 && !currentScene) {
+      console.warn('[VR-DEBUG][fovSync][MiniMap] currentScene is missing for index', {
+        currentSceneIndex,
+        scenesCount: scenes.length,
+      });
+    }
+
+    if (currentScene && currentScene.camera_fov == null) {
+      console.warn('[VR-DEBUG][fovSync][MiniMap] scene has no camera_fov from API', {
+        sceneId: currentScene?.id ?? null,
+        availableKeys: Object.keys(currentScene || {}),
+      });
+    }
+  }, [
+    scenes,
+    currentScene,
+    currentSceneIndex,
+    currentSceneCameraFov,
+    fovAngle,
+    heading,
+    fovRadius,
+    currentCenter,
+    currentSpotCenter,
+  ]);
 
   const updateFovSourceData = useCallback((nextData) => {
     const map = mapRef.current;
@@ -822,6 +880,49 @@ export default function MiniMap({
     if (!currentCenter) return;
     updateFovPolygon(currentCenter, heading, fovAngle, fovRadius);
   }, [currentCenter, heading, fovAngle, fovRadius, updateFovPolygon]);
+
+  useEffect(() => {
+    if (!Number.isFinite(currentSceneCameraFov)) {
+      console.warn('[VR-DEBUG][fovSync][MiniMap] skip camera_fov sync: invalid camera_fov', {
+        sceneId: currentScene?.id ?? null,
+        rawCameraFov: currentScene?.camera_fov ?? null,
+        resolvedCameraFov: currentSceneCameraFov,
+      });
+      return;
+    }
+
+    const targetCenter = currentCenter || currentSpotCenter;
+    console.debug('[VR-DEBUG][fovSync][MiniMap] apply camera_fov to FOV store/polygon', {
+      sceneId: currentScene?.id ?? null,
+      rawCameraFov: currentScene?.camera_fov ?? null,
+      resolvedCameraFov: currentSceneCameraFov,
+      previousStoreFovAngle: fovAngleRef.current,
+      targetCenter,
+      heading,
+      fovRadius,
+    });
+
+    setFovAngle(currentSceneCameraFov);
+    if (targetCenter) {
+      updateFovPolygon(targetCenter, heading, currentSceneCameraFov, fovRadius);
+      return;
+    }
+
+    console.warn('[VR-DEBUG][fovSync][MiniMap] camera_fov applied but polygon not updated: no center', {
+      sceneId: currentScene?.id ?? null,
+      currentCenter,
+      currentSpotCenter,
+    });
+  }, [
+    currentScene,
+    currentSceneCameraFov,
+    currentCenter,
+    currentSpotCenter,
+    heading,
+    fovRadius,
+    setFovAngle,
+    updateFovPolygon,
+  ]);
 
   useEffect(() => {
     console.debug('[VR-DEBUG][MiniMap] smooth-fov-update listener registered');

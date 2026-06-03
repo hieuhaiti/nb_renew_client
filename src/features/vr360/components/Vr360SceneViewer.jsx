@@ -499,10 +499,13 @@ export default function Vr360SceneViewer({
   const volumeControlRef = useRef(null);
   const headingRafRef = useRef(null);
   const lastHeadingRef = useRef(null);
+  const initialCameraYawRef = useRef(0);
   const latestImageUrlRef = useRef(null);
   const isNarrationAutoPlayRef = useRef(true);
 
   const [aframeReady, setAframeReady] = useState(!!window.AFRAME);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraReadyVersion, setCameraReadyVersion] = useState(0);
   const [isSceneImageLoading, setIsSceneImageLoading] = useState(false);
   const [narrationVolume, setNarrationVolume] = useState(50);
   const [isNarrationMuted, setIsNarrationMuted] = useState(false);
@@ -511,6 +514,11 @@ export default function Vr360SceneViewer({
   const [isVolumeControlOpen, setIsVolumeControlOpen] = useState(false);
   const fovAngle = useFovStore((state) => state.fovAngle);
   const setFovAngle = useFovStore((state) => state.setFovAngle);
+  const fovAngleRef = useRef(fovAngle);
+
+  useEffect(() => {
+    fovAngleRef.current = fovAngle;
+  }, [fovAngle]);
 
   const onHotspotClickRef = useRef(onHotspotClick);
   useEffect(() => {
@@ -538,23 +546,55 @@ export default function Vr360SceneViewer({
   const hasNarration = Boolean(narrationUrl);
 
   const applySceneCamera = useCallback(() => {
-    if (!scene || !aCameraRef.current) return;
+    if (!scene || !aCameraRef.current) {
+      console.warn('[VR-DEBUG][cameraRotation] skip applySceneCamera', {
+        hasScene: Boolean(scene),
+        hasCamera: Boolean(aCameraRef.current),
+      });
+      return;
+    }
 
     const camera = aCameraRef.current;
     const camPos = scene.camera_position || DEFAULT_CAMERA_POSITION;
     const camRot = scene.camera_rotation || DEFAULT_CAMERA_ROTATION;
+    const rotX = Number(camRot.x ?? 0);
+    const rotY = Number(camRot.y ?? 0);
+    const rotZ = Number(camRot.z ?? 0);
+    initialCameraYawRef.current = rotY;
 
     camera.setAttribute('position', `${camPos.x ?? 0} ${camPos.y ?? 1.6} ${camPos.z ?? 0}`);
-    camera.setAttribute('rotation', `${camRot.x ?? 0} ${camRot.y ?? 0} ${camRot.z ?? 0}`);
+    camera.setAttribute('rotation', `${rotX} ${rotY} ${rotZ}`);
 
     const lookControls = camera.components?.['look-controls'];
     if (lookControls?.yawObject && lookControls?.pitchObject) {
-      lookControls.yawObject.rotation.y = toRadians(camRot.y ?? 0);
-      lookControls.pitchObject.rotation.x = toRadians(camRot.x ?? 0);
+      lookControls.yawObject.rotation.y = toRadians(rotY);
+      lookControls.pitchObject.rotation.x = toRadians(rotX);
       if (lookControls.pitchObject.rotation.z !== undefined) {
-        lookControls.pitchObject.rotation.z = toRadians(camRot.z ?? 0);
+        lookControls.pitchObject.rotation.z = toRadians(rotZ);
       }
     }
+
+    const initialBearing = 0;
+    lastHeadingRef.current = null;
+    window.dispatchEvent(
+      new CustomEvent('smooth-fov-update', {
+        detail: { bearing: initialBearing },
+      })
+    );
+
+    console.debug('[VR-DEBUG][cameraRotation] applied scene camera rotation', {
+      sceneId: scene?.id ?? null,
+      camera_rotation: camRot,
+      aframeRotationAttr: camera.getAttribute('rotation'),
+      hasLookControls: Boolean(lookControls),
+      hasYawObject: Boolean(lookControls?.yawObject),
+      yawDeg: lookControls?.yawObject?.rotation
+        ? toDegrees(lookControls.yawObject.rotation.y)
+        : null,
+      initialCameraYaw: initialCameraYawRef.current,
+      emittedBearing: initialBearing,
+      note: 'MiniMap stays north; camera_rotation.y is the camera center offset, not a panorama/hotspot rotation.',
+    });
   }, [scene]);
 
   useEffect(() => {
@@ -634,6 +674,8 @@ export default function Vr360SceneViewer({
     nearbyHotspotsRootRef.current = nearbyHotspotsRoot;
     aCameraRef.current = aCamera;
     aSceneRef.current = aScene;
+    setCameraReady(true);
+    setCameraReadyVersion((version) => version + 1);
     container.appendChild(aScene);
 
     aScene.addEventListener('enter-vr', () => {
@@ -663,8 +705,17 @@ export default function Vr360SceneViewer({
       aScene.addEventListener('loaded', () => {
         console.debug('[VR-DEBUG][sceneCreate] a-scene "loaded" event fired');
         applyPendingImage();
+        setCameraReady(true);
+        setCameraReadyVersion((version) => version + 1);
       }, { once: true });
     }
+
+    aCamera.addEventListener('componentinitialized', (event) => {
+      if (event?.detail?.name !== 'look-controls') return;
+      console.debug('[VR-DEBUG][cameraRotation] look-controls initialized');
+      setCameraReady(true);
+      setCameraReadyVersion((version) => version + 1);
+    });
 
     renderHotspots(hotspotsRoot, hotspotsPropRef.current, onHotspotClickRef, cursorProgressRef);
     renderNearbySpots(
@@ -743,11 +794,18 @@ export default function Vr360SceneViewer({
 
   useEffect(() => {
     applySceneCamera();
-  }, [applySceneCamera]);
+  }, [applySceneCamera, cameraReady, cameraReadyVersion]);
 
   useEffect(() => {
     const sceneFov = Number(scene?.camera_fov);
-    setFovAngle(Number.isFinite(sceneFov) ? sceneFov : DEFAULT_FOV);
+    const nextFov = Number.isFinite(sceneFov) ? sceneFov : DEFAULT_FOV;
+    console.debug('[VR-DEBUG][fovSync][SceneViewer] apply scene camera_fov to FOV store', {
+      sceneId: scene?.id ?? null,
+      rawCameraFov: scene?.camera_fov ?? null,
+      resolvedFov: nextFov,
+      previousStoreFovAngle: fovAngleRef.current,
+    });
+    setFovAngle(nextFov);
   }, [scene?.id, scene?.camera_fov, setFovAngle]);
 
   useEffect(() => {
@@ -894,10 +952,11 @@ export default function Vr360SceneViewer({
     const cameraEl = aCameraRef.current;
     if (!cameraEl) return;
 
-    cameraEl.setAttribute('rotation', '0 0 0');
+    const baseYaw = initialCameraYawRef.current;
+    cameraEl.setAttribute('rotation', `0 ${baseYaw} 0`);
     const lookControls = cameraEl.components?.['look-controls'];
     if (lookControls?.yawObject?.rotation) {
-      lookControls.yawObject.rotation.y = 0;
+      lookControls.yawObject.rotation.y = toRadians(baseYaw);
     }
     if (lookControls?.pitchObject?.rotation) {
       lookControls.pitchObject.rotation.x = 0;
@@ -911,9 +970,9 @@ export default function Vr360SceneViewer({
   }, []);
 
   useEffect(() => {
-    console.debug('[VR-DEBUG][emitHeading] effect triggered. scene:', scene?.id, '| aCameraRef ready:', !!aCameraRef.current, '| aframeReady:', aframeReady);
-    if (!scene || !aCameraRef.current) {
-      console.warn('[VR-DEBUG][emitHeading] Early return — scene:', !!scene, '| aCameraRef:', !!aCameraRef.current, '→ RAF NOT started, FOV will not rotate');
+    console.debug('[VR-DEBUG][emitHeading] effect triggered. scene:', scene?.id, '| aCameraRef ready:', !!aCameraRef.current, '| cameraReady:', cameraReady, '| cameraReadyVersion:', cameraReadyVersion, '| aframeReady:', aframeReady);
+    if (!scene || !aCameraRef.current || !cameraReady) {
+      console.warn('[VR-DEBUG][emitHeading] Early return — scene:', !!scene, '| aCameraRef:', !!aCameraRef.current, '| cameraReady:', cameraReady, '→ RAF NOT started yet');
       return undefined;
     }
 
@@ -937,19 +996,21 @@ export default function Vr360SceneViewer({
       if (lookControls?.yawObject?.rotation) {
         const yawRad = lookControls.yawObject.rotation.y;
         const yawDeg = toDegrees(yawRad);
-        nextHeading = normalizeBearing(-yawDeg);
+        const yawDelta = yawDeg - initialCameraYawRef.current;
+        nextHeading = normalizeBearing(-yawDelta);
         source = 'yawObject';
 
         // Log chi tiết mỗi 120 frame (~2s) để debug góc lệch
         frameCount += 1;
         if (frameCount % 120 === 0) {
           const aframeDeclaredRotY = Number(cameraEl.getAttribute('rotation')?.y);
-          console.debug('[VR-DEBUG][emitHeading] yawRad:', yawRad.toFixed(4), '| yawDeg:', yawDeg.toFixed(2), '| bearing=-yawDeg→normalized:', nextHeading.toFixed(2), '| aframe rotation.y attr:', aframeDeclaredRotY.toFixed(2), '| look right → yawDeg<0 → bearing>0 (CW) ✓');
+          console.debug('[VR-DEBUG][emitHeading] yawRad:', yawRad.toFixed(4), '| yawDeg:', yawDeg.toFixed(2), '| initialCameraYaw:', initialCameraYawRef.current.toFixed(2), '| bearing=-(yaw-initial)→normalized:', nextHeading.toFixed(2), '| aframe rotation.y attr:', aframeDeclaredRotY.toFixed(2), '| look right → yaw delta < 0 → bearing > 0 (CW) ✓');
         }
       } else {
         const rotY = Number(cameraEl.getAttribute('rotation')?.y);
         if (Number.isFinite(rotY)) {
-          nextHeading = normalizeBearing(rotY);
+          const yawDelta = rotY - initialCameraYawRef.current;
+          nextHeading = normalizeBearing(-yawDelta);
           source = 'getAttribute(rotation)';
         }
         if (frameCount === 0) {
@@ -982,7 +1043,7 @@ export default function Vr360SceneViewer({
       }
       lastHeadingRef.current = null;
     };
-  }, [scene?.id, aframeReady]);
+  }, [scene?.id, aframeReady, cameraReady, cameraReadyVersion]);
 
   useEffect(() => {
     const handleResetNorthRequest = () => {

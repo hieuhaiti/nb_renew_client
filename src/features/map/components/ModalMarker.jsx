@@ -227,12 +227,12 @@ function OcopProductCard({ ocop, spotLat, spotLng, onClick }) {
     <button
       type="button"
       onClick={() => onClick?.(ocop)}
-      className="hover:bg-muted/50 focus-visible:ring-ring flex w-full items-start gap-2.5 rounded-lg p-2 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
+      className="focus-visible:ring-ring group flex w-full cursor-pointer items-start gap-2.5 rounded-lg p-2 text-left transition-all hover:bg-amber-50/80 hover:shadow-sm hover:ring-1 hover:ring-amber-200 focus-visible:ring-2 focus-visible:outline-none"
     >
       <img
         src={imageUrl}
         alt={ocop.name}
-        className="h-14 w-14 shrink-0 rounded-md object-cover"
+        className="h-14 w-14 shrink-0 rounded-md object-cover transition-transform duration-200 group-hover:scale-[1.03]"
         onError={(e) => {
           e.target.onerror = null;
           e.target.src = placeholderImg;
@@ -316,10 +316,10 @@ function OcopNearbyPanel({ spot, isModalOpen, onSelectOcop }) {
             <button
               key={r}
               onClick={() => setRadiusKm(r)}
-              className={`rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${
+              className={`cursor-pointer rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${
                 radiusKm === r
                   ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-muted text-muted-foreground hover:border-border border-transparent'
+                  : 'bg-muted text-muted-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary border-transparent'
               }`}
             >
               {r} km
@@ -677,7 +677,7 @@ export default function ModalMarker() {
                       type="button"
                       onClick={() => handleOpenTourSuggestion(tour)}
                       disabled={isRouteLoading}
-                      className="group from-background via-background to-muted/20 hover:border-primary/40 hover:bg-muted/30 w-full rounded-xl border bg-linear-to-br p-2 text-left transition-all"
+                      className="focus-visible:ring-ring group from-background via-background to-muted/20 hover:border-primary/50 hover:bg-primary/5 hover:ring-primary/20 w-full cursor-pointer rounded-xl border bg-linear-to-br p-2 text-left transition-all hover:shadow-md hover:ring-1 focus-visible:ring-2 focus-visible:outline-none disabled:cursor-wait disabled:opacity-70"
                     >
                       <div className="mb-2 overflow-hidden rounded-lg">
                         <img
@@ -718,7 +718,7 @@ export default function ModalMarker() {
                             defaultValue: 'Open this route on the map to view itinerary details.',
                           })}
                       </p>
-                      <span className="text-primary mt-2 inline-flex items-center gap-1 text-[11px] font-medium">
+                      <span className="text-primary mt-2 inline-flex items-center gap-1 text-[11px] font-medium transition-transform duration-200 group-hover:translate-x-0.5">
                         {isRouteLoading
                           ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Opening...' })
                           : t('mapPage.spotModal.suggestedTours.openOnMap', {
@@ -990,28 +990,38 @@ export default function ModalMarker() {
                     <Star size={14} className="fill-current" />
                     {t('mapPage.spotModal.viewDetail')}
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={() => window.open('https://3d.humgsoftware.pro.vn/', '_blank')}
+                    className="text-secondary-foreground w-full gap-1.5 bg-green-500"
+                  >
+                    <RectangleGoggles size={14} />
+                    {t('mapPage.spotModal.view3D')}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    disabled={isLoading || !spot}
+                    onClick={handleGetDirections}
+                    className="w-full gap-1.5"
+                  >
+                    <Navigation size={14} />
+                    {t('mapPage.spotModal.directions')}
+                  </Button>
                 </div>
+
                 {hasVrTour && (
                   <Button
                     size="sm"
                     variant="default"
                     onClick={handleVrTour}
-                    className="text-secondary-foreground w-full gap-1.5 bg-green-500"
+                    className="text-secondary-foreground w-full gap-1.5 bg-amber-500"
                   >
                     <RectangleGoggles size={14} />
                     {t('mapPage.spotModal.vrTour')}
                   </Button>
                 )}
-                <Button
-                  size="sm"
-                  variant="default"
-                  disabled={isLoading || !spot}
-                  onClick={handleGetDirections}
-                  className="w-full gap-1.5"
-                >
-                  <Navigation size={14} />
-                  {t('mapPage.spotModal.directions')}
-                </Button>
               </div>
             </div>
           </div>

@@ -428,6 +428,28 @@ export default function Vr360PageContent() {
   const scenesQuery = useGetAframeScenes({ spotId: selectedSpotId });
   const scenes = useMemo(() => normalizeList(scenesQuery.data), [scenesQuery.data]);
 
+  useEffect(() => {
+    console.debug('[VR-DEBUG][fovSync][Vr360Page] aframe scenes query normalized', {
+      selectedSpotId,
+      isLoading: scenesQuery.isLoading,
+      isSuccess: scenesQuery.isSuccess,
+      rawDataShape: {
+        hasData: Boolean(scenesQuery.data),
+        dataIsArray: Array.isArray(scenesQuery.data),
+        nestedDataIsArray: Array.isArray(scenesQuery.data?.data),
+        nestedScenesIsArray: Array.isArray(scenesQuery.data?.data?.scenes),
+      },
+      scenesCount: scenes.length,
+      scenes: scenes.map((scene, index) => ({
+        index,
+        id: scene?.id ?? null,
+        name: scene?.name ?? scene?.slug ?? null,
+        camera_fov: scene?.camera_fov ?? null,
+        hasCoordinates: Boolean(scene?.coordinates || scene?.geojson || scene?.geometry_data),
+      })),
+    });
+  }, [selectedSpotId, scenesQuery.data, scenesQuery.isLoading, scenesQuery.isSuccess, scenes]);
+
   const selectedSpot = useMemo(() => {
     if (selectedSpotId == null) return null;
     return (
