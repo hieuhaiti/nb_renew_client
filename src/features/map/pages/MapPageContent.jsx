@@ -546,8 +546,6 @@ export default function MapPage() {
     if (prefillRoute) {
       setHighlightedRoute(prefillRoute);
       setShowOnlyHighlightedRoute(Boolean(prefillRoute));
-    } else if (!prefillActiveSidebar) {
-      console.warn('[MapPage prefill] NO prefillRoute in location.state → route will NOT be drawn');
     }
     if (prefillTourPanel) {
       const { tourId, tourName, stops, selectedTour } = prefillTourPanel;

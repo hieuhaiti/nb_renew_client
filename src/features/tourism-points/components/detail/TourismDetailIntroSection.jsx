@@ -13,23 +13,23 @@ export function TourismDetailIntroSection({
   const infoBoxes = [
     {
       icon: <MapPin className="mb-2 h-5 w-5 text-[#08aeb9]" />,
-      label: t('tourism.location', 'Vị trí'),
-      value: address || t('tourism.unknown', 'Chưa cập nhật'),
+      label: t('tourism.location'),
+      value: address || t('tourism.unknown'),
     },
     {
       icon: <Globe className="mb-2 h-5 w-5 text-[#08aeb9]" />,
-      label: t('tourism.province', 'Tỉnh/Thành'),
-      value: provinceName || t('tourism.unknown', 'Chưa cập nhật'),
+      label: t('tourism.province'),
+      value: provinceName || t('tourism.unknown'),
     },
     {
       icon: <Clock className="mb-2 h-5 w-5 text-[#08aeb9]" />,
-      label: t('tourism.opening_hours', 'Giờ mở cửa'),
-      value: openingHours || t('tourism.unknown', 'Chưa cập nhật'),
+      label: t('tourism.opening_hours'),
+      value: openingHours || t('tourism.unknown'),
     },
     {
       icon: <Tag className="mb-2 h-5 w-5 text-[#08aeb9]" />,
-      label: t('tourism.type', 'Loại hình'),
-      value: categoryName || t('tourism.unknown', 'Chưa cập nhật'),
+      label: t('tourism.type'),
+      value: categoryName || t('tourism.unknown'),
     },
   ];
 
@@ -37,14 +37,14 @@ export function TourismDetailIntroSection({
     <section className="rounded-[24px] border border-[#dcecf7] bg-white px-5 py-5 shadow-[0_10px_28px_rgba(7,29,54,0.08)]">
       <h2 className="mb-4 flex items-center gap-2.5 text-xl font-bold text-[#071d36] md:text-2xl">
         <Info className="h-6 w-6 text-[#08aeb9]" />
-        {t('tourism.introduction', 'Giới thiệu điểm du lịch')}
+        {t('tourism.introduction')}
       </h2>
 
       {description ? (
         <p className="mb-3 text-[15px] leading-[1.8] text-[#435a6e]">{description}</p>
       ) : (
         <p className="mb-3 text-sm text-[#64748b] italic">
-          {t('tourism.no_description', 'Chưa có thông tin giới thiệu.')}
+          {t('tourism.no_description')}
         </p>
       )}
 

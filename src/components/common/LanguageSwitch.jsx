@@ -28,9 +28,8 @@ export default function LanguageSwitch() {
     try {
       await i18n.changeLanguage(next);
       setLang(next);
-    } catch (error) {
+    } catch {
       setLang(lang);
-      console.error('[LanguageSwitch] Failed to change language:', error);
     } finally {
       setLoadingByKey(LANGUAGE_SWITCH_LOADING_KEY, false);
     }

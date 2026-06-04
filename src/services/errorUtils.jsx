@@ -1,27 +1,22 @@
 import React from 'react';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 
-/**
- * renderValidationErrors — renders backend validation error array as a React element.
- * Used inside toast.error() for 400 responses with `errors: [{ field, message }]`.
- *
- * TODO: When i18n is fully integrated, translate field names via t() if needed.
- *
- * @param {{ field?: string, message?: string, type?: string }[]} errors
- * @returns {React.ReactNode|null}
- */
+function getValidationHeading() {
+  const lang = useLanguageStore.getState().lang || 'vi';
+  return lang === 'en' ? 'An error occurred:' : 'Có lỗi xảy ra:';
+}
+
 export function renderValidationErrors(errors) {
   if (!errors?.length) return null;
 
   return (
     <div className="text-sm">
-      <p className="font-semibold mb-1">Có lỗi xảy ra:</p>
-      <ul className="list-disc pl-4 space-y-0.5">
-        {errors.map((e, i) => (
-          <li key={i}>
-            {e.field && (
-              <span className="font-medium capitalize">{e.field}: </span>
-            )}
-            <span>{e.message || JSON.stringify(e)}</span>
+      <p className="mb-1 font-semibold">{getValidationHeading()}</p>
+      <ul className="list-disc space-y-0.5 pl-4">
+        {errors.map((error, index) => (
+          <li key={index}>
+            {error.field && <span className="font-medium capitalize">{error.field}: </span>}
+            <span>{error.message || JSON.stringify(error)}</span>
           </li>
         ))}
       </ul>
@@ -29,15 +24,11 @@ export function renderValidationErrors(errors) {
   );
 }
 
-/**
- * validationErrorsToString — plain string version for non-JSX contexts (e.g. console, RHF setError).
- *
- * @param {{ field?: string, message?: string }[]} errors
- * @returns {string}
- */
 export function validationErrorsToString(errors) {
   if (!errors?.length) return '';
   return errors
-    .map((e) => (e.field ? `${e.field}: ${e.message}` : e.message || JSON.stringify(e)))
+    .map((error) =>
+      error.field ? `${error.field}: ${error.message}` : error.message || JSON.stringify(error)
+    )
     .join('\n');
 }

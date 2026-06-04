@@ -41,12 +41,12 @@ export function TourismDetailHero({
 
         {/* Floating action buttons */}
         <div className="absolute top-4 right-4 flex gap-2.5 md:top-6 md:right-6">
-          <FloatBtn onClick={onToggleFavorite} label={t('tourism.actions.save', 'Lưu')}>
+          <FloatBtn onClick={onToggleFavorite} label={t('tourism.actions.save')}>
             <Heart
               className={`h-[17px] w-[17px] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`}
             />
           </FloatBtn>
-          <FloatBtn onClick={onShare} label={t('tourism.actions.share', 'Chia sẻ')}>
+          <FloatBtn onClick={onShare} label={t('tourism.actions.share')}>
             <Share2 className="h-[17px] w-[17px]" />
           </FloatBtn>
         </div>
@@ -77,7 +77,10 @@ export function TourismDetailHero({
             )}
             {displayRating && (
               <MetaPill icon={<Star className="h-3.5 w-3.5 text-[#08aeb9]" />}>
-                {displayRating}/5{ratingCount > 0 ? ` · ${ratingCount} đánh giá` : ''}
+                {displayRating}/5
+                {ratingCount > 0
+                  ? ` · ${t('tourism.rating_count_suffix', { count: ratingCount })}`
+                  : ''}
               </MetaPill>
             )}
             {openingTime && (
@@ -96,23 +99,23 @@ export function TourismDetailHero({
 
       {/* Summary strip */}
       <div className="grid grid-cols-3 divide-x divide-[#e4f0f7] border-t border-[#e4f0f7] sm:grid-cols-5">
-        <SummaryItem value={openingTime || '–'} label={t('tourism.opening', 'Giờ mở cửa')} />
+        <SummaryItem value={openingTime || '–'} label={t('tourism.opening')} />
         <SummaryItem
-          value={ticketDisplay || 'Miễn phí'}
-          label={t('tourism.ticket_price', 'Giá vé')}
+          value={ticketDisplay || t('tourism.free')}
+          label={t('tourism.ticket_price')}
         />
         <SummaryItem
           value={displayRating ? `${displayRating}★` : '–'}
-          label={t('tourism.rating', 'Đánh giá')}
+          label={t('tourism.rating')}
         />
         <SummaryItem
           value={maxCapacity ? Number(maxCapacity).toLocaleString('vi') : '–'}
-          label={t('tourism.max_capacity', 'Sức chứa')}
+          label={t('tourism.max_capacity')}
           extraClass="hidden sm:block"
         />
         <SummaryItem
           value={capacityPct != null ? `${Math.round(Number(capacityPct))}%` : '–'}
-          label={t('tourism.current_capacity', 'Tải khách')}
+          label={t('tourism.current_capacity')}
           extraClass="hidden sm:block"
         />
       </div>

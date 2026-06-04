@@ -128,6 +128,21 @@ function getSceneTamChucPointId(scene) {
   if (!Number.isFinite(pointId)) return null;
   return TAM_CHUC_POINTS.find((point) => point.id === pointId)?.id ?? null;
 }
+function normalizeTamChucLabel(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase();
+}
+function findTamChucPointByName(scene) {
+  const candidates = [scene?.name, scene?.title, scene?.slug];
+  const normalizedCandidates = candidates.map(normalizeTamChucLabel).filter(Boolean);
+  if (!normalizedCandidates.length) return null;
+  return (
+    TAM_CHUC_POINTS.find((point) =>
+      normalizedCandidates.includes(normalizeTamChucLabel(point?.name))
+    ) ?? null
+  );
+}
 function findNearestTamChucPoint(coords) {
   if (!Array.isArray(coords) || coords.length < 2) return null;
   let nearestPoint = null;
@@ -148,6 +163,8 @@ function resolveTamChucPoint(scene, sceneIndex = -1) {
   if (explicitPointId != null) {
     return TAM_CHUC_POINTS.find((point) => point.id === explicitPointId) ?? null;
   }
+  const pointByName = findTamChucPointByName(scene);
+  if (pointByName) return pointByName;
   const intrinsicCoords = getSceneIntrinsicCoords(scene);
   if (intrinsicCoords) {
     const nearestPoint = findNearestTamChucPoint(intrinsicCoords);

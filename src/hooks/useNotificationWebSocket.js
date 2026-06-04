@@ -1,13 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { env } from '@/config/env';
 
-function debugNotificationSocket(event, payload = {}) {
-  if (!env.isDev) return;
-  console.info(`[notificationSocket] ${event}`, {
-    at: new Date().toISOString(),
-    ...payload,
-  });
-}
+function debugNotificationSocket() {}
 
 function buildNotificationSocketUrl(token) {
   if (!env.notificationWsUrl) return '';

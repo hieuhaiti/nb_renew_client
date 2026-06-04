@@ -139,7 +139,6 @@ export function SatelliteCompareModePanel() {
           const r2 = await LAYER_CONFIG[layerType].service(p2);
           setPeriod2Data(layerType, r2?.data || r2);
         } catch (err) {
-          console.error(`[${layerType}]`, err);
           setPeriod1Data(layerType, { error: err.message });
           setPeriod2Data(layerType, { error: err.message });
         }
@@ -164,8 +163,7 @@ export function SatelliteCompareModePanel() {
             collection,
             cloudCover,
           });
-        } catch (err) {
-          console.error('[auto-detect-change compare]', err);
+        } catch {
         }
       }
     } catch (err) {

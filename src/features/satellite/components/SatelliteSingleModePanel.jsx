@@ -162,8 +162,7 @@ export function SatelliteSingleModePanel() {
             collection,
             cloudCover,
           });
-        } catch (err) {
-          console.error('[auto-detect-change single]', err);
+        } catch {
         }
       }
     } catch (err) {

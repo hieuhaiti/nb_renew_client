@@ -126,41 +126,58 @@ const normalizeServiceKey = (service) => {
     .toLowerCase()
     .replace(/\s+/g, '_');
 };
-const normalizeServiceLabel = (service, key) => {
+const getLocalizedField = (item, baseField, lang = 'vi') => {
+  if (!item || typeof item !== 'object') return '';
+  const viValue = item?.[`${baseField}_vi`];
+  const enValue = item?.[`${baseField}_en`];
+  const baseValue = item?.[baseField];
+
+  return lang === 'en'
+    ? enValue || viValue || baseValue || ''
+    : viValue || enValue || baseValue || '';
+};
+
+const normalizeServiceLabel = (service, key, lang = 'vi') => {
   if (service && typeof service === 'object') {
-    return service?.name || service?.name_vi || service?.name_en || service?.label || key;
+    return (
+      getLocalizedField(service, 'name', lang) ||
+      getLocalizedField(service, 'label', lang) ||
+      service?.label ||
+      key
+    );
   }
   if (typeof service === 'string' && service.trim()) return service;
   return key.replace(/[_-]+/g, ' ').trim();
 };
-const buildServices = (attraction, t) => {
+
+const buildServices = (attraction, t, lang = 'vi') => {
   const relatedServices = normalizeServiceList(attraction?.related_services);
   const unique = new Map();
   relatedServices.forEach((service) => {
     const key = normalizeServiceKey(service);
     if (!key || unique.has(key)) return;
     const Icon = SERVICE_ICON_MAP[key] || Users;
-    unique.set(key, { key, icon: Icon, label: normalizeServiceLabel(service, key) });
+    unique.set(key, { key, icon: Icon, label: normalizeServiceLabel(service, key, lang) });
   });
   if (attraction?.has_audio_guide && !unique.has('audio_guide')) {
     unique.set('audio_guide', {
       key: 'audio_guide',
       icon: Headphones,
-      label: t('tourism.audio_guide', 'Thuyet minh'),
+      label: t('tourism.audio_guide'),
     });
   }
   if (attraction?.has_vr_360 && !unique.has('vr_360')) {
     unique.set('vr_360', {
       key: 'vr_360',
       icon: Eye,
-      label: 'VR 360',
+      label: t('tourism.vr_tour'),
     });
   }
   if (attraction?.has_ar_support && !unique.has('ar')) {
     unique.set('ar', {
       key: 'ar',
       icon: Eye,
-      label: t('tourism.ar_support', 'AR ho tro'),
+      label: t('tourism.ar_support'),
     });
   }
   return Array.from(unique.values());
@@ -197,13 +214,8 @@ export default function TourismDetailPage() {
     );
   }, [pointResp]);
 
-  const attractionName =
-    attraction?.name ||
-    attraction?.name_vi ||
-    attraction?.name_en ||
-    t('tourism.detail_title', 'Tourism point');
-  const attractionAddress =
-    attraction?.address || attraction?.address_vi || attraction?.address_en || '';
+  const attractionName = getLocalizedField(attraction, 'name', lang) || t('tourism.detail_title');
+  const attractionAddress = getLocalizedField(attraction, 'address', lang);
 
   const { data: spotMediaResp } = useGetSpotMedia({
     spot_id: attraction?.id,
@@ -356,7 +368,7 @@ export default function TourismDetailPage() {
   const handleCreateReview = async () => {
     if (!attraction?.id) return;
     if (Number(newStars) === 0) {
-      toast.error(t('tourism.review.missing_rating', 'Vui lòng chọn số sao đánh giá.'));
+      toast.error(t('tourism.review.missing_rating'));
       return;
     }
     const payload = {
@@ -473,7 +485,7 @@ export default function TourismDetailPage() {
   const handleContact = () => {
     const phone = attraction?.contact_phone || attraction?.phone || attraction?.contact?.phone;
     if (!phone) {
-      toast.info(t('tourism.contact_not_available', 'Chưa có thông tin liên hệ.'));
+      toast.info(t('tourism.contact_not_available'));
       return;
     }
     window.location.href = `tel:${String(phone).trim()}`;
@@ -493,10 +505,10 @@ export default function TourismDetailPage() {
         <div className="bg-background flex min-h-screen items-center justify-center px-4">
           <div className="text-center">
             <h2 className="text-foreground mb-4 text-2xl font-bold">
-              {t('tourism.not_found', 'Tourism point not found')}
+              {t('tourism.not_found')}
             </h2>
             <Button variant="ghost" onClick={() => navigate('/tourism-point')}>
-              {t('tourism.back_to_list', 'Back to list')}
+              {t('tourism.back_to_list')}
             </Button>
           </div>
         </div>
@@ -550,7 +562,7 @@ export default function TourismDetailPage() {
 
   const openingHours =
     formatOpeningHoursDisplay(attraction?.opening_hours, lang) ||
-    t('tourism.unknown', 'Chưa cập nhật');
+    t('tourism.unknown');
   const openingTimeStart = parseOpeningTimeStart(openingHours);
 
   const entranceFeeNumber = Number(
@@ -559,11 +571,9 @@ export default function TourismDetailPage() {
   const ticketDisplay =
     Number.isFinite(entranceFeeNumber) && entranceFeeNumber > 0
       ? formatVND(entranceFeeNumber)
-      : t('tourism.free', 'Miễn phí');
+      : t('tourism.free');
 
-  const plainDescription = stripHtmlTags(
-    attraction?.description || attraction?.description_vi || attraction?.description_en
-  );
+  const plainDescription = stripHtmlTags(getLocalizedField(attraction, 'description', lang));
 
   const attractionGeo = attraction?.geojson?.coordinates;
   const attractionLat = pickCoordinate(
@@ -591,7 +601,7 @@ export default function TourismDetailPage() {
     return filled;
   })();
 
-  const services = buildServices(attraction, t);
+  const services = buildServices(attraction, t, lang);
 
   /* â”€â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
@@ -606,7 +616,7 @@ export default function TourismDetailPage() {
               onClick={() => navigate('/')}
               className="flex items-center gap-1 transition-colors hover:text-[#08aeb9]"
             >
-              {t('common.home', 'Trang chủ')}
+              {t('common.home')}
             </Button>
             <ChevronRight className="h-3 w-3 text-[#08aeb9]" />
             <Button
@@ -614,7 +624,7 @@ export default function TourismDetailPage() {
               onClick={() => navigate('/tourism-point')}
               className="transition-colors hover:text-[#08aeb9]"
             >
-              {t('tourism.title', 'Điểm du lịch')}
+              {t('tourism.title')}
             </Button>
             <ChevronRight className="h-3 w-3 text-[#08aeb9]" />
             <span className="truncate text-[#08aeb9]">{attractionName}</span>
@@ -626,7 +636,7 @@ export default function TourismDetailPage() {
             title={attractionName}
             subtitle={attractionAddress}
             description={plainDescription}
-            categoryTag={attraction?.category_name}
+            categoryTag={getLocalizedField(attraction, 'category_name', lang)}
             totalImages={safeImagesMapped.length}
             openingTime={openingTimeStart}
             ticketDisplay={ticketDisplay}
@@ -644,8 +654,8 @@ export default function TourismDetailPage() {
           {shareStatus !== 'idle' && (
             <div className="mt-3 rounded-[10px] border border-[#dcecf7] bg-white px-4 py-2.5 text-sm font-medium text-[#42627a]">
               {shareStatus === 'copied'
-                ? t('tourism.share.copied', 'Đã sao chép liên kết')
-                : t('tourism.share.shared', 'Đã chia sẻ')}
+                ? t('tourism.share.copied')
+                : t('tourism.share.shared')}
             </div>
           )}
 
@@ -656,8 +666,8 @@ export default function TourismDetailPage() {
               <TourismDetailIntroSection
                 description={plainDescription}
                 address={attractionAddress}
-                categoryName={attraction?.category_name}
-                provinceName={attraction?.province_name}
+                categoryName={getLocalizedField(attraction, 'category_name', lang)}
+                provinceName={getLocalizedField(attraction, 'province_name', lang)}
                 website={attraction?.website}
                 openingHours={openingHours}
                 t={t}
@@ -678,7 +688,7 @@ export default function TourismDetailPage() {
                 <section className="rounded-[24px] border border-[#dcecf7] bg-white px-5 py-5 shadow-[0_10px_28px_rgba(7,29,54,0.08)]">
                   <h2 className="mb-4 flex items-center gap-2.5 text-xl font-bold text-[#071d36] md:text-2xl">
                     <Bell className="h-6 w-6 text-[#08aeb9]" />
-                    {t('tourism.services', 'Dich vu va tien ich')}
+                    {t('tourism.services')}
                   </h2>
                   <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                     {services.map(({ key, icon: Icon, label }) => (

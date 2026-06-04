@@ -76,7 +76,7 @@ export function TourismDetailSidebar({
 
   const weather = weatherData?.weather;
   const weatherLabel = weather?.weather?.[0]?.description;
-  const weatherTitle = weatherLabel || t('tourism.weather', 'Thoi tiet');
+  const weatherTitle = weatherLabel || t('tourism.weather');
 
   const weatherTempDisplay = useMemo(() => {
     if (!isWeatherConfigured && !weather) return '-';
@@ -165,11 +165,11 @@ export function TourismDetailSidebar({
         return {
           id: item?.id || `nearby-${index}`,
           name:
-            item?.name_vi ||
-            item?.name_en ||
-            item?.name ||
-            t('tourism.nearby_point_name', `Point ${index + 1}`),
-          distance: distanceLabel || t('tourism.nearby_distance_unknown', 'Chua ro'),
+            (lang === 'en'
+              ? item?.name_en || item?.name_vi || item?.name
+              : item?.name_vi || item?.name_en || item?.name) ||
+            t('tourism.nearby_point_name', { index: index + 1 }),
+          distance: distanceLabel || t('tourism.nearby_distance_unknown'),
           image:
             item?.primary_image ||
             item?.cover_image_url ||
@@ -177,7 +177,10 @@ export function TourismDetailSidebar({
             item?.image ||
             '',
           slug: item?.slug || null,
-          category: item?.category_name || '',
+          category:
+            (lang === 'en'
+              ? item?.category_name_en || item?.category_name_vi || item?.category_name
+              : item?.category_name_vi || item?.category_name_en || item?.category_name) || '',
         };
       });
   }, [nearbyResp, currentPointId, t]);
@@ -188,27 +191,27 @@ export function TourismDetailSidebar({
         className="rounded-[24px] p-5 text-white"
         style={{ background: 'linear-gradient(135deg,#1cb6d8,#0fb49f)' }}
       >
-        <h3 className="mb-2 text-[22px] font-bold">{t('tourism.cta_title', 'Kham pha ngay')}</h3>
+        <h3 className="mb-2 text-[22px] font-bold">{t('tourism.cta_title')}</h3>
         <p className="mb-4 text-sm leading-[1.65] text-[#eafffb]">
-          {t('tourism.cta_desc', 'Mo chi duong, xem anh 360.')}
+          {t('tourism.cta_desc')}
         </p>
         <div className="flex flex-col gap-3">
           <CtaBtn
             onClick={() => onOpenMap?.(pointCoords)}
             icon={<Map className="h-4 w-4" />}
-            label={t('tourism.view_on_map', 'Chi duong')}
+            label={t('tourism.view_on_map')}
           />
           {hasVrTour && (
             <CtaBtn
               onClick={() => navigate(`/vr360/${currentPointId}`)}
               icon={<RectangleGoggles className="h-4 w-4" />}
-              label={t('tourism.vr_tour', 'VR 360')}
+              label={t('tourism.vr_tour')}
             />
           )}
           <CtaBtn
             onClick={onContact}
             icon={<Phone className="h-4 w-4" />}
-            label={t('tourism.contact', 'Lien he')}
+            label={t('tourism.contact')}
             dark
           />
         </div>
@@ -217,40 +220,40 @@ export function TourismDetailSidebar({
       <div className="rounded-[24px] border-border bg-card px-5 py-5 shadow-(--ambient-shadow)">
         <h3 className="mb-3 flex items-center gap-2.5 text-[18px] font-bold text-foreground">
           <Leaf className="h-5 w-5 text-secondary" />
-          {t('tourism.conditions', 'Thời tiết & tải khách')}
+          {t('tourism.conditions')}
         </h3>
         <div className="mb-2 text-xs font-semibold text-muted-foreground">{weatherTitle}</div>
         <div className="grid grid-cols-2 gap-2.5">
-          <WeatherBox value={weatherTempDisplay} label={t('tourism.weather', 'Thời tiết')} />
-          <WeatherBox value={capacityDisplay} label={t('tourism.current_capacity', 'Tải khách')} />
+          <WeatherBox value={weatherTempDisplay} label={t('tourism.weather')} />
+          <WeatherBox value={capacityDisplay} label={t('tourism.current_capacity')} />
         </div>
         <div className="mt-3 space-y-2">
           <QuickRow
             icon={<Wind className="h-3.5 w-3.5 text-secondary" />}
-            label={t('tourism.wind', 'Gió')}
+            label={t('tourism.wind')}
             value={weatherWindDisplay}
           />
           <QuickRow
             icon={<Droplets className="h-3.5 w-3.5 text-secondary" />}
-            label={t('tourism.humidity', 'Độ ẩm')}
+            label={t('tourism.humidity')}
             value={weatherHumidityDisplay}
           />
           <QuickRow
             icon={<Droplets className="h-3.5 w-3.5 text-secondary" />}
-            label={t('tourism.rain', 'Mưa')}
+            label={t('tourism.rain')}
             value={weatherRainDisplay}
           />
           {hasVisitorCount && (
             <QuickRow
               icon={<Leaf className="h-3.5 w-3.5 text-secondary" />}
-              label={t('tourism.current_visitors', 'Khách hiện tại')}
+              label={t('tourism.current_visitors')}
               value={visitorDisplay}
             />
           )}
           {hasMaxCapacity && (
             <QuickRow
               icon={<Leaf className="h-3.5 w-3.5 text-secondary" />}
-              label={t('tourism.max_capacity', 'Sức chứa')}
+              label={t('tourism.max_capacity')}
               value={maxCapacityDisplay}
             />
           )}
@@ -261,7 +264,7 @@ export function TourismDetailSidebar({
         <div className="rounded-[24px] border-border bg-card px-5 py-5 shadow-(--ambient-shadow)">
           <h3 className="mb-3 flex items-center gap-2.5 text-[18px] font-bold text-foreground">
             <MapPin className="h-5 w-5 text-secondary" />
-            {t('tourism.nearby_points', 'Diem gan do')}
+            {t('tourism.nearby_points')}
           </h3>
           <div className="space-y-3">
             {resolvedNearbyPoints.map((point) => (

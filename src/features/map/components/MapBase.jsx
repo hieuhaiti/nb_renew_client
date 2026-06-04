@@ -341,8 +341,7 @@ export default function MapBaseArea() {
               orientation: 'vertical',
             });
             compareRef.current = mapRef.current.compare;
-          } catch (error) {
-            console.error('[MapBase] Failed to initialize map compare:', error);
+          } catch {
           }
         }
       }, 100);
@@ -365,8 +364,7 @@ export default function MapBaseArea() {
         if (mapRef.current.compare) {
           try {
             mapRef.current.compare.remove();
-          } catch (error) {
-            console.error('[MapBase] Failed to remove map compare:', error);
+          } catch {
           }
           mapRef.current.compare = null;
           compareRef.current = null;
@@ -522,9 +520,8 @@ export default function MapBaseArea() {
           padding: 88,
           duration: 850,
         });
-      } catch (error) {
+      } catch {
         if (!didCancel) {
-          console.error('[MapBase drawHighlightedRoute] error:', error);
           clearHighlightedRouteLayers(map);
         }
       }

@@ -61,7 +61,7 @@ function StarPicker({ value, hover, onValue, onHover, size = 'h-6 w-6' }) {
 
 function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
   const starCount = computeDisplayRating(r);
-  const userName = r.user_name || r.user?.name || r.author || t('tourism.anonymous', 'Khách');
+  const userName = r.user_name || r.user?.name || r.author || t('tourism.anonymous');
   const photoUrls = Array.isArray(r.photo_urls) ? r.photo_urls.filter(Boolean) : [];
   const dateStr = r.visit_date || r.created_at;
 
@@ -152,7 +152,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
             {r.helpful_count > 0 ? (
               <span className="text-muted-foreground flex items-center gap-1 text-xs">
                 <ThumbsUp size={11} />
-                {r.helpful_count} {t('tourism.helpful', 'hữu ích')}
+                {r.helpful_count} {t('tourism.helpful')}
               </span>
             ) : (
               <span />
@@ -164,7 +164,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
                 onClick={() => onDeleteReview(r.id)}
                 className="text-muted-foreground h-6 rounded-[6px] border-border bg-card px-2 text-xs hover:bg-muted"
               >
-                {t('tourism.delete', 'Xoá')}
+                {t('tourism.delete')}
               </Button>
             )}
           </div>
@@ -174,7 +174,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
             <div className="mt-2.5 rounded-[10px] border-border bg-primary-soft p-3">
               <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-primary">
                 <MessageSquare size={11} />
-                {r.reply_by_name || t('tourism.operator_reply', 'Phản hồi từ đơn vị')}
+                {r.reply_by_name || t('tourism.operator_reply')}
               </div>
               <p className="text-muted-foreground text-xs leading-relaxed">{r.reply_text}</p>
             </div>
@@ -223,7 +223,7 @@ export function TourismDetailReviewsSection({
   return (
     <section className="border-border bg-card mb-3 rounded-[16px] border px-5 py-4">
       <h2 className="text-foreground mb-4 text-sm font-bold 2xl:text-base">
-        {t('tourism.reviews', 'Đánh giá')}
+        {t('tourism.reviews')}
       </h2>
 
       {/* Summary */}
@@ -237,7 +237,7 @@ export function TourismDetailReviewsSection({
               <StarsDisplay count={Math.round(averageDisplayRating)} size={14} />
             </div>
             <div className="text-muted-foreground mt-1 text-center text-xs">
-              {totalReviewCount} {t('tourism.reviews_count', 'đánh giá')}
+              {totalReviewCount} {t('tourism.reviews_count')}
             </div>
           </div>
 
@@ -284,7 +284,7 @@ export function TourismDetailReviewsSection({
           ))
         ) : (
           <div className="text-muted-foreground rounded-[14px] border-border bg-muted px-4 py-6 text-center text-sm">
-            {t('tourism.no_reviews', 'Chưa có đánh giá nào.')}
+            {t('tourism.no_reviews')}
           </div>
         )}
       </div>
@@ -293,7 +293,7 @@ export function TourismDetailReviewsSection({
       {pagesDisplay > 1 && (
         <div className="mt-3 mb-4 flex items-center justify-between">
           <span className="text-muted-foreground text-xs">
-            {t('tourism.page', 'Trang')} {pageDisplay} / {pagesDisplay}
+            {t('tourism.page')} {pageDisplay} / {pagesDisplay}
           </span>
           <div className="flex items-center gap-1.5">
             <Button
@@ -304,7 +304,7 @@ export function TourismDetailReviewsSection({
               className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border-border bg-card px-2.5 text-xs font-semibold hover:bg-muted disabled:opacity-40"
             >
               <ChevronLeft size={13} />
-              {t('common.prev', 'Trước')}
+              {t('common.prev')}
             </Button>
             <Button
               variant="ghost"
@@ -313,7 +313,7 @@ export function TourismDetailReviewsSection({
               onClick={onNextPage}
               className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border-border bg-card px-2.5 text-xs font-semibold hover:bg-muted disabled:opacity-40"
             >
-              {t('common.next', 'Sau')}
+              {t('common.next')}
               <ChevronRight size={13} />
             </Button>
           </div>
@@ -323,13 +323,13 @@ export function TourismDetailReviewsSection({
       {/* Write review form */}
       <div className="mt-4 rounded-[14px] border-border bg-muted p-4">
         <h3 className="text-foreground mb-4 text-sm font-bold">
-          {t('tourism.write_your_review', 'Viết đánh giá của bạn')}
+          {t('tourism.write_your_review')}
         </h3>
 
         {/* Star picker */}
         <div className="mb-4 flex items-center justify-between rounded-[10px] border-border bg-card px-3 py-2.5">
           <span className="text-foreground text-sm">
-            {t('tourism.your_rating', 'Số sao đánh giá')} <span className="text-quinary">*</span>
+            {t('tourism.your_rating')} <span className="text-quinary">*</span>
           </span>
           <StarPicker
             value={newStars}
@@ -347,13 +347,13 @@ export function TourismDetailReviewsSection({
               htmlFor="review-title"
               className="text-muted-foreground mb-1 block text-xs font-medium"
             >
-              {t('tourism.review_title', 'Tiêu đề (tuỳ chọn)')}
+              {t('tourism.review_title')}
             </label>
             <Input
               id="review-title"
               value={newTitle}
               onChange={(e) => onTitleChange(e.target.value)}
-              placeholder={t('tourism.review_title_placeholder', 'Tóm tắt trải nghiệm của bạn...')}
+              placeholder={t('tourism.review_title_placeholder')}
               className="h-9 rounded-[8px] border-border bg-card text-sm focus:border-primary"
             />
           </div>
@@ -362,7 +362,7 @@ export function TourismDetailReviewsSection({
               htmlFor="visit-date"
               className="text-muted-foreground mb-1 block text-xs font-medium"
             >
-              {t('tourism.visit_date', 'Ngày tham quan')}
+              {t('tourism.visit_date')}
             </label>
             <Input
               id="visit-date"
@@ -380,17 +380,14 @@ export function TourismDetailReviewsSection({
             htmlFor="review-comment"
             className="text-muted-foreground mb-1 block text-xs font-medium"
           >
-            {t('tourism.your_comment', 'Cảm nhận của bạn')}
+            {t('tourism.your_comment')}
           </label>
           <Textarea
             id="review-comment"
             value={newComment}
             maxLength={500}
             onChange={(e) => onCommentChange(e.target.value)}
-            placeholder={t(
-              'tourism.leave_comment_placeholder',
-              'Chia sẻ trải nghiệm của bạn về địa điểm này...'
-            )}
+            placeholder={t('tourism.leave_comment_placeholder')}
             className="min-h-20 resize-none rounded-[8px] border-border bg-card text-sm focus:border-primary"
           />
         </div>
@@ -402,13 +399,13 @@ export function TourismDetailReviewsSection({
               htmlFor="review-pros"
               className="text-muted-foreground mb-1 block text-xs font-medium"
             >
-              {t('tourism.pros', 'Điểm tích cực')}
+              {t('tourism.pros')}
             </label>
             <Input
               id="review-pros"
               value={newPros}
               onChange={(e) => onProsChange(e.target.value)}
-              placeholder={t('tourism.pros_placeholder', 'Điểm bạn thích...')}
+              placeholder={t('tourism.pros_placeholder')}
               className="h-9 rounded-[8px] border-border bg-card text-sm focus:border-primary"
             />
           </div>
@@ -417,13 +414,13 @@ export function TourismDetailReviewsSection({
               htmlFor="review-cons"
               className="text-muted-foreground mb-1 block text-xs font-medium"
             >
-              {t('tourism.cons', 'Điểm cần cải thiện')}
+              {t('tourism.cons')}
             </label>
             <Input
               id="review-cons"
               value={newCons}
               onChange={(e) => onConsChange(e.target.value)}
-              placeholder={t('tourism.cons_placeholder', 'Điểm chưa hài lòng...')}
+              placeholder={t('tourism.cons_placeholder')}
               className="h-9 rounded-[8px] border-border bg-card text-sm focus:border-primary"
             />
           </div>
@@ -435,7 +432,7 @@ export function TourismDetailReviewsSection({
             htmlFor="review-file-input"
             className="text-muted-foreground mb-1.5 block text-xs font-medium"
           >
-            {t('tourism.upload_photos', 'Tải ảnh (tối đa 5 ảnh)')}
+            {t('tourism.upload_photos')}
           </label>
           <div
             className="text-muted-foreground flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-border bg-card text-sm transition hover:bg-muted"
@@ -450,7 +447,7 @@ export function TourismDetailReviewsSection({
             }}
           >
             <Plus size={14} className="text-primary" />
-            {t('tourism.upload_hint', 'Nhấn để chọn ảnh')}
+            {t('tourism.upload_hint')}
             <Input
               id="review-file-input"
               type="file"
@@ -488,7 +485,7 @@ export function TourismDetailReviewsSection({
             onClick={onReset}
             className="text-foreground h-9 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted"
           >
-            {t('tourism.cancel', 'Huỷ')}
+            {t('tourism.cancel')}
           </Button>
           <Button
             variant="ghost"
@@ -499,8 +496,8 @@ export function TourismDetailReviewsSection({
             style={BTN_GRADIENT}
           >
             {isSubmitting
-              ? t('tourism.sending', 'Đang gửi...')
-              : t('tourism.submit_review', 'Gửi đánh giá')}
+              ? t('tourism.sending')
+              : t('tourism.submit_review')}
           </Button>
         </div>
       </div>

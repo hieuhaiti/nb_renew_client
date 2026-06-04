@@ -645,11 +645,6 @@ export function addOrUpdateSubcategoryLayer(
       if (!map.getSource(sourceId)) return;
 
       if (loadError) {
-        console.warn('[MapHelper] Failed to render fallback marker image', {
-          sourceId,
-          markerImageBaseId: fallbackMarkerImageBaseId,
-          error: loadError,
-        });
         return;
       }
 
@@ -665,12 +660,6 @@ export function addOrUpdateSubcategoryLayer(
         if (!map.getSource(sourceId)) return;
 
         if (loadError) {
-          console.warn('[MapHelper] Failed to load subcategory icon image', {
-            sourceId,
-            iconUrl,
-            iconImageId,
-            error: loadError,
-          });
           ensureFallbackPointLayer();
           return;
         }
@@ -1166,8 +1155,7 @@ export function clearHighlightFromMap(map) {
       pointMarker.remove();
       highlightPointMarkerByMap.delete(map);
     }
-  } catch (error) {
-    console.error('Error clearing highlight from map:', error);
+  } catch {
   }
 }
 
@@ -1176,7 +1164,6 @@ export function highlightPointOnMap(map, point) {
 
   const coordinates = getHighlightCoordinates(point);
   if (!coordinates) {
-    console.warn('Invalid coordinates provided for highlight');
     return;
   }
 
@@ -1359,7 +1346,6 @@ export function addOrUpdateOcopLayer(map, featureCollection) {
   loadSvgStringAsImage(createOcopMarkerSvg(), (image, error) => {
     if (!map.getSource(OCOP_SOURCE_ID)) return;
     if (error || !image) {
-      console.warn('[MapHelper] Failed to load OCOP marker image', error);
       return;
     }
     if (!map.hasImage(OCOP_MARKER_IMAGE_ID)) {

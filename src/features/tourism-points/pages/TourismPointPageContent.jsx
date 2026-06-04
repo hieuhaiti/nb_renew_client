@@ -191,8 +191,7 @@ export default function TourismPointPage() {
       else next.add(idStr);
       setFavorites(next);
       localStorage.setItem('favorites', JSON.stringify(Array.from(next)));
-    } catch (err) {
-      console.error('toggleFavorite', err);
+    } catch {
     }
   };
 

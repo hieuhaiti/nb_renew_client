@@ -42,14 +42,14 @@ export function TourismDetailGallerySection({
       <div className="mb-4 flex items-center justify-between">
         <h2 className="flex items-center gap-2.5 text-xl font-bold text-foreground md:text-2xl">
           <Images className="h-6 w-6 text-secondary" />
-          {t('tourism.gallery', 'Thư viện hình ảnh')}
+          {t('tourism.gallery')}
         </h2>
         <Button
           variant="ghost"
           onClick={() => (typeof onViewAll === 'function' ? onViewAll() : onPickImage(0))}
           className="text-sm font-semibold text-[#08aeb9] hover:underline"
         >
-          {t('tourism.view_all_photos', 'Xem tất cả')} ({totalImages})
+          {t('tourism.view_all_photos')} ({totalImages})
         </Button>
       </div>
 
@@ -82,7 +82,7 @@ export function TourismDetailGallerySection({
             onClick={() => (typeof onViewAll === 'function' ? onViewAll() : onPickImage(0))}
             className="mt-2 w-full rounded-[14px] border border-[#dcecf7] bg-[#f6fbff] py-2.5 text-xs font-extrabold text-[#08aeb9]"
           >
-            +{totalImages - 3} ảnh khác
+            {t('tourism.more_photos', { count: totalImages - 3 })}
           </button>
         )}
       </div>

@@ -647,7 +647,7 @@ export default function HomePageContent() {
                       <SelectItem value="nature">{t('home.filters.nature')}</SelectItem>
                       <SelectItem value="culture">{t('home.filters.culture')}</SelectItem>
                       <SelectItem value="cuisine">{t('home.filters.cuisine')}</SelectItem>
-                      <SelectItem value="ocop">OCOP</SelectItem>
+                      <SelectItem value="ocop">{t('common.ocop')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </label>
@@ -689,11 +689,7 @@ export default function HomePageContent() {
                   ) : homeSearchResults.length === 0 ? (
                     <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-[13px]">
                       <MapPin className="h-5 w-5 opacity-60" />
-                      <p>
-                        {t('mapPage.toolbar.searchNoResult', {
-                          defaultValue: 'Không tìm thấy điểm đến.',
-                        })}
-                      </p>
+                      <p>{t('mapPage.toolbar.searchNoResult')}</p>
                     </div>
                   ) : (
                     <div className="p-2">
@@ -712,10 +708,7 @@ export default function HomePageContent() {
                               {item.name}
                             </p>
                             <p className="text-muted-foreground truncate text-[12px]">
-                              {item.address ||
-                                t('mapPage.destination.noAddress', {
-                                  defaultValue: 'Không có địa chỉ',
-                                })}
+                              {item.address || t('mapPage.destination.noAddress')}
                             </p>
                           </div>
                           <ArrowUpRight className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
@@ -1119,7 +1112,7 @@ export default function HomePageContent() {
                       </span>
                       <div className="flex gap-2">
                         <Button size="sm" onClick={() => handleOpenPointDetail(item)}>
-                          Chi tiết
+                          {t('home.featured_destinations.detail_cta')}
                         </Button>
                         <Button
                           size="sm"
@@ -1295,7 +1288,7 @@ export default function HomePageContent() {
               className="h-10 rounded-full"
               onClick={() => navigate('/news')}
             >
-              <FileText size={14} /> Xem tất cả tin
+              <FileText size={14} /> {t('home.news_section.see_all')}
             </Button>
           </div>
 
@@ -1353,7 +1346,7 @@ export default function HomePageContent() {
                   className="rounded-[12px]"
                   onClick={() => navigate('/news')}
                 >
-                  Xem thêm
+                  {t('home.vlog_section.see_all')}
                 </Button>
               </div>
               <p className="text-muted-foreground mb-4 text-[13px] leading-[1.7]">
@@ -1480,7 +1473,7 @@ export default function HomePageContent() {
                 className="h-10 rounded-full"
                 onClick={() => navigate('/ocop')}
               >
-                <ShoppingBasket size={14} /> Xem tất cả OCOP
+                <ShoppingBasket size={14} /> {t('home.ocop_section.see_all')}
               </Button>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -1556,7 +1549,9 @@ export default function HomePageContent() {
           }}
         >
           <div>
-            <h3 className="mb-2 text-[17px] font-black text-white">SmartTour WebGIS</h3>
+            <h3 className="mb-2 text-[17px] font-black text-white">
+              {t('home.footer_section.brand_name')}
+            </h3>
             <p className="text-[13px] leading-[1.8] text-[#b8d6d4]">
               {t('home.footer_section.brand')}
             </p>

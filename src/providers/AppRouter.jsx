@@ -43,9 +43,7 @@ export function AppRouter() {
 
     const currentLang = i18n.resolvedLanguage || i18n.language;
     if (!String(currentLang || '').startsWith(lang)) {
-      i18n.changeLanguage(lang).catch((error) => {
-        console.error('[AppRouter] Failed to sync language:', error);
-      });
+      i18n.changeLanguage(lang).catch(() => {});
     }
   }, [lang]);
 

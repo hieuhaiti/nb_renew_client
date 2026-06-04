@@ -29,14 +29,6 @@ import { useNotificationWebSocket } from '@/hooks/useNotificationWebSocket';
 
 const DEFAULT_NOTIFICATION_LIMIT = 10;
 
-function debugNotificationBell(event, payload = {}) {
-  if (!env.isDev) return;
-  console.info(`[notificationBell] ${event}`, {
-    at: new Date().toISOString(),
-    ...payload,
-  });
-}
-
 function getResponseData(response) {
   return response?.data ?? response ?? {};
 }
@@ -158,21 +150,10 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
 
   renderCountRef.current += 1;
 
-  useEffect(() => {
-    debugNotificationBell('render', {
-      renderCount: renderCountRef.current,
-      isAuthenticated,
-      open,
-      page,
-      userId: userId || 'current-user',
-    });
-  });
-
   useNotificationWebSocket({
     enabled: isAuthenticated && Boolean(accessToken),
     token: accessToken,
     onMessage: () => {
-      debugNotificationBell('websocket:invalidate', { page });
       queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all });
     },
   });
@@ -186,7 +167,6 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
   useEffect(() => {
     if (!open || !isAuthenticated) return;
     if (!isStale) return;
-    debugNotificationBell('dropdown:refetch-stale', { page });
     refetch();
   }, [open, isAuthenticated, isStale, refetch]);
 
@@ -194,7 +174,6 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
     if (!open) return;
     const handler = (e) => {
       if (!wrapperRef.current?.contains(e.target)) {
-        debugNotificationBell('dropdown:outside-close');
         setOpen(false);
       }
     };
@@ -205,73 +184,36 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
   useEffect(() => {
     if (!notificationsQuery.isFetching) return;
     debugFetchCountRef.current += 1;
-    debugNotificationBell('query:fetching', {
-      fetchCount: debugFetchCountRef.current,
-      page,
-      queryKey: [...notificationQueryKeys.me(notificationParams), userId || 'current-user'],
-    });
   }, [notificationsQuery.isFetching, notificationParams, page, userId]);
 
   useEffect(() => {
     if (!notificationsQuery.dataUpdatedAt) return;
-    debugNotificationBell('query:data-updated', {
-      page: currentPage,
-      totalNotifications,
-      unreadCount,
-      totalPages,
-    });
   }, [notificationsQuery.dataUpdatedAt, currentPage, totalNotifications, unreadCount, totalPages]);
 
   useEffect(() => {
     if (!notificationsQuery.errorUpdatedAt) return;
-    debugNotificationBell('query:error', {
-      page,
-      error: notificationsQuery.error?.message || 'unknown',
-    });
   }, [notificationsQuery.errorUpdatedAt, notificationsQuery.error, page]);
 
   const invalidateNotifications = (reason) => {
-    debugNotificationBell('query:invalidate', { reason, page });
     queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all });
   };
 
   const markAsReadMutation = useMutation({
     mutationFn: (id) => notificationService.markAsRead(id),
     onSuccess: (_, id) => {
-      debugNotificationBell('markAsRead:success', { id, page });
       invalidateNotifications('mark-as-read');
-    },
-    onError: (error, id) => {
-      debugNotificationBell('markAsRead:error', {
-        id,
-        page,
-        error: error?.message || 'unknown',
-      });
     },
   });
 
   const markAllAsReadMutation = useMutation({
     mutationFn: () => notificationService.markAllAsRead(),
     onSuccess: () => {
-      debugNotificationBell('markAllAsRead:success', { page });
       invalidateNotifications('mark-all-as-read');
-    },
-    onError: (error) => {
-      debugNotificationBell('markAllAsRead:error', {
-        page,
-        error: error?.message || 'unknown',
-      });
     },
   });
 
   const handleNotificationClick = async (notification) => {
     if (!notification) return;
-    debugNotificationBell('item:click', {
-      id: notification.id,
-      isRead: notification.is_read,
-      href: getNotificationHref(notification),
-      page,
-    });
 
     if (!notification.is_read && notification.id) {
       try {
@@ -317,13 +259,6 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
           setOpen((v) => {
             const nextOpen = !v;
             bellToggleCountRef.current += 1;
-            debugNotificationBell('bell:toggle', {
-              toggleCount: bellToggleCountRef.current,
-              nextOpen,
-              unreadCount,
-              totalNotifications,
-              page,
-            });
             return nextOpen;
           })
         }
@@ -405,7 +340,7 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
             <>
               <hr className="border-[var(--notification-divider)]" />
 
-              <div className="border-l-[3px] border-[var(--notification-accent)]">
+              <div className="p-1">
                 <div className="flex items-center justify-between gap-3 px-4 py-2.5">
                   <div className="flex min-w-0 items-center gap-2">
                     <Bell size={14} className="shrink-0 text-[var(--notification-dot)]" />
@@ -426,7 +361,6 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
                         disabled={markAllAsReadMutation.isPending}
                         onClick={(event) => {
                           event.stopPropagation();
-                          debugNotificationBell('markAllAsRead:click', { page, unreadCount });
                           markAllAsReadMutation.mutate();
                         }}
                         className="shrink-0 text-[var(--notification-dot)]"
@@ -522,10 +456,7 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
                                   disabled={markAsReadMutation.isPending}
                                   onClick={(event) => {
                                     event.stopPropagation();
-                                    debugNotificationBell('markAsRead:click', {
-                                      id: notification.id,
-                                      page,
-                                    });
+
                                     markAsReadMutation.mutate(notification.id);
                                   }}
                                   className="text-[var(--notification-dot)]"
@@ -549,10 +480,6 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
                       disabled={currentPage <= 1 || notificationsQuery.isFetching}
                       onClick={() => {
                         const nextPage = Math.max(1, currentPage - 1);
-                        debugNotificationBell('pagination:prev', {
-                          from: currentPage,
-                          to: nextPage,
-                        });
                         setPage(nextPage);
                       }}
                     >
@@ -571,10 +498,6 @@ export default function WeatherAlertBell({ isAuthenticated = false, userId }) {
                       disabled={currentPage >= totalPages || notificationsQuery.isFetching}
                       onClick={() => {
                         const nextPage = Math.min(totalPages, currentPage + 1);
-                        debugNotificationBell('pagination:next', {
-                          from: currentPage,
-                          to: nextPage,
-                        });
                         setPage(nextPage);
                       }}
                     >

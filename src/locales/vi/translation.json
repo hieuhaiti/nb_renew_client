@@ -255,6 +255,7 @@
       }
     },
     "footer_section": {
+      "brand_name": "SmartTour WebGIS",
       "brand": "Cổng thông tin du lịch Ninh Bình – Nền tảng GIS, VR360, OCOP và lịch trình thông minh tích hợp",
       "quick_links": "Liên kết nhanh",
       "contact": "Liên hệ",
@@ -604,6 +605,8 @@
     "helpful": "hữu ích",
     "operator_reply": "Phản hồi từ đơn vị vận hành",
     "reviews_count": "đánh giá",
+    "rating_count_suffix": "{{count}} đánh giá",
+    "more_photos": "+{{count}} ảnh khác",
     "write_your_review": "Viết đánh giá của bạn",
     "your_rating": "Số sao đánh giá",
     "review_title": "Tiêu đề (tùy chọn)",

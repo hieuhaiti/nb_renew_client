@@ -59,8 +59,7 @@ export const tokenManager = {
           }
         }
         Cookies.set(ACCESS_TOKEN_KEY, token, cookieOptions);
-      } catch (error) {
-        console.error("[TokenManager] Failed to save accessToken:", error);
+      } catch {
       }
     } else {
       Cookies.remove(ACCESS_TOKEN_KEY);
@@ -84,8 +83,7 @@ export const tokenManager = {
           }
         }
         Cookies.set(REFRESH_TOKEN_KEY, token, cookieOptions);
-      } catch (error) {
-        console.error("[TokenManager] Failed to save refreshToken:", error);
+      } catch {
       }
     } else {
       Cookies.remove(REFRESH_TOKEN_KEY);

@@ -113,8 +113,7 @@ export const useSatelliteStore = create(
                 if (mapRef.current.single) {
                   removeSatelliteLayerFromMap(mapRef.current.single, layer.id, layer.sourceId);
                 }
-              } catch (e) {
-                console.error(`[setIsCompareMode→compare] Error removing layer ${layer.id}:`, e);
+              } catch {
               }
             });
           }
@@ -137,8 +136,7 @@ export const useSatelliteStore = create(
                 if (targetMap) {
                   removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
                 }
-              } catch (e) {
-                console.error(`[setIsCompareMode→single] Error removing layer ${layer.id}:`, e);
+              } catch {
               }
             });
           }
@@ -507,8 +505,7 @@ export const useSatelliteStore = create(
               const targetMap =
                 layer.splitSide === 'right' ? mapRef.current.split : mapRef.current.single;
               if (targetMap) removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
-            } catch (e) {
-              console.error(`[resetToSingleMode] Error removing layer ${layer.id}:`, e);
+            } catch {
             }
           });
         }
@@ -530,8 +527,7 @@ export const useSatelliteStore = create(
               const targetMap =
                 layer.splitSide === 'right' ? mapRef.current.split : mapRef.current.single;
               if (targetMap) removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
-            } catch (e) {
-              console.error(`[resetCompareSettings] Error removing layer ${layer.id}:`, e);
+            } catch {
             }
           });
         }
@@ -561,8 +557,7 @@ export const useSatelliteStore = create(
                   ? mapRef.current.split
                   : mapRef.current.single;
               if (targetMap) removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
-            } catch (e) {
-              console.error(`[clearData] Error removing layer ${layer.id}:`, e);
+            } catch {
             }
           });
         }
@@ -584,8 +579,7 @@ export const useSatelliteStore = create(
               const targetMap =
                 layer.splitSide === 'right' ? mapRef.current.split : mapRef.current.single;
               if (targetMap) removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
-            } catch (e) {
-              console.error(`[reset] Error removing layer ${layer.id}:`, e);
+            } catch {
             }
           });
         }

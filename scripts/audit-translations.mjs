@@ -9,6 +9,24 @@ const viPath = path.join(srcDir, 'locales', 'vi', 'translation.json');
 const defaultReportPath = path.join(rootDir, 'translation-audit.md');
 const sourceExtensions = new Set(['.js', '.jsx', '.ts', '.tsx']);
 const placeholderPattern = /^(todo|tbd|n\/a|na|none|null|undefined|-|--|\.\.\.|translate|translation pending|missing)$/i;
+const visibleAttributeNames = new Set([
+  'aria-label',
+  'label',
+  'placeholder',
+  'title',
+  'alt',
+  'value',
+]);
+const safeTextPattern =
+  /^([A-Z0-9_\-/.:#%+()[\]\s]+|[.#/%+\-–—·|:()[\]\s]+|\d+(\.\d+)?\s*(px|rem|em|vh|vw|%|km|m|min|h)?|true|false|null|undefined)$/i;
+const technicalStringPattern =
+  /^(https?:\/\/|\/|\.\/|\.\.\/|@\/|data:|linear-gradient|radial-gradient|rgb|rgba|hsl|hsla|var\(|calc\(|repeat\(|minmax\(|translate|scale|rotate|Bearer\s|GET|POST|PUT|PATCH|DELETE|ASC|DESC|EPSG|FeatureCollection|Point|LineString|Polygon)/i;
+const codeLikeTextPattern =
+  /(;|=>|===|!==|&&|\|\||\?\s*\(|:\s*\(|\breturn\b|\bconst\b|\blet\b|\bfunction\b|\bpath\b|\blocation\b|\bstartsWith\b|\blength\b|\bslice\b|\bmap\b|\bfilter\b)/;
+const technicalContextPattern =
+  /\b(className|style|background|backgroundImage|src|href|path|to|url|id|key|type|variant|size|method|queryKey|endPoint|endpoint|baseURL|headers|params|data|icon|bg|color|coords|coordinates|slug|token|access_token|appid|apiKey|sortBy|sortOrder|status|enabled|name|code)\s*[:=]\s*$/;
+const visibleFunctionPattern =
+  /\b(toast\.(?:success|error|info|warning|warn)|alert|confirm|setError|throw new Error|Error)\s*\(\s*$/;
 
 const args = process.argv.slice(2);
 const writeIndex = args.indexOf('--write');
@@ -241,10 +259,169 @@ function extractDynamicUsages(content, relPath, lineStarts) {
   return dynamic;
 }
 
+function getLineText(content, lineStarts, line) {
+  const start = lineStarts[line - 1] ?? 0;
+  const end = lineStarts[line] ? lineStarts[line] - 1 : content.length;
+  return content.slice(start, end);
+}
+
+function hasHumanLetters(text) {
+  return /[\p{L}]/u.test(text);
+}
+
+function normalizeVisibleText(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim();
+}
+
+function isIgnorableVisibleText(text) {
+  const normalized = normalizeVisibleText(text);
+  if (!normalized) return true;
+  if (/^[,.;:()[\]{}]/.test(normalized)) return true;
+  if (codeLikeTextPattern.test(normalized)) return true;
+  if (!hasHumanLetters(normalized)) return true;
+  if (safeTextPattern.test(normalized)) return true;
+  if (technicalStringPattern.test(normalized)) return true;
+  return false;
+}
+
+function classifyHardcodedText(text) {
+  const normalized = normalizeVisibleText(text);
+
+  if (/^[A-Z0-9&+\-/\s.]+$/.test(normalized) && normalized.length <= 32) {
+    return 'review';
+  }
+
+  if (/^[A-Z][A-Za-z0-9&+\-/\s.]+$/.test(normalized) && normalized.length <= 40) {
+    return 'review';
+  }
+
+  return 'must_i18n';
+}
+
+function addHardcodedCandidate(output, candidate) {
+  const text = normalizeVisibleText(candidate.text);
+  if (isIgnorableVisibleText(text)) return;
+
+  output.push({
+    ...candidate,
+    text,
+    classification: candidate.classification || classifyHardcodedText(text),
+  });
+}
+
+function extractJsxTextNodes(content, relPath, lineStarts) {
+  const candidates = [];
+  const jsxTextRegex = />([^<>{}]+)</g;
+  let match;
+
+  while ((match = jsxTextRegex.exec(content))) {
+    if (!isProbablyJsxTagClose(content, match.index)) continue;
+
+    const text = normalizeVisibleText(match[1]);
+    if (!text) continue;
+
+    addHardcodedCandidate(candidates, {
+      text,
+      source: 'jsx_text',
+      file: relPath,
+      line: lineForIndex(lineStarts, match.index),
+    });
+  }
+
+  return candidates;
+}
+
+function isProbablyJsxTagClose(content, closeIndex) {
+  if (content[closeIndex - 1] === '=' || content[closeIndex - 1] === '-') return false;
+
+  const lineStart = content.lastIndexOf('\n', closeIndex) + 1;
+  const previousOpen = content.lastIndexOf('<', closeIndex);
+  if (previousOpen < lineStart) return false;
+
+  const tagText = content.slice(previousOpen + 1, closeIndex).trim();
+  if (!tagText) return false;
+  if (tagText.startsWith('!') || tagText.startsWith('?')) return false;
+  if (/^[A-Za-z][\w.:/-]*(\s|$|>)/.test(tagText)) return true;
+  if (/^\/[A-Za-z][\w.:/-]*(\s|$|>)/.test(tagText)) return true;
+
+  return false;
+}
+
+function extractVisibleAttributes(content, relPath, lineStarts) {
+  const candidates = [];
+  const attrRegex = /\b([A-Za-z][\w-]*)\s*=\s*(["'])(.*?)\2/g;
+  let match;
+
+  while ((match = attrRegex.exec(content))) {
+    const attrName = match[1];
+    const attrValue = unescapeStringLiteral(match[3]);
+
+    if (!visibleAttributeNames.has(attrName)) continue;
+    addHardcodedCandidate(candidates, {
+      text: attrValue,
+      source: `attr:${attrName}`,
+      file: relPath,
+      line: lineForIndex(lineStarts, match.index),
+    });
+  }
+
+  return candidates;
+}
+
+function extractVisibleStringLiterals(content, relPath, lineStarts) {
+  const candidates = [];
+  const stringRegex = /(["'`])/g;
+  let match;
+
+  while ((match = stringRegex.exec(content))) {
+    const literal = readStringLiteralAt(content, match.index);
+    if (!literal) continue;
+    stringRegex.lastIndex = literal.end;
+
+    const templateChunks =
+      literal.quote === '`' && literal.raw.includes('${')
+        ? literal.raw.replace(/\$\{[\s\S]*?\}/g, ' ')
+        : null;
+    const text = normalizeVisibleText(templateChunks || literal.value);
+    if (isIgnorableVisibleText(text)) continue;
+
+    const before = content.slice(Math.max(0, match.index - 80), match.index);
+    const line = getLineText(content, lineStarts, lineForIndex(lineStarts, match.index));
+    const isVisibleContext =
+      visibleFunctionPattern.test(before) ||
+      /\b(defaultValue|fallback|fallbackText|emptyText|loadingText|errorMessage|successMessage|label|placeholder|title|description|message|text|content)\s*:\s*$/.test(before) ||
+      /\b(defaultValue|fallback)\s*[:=]/.test(line);
+
+    if (!isVisibleContext) {
+      if (technicalContextPattern.test(before)) continue;
+      continue;
+    }
+
+    addHardcodedCandidate(candidates, {
+      text,
+      source: 'string_literal',
+      file: relPath,
+      line: lineForIndex(lineStarts, match.index),
+    });
+  }
+
+  return candidates;
+}
+
 function uniqueByLocation(entries) {
   const seen = new Set();
   return entries.filter((entry) => {
     const id = `${entry.file}:${entry.line}:${entry.source}:${entry.key ?? ''}`;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+}
+
+function uniqueHardcodedCandidates(entries) {
+  const seen = new Set();
+  return entries.filter((entry) => {
+    const id = `${entry.file}:${entry.line}:${entry.source}:${entry.text}`;
     if (seen.has(id)) return false;
     seen.add(id);
     return true;
@@ -275,6 +452,29 @@ function formatDynamicList(items) {
   return items
     .map((item) => `- ${item.source} at \`${item.file}:${item.line}\``)
     .join('\n');
+}
+
+function formatHardcodedList(items) {
+  if (!items.length) return '- None';
+  return items
+    .map((item) => `- ${JSON.stringify(item.text)} (${item.source}) at \`${item.file}:${item.line}\``)
+    .join('\n');
+}
+
+function formatFileCountList(items) {
+  if (!items.length) return '- None';
+  return items.map((item) => `- \`${item.file}\`: ${item.count}`).join('\n');
+}
+
+function countByFile(items) {
+  const counts = new Map();
+  for (const item of items) {
+    counts.set(item.file, (counts.get(item.file) || 0) + 1);
+  }
+
+  return [...counts.entries()]
+    .map(([file, count]) => ({ file, count }))
+    .sort((a, b) => b.count - a.count || a.file.localeCompare(b.file));
 }
 
 function buildMissingKeyCandidates(usages) {
@@ -349,6 +549,8 @@ Dynamic i18n usages are listed for manual review because static analysis cannot 
 - Static i18n usages found: ${result.counts.staticUsages}
 - Dynamic i18n usages needing manual review: ${result.counts.dynamicUsages}
 - Inline fallbacks found: ${result.counts.inlineFallbacks}
+- Hardcoded visible text must_i18n: ${result.counts.hardcodedMustI18n}
+- Hardcoded visible text review: ${result.counts.hardcodedReview}
 - Unique used keys missing in EN: ${result.missingKeyCandidates.en.length}
 - Unique used keys missing in VI: ${result.missingKeyCandidates.vi.length}
 - Keys unused by static scan: ${result.counts.unusedKeys}
@@ -394,6 +596,20 @@ ${formatUsageList(result.usedButMissing.vi)}
 ## Inline Fallbacks
 
 ${formatUsageList(result.inlineFallbacks)}
+
+## Hardcoded Visible Text
+
+### must_i18n by file
+
+${formatFileCountList(result.hardcodedVisibleText.mustI18nByFile)}
+
+### must_i18n
+
+${formatHardcodedList(result.hardcodedVisibleText.mustI18n)}
+
+### review
+
+${formatHardcodedList(result.hardcodedVisibleText.review)}
 
 ## Suggested Missing-Key Additions
 
@@ -455,6 +671,7 @@ for (const [locale, entries] of [
 const sourceFiles = collectSourceFiles(srcDir);
 const staticUsages = [];
 const dynamicUsages = [];
+const hardcodedVisibleText = [];
 
 for (const filePath of sourceFiles) {
   const relPath = path.relative(rootDir, filePath).replace(/\\/g, '/');
@@ -464,6 +681,9 @@ for (const filePath of sourceFiles) {
   staticUsages.push(...extractStaticTranslationCalls(content, relPath, lineStarts));
   staticUsages.push(...extractStaticI18nKeys(content, relPath, lineStarts));
   dynamicUsages.push(...extractDynamicUsages(content, relPath, lineStarts));
+  hardcodedVisibleText.push(...extractJsxTextNodes(content, relPath, lineStarts));
+  hardcodedVisibleText.push(...extractVisibleAttributes(content, relPath, lineStarts));
+  hardcodedVisibleText.push(...extractVisibleStringLiterals(content, relPath, lineStarts));
 }
 
 const uniqueStaticUsages = uniqueByLocation(staticUsages).sort((a, b) =>
@@ -476,6 +696,15 @@ const usedButMissing = {
 };
 const inlineFallbacks = uniqueStaticUsages.filter((usage) => usage.fallback);
 const unusedKeys = allLocaleKeys.filter((key) => !usedKeys.has(key));
+const uniqueHardcodedVisibleText = uniqueHardcodedCandidates(hardcodedVisibleText).sort((a, b) =>
+  `${a.file}:${a.line}:${a.text}`.localeCompare(`${b.file}:${b.line}:${b.text}`)
+);
+const mustI18nHardcodedText = uniqueHardcodedVisibleText.filter(
+  (item) => item.classification === 'must_i18n'
+);
+const reviewHardcodedText = uniqueHardcodedVisibleText.filter(
+  (item) => item.classification === 'review'
+);
 
 const result = {
   failed:
@@ -485,13 +714,16 @@ const result = {
     emptyOrPlaceholder.en.length > 0 ||
     emptyOrPlaceholder.vi.length > 0 ||
     usedButMissing.en.length > 0 ||
-    usedButMissing.vi.length > 0,
+    usedButMissing.vi.length > 0 ||
+    mustI18nHardcodedText.length > 0,
   counts: {
     en: enKeys.length,
     vi: viKeys.length,
     staticUsages: uniqueStaticUsages.length,
     dynamicUsages: dynamicUsages.length,
     inlineFallbacks: inlineFallbacks.length,
+    hardcodedMustI18n: mustI18nHardcodedText.length,
+    hardcodedReview: reviewHardcodedText.length,
     unusedKeys: unusedKeys.length,
   },
   missingInEn,
@@ -500,6 +732,11 @@ const result = {
   emptyOrPlaceholder,
   usedButMissing,
   inlineFallbacks,
+  hardcodedVisibleText: {
+    mustI18n: mustI18nHardcodedText,
+    mustI18nByFile: countByFile(mustI18nHardcodedText),
+    review: reviewHardcodedText,
+  },
   missingKeyCandidates: {
     en: buildMissingKeyCandidates(usedButMissing.en),
     vi: buildMissingKeyCandidates(usedButMissing.vi),

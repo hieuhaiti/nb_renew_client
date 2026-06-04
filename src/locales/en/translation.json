@@ -255,6 +255,7 @@
       }
     },
     "footer_section": {
+      "brand_name": "SmartTour WebGIS",
       "brand": "Ninh Binh Tourism Information Portal — Integrated GIS, VR360, OCOP and smart itinerary platform",
       "quick_links": "Quick links",
       "contact": "Contact",
@@ -604,6 +605,8 @@
     "helpful": "helpful",
     "operator_reply": "Operator reply",
     "reviews_count": "reviews",
+    "rating_count_suffix": "{{count}} reviews",
+    "more_photos": "+{{count}} more photos",
     "write_your_review": "Write your review",
     "your_rating": "Your rating",
     "review_title": "Title (optional)",

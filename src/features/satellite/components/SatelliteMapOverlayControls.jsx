@@ -30,8 +30,7 @@ function syncLayersToMap(mapRef, layers, isCompareMode) {
         updateSatelliteLayerOpacity(targetMap, layer.id, layer.layerOpacity ?? 1);
         toggleSatelliteLayerVisibility(targetMap, layer.id, layer.visible !== false);
       }
-    } catch (e) {
-      console.error(`[SatelliteMapOverlayControls] Error syncing layer ${layer.id}:`, e);
+    } catch {
     }
   });
 }

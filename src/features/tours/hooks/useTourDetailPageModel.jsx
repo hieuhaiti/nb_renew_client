@@ -201,8 +201,7 @@ export function useTourDetailPageModel(t) {
       const newFavs = exists ? favs.filter((x) => x !== slugStr) : [...favs, slugStr];
       localStorage.setItem('tour_favorites', JSON.stringify(newFavs));
       setIsLiked(!exists);
-    } catch (e) {
-      console.error(e);
+    } catch {
     }
   };
 
