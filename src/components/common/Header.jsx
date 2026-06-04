@@ -152,111 +152,114 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* DESKTOP RIGHT: Lang, User */}
-        <div className="hidden items-center gap-2 2xl:flex">
-          <WeatherAlertBell />
-          <LanguageSwitch />
+        {/* RIGHT ACTIONS */}
+        <div className="flex items-center gap-2">
+          <WeatherAlertBell isAuthenticated={isAuthenticated} userId={user?.id} />
 
-          {isAuthenticated ? (
-            <div className="relative" data-header-interactive>
-              <Button
-                id="header-user-btn"
-                type="button"
-                variant="outline"
-                onClick={() => setDropdownOpenIdx(dropdownOpenIdx === 'user' ? null : 'user')}
-              >
-                {user?.avatar_url ? (
-                  <img
-                    src={withBaseUrl(user.avatar_url)}
-                    alt={user?.full_name || 'avatar'}
-                    className="h-6 w-6 rounded-full object-cover"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = placeholderImg;
-                    }}
+          <div className="hidden items-center gap-2 2xl:flex">
+            <LanguageSwitch />
+
+            {isAuthenticated ? (
+              <div className="relative" data-header-interactive>
+                <Button
+                  id="header-user-btn"
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDropdownOpenIdx(dropdownOpenIdx === 'user' ? null : 'user')}
+                >
+                  {user?.avatar_url ? (
+                    <img
+                      src={withBaseUrl(user.avatar_url)}
+                      alt={user?.full_name || 'avatar'}
+                      className="h-6 w-6 rounded-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = placeholderImg;
+                      }}
+                    />
+                  ) : (
+                    <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full">
+                      <User size={13} className="text-primary-foreground" />
+                    </div>
+                  )}
+                  <span className="text-foreground max-w-25 truncate text-sm font-medium">
+                    {user?.full_name || user?.name || user?.username || user?.email}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={`text-muted-foreground transition-transform duration-200 ${dropdownOpenIdx === 'user' ? 'rotate-180' : ''}`}
                   />
-                ) : (
-                  <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full">
-                    <User size={13} className="text-primary-foreground" />
+                </Button>
+
+                {dropdownOpenIdx === 'user' && (
+                  <div className="bg-popover border-border absolute top-full right-0 z-50 mt-2 min-w-56 overflow-hidden rounded-xl border py-1.5 shadow-xl">
+                    <div className="border-border mb-1 border-b px-4 py-2">
+                      <p className="text-foreground truncate text-sm font-semibold">
+                        {user?.full_name || user?.username}
+                      </p>
+                      <p className="text-muted-foreground truncate text-sm">{user?.email}</p>
+                    </div>
+                    <Button
+                      id="header-profile-btn"
+                      type="button"
+                      className="w-full justify-start"
+                      variant="ghost"
+                      onClick={() => {
+                        navigate('/profile');
+                        setDropdownOpenIdx(null);
+                      }}
+                    >
+                      <Settings size={14} />
+                      {t('common.settings')}
+                    </Button>
+                    <Button
+                      id="header-my-feedback-btn"
+                      type="button"
+                      className="w-full justify-start"
+                      variant="ghost"
+                      onClick={() => {
+                        navigate('/feedback');
+                        setDropdownOpenIdx(null);
+                      }}
+                    >
+                      <MessageSquareText size={14} />
+                      {t('common.my_feedbacks')}
+                    </Button>
+                    <div className="border-border my-1 border-t" />
+                    <Button
+                      id="header-logout-btn"
+                      type="button"
+                      variant="destructive"
+                      className="w-full justify-start"
+                      onClick={handleLogout}
+                    >
+                      <LogOut size={14} />
+                      {t('common.logout')}
+                    </Button>
                   </div>
                 )}
-                <span className="text-foreground max-w-25 truncate text-sm font-medium">
-                  {user?.full_name || user?.name || user?.username || user?.email}
-                </span>
-                <ChevronDown
-                  size={14}
-                  className={`text-muted-foreground transition-transform duration-200 ${dropdownOpenIdx === 'user' ? 'rotate-180' : ''}`}
-                />
+              </div>
+            ) : (
+              <Button id="header-login-btn" size="sm" onClick={() => navigate('/login', { state: { from: location.pathname + location.search } })}>
+                <LogIn size={14} className="mr-1.5" />
+                {t('common.login')}
               </Button>
+            )}
+          </div>
 
-              {dropdownOpenIdx === 'user' && (
-                <div className="bg-popover border-border absolute top-full right-0 z-50 mt-2 min-w-56 overflow-hidden rounded-xl border py-1.5 shadow-xl">
-                  <div className="border-border mb-1 border-b px-4 py-2">
-                    <p className="text-foreground truncate text-sm font-semibold">
-                      {user?.full_name || user?.username}
-                    </p>
-                    <p className="text-muted-foreground truncate text-sm">{user?.email}</p>
-                  </div>
-                  <Button
-                    id="header-profile-btn"
-                    type="button"
-                    className="w-full justify-start"
-                    variant="ghost"
-                    onClick={() => {
-                      navigate('/profile');
-                      setDropdownOpenIdx(null);
-                    }}
-                  >
-                    <Settings size={14} />
-                    {t('common.settings')}
-                  </Button>
-                  <Button
-                    id="header-my-feedback-btn"
-                    type="button"
-                    className="w-full justify-start"
-                    variant="ghost"
-                    onClick={() => {
-                      navigate('/feedback');
-                      setDropdownOpenIdx(null);
-                    }}
-                  >
-                    <MessageSquareText size={14} />
-                    {t('common.my_feedbacks')}
-                  </Button>
-                  <div className="border-border my-1 border-t" />
-                  <Button
-                    id="header-logout-btn"
-                    type="button"
-                    variant="destructive"
-                    className="w-full justify-start"
-                    onClick={handleLogout}
-                  >
-                    <LogOut size={14} />
-                    {t('common.logout')}
-                  </Button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Button id="header-login-btn" size="sm" onClick={() => navigate('/login', { state: { from: location.pathname + location.search } })}>
-              <LogIn size={14} className="mr-1.5" />
-              {t('common.login')}
+          {/* HAMBURGER (mobile/tablet) */}
+          <div className="2xl:hidden">
+            <Button
+              id="header-hamburger-btn"
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label={t('common.open_menu')}
+            >
+              <Menu size={22} />
             </Button>
-          )}
-        </div>
-
-        {/* HAMBURGER (mobile/tablet) */}
-        <div className="2xl:hidden">
-          <Button
-            id="header-hamburger-btn"
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label={t('common.open_menu')}
-          >
-            <Menu size={22} />
-          </Button>
+          </div>
         </div>
       </header>
 
@@ -396,14 +399,8 @@ export default function Header() {
                 </Button>
               )}
 
-              {/* Weather alert + Language */}
+              {/* Language */}
               <div className="bg-muted/50 border-border space-y-1 rounded-2xl border p-3">
-                <div className="flex items-center justify-between px-1 py-1.5">
-                  <span className="text-foreground text-sm font-medium">
-                    {t('mapPage.layout.weatherAlert')}
-                  </span>
-                  <WeatherAlertBell />
-                </div>
                 <div className="flex items-center justify-between px-1 py-1.5">
                   <span className="text-foreground text-sm font-medium">
                     {t('common.toggle_lang')}

@@ -31,7 +31,22 @@
     "search_no_results": "Không tìm thấy kết quả",
     "search_view_all": "Xem tất cả kết quả",
     "tourism_point": "Điểm du lịch",
-    "my_feedbacks": "Phản ánh của tôi"
+    "my_feedbacks": "Phản ánh của tôi",
+    "open": "Mở",
+    "close": "Đóng",
+    "loading": "Đang tải..."
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "fallback_title": "Thông báo mới",
+    "mark_read": "Đánh dấu đã đọc",
+    "mark_all_read": "Đã đọc hết",
+    "loading": "Đang tải thông báo..",
+    "empty": "Chưa có thông báo",
+    "error": "Không thể tải thông báo",
+    "prev": "Trước",
+    "next": "Tiếp",
+    "page": "Trang {{current}} / {{total}}"
   },
   "theme": {
     "toggle": "Chuyển giao diện",
@@ -382,7 +397,8 @@
       "submit": "Đăng bình luận",
       "login_prompt": "Đăng nhập để tham gia bình luận",
       "login_btn": "Đăng nhập ngay",
-      "error": "Đã có lỗi xảy ra. Vui lòng thử lại."
+      "error": "Đã có lỗi xảy ra. Vui lòng thử lại.",
+      "admin": "Quản trị viên"
     }
   },
   "auth": {
@@ -583,7 +599,24 @@
     "total_reviews": "Tổng số đánh giá",
     "share_experience": "Chia sẻ trải nghiệm",
     "pros": "Ưu điểm",
-    "cons": "Nhược điểm"
+    "cons": "Nhược điểm",
+    "opening": "Giờ mở cửa",
+    "helpful": "hữu ích",
+    "operator_reply": "Phản hồi từ đơn vị vận hành",
+    "reviews_count": "đánh giá",
+    "write_your_review": "Viết đánh giá của bạn",
+    "your_rating": "Số sao đánh giá",
+    "review_title": "Tiêu đề (tùy chọn)",
+    "review_title_placeholder": "Tóm tắt trải nghiệm của bạn...",
+    "your_comment": "Cảm nhận của bạn",
+    "pros_placeholder": "Điểm bạn thích...",
+    "cons_placeholder": "Điểm chưa hài lòng...",
+    "weather": "Thời tiết",
+    "audio_guide": "Thuyết minh",
+    "ar_support": "Hỗ trợ AR",
+    "contact_not_available": "Chưa có thông tin liên hệ.",
+    "title": "Điểm du lịch",
+    "services": "Dịch vụ và tiện ích"
   },
   "tourismPointPage": {
     "title": "Điểm du lịch",
@@ -779,7 +812,21 @@
     "filter": "Lọc tuyến đường",
     "toursLabel": "tour phù hợp",
     "viewDetail": "Xem chi tiết",
-    "viewRouteOnMap": "Xem tuyến đường trên bản đồ"
+    "viewRouteOnMap": "Xem tuyến đường trên bản đồ",
+    "gallery": "Thư viện ảnh",
+    "viewAllPhotos": "Xem tất cả",
+    "reviewsCount": "đánh giá",
+    "noReviews": "Chưa có đánh giá nào.",
+    "rateCriteria": "Đánh giá theo tiêu chí",
+    "avgScore": "Điểm trung bình",
+    "comment": "Nội dung đánh giá",
+    "leave_comment_placeholder": "Chia sẻ trải nghiệm, cảm nhận của bạn về tour này...",
+    "day": "Ngày",
+    "actions": {
+      "save": "Lưu",
+      "share": "Chia sẻ"
+    },
+    "routeCapacitySummary": "Tổng quan sức chứa tuyến"
   },
   "mapStyle": {
     "toggle": "Chuyển bản đồ nền",
@@ -790,7 +837,8 @@
     "outdoorDesc": "Kiểu bản đồ địa hình và thiên nhiên",
     "streetDesc": "Bản đồ đô thị với đường và nhãn",
     "satelliteDesc": "Ảnh vệ tinh độ phân giải cao",
-    "satelliteStreetDesc": "Ảnh vệ tinh kèm đường giao thông"
+    "satelliteStreetDesc": "Ảnh vệ tinh kèm đường giao thông",
+    "unavailable": "Kiểu bản đồ không khả dụng"
   },
   "headerAside": {
     "layerData": "Lớp dữ liệu",
@@ -905,7 +953,10 @@
       "aqiUnknown": "Không xác định",
       "unsupportedTitle": "Bản đồ không hỗ trợ trên thiết bị này",
       "unsupportedMessage": "Vui lòng dùng màn hình máy tính xách tay/máy bàn (>= 1024px) để có trải nghiệm bản đồ đầy đủ",
-      "toolResetDesc": "Đặt lại bản đồ về tâm và góc nhìn mặc định"
+      "toolResetDesc": "Đặt lại bản đồ về tâm và góc nhìn mặc định",
+      "monitoringAreaTrangAn": "Khu vực giám sát Tràng An",
+      "monitoringAreaHangMua": "Khu vực giám sát Hang Múa",
+      "monitoringAreaTamCoc": "Khu vực giám sát Tam Cốc"
     },
     "toolbar": {
       "searchPlaceholder": "Tìm điểm đến, dịch vụ, ẩm thực, sự kiện..",
@@ -959,7 +1010,12 @@
       "rating": "Đánh giá",
       "reviews": "Đánh giá",
       "visits": "Lượt ghé thăm",
-      "openRoute": "Chỉ đường"
+      "openRoute": "Chỉ đường",
+      "viewDetail": "Xem chi tiết",
+      "openVr": "Mở VR 360",
+      "featuredSuggestions": "Gợi ý nổi bật",
+      "noFeaturedSuggestions": "Chưa có gợi ý nổi bật",
+      "unknownCategory": "Danh mục chưa xác định"
     },
     "tourPanel": {
       "title": "Tour",
@@ -994,7 +1050,12 @@
       "totalStopCount": "{{count}} điểm dừng trong lịch trình này",
       "stopSearchPlaceholder": "Tìm tên điểm dừng, mô tả, danh mục..",
       "coverAlt": "Ảnh bìa {{tourName}}",
-      "stopFallbackLabel": "Điểm dừng {{index}}"
+      "stopFallbackLabel": "Điểm dừng {{index}}",
+      "stopCapacity": "Sức chứa điểm dừng",
+      "label": "Bảng tour",
+      "capacityNoData": "Chưa có dữ liệu sức chứa",
+      "routeCapacity": "Sức chứa tuyến",
+      "openTourOnMap": "Mở tour trên bản đồ"
     },
     "tourSuggestModal": {
       "title": "Gợi ý tour du lịch",
@@ -1042,7 +1103,10 @@
       "empty": "Không tìm thấy điểm phù hợp",
       "peopleWithCapacity": "{{current}} / {{max}} người",
       "peopleOnly": "{{count}} người",
-      "viewOnMap": "Xem trên bản đồ"
+      "viewOnMap": "Xem trên bản đồ",
+      "live": "Trực tiếp",
+      "connecting": "Đang kết nối...",
+      "searchPlaceholder": "Tìm điểm theo dõi..."
     },
     "direction": {
       "title": "Chỉ đường",
@@ -1064,7 +1128,9 @@
       "totalDistance": "Tổng khoảng cách",
       "totalDuration": "Tổng thời gian",
       "stepsTitle": "Các bước rẽ từng chặng",
-      "noInstruction": "Không có hướng dẫn"
+      "noInstruction": "Không có hướng dẫn",
+      "subtitle": "Lập tuyến đường giữa hai điểm",
+      "empty": "Nhập điểm xuất phát và điểm đến để xem chi tiết tuyến đường"
     },
     "chatbot": {
       "title": "Trợ lý bản đồ",
@@ -1078,13 +1144,23 @@
       "quickPrompts": {
         "dayTour": "Gợi ý tour 1 ngày",
         "lessCrowded": "Điểm nào ít đông đúc hơn?",
-        "weatherToday": "Tư vấn thời tiết hôm nay"
+        "weatherToday": "Tư vấn thời tiết hôm nay",
+        "randomSpot": "Gợi ý một điểm đến bất kỳ",
+        "tamChucIntro": "Giới thiệu về Tam Chúc",
+        "ndviIndex": "Giải thích chỉ số NDVI"
       },
       "sampleMessages": {
         "welcome": "Xin chào, tôi có thể gợi ý điểm đến, cập nhật thời tiết, tour và lịch trình phù hợp với sở thích của bạn",
         "userPreference": "Tôi muốn đi 1 ngày, tránh chỗ đông người và ưu tiên thiên nhiên",
         "botSuggestion": "Bạn có thể xem xét Tràng An vào buổi sáng, sau đó di chuyển đến Bích Động hoặc Hang Múa cho tuyến đường thoải mái hơn"
-      }
+      },
+      "quickPromptsLabel": "Gợi ý nhanh",
+      "historyTitle": "Lịch sử trò chuyện",
+      "error": "Không thể nhận phản hồi. Vui lòng thử lại.",
+      "newChat": "Cuộc trò chuyện mới",
+      "noHistory": "Chưa có lịch sử trò chuyện",
+      "sessionLabel": "Cuộc trò chuyện {{index}}",
+      "deleteSession": "Xóa cuộc trò chuyện"
     },
     "traffic": {
       "title": "Giao thông",
@@ -1096,7 +1172,9 @@
       "error": "Tải dữ liệu thất bại",
       "incidentCount": "{{count}} sự cố",
       "flowLegend": "Mức độ tắc nghẽn",
-      "incidentLegend": "Loại sự cố"
+      "incidentLegend": "Loại sự cố",
+      "disabled": "Lớp giao thông đang tắt",
+      "live": "Trực tiếp"
     },
     "spotModal": {
       "reviews": "Đánh giá",
@@ -1119,13 +1197,15 @@
         "openOnMap": "Mở tuyến trên bản đồ",
         "fallbackDescription": "Mở tuyến này trên bản đồ để xem chi tiết lịch trình."
       },
-      "scanToBook": "Quét để đặt vé"
+      "scanToBook": "Quét để đặt vé",
+      "ticketChild": "Vé trẻ em"
     },
     "ocopPanel": {
       "title": "Đặc sản OCOP lân cận",
       "noProducts": "Không có sản phẩm OCOP lân cận",
       "radiusLabel": "Bán kính",
-      "distFrom": "Cách"
+      "distFrom": "Cách",
+      "missingCoordinates": "Chưa có tọa độ sản phẩm"
     }
   },
   "satellite": {
@@ -1526,7 +1606,8 @@
         "title_min": "Tiêu đề phải có ít nhất 10 ký tự",
         "title_max": "Tiêu đề không được vượt quá 500 ký tự",
         "content_min": "Nội dung phải có ít nhất 20 ký tự"
-      }
+      },
+      "success_toast": "Gửi phản ánh thành công"
     },
     "pagination": {
       "page": "Trang {{current}} / {{total}}"
@@ -1538,5 +1619,10 @@
       "error": "Không thể tải danh sách phản ánh. Vui lòng thử lại.",
       "not_found": "Không tìm thấy phản ánh này."
     }
-  }
+  },
+  "close": "Đóng",
+  "zoomed_image": "Ảnh phóng to",
+  "images_gallery": "Thư viện ảnh",
+  "explore_images": "Khám phá những hình ảnh đẹp của địa điểm này",
+  "image": "Ảnh"
 }

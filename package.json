@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "audit:translations": "node scripts/audit-translations.mjs --write translation-audit.md",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",

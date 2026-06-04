@@ -31,7 +31,22 @@
     "search_no_results": "No results found",
     "search_view_all": "View all results",
     "tourism_point": "Tourism Point",
-    "my_feedbacks": "My reports"
+    "my_feedbacks": "My reports",
+    "open": "Open",
+    "close": "Close",
+    "loading": "Loading..."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "fallback_title": "New notification",
+    "mark_read": "Mark read",
+    "mark_all_read": "Mark all read",
+    "loading": "Loading notifications..",
+    "empty": "No notifications yet",
+    "error": "Unable to load notifications",
+    "prev": "Prev",
+    "next": "Next",
+    "page": "Page {{current}} / {{total}}"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -382,7 +397,8 @@
       "submit": "Post comment",
       "login_prompt": "Sign in to join the conversation",
       "login_btn": "Sign in",
-      "error": "Something went wrong. Please try again."
+      "error": "Something went wrong. Please try again.",
+      "admin": "Admin"
     }
   },
   "auth": {
@@ -583,7 +599,24 @@
     "total_reviews": "Total Reviews",
     "share_experience": "Share Your Experience",
     "pros": "Pros",
-    "cons": "Cons"
+    "cons": "Cons",
+    "opening": "Opening hours",
+    "helpful": "helpful",
+    "operator_reply": "Operator reply",
+    "reviews_count": "reviews",
+    "write_your_review": "Write your review",
+    "your_rating": "Your rating",
+    "review_title": "Title (optional)",
+    "review_title_placeholder": "Summarize your experience...",
+    "your_comment": "Your comment",
+    "pros_placeholder": "What did you like...",
+    "cons_placeholder": "What could be improved...",
+    "weather": "Weather",
+    "audio_guide": "Audio guide",
+    "ar_support": "AR support",
+    "contact_not_available": "Contact information is not available yet.",
+    "title": "Tourism point",
+    "services": "Services and amenities"
   },
   "tourismPointPage": {
     "title": "Tourism Points",
@@ -779,7 +812,21 @@
     "filter": "Filter routes",
     "toursLabel": "matching tours",
     "viewDetail": "View details",
-    "viewRouteOnMap": "View route on map"
+    "viewRouteOnMap": "View route on map",
+    "gallery": "Photo gallery",
+    "viewAllPhotos": "View all",
+    "reviewsCount": "reviews",
+    "noReviews": "No reviews yet.",
+    "rateCriteria": "Rate by criteria",
+    "avgScore": "Average score",
+    "comment": "Review content",
+    "leave_comment_placeholder": "Share your experience and feelings about this tour...",
+    "day": "Day",
+    "actions": {
+      "save": "Save",
+      "share": "Share"
+    },
+    "routeCapacitySummary": "Route capacity summary"
   },
   "mapStyle": {
     "toggle": "Switch base map",
@@ -790,7 +837,8 @@
     "outdoorDesc": "Topographic and nature-oriented map style",
     "streetDesc": "Urban-focused map with roads and labels",
     "satelliteDesc": "High-resolution satellite imagery",
-    "satelliteStreetDesc": "Satellite imagery with road "
+    "satelliteStreetDesc": "Satellite imagery with road ",
+    "unavailable": "Map style unavailable"
   },
   "headerAside": {
     "layerData": "Data layers",
@@ -905,7 +953,10 @@
       "aqiUnknown": "Unknown",
       "unsupportedTitle": "Map is not supported on this device",
       "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience",
-      "toolResetDesc": "Reset map to the default center and viewing angle"
+      "toolResetDesc": "Reset map to the default center and viewing angle",
+      "monitoringAreaTrangAn": "Trang An monitoring area",
+      "monitoringAreaHangMua": "Hang Mua monitoring area",
+      "monitoringAreaTamCoc": "Tam Coc monitoring area"
     },
     "toolbar": {
       "searchPlaceholder": "Search destination, service, food, event..",
@@ -959,7 +1010,12 @@
       "rating": "Rating",
       "reviews": "Reviews",
       "visits": "Visits",
-      "openRoute": "Directions"
+      "openRoute": "Directions",
+      "viewDetail": "View details",
+      "openVr": "Open VR 360",
+      "featuredSuggestions": "Featured suggestions",
+      "noFeaturedSuggestions": "No featured suggestions yet",
+      "unknownCategory": "Unknown category"
     },
     "tourPanel": {
       "title": "Tours",
@@ -994,7 +1050,12 @@
       "totalStopCount": "{{count}} stops in this itinerary",
       "stopSearchPlaceholder": "Search stop name, description, category..",
       "coverAlt": "{{tourName}} cover image",
-      "stopFallbackLabel": "Stop {{index}}"
+      "stopFallbackLabel": "Stop {{index}}",
+      "stopCapacity": "Stop capacity",
+      "label": "Tour panel",
+      "capacityNoData": "No capacity data yet",
+      "routeCapacity": "Route capacity",
+      "openTourOnMap": "Open tour on map"
     },
     "tourSuggestModal": {
       "title": "Suggested tours",
@@ -1042,7 +1103,10 @@
       "empty": "No matching spots found",
       "peopleWithCapacity": "{{current}} / {{max}} people",
       "peopleOnly": "{{count}} people",
-      "viewOnMap": "View on map"
+      "viewOnMap": "View on map",
+      "live": "Live",
+      "connecting": "Connecting...",
+      "searchPlaceholder": "Search monitored spots..."
     },
     "direction": {
       "title": "Directions",
@@ -1064,7 +1128,9 @@
       "totalDistance": "Total distance",
       "totalDuration": "Total duration",
       "stepsTitle": "Turn-by-turn steps",
-      "noInstruction": "No instruction"
+      "noInstruction": "No instruction",
+      "subtitle": "Plan a route between two points",
+      "empty": "Enter a start point and destination to view route details"
     },
     "chatbot": {
       "title": "Map assistant",
@@ -1078,13 +1144,23 @@
       "quickPrompts": {
         "dayTour": "Suggest a 1-day tour",
         "lessCrowded": "Which places are less crowded?",
-        "weatherToday": "Weather advice for today"
+        "weatherToday": "Weather advice for today",
+        "randomSpot": "Suggest a random destination",
+        "tamChucIntro": "Tell me about Tam Chuc",
+        "ndviIndex": "Explain the NDVI index"
       },
       "sampleMessages": {
         "welcome": "Hello, I can suggest destinations, weather updates, tours, and itineraries that fit your preferences",
         "userPreference": "I want a one-day trip, avoid crowded places, and prioritize nature",
         "botSuggestion": "You can consider Trang An in the morning, then move to Bich Dong or Hang Mua for a gentler route"
-      }
+      },
+      "quickPromptsLabel": "Quick prompts",
+      "historyTitle": "Chat history",
+      "error": "Unable to get a response. Please try again.",
+      "newChat": "New chat",
+      "noHistory": "No chat history yet",
+      "sessionLabel": "Conversation {{index}}",
+      "deleteSession": "Delete conversation"
     },
     "traffic": {
       "title": "Traffic",
@@ -1096,7 +1172,9 @@
       "error": "Failed to load data",
       "incidentCount": "{{count}} incidents",
       "flowLegend": "Congestion level",
-      "incidentLegend": "Incident types"
+      "incidentLegend": "Incident types",
+      "disabled": "Traffic layer is disabled",
+      "live": "Live"
     },
     "spotModal": {
       "reviews": "reviews",
@@ -1119,13 +1197,15 @@
         "openOnMap": "Open route on map",
         "fallbackDescription": "Open this route on the map to view itinerary details."
       },
-      "scanToBook": "Scan to book tickets"
+      "scanToBook": "Scan to book tickets",
+      "ticketChild": "Child ticket"
     },
     "ocopPanel": {
       "title": "Nearby OCOP Products",
       "noProducts": "No nearby OCOP products found",
       "radiusLabel": "Radius",
-      "distFrom": "From"
+      "distFrom": "From",
+      "missingCoordinates": "Product coordinates are unavailable"
     }
   },
   "satellite": {
@@ -1526,7 +1606,8 @@
         "title_min": "Title must be at least 10 characters",
         "title_max": "Title must not exceed 500 characters",
         "content_min": "Description must be at least 20 characters"
-      }
+      },
+      "success_toast": "Feedback submitted successfully"
     },
     "pagination": {
       "page": "Page {{current}} of {{total}}"
@@ -1538,5 +1619,10 @@
       "error": "Could not load reports. Please try again.",
       "not_found": "This report could not be found."
     }
-  }
+  },
+  "close": "Close",
+  "zoomed_image": "Zoomed image",
+  "images_gallery": "Image gallery",
+  "explore_images": "Explore beautiful images of this place",
+  "image": "Image"
 }

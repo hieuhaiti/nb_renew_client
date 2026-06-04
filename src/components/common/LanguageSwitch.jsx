@@ -24,14 +24,15 @@ export default function LanguageSwitch() {
 
     const next = lang === 'vi' ? 'en' : 'vi';
     setLoadingByKey(LANGUAGE_SWITCH_LOADING_KEY, true);
-    setLang(next);
 
     try {
       await i18n.changeLanguage(next);
+      setLang(next);
     } catch (error) {
       setLang(lang);
-      setLoadingByKey(LANGUAGE_SWITCH_LOADING_KEY, false);
       console.error('[LanguageSwitch] Failed to change language:', error);
+    } finally {
+      setLoadingByKey(LANGUAGE_SWITCH_LOADING_KEY, false);
     }
   };
 

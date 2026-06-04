@@ -101,6 +101,64 @@ const TAM_CHUC_POINTS = [
     lat: 20.584428,
   },
 ];
+function getSceneIntrinsicCoords(scene) {
+  if (!scene || typeof scene !== 'object') return null;
+  const fromGeojson =
+    parseGeometryValue(scene?.geojson)?.coordinates ||
+    parseGeometryValue(scene?.geometry_data)?.coordinates ||
+    parseGeometryValue(scene?.geometry)?.coordinates ||
+    scene?.location?.coordinates ||
+    null;
+  const direct = toCoords(fromGeojson);
+  if (direct) return direct;
+  const lng = Number(scene?.longitude ?? scene?.lng ?? scene?.lon);
+  const lat = Number(scene?.latitude ?? scene?.lat);
+  if (Number.isFinite(lng) && Number.isFinite(lat)) return [lng, lat];
+  return null;
+}
+function getSceneTamChucPointId(scene) {
+  const rawId =
+    scene?.tam_chuc_point_id ??
+    scene?.tamChucPointId ??
+    scene?.map_point_id ??
+    scene?.mapPointId ??
+    scene?.point_index ??
+    scene?.pointIndex;
+  const pointId = Number(rawId);
+  if (!Number.isFinite(pointId)) return null;
+  return TAM_CHUC_POINTS.find((point) => point.id === pointId)?.id ?? null;
+}
+function findNearestTamChucPoint(coords) {
+  if (!Array.isArray(coords) || coords.length < 2) return null;
+  let nearestPoint = null;
+  let nearestDistance = Number.POSITIVE_INFINITY;
+  TAM_CHUC_POINTS.forEach((point) => {
+    const dx = Number(point.lon) - Number(coords[0]);
+    const dy = Number(point.lat) - Number(coords[1]);
+    const distance = dx * dx + dy * dy;
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestPoint = point;
+    }
+  });
+  return nearestPoint;
+}
+function resolveTamChucPoint(scene, sceneIndex = -1) {
+  const explicitPointId = getSceneTamChucPointId(scene);
+  if (explicitPointId != null) {
+    return TAM_CHUC_POINTS.find((point) => point.id === explicitPointId) ?? null;
+  }
+  const intrinsicCoords = getSceneIntrinsicCoords(scene);
+  if (intrinsicCoords) {
+    const nearestPoint = findNearestTamChucPoint(intrinsicCoords);
+    if (nearestPoint) return nearestPoint;
+  }
+  return TAM_CHUC_POINTS[sceneIndex] ?? null;
+}
+function findSceneIndexByTamChucPoint(scenes, pointId) {
+  if (!Array.isArray(scenes) || !Number.isFinite(pointId)) return -1;
+  return scenes.findIndex((scene, index) => resolveTamChucPoint(scene, index)?.id === pointId);
+}
 function parseGeometryValue(value) {
   if (!value) return null;
   if (typeof value === 'object') return value;
@@ -448,6 +506,7 @@ export default function MiniMap({
   const scenesRef = useRef(scenes);
   const spotsRef = useRef(spots);
   const currentCenterRef = useRef(null);
+  const fovCenterRef = useRef(null);
   const fovAngleRef = useRef(DEFAULT_FOV_ANGLE);
   const fovRadiusRef = useRef(250);
   const fovPolygonRef = useRef(null);
@@ -483,9 +542,23 @@ export default function MiniMap({
   const currentSceneCameraFov = useMemo(() => {
     return getSceneCameraFov(currentScene);
   }, [currentScene]);
+  const activeTcPoint = useMemo(
+    () => resolveTamChucPoint(currentScene, currentSceneIndex),
+    [currentScene, currentSceneIndex]
+  );
+  const activeTcCenter = useMemo(() => {
+    if (!activeTcPoint) return null;
+    return [activeTcPoint.lon, activeTcPoint.lat];
+  }, [activeTcPoint]);
   const currentSpotCenter = useMemo(() => {
     return getSceneCoords(currentSpot);
   }, [currentSpot]);
+  const activeFovCenter = useMemo(() => {
+    if (viewMode === 'closeup') {
+      return activeTcCenter || currentCenter || currentSpotCenter;
+    }
+    return currentCenter || currentSpotCenter;
+  }, [activeTcCenter, currentCenter, currentSpotCenter, viewMode]);
   const currentSpotIds = useMemo(() => {
     const ids = new Set();
     const id = currentSpot?.id ?? currentSpot?.spot_id ?? currentSpot?.point_id;
@@ -544,14 +617,14 @@ export default function MiniMap({
     const map = mapRef.current;
     if (!map) return;
     applyViewModeVisibility(map, 'closeup');
-    const activePoint = TAM_CHUC_POINTS[tcActiveIdRef.current] ?? TAM_CHUC_POINTS[0];
+    const activePoint = activeTcPoint ?? TAM_CHUC_POINTS[tcActiveIdRef.current] ?? TAM_CHUC_POINTS[0];
     if (activePoint)
       map.easeTo({
         center: [activePoint.lon, activePoint.lat],
         zoom: 13,
         duration: 400,
       });
-  }, []);
+  }, [activeTcPoint]);
   useEffect(() => {
     onSelectSceneRef.current = onSelectScene;
   }, [onSelectScene]);
@@ -562,6 +635,7 @@ export default function MiniMap({
     scenesRef.current = scenes;
     spotsRef.current = spots;
     currentCenterRef.current = currentSpotCenter || currentCenter;
+    fovCenterRef.current = activeFovCenter;
     fovAngleRef.current = fovAngle;
     fovRadiusRef.current = fovRadius;
     fovPolygonRef.current = fovPolygon;
@@ -575,6 +649,7 @@ export default function MiniMap({
     currentSceneIndex,
     currentCenter,
     currentSpotCenter,
+    activeFovCenter,
     fovAngle,
     fovRadius,
     fovPolygon,
@@ -645,9 +720,11 @@ export default function MiniMap({
       tcActiveIdRef.current = pointId;
       const source = map.getSource(SOURCE_TC);
       if (source) source.setData(buildTamChucGeoJson(pointId));
-      const selectedScene = scenesRef.current?.[pointId] ?? null;
-      setCurrentSceneIndex(pointId);
-      onSelectSceneRef.current?.(selectedScene, pointId);
+      const matchedSceneIndex = findSceneIndexByTamChucPoint(scenesRef.current, pointId);
+      const nextIndex = matchedSceneIndex > -1 ? matchedSceneIndex : pointId;
+      const selectedScene = scenesRef.current?.[nextIndex] ?? null;
+      setCurrentSceneIndex(nextIndex);
+      onSelectSceneRef.current?.(selectedScene, nextIndex);
     };
     const handlePointMouseEnter = (event) => {
       map.getCanvas().style.cursor = 'pointer';
@@ -759,20 +836,20 @@ export default function MiniMap({
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    tcActiveIdRef.current = currentSceneIndex;
+    const activePointId = activeTcPoint?.id ?? currentSceneIndex;
+    tcActiveIdRef.current = activePointId;
     const source = map.getSource(SOURCE_TC);
-    if (source) source.setData(buildTamChucGeoJson(currentSceneIndex));
+    if (source) source.setData(buildTamChucGeoJson(activePointId));
     if (viewModeRef.current !== 'closeup') return;
-    const p = TAM_CHUC_POINTS[currentSceneIndex];
-    if (p && map.loaded())
+    if (activeTcCenter && map.loaded())
       map.easeTo({
-        center: [p.lon, p.lat],
+        center: activeTcCenter,
         duration: 400,
       });
-  }, [currentSceneIndex]);
+  }, [activeTcCenter, activeTcPoint, currentSceneIndex]);
   useEffect(() => {
     const map = mapRef.current;
-    const targetCenter = currentSpotCenter || currentCenter;
+    const targetCenter = activeTcCenter || currentSpotCenter || currentCenter;
     if (!map || !targetCenter || viewModeRef.current !== 'closeup') return;
     const runEaseTo = () => {
       map.easeTo({
@@ -795,7 +872,7 @@ export default function MiniMap({
       map.off('load', handleMapReady);
       map.off('style.load', handleMapReady);
     };
-  }, [currentCenter, currentSpotCenter]);
+  }, [activeTcCenter, currentCenter, currentSpotCenter]);
   useEffect(() => {
     const map = mapRef.current;
     const targetCenter = currentSpotCenter || currentCenter;
@@ -825,14 +902,14 @@ export default function MiniMap({
     };
   }, [currentCenter, currentSpotCenter]);
   useEffect(() => {
-    if (!currentCenter) return;
-    updateFovPolygon(currentCenter, heading, fovAngle, fovRadius);
-  }, [currentCenter, heading, fovAngle, fovRadius, updateFovPolygon]);
+    if (!activeFovCenter) return;
+    updateFovPolygon(activeFovCenter, heading, fovAngle, fovRadius);
+  }, [activeFovCenter, heading, fovAngle, fovRadius, updateFovPolygon]);
   useEffect(() => {
     if (!Number.isFinite(currentSceneCameraFov)) {
       return;
     }
-    const targetCenter = currentCenter || currentSpotCenter;
+    const targetCenter = activeFovCenter;
     setFovAngle(currentSceneCameraFov);
     if (targetCenter) {
       updateFovPolygon(targetCenter, heading, currentSceneCameraFov, fovRadius);
@@ -841,8 +918,7 @@ export default function MiniMap({
   }, [
     currentScene,
     currentSceneCameraFov,
-    currentCenter,
-    currentSpotCenter,
+    activeFovCenter,
     heading,
     fovRadius,
     setFovAngle,
@@ -854,7 +930,7 @@ export default function MiniMap({
       const nextBearing = pendingHeadingRef.current;
       pendingHeadingRef.current = null;
       if (!Number.isFinite(nextBearing)) return;
-      const center = currentCenterRef.current;
+      const center = fovCenterRef.current;
       if (!center) {
         return;
       }
@@ -909,7 +985,7 @@ export default function MiniMap({
 
       {showFovControls && (
         <FOVControls
-          center={currentCenter}
+          center={activeFovCenter}
           className="absolute right-2 bottom-2 z-10 w-[min(300px,calc(100%-1rem))]"
         />
       )}

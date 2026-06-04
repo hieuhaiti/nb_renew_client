@@ -6,6 +6,7 @@ export const env = {
   apiBaseUrl: viteEnv.VITE_BASE_URL ?? '',
   apiBaseUrlBE: viteEnv.VITE_BASE_URL_BE ?? '',
   wsUrl: viteEnv.VITE_WS_URL ?? '',
+  notificationWsUrl: viteEnv.VITE_NOTIFICATION_WS_URL ?? viteEnv.VITE_WS_URL ?? '',
   
   openWeatherUrlBase: viteEnv.VITE_OPENWEATHER_URL_BASE ?? '',
   weatherApiUrlBase: viteEnv.VITE_WEATHERAPI_URL_BASE ?? '',

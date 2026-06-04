@@ -134,6 +134,15 @@
   --weather-humidity: #3b82f6;
   --weather-wind: #06b6d4;
 
+  /* Notifications */
+  --notification-accent: #7c3aed;
+  --notification-dot: #7c3aed;
+  --notification-badge: #7c3aed;
+  --notification-badge-foreground: #ffffff;
+  --notification-unread-bg: #f1edff;
+  --notification-unread-border: #c9bbff;
+  --notification-divider: #d8cfff;
+
   /* Inputs and separators */
   --border: #cfe0f4;
   --input: #d2e1f2;
@@ -299,6 +308,14 @@
   --weather-temp: #fb923c;
   --weather-humidity: #60a5fa;
   --weather-wind: #67e8f9;
+
+  --notification-accent: #b2a3ff;
+  --notification-dot: #b2a3ff;
+  --notification-badge: #b2a3ff;
+  --notification-badge-foreground: #1a123f;
+  --notification-unread-bg: #30275c;
+  --notification-unread-border: #584aa0;
+  --notification-divider: #443977;
 
   --border: #2b3b48;
   --input: #21303c;
