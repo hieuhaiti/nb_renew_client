@@ -538,9 +538,7 @@ export default function MapToolbarCard({
                       onSearch();
                     }
                   }}
-                  placeholder={t('mapPage.toolbar.searchPlaceholder', {
-                    defaultValue: 'Search destination, service, food, event...',
-                  })}
+                  placeholder={t('mapPage.toolbar.searchPlaceholder')}
                   className="pr-9 pl-9"
                 />
 

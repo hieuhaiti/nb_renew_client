@@ -172,19 +172,9 @@ export default function ChatbotPanel() {
   };
 
   const quickPrompts = [
-    t('mapPage.chatbot.quickPrompts.randomSpot', {
-      defaultValue:
-        language === 'vi' ? 'Gợi ý 1 điểm du lịch ngẫu nhiên' : 'Suggest one random tourist spot',
-    }),
-    t('mapPage.chatbot.quickPrompts.tamChucIntro', {
-      defaultValue: language === 'vi' ? 'Giới thiệu về chùa Tam Chúc' : 'Introduce Tam Chuc Temple',
-    }),
-    t('mapPage.chatbot.quickPrompts.ndviIndex', {
-      defaultValue:
-        language === 'vi'
-          ? 'Chỉ số thực vật ở Cúc Phương ra sao?'
-          : 'How is vegetation index at Cuc Phuong?',
-    }),
+    t('mapPage.chatbot.quickPrompts.randomSpot'),
+    t('mapPage.chatbot.quickPrompts.tamChucIntro'),
+    t('mapPage.chatbot.quickPrompts.ndviIndex'),
   ];
 
   const handleQuickPromptSelect = (prompt) => {
@@ -202,7 +192,7 @@ export default function ChatbotPanel() {
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-foreground mt-1 text-lg font-bold max-[900px]:mt-0.5 max-[900px]:text-base">
-              {t('mapPage.chatbot.heading', { defaultValue: 'Chatbot đồng hành' })}
+              {t('mapPage.chatbot.heading')}
             </h3>
           </div>
           <div className="flex shrink-0 items-start gap-1.5">
@@ -214,7 +204,7 @@ export default function ChatbotPanel() {
                 disabled={isSending}
                 onClick={() => setShowQuickPromptMenu((prev) => !prev)}
                 className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex rounded-xl p-1.5 transition-colors"
-                aria-label={t('mapPage.chatbot.quickPromptsLabel', { defaultValue: 'Gợi ý nhanh' })}
+                aria-label={t('mapPage.chatbot.quickPromptsLabel')}
               >
                 <Sparkles className="size-4" />
               </Button>
@@ -225,9 +215,7 @@ export default function ChatbotPanel() {
                 type="button"
                 onClick={handleOpenHistory}
                 className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl p-1.5 transition-colors"
-                aria-label={t('mapPage.chatbot.historyTitle', {
-                  defaultValue: 'Lịch sử trò chuyện',
-                })}
+                aria-label={t('mapPage.chatbot.historyTitle')}
               >
                 <Menu className="size-4.5" />
               </Button>
@@ -241,7 +229,7 @@ export default function ChatbotPanel() {
             className="bg-card border-border absolute top-[calc(100%+6px)] right-2 z-20 w-[min(320px,calc(100vw-72px))] rounded-xl border p-1.5 shadow-lg"
           >
             <div className="mb-1 px-2 py-1 text-xs font-medium text-[var(--event-panel-title)]">
-              {t('mapPage.chatbot.quickPromptsLabel', { defaultValue: 'Gợi ý nhanh' })}
+              {t('mapPage.chatbot.quickPromptsLabel')}
             </div>
             <div className="max-h-52 space-y-1 overflow-y-auto">
               {quickPrompts.map((prompt, i) => (
@@ -266,16 +254,12 @@ export default function ChatbotPanel() {
         <div className="bg-muted/20 min-h-0 flex-1 overflow-y-auto rounded-xl border p-2 pr-1 max-[900px]:p-1.5 max-[900px]:pr-1">
           {isLoading ? (
             <div className="flex h-full items-center justify-center">
-              <p className="typo-meta text-muted-foreground">
-                {t('common.loading', { defaultValue: 'Đang tải...' })}
-              </p>
+              <p className="typo-meta text-muted-foreground">{t('common.loading')}</p>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex h-full items-center justify-center px-4">
               <p className="typo-meta text-muted-foreground text-center">
-                {t('mapPage.chatbot.emptyState', {
-                  defaultValue: 'Hãy bắt đầu cuộc trò chuyện hoặc chọn gợi ý phía trên.',
-                })}
+                {t('mapPage.chatbot.emptyState')}
               </p>
             </div>
           ) : (
@@ -294,8 +278,8 @@ export default function ChatbotPanel() {
                       }
                     >
                       {msg.role === 'user'
-                        ? t('mapPage.chatbot.youLabel', { defaultValue: 'Bạn' })
-                        : t('mapPage.chatbot.botLabel', { defaultValue: 'Trợ lý AI' })}
+                        ? t('mapPage.chatbot.youLabel')
+                        : t('mapPage.chatbot.botLabel')}
                     </div>
                     <div
                       className={
@@ -342,7 +326,7 @@ export default function ChatbotPanel() {
                 <div className="flex justify-start">
                   <div className="max-w-[88%] space-y-1">
                     <div className="typo-caption text-muted-foreground">
-                      {t('mapPage.chatbot.botLabel', { defaultValue: 'Trợ lý AI' })}
+                      {t('mapPage.chatbot.botLabel')}
                     </div>
                     <div className="typo-body bg-card text-muted-foreground rounded-2xl border px-3 py-2 break-words max-[900px]:px-2.5 max-[900px]:py-1.5">
                       <span className="inline-flex items-center gap-0.5">
@@ -367,16 +351,14 @@ export default function ChatbotPanel() {
         </div>
 
         {error === 'send_failed' && (
-          <p className="typo-meta text-destructive mt-1.5 px-1">
-            {t('mapPage.chatbot.error', { defaultValue: 'Gửi thất bại. Vui lòng thử lại.' })}
-          </p>
+          <p className="typo-meta text-destructive mt-1.5 px-1">{t('mapPage.chatbot.error')}</p>
         )}
 
         {/* Input bar */}
         <div className="bg-muted/20 mt-2 shrink-0 rounded-2xl border p-3 max-[900px]:mt-1.5 max-[900px]:p-2">
           <div className="typo-overline text-muted-foreground flex items-center gap-2">
             <Sparkles className="size-3.5" />
-            {t('mapPage.chatbot.cta', { defaultValue: 'Trò chuyện cùng chatbot' })}
+            {t('mapPage.chatbot.cta')}
           </div>
           <div className="mt-3 flex gap-2 max-[900px]:mt-2 max-[900px]:gap-1.5">
             <Input
@@ -389,9 +371,7 @@ export default function ChatbotPanel() {
                   handleSend();
                 }
               }}
-              placeholder={t('mapPage.chatbot.placeholder', {
-                defaultValue: 'Nhập câu hỏi về điểm đến, tour hoặc thời tiết...',
-              })}
+              placeholder={t('mapPage.chatbot.placeholder')}
               className="typo-search bg-card rounded-full"
               disabled={isSending}
             />
@@ -421,7 +401,7 @@ export default function ChatbotPanel() {
           {/* Overlay header */}
           <div className="flex shrink-0 items-center justify-between border-b px-4 py-3">
             <h4 className="typo-section-title text-foreground">
-              {t('mapPage.chatbot.historyTitle', { defaultValue: 'Lịch sử trò chuyện' })}
+              {t('mapPage.chatbot.historyTitle')}
             </h4>
             <Button
               variant="ghost"
@@ -442,9 +422,7 @@ export default function ChatbotPanel() {
               className="hover:bg-muted text-primary flex w-full items-center gap-2 rounded-xl px-3 py-2 transition-colors"
             >
               <Plus className="size-4" />
-              <span className="typo-body">
-                {t('mapPage.chatbot.newChat', { defaultValue: 'Cuộc trò chuyện mới' })}
-              </span>
+              <span className="typo-body">{t('mapPage.chatbot.newChat')}</span>
             </Button>
           </div>
 
@@ -453,9 +431,7 @@ export default function ChatbotPanel() {
             {sessions.length === 0 ? (
               <div className="flex h-full items-center justify-center">
                 <p className="typo-meta text-muted-foreground text-center">
-                  {t('mapPage.chatbot.noHistory', {
-                    defaultValue: 'Chưa có cuộc trò chuyện nào.',
-                  })}
+                  {t('mapPage.chatbot.noHistory')}
                 </p>
               </div>
             ) : (
@@ -474,10 +450,7 @@ export default function ChatbotPanel() {
                       <p className="typo-body text-foreground truncate">
                         {session.title ??
                           session.name ??
-                          t('mapPage.chatbot.sessionLabel', {
-                            defaultValue: 'Phiên {{id}}',
-                            id: String(session.id).slice(0, 8),
-                          })}
+                          t('mapPage.chatbot.sessionLabel', { id: session.id })}
                       </p>
                       {session.created_at && (
                         <p className="typo-meta text-muted-foreground">
@@ -490,7 +463,7 @@ export default function ChatbotPanel() {
                       type="button"
                       onClick={(e) => handleDeleteSession(e, session.id)}
                       className="text-muted-foreground hover:text-destructive shrink-0 rounded-lg p-1 opacity-0 transition-colors group-hover:opacity-100"
-                      aria-label={t('mapPage.chatbot.deleteSession', { defaultValue: 'Xóa phiên' })}
+                      aria-label={t('mapPage.chatbot.deleteSession')}
                     >
                       <Trash2 className="size-3.5" />
                     </Button>
@@ -530,7 +503,7 @@ export default function ChatbotPanel() {
                 window.open(zoomImage, '_blank');
               }}
               className="bg-muted/90 text-muted-foreground hover:bg-muted hover:text-foreground absolute top-3 right-14 z-10 rounded-lg p-1.5 transition-colors"
-              title="Open in new tab"
+              title={t('common.open_in_new_tab')}
             >
               <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -545,7 +518,7 @@ export default function ChatbotPanel() {
             {/* Image */}
             <img
               src={zoomImage}
-              alt="Zoomed"
+              alt={t('zoomed_image')}
               className="max-h-[90vh] max-w-[90vw] rounded-xl object-contain"
             />
           </div>

@@ -418,11 +418,7 @@ export default function ModalMarker() {
       const stops = await fetchTourStopsByTourId(tour.id);
       const sortedStops = sortStops(stops);
       if (sortedStops.length < 2) {
-        throw new Error(
-          t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
       }
       const routePoints = (
         await Promise.all(
@@ -449,19 +445,11 @@ export default function ModalMarker() {
         )
       ).filter(Boolean);
       if (routePoints.length < 2) {
-        throw new Error(
-          t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
       }
       const routeResult = await createRouteFromPoints(routePoints, 'driving', routeLang);
       if (!routeResult?.geometry?.coordinates?.length) {
-        throw new Error(
-          t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeFailed'));
       }
       openTourPanel({
         tourId: tour.id,
@@ -487,18 +475,9 @@ export default function ModalMarker() {
       setShowOnlyHighlightedRoute(true);
       requestOpenTourSidebar();
       closeSpotModal();
-      toast.success(
-        t('mapPage.tourPanel.routeReady', {
-          defaultValue: 'Đã hiển thị tuyến tour trên bản đồ.',
-        })
-      );
+      toast.success(t('mapPage.tourPanel.routeReady'));
     } catch (error) {
-      toast.error(
-        error?.message ||
-          t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
-          })
-      );
+      toast.error(error?.message || t('mapPage.tourPanel.routeFailed'));
     } finally {
       setRouteLoadingTourId(null);
     }
@@ -536,11 +515,7 @@ export default function ModalMarker() {
   const handleSelectOcop = (ocop) => {
     const coordinates = getOcopCoordinates(ocop);
     if (!coordinates) {
-      toast.error(
-        t('mapPage.ocopPanel.missingCoordinates', {
-          defaultValue: 'Không tìm thấy tọa độ sản phẩm OCOP này.',
-        })
-      );
+      toast.error(t('mapPage.ocopPanel.missingCoordinates'));
       return;
     }
     const mapRefObjCurrent = mapRefObj?.current;
@@ -601,14 +576,11 @@ export default function ModalMarker() {
             <div className="mb-1.5 flex items-center gap-1.5">
               <Sparkles size={13} className="text-primary shrink-0" />
               <p className="typo-meta text-foreground font-semibold">
-                {t('mapPage.spotModal.suggestedTours.title', {
-                  defaultValue: 'Suggested routes',
-                })}
+                {t('mapPage.spotModal.suggestedTours.title')}
               </p>
             </div>
             <p className="typo-meta text-muted-foreground line-clamp-2">
               {t('mapPage.spotModal.suggestedTours.subtitle', {
-                defaultValue: 'Related to {{destination}}',
                 destination: spot?.name || t('mapPage.destination.unknownName'),
               })}
             </p>
@@ -633,9 +605,7 @@ export default function ModalMarker() {
               <div className="border-border/60 bg-muted/30 rounded-xl border border-dashed p-3 text-center">
                 <Route size={18} className="text-muted-foreground/60 mx-auto mb-1.5" />
                 <p className="typo-meta text-muted-foreground">
-                  {t('mapPage.spotModal.suggestedTours.empty', {
-                    defaultValue: 'No related tour routes found.',
-                  })}
+                  {t('mapPage.spotModal.suggestedTours.empty')}
                 </p>
               </div>
             ) : (
@@ -670,9 +640,7 @@ export default function ModalMarker() {
                         </p>
                         {tour.is_featured && (
                           <Badge variant="secondary" className="shrink-0 px-1.5 py-0.5 text-[10px]">
-                            {t('mapPage.spotModal.suggestedTours.featured', {
-                              defaultValue: 'Featured',
-                            })}
+                            {t('mapPage.spotModal.suggestedTours.featured')}
                           </Badge>
                         )}
                       </div>
@@ -686,18 +654,12 @@ export default function ModalMarker() {
                       </div>
                       <p className="typo-meta text-muted-foreground line-clamp-2">
                         {tour.description ||
-                          t('mapPage.spotModal.suggestedTours.fallbackDescription', {
-                            defaultValue: 'Open this route on the map to view itinerary details.',
-                          })}
+                          t('mapPage.spotModal.suggestedTours.fallbackDescription')}
                       </p>
                       <span className="text-primary mt-2 inline-flex items-center gap-1 text-[11px] font-medium transition-transform duration-200 group-hover:translate-x-0.5">
                         {isRouteLoading
-                          ? t('mapPage.tourPanel.loadingRoute', {
-                              defaultValue: 'Opening...',
-                            })
-                          : t('mapPage.spotModal.suggestedTours.openOnMap', {
-                              defaultValue: 'Open route on map',
-                            })}
+                          ? t('mapPage.tourPanel.loadingRoute')
+                          : t('mapPage.spotModal.suggestedTours.openOnMap')}
                         <ArrowUpRight size={12} />
                       </span>
                     </button>

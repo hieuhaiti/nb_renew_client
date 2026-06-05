@@ -13,6 +13,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { useAsRef } from '@/hooks/use-as-ref';
 import { useLazyRef } from '@/hooks/use-lazy-ref';
+import i18n from '@/i18n';
 
 const ROOT_NAME = 'FileUpload';
 const DROPZONE_NAME = 'FileUploadDropzone';
@@ -89,7 +90,7 @@ const StoreContext = React.createContext(null);
 function useStoreContext(consumerName) {
   const context = React.useContext(StoreContext);
   if (!context) {
-    throw new Error(`\`${consumerName}\` must be used within \`${ROOT_NAME}\``);
+    throw new Error(i18n.t('common.errors.file_upload_root_context', { consumer: consumerName }));
   }
   return context;
 }
@@ -120,7 +121,7 @@ const FileUploadContext = React.createContext(null);
 function useFileUploadContext(consumerName) {
   const context = React.useContext(FileUploadContext);
   if (!context) {
-    throw new Error(`\`${consumerName}\` must be used within \`${ROOT_NAME}\``);
+    throw new Error(i18n.t('common.errors.file_upload_root_context', { consumer: consumerName }));
   }
   return context;
 }
@@ -837,7 +838,7 @@ const FileUploadItemContext = React.createContext(null);
 function useFileUploadItemContext(consumerName) {
   const context = React.useContext(FileUploadItemContext);
   if (!context) {
-    throw new Error(`\`${consumerName}\` must be used within \`${ITEM_NAME}\``);
+    throw new Error(i18n.t('common.errors.file_upload_item_context', { consumer: consumerName }));
   }
   return context;
 }

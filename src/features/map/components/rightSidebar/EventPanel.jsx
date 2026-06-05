@@ -1,18 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useDebounce } from 'use-debounce';
-import { CalendarDays, ExternalLink, LocateFixed, MapPin, Search, Sparkles } from 'lucide-react';
+import { CalendarDays, ExternalLink, LocateFixed, MapPin, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   fetchFestivalDetailById,
@@ -25,7 +18,6 @@ import {
   getFestivalCoordinates,
   normalizeFestivalListPayload,
   normalizeFestivalModel,
-  normalizeFestivalTypesPayload,
 } from '@/features/map/utils/festivalUtils';
 import { useFestivalStore } from '@/features/map/store/useFestivalStore';
 import { useMapStore } from '@/features/map/store/useMapStore';
@@ -67,14 +59,13 @@ export default function EventPanel() {
         .replace(/[^a-z0-9]+/g, '_');
 
       return t(`mapPage.eventPanel.festivalTypes.${normalizedKey}`, {
-        defaultValue:
-          fallbackLabel || t('mapPage.eventPanel.festivalTypes.other', { defaultValue: 'Other' }),
+        defaultValue: fallbackLabel || t('mapPage.eventPanel.festivalTypes.other'),
       });
     },
     [t]
   );
 
-  const { data: festivalTypesData } = useFestivalTypesQuery();
+  useFestivalTypesQuery();
   const {
     data: festivalsData,
     isLoading,
@@ -104,7 +95,6 @@ export default function EventPanel() {
       return true;
     }
 
-    // Only use slug for navigation when no coordinates
     if (festival?.spot_slug) {
       navigate(`/tourism-point/point/${festival.spot_slug}`);
       return true;
@@ -120,35 +110,6 @@ export default function EventPanel() {
 
     try {
       const detail = await fetchFestivalDetailById(festival.id);
-      //       {
-      //     "message": "Chi tiết lễ hội",
-      //     "status": 200,
-      //     "data": {
-      //         "id": "1e2c982a-f19d-4f16-a18f-1671fa5732ab",
-      //         "province_code": "37",
-      //         "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
-      //         "name_vi": "Lễ Phật Đản Bái Đính - Lễ Hội Tôn Giáo Lớn Nhất",
-      //         "name_en": "Bai Dinh Buddha Birthday Festival",
-      //         "festival_type": "religious",
-      //         "description_vi": "Lễ Phật Đản kéo dài 10 ngày tại Chùa Bái Đính với hàng chục ngàn người tham dự. Có các buổi lễ cầu nguyện, thắp nến dâng Phật, các bài giảng pháp từ các cao tăng nổi tiếng, múa mâm (múa cầu bình an), và những pháp hành thiêng liêng trong hang động. Có các gian hàng bán hương, hoa, lưu niệm tôn giáo và ẩm thực chay.",
-      //         "start_date": "2026-05-15T05:00:00.000Z",
-      //         "end_date": "2026-05-25T05:00:00.000Z",
-      //         "is_recurring": true,
-      //         "recurrence_rule": "FREQ=YEARLY;BYMONTH=5;BYMONTHDAY=15",
-      //         "geom": null,
-      //         "cover_image_url": "/uploads/festivals/bai-dinh-buddha.jpg",
-      //         "website": null,
-      //         "is_published": true,
-      //         "location_name": "Chùa Bái Đính Cổ, Nho Quan, Ninh Bình",
-      //         "created_at": "2026-05-05T09:15:36.450Z",
-      //         "updated_at": "2026-05-05T09:15:36.450Z",
-      //         "name": "Lễ Phật Đản Bái Đính - Lễ Hội Tôn Giáo Lớn Nhất",
-      //         "province_name": "Ninh Bình",
-      //         "spot_name": "Chùa Bái Đính cổ",
-      //         "lng": null,
-      //         "lat": null
-      //     }
-      // }
       const normalizedDetail = detail
         ? normalizeFestivalModel(detail, { lang, fallbackId: festival.id })
         : null;
@@ -157,7 +118,7 @@ export default function EventPanel() {
       setSelectedFestival(resolvedFestival);
       if (openFestivalTarget(resolvedFestival)) return;
     } catch (_error) {
-      // Fallback to list payload when detail endpoint is temporarily unavailable.
+      // Fall back to the list payload if the detail endpoint is unavailable.
     } finally {
       setOpeningFestivalId(null);
     }
@@ -170,16 +131,11 @@ export default function EventPanel() {
     <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
       <div className="flex shrink-0 items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
-          <p className="typo-section-title text-foreground">
-            {t('mapPage.eventPanel.title', { defaultValue: 'Lễ hội' })}
-          </p>
+          <p className="typo-section-title text-foreground">{t('mapPage.eventPanel.title')}</p>
           <p className="typo-meta text-muted-foreground">
             {isFetching
-              ? t('mapPage.eventPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
-              : t('mapPage.eventPanel.count', {
-                  defaultValue: '{{count}} lễ hội',
-                  count: festivals.length,
-                })}
+              ? t('mapPage.eventPanel.syncing')
+              : t('mapPage.eventPanel.count', { count: festivals.length })}
           </p>
         </div>
       </div>
@@ -190,13 +146,12 @@ export default function EventPanel() {
           <Input
             value={filters.search}
             onChange={(event) => setFestivalFilters({ search: event.target.value, page: 1 })}
-            placeholder={t('mapPage.eventPanel.searchPlaceholder', {
-              defaultValue: 'Tìm tên lễ hội...',
-            })}
+            placeholder={t('mapPage.eventPanel.searchPlaceholder')}
             className="h-9 border-[var(--event-panel-border)] bg-[var(--event-panel-control-bg)] pr-2 pl-8 text-sm"
           />
         </div>
       </div>
+
       <ScrollArea className="min-h-0 flex-1">
         {isLoading ? (
           <div className="space-y-2">
@@ -206,15 +161,11 @@ export default function EventPanel() {
           </div>
         ) : isError ? (
           <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
-            {t('mapPage.eventPanel.error', {
-              defaultValue: 'Không thể tải danh sách sự kiện từ hệ thống.',
-            })}
+            {t('mapPage.eventPanel.error')}
           </div>
         ) : festivals.length === 0 ? (
           <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
-            {t('mapPage.eventPanel.empty', {
-              defaultValue: 'Không có sự kiện phù hợp với bộ lọc hiện tại.',
-            })}
+            {t('mapPage.eventPanel.empty')}
           </div>
         ) : (
           <div className="space-y-2 pr-0.5">
@@ -291,8 +242,8 @@ export default function EventPanel() {
                     >
                       <LocateFixed className="h-3.5 w-3.5 shrink-0" />
                       {isOpening
-                        ? t('mapPage.eventPanel.openingMap', { defaultValue: 'Đang mở...' })
-                        : t('mapPage.eventPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
+                        ? t('mapPage.eventPanel.openingMap')
+                        : t('mapPage.eventPanel.viewOnMap')}
                     </Button>
 
                     {festival.website ? (
@@ -305,7 +256,7 @@ export default function EventPanel() {
                       >
                         <a href={festival.website} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-3.5 w-3.5" />
-                          {t('mapPage.eventPanel.website', { defaultValue: 'Website' })}
+                          {t('mapPage.eventPanel.website')}
                         </a>
                       </Button>
                     ) : null}

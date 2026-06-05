@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { MessageSquare, Send, LogIn } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -13,22 +13,32 @@ import { ADMIN_ROLE_CODES } from '@/constants/roles';
 const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 
 function CommentItem({
-  comment, t, onDelete, replyingToId, onReply,
-  replyContent, onReplyContentChange, onReplySubmit, onReplyCancel,
-  isAuthenticated, currentUser,
+  comment,
+  t,
+  onDelete,
+  replyingToId,
+  onReply,
+  replyContent,
+  onReplyContentChange,
+  onReplySubmit,
+  onReplyCancel,
+  isAuthenticated,
+  currentUser,
 }) {
   const authorName =
-    comment.author_full_name || comment.user_name || comment.author_name ||
-    comment.user?.name || comment.user?.username ||
+    comment.author_full_name ||
+    comment.user_name ||
+    comment.author_name ||
+    comment.user?.name ||
+    comment.user?.username ||
     t('newsPage.comments.anonymous');
   const isOwn =
-    currentUser &&
-    (comment.user_id === currentUser.id || comment.user?.id === currentUser.id);
+    currentUser && (comment.user_id === currentUser.id || comment.user?.id === currentUser.id);
   const isReplying = replyingToId === comment.id;
 
   return (
     <div>
-      <article className="rounded-[14px] border border-border/60 bg-card p-4">
+      <article className="border-border/60 bg-card rounded-[14px] border p-4">
         <div className="flex items-start gap-3">
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
@@ -45,14 +55,16 @@ function CommentItem({
                 </span>
               )}
             </div>
-            <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed">{comment.content}</p>
+            <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed">
+              {comment.content}
+            </p>
             <div className="mt-2 flex items-center gap-2">
               {isAuthenticated && (
                 <Button
                   variant="ghost"
                   type="button"
                   onClick={() => onReply(isReplying ? null : comment.id)}
-                  className="text-muted-foreground h-6 rounded-[6px] px-2 text-xs hover:bg-muted hover:text-foreground"
+                  className="text-muted-foreground hover:bg-muted hover:text-foreground h-6 rounded-[6px] px-2 text-xs"
                 >
                   <MessageSquare size={11} className="mr-1" />
                   {t('newsPage.comments.reply')}
@@ -63,7 +75,7 @@ function CommentItem({
                   variant="ghost"
                   type="button"
                   onClick={() => onDelete(comment.id)}
-                  className="text-muted-foreground h-6 rounded-[6px] px-2 text-xs hover:bg-muted hover:text-destructive"
+                  className="text-muted-foreground hover:bg-muted hover:text-destructive h-6 rounded-[6px] px-2 text-xs"
                 >
                   {t('newsPage.comments.delete')}
                 </Button>
@@ -74,21 +86,21 @@ function CommentItem({
       </article>
 
       {isReplying && (
-        <div className="ml-8 mt-2">
-          <div className="rounded-[12px] border border-border/60 bg-muted/60 p-3">
+        <div className="mt-2 ml-8">
+          <div className="border-border/60 bg-muted/60 rounded-[12px] border p-3">
             <Textarea
               value={replyContent}
               onChange={(e) => onReplyContentChange(e.target.value)}
               placeholder={t('newsPage.comments.reply_placeholder')}
               maxLength={500}
-              className="min-h-16 resize-none rounded-[8px] border-border bg-card text-sm focus:border-primary"
+              className="border-border bg-card focus:border-primary min-h-16 resize-none rounded-[8px] text-sm"
             />
             <div className="mt-2 flex items-center justify-end gap-2">
               <Button
                 variant="ghost"
                 type="button"
                 onClick={onReplyCancel}
-                className="text-foreground h-7 rounded-[8px] border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
+                className="text-foreground border-border bg-card hover:bg-muted h-7 rounded-[8px] px-3 text-xs font-semibold"
               >
                 {t('newsPage.comments.cancel')}
               </Button>
@@ -122,9 +134,9 @@ function AdminReplyItem({ comment, t }) {
   const authorName = comment.author_full_name || t('newsPage.comments.admin');
 
   return (
-    <div className="ml-8 mt-2">
+    <div className="mt-2 ml-8">
       <article className="relative overflow-hidden rounded-[12px] border border-emerald-200/70 bg-emerald-50/60 p-3">
-        <div className="absolute bottom-0 left-0 top-0 w-[3px] rounded-l-[12px] bg-emerald-400" />
+        <div className="absolute top-0 bottom-0 left-0 w-[3px] rounded-l-[12px] bg-emerald-400" />
         <div className="flex items-start gap-2.5 pl-1.5">
           {comment.author_avatar ? (
             <img
@@ -144,8 +156,8 @@ function AdminReplyItem({ comment, t }) {
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-bold text-emerald-800">{authorName}</span>
-                <span className="inline-flex items-center rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
-                  Quản trị viên
+                <span className="inline-flex items-center rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-600/20 ring-inset">
+                  {t('newsPage.comments.admin_role')}
                 </span>
               </div>
               {comment.created_at && (
@@ -168,15 +180,17 @@ function ReplyItem({ comment, t, onDelete, currentUser }) {
   }
 
   const authorName =
-    comment.user_name || comment.author_name || comment.user?.name || comment.user?.username ||
+    comment.user_name ||
+    comment.author_name ||
+    comment.user?.name ||
+    comment.user?.username ||
     t('newsPage.comments.anonymous');
   const isOwn =
-    currentUser &&
-    (comment.user_id === currentUser.id || comment.user?.id === currentUser.id);
+    currentUser && (comment.user_id === currentUser.id || comment.user?.id === currentUser.id);
 
   return (
-    <div className="ml-8 mt-2">
-      <article className="rounded-[12px] border border-border/40 bg-muted/40 p-3">
+    <div className="mt-2 ml-8">
+      <article className="border-border/40 bg-muted/40 rounded-[12px] border p-3">
         <div className="flex items-start gap-2.5">
           <div
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -186,20 +200,20 @@ function ReplyItem({ comment, t, onDelete, currentUser }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
-              <span className="text-xs font-semibold text-foreground">{authorName}</span>
+              <span className="text-foreground text-xs font-semibold">{authorName}</span>
               {comment.created_at && (
-                <span className="shrink-0 text-xs text-muted-foreground">
+                <span className="text-muted-foreground shrink-0 text-xs">
                   {new Date(comment.created_at).toLocaleDateString('vi-VN')}
                 </span>
               )}
             </div>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{comment.content}</p>
+            <p className="text-muted-foreground mt-1 text-xs leading-relaxed">{comment.content}</p>
             {isOwn && (
               <Button
                 variant="ghost"
                 type="button"
                 onClick={() => onDelete(comment.id)}
-                className="mt-1 h-5 rounded-[6px] px-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-destructive"
+                className="text-muted-foreground hover:bg-muted hover:text-destructive mt-1 h-5 rounded-[6px] px-1.5 text-xs"
               >
                 {t('newsPage.comments.delete')}
               </Button>
@@ -257,8 +271,7 @@ export default function NewsCommentSection({ newsId, t }) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (commentId) =>
-      mutater(`news/${newsId}/comments/${commentId}`, 'DELETE'),
+    mutationFn: (commentId) => mutater(`news/${newsId}/comments/${commentId}`, 'DELETE'),
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ['news', 'comments', newsId] });
       if (res?.message) toast.success(res.message);
@@ -288,13 +301,13 @@ export default function NewsCommentSection({ newsId, t }) {
   const total = allComments.length;
 
   return (
-    <section className="rounded-[18px] border border-border/70 bg-card shadow-sm">
+    <section className="border-border/70 bg-card rounded-[18px] border shadow-sm">
       <div className="px-6 py-5">
         <h2 className="text-foreground mb-4 flex items-center gap-2 text-sm font-bold 2xl:text-base">
           <MessageSquare size={16} className="text-primary" />
           {t('newsPage.comments.title')}
           {total > 0 && (
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+            <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-semibold">
               {total}
             </span>
           )}
@@ -304,7 +317,7 @@ export default function NewsCommentSection({ newsId, t }) {
         <div className="space-y-3">
           {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-20 animate-pulse rounded-[14px] bg-muted" />
+              <div key={i} className="bg-muted h-20 animate-pulse rounded-[14px]" />
             ))
           ) : rootComments.length > 0 ? (
             rootComments.map((comment) => (
@@ -322,20 +335,22 @@ export default function NewsCommentSection({ newsId, t }) {
                   isAuthenticated={isAuthenticated}
                   currentUser={user}
                 />
-                {(comment.replies?.length ? comment.replies : repliesMap[comment.id] || []).map((reply) => (
-                  <ReplyItem
-                    key={reply.id}
-                    comment={reply}
-                    t={t}
-                    onDelete={(id) => deleteMutation.mutate(id)}
-                    currentUser={user}
-                  />
-                ))}
+                {(comment.replies?.length ? comment.replies : repliesMap[comment.id] || []).map(
+                  (reply) => (
+                    <ReplyItem
+                      key={reply.id}
+                      comment={reply}
+                      t={t}
+                      onDelete={(id) => deleteMutation.mutate(id)}
+                      currentUser={user}
+                    />
+                  )
+                )}
               </div>
             ))
           ) : (
-            <div className="rounded-[14px] bg-muted px-4 py-8 text-center">
-              <MessageSquare size={28} className="mx-auto mb-2 text-muted-foreground/50" />
+            <div className="bg-muted rounded-[14px] px-4 py-8 text-center">
+              <MessageSquare size={28} className="text-muted-foreground/50 mx-auto mb-2" />
               <p className="text-muted-foreground text-sm">{t('newsPage.comments.empty')}</p>
             </div>
           )}
@@ -344,8 +359,8 @@ export default function NewsCommentSection({ newsId, t }) {
         {/* Create / login form */}
         <div className="mt-5">
           {isAuthenticated ? (
-            <div className="rounded-[14px] border border-border/60 bg-muted/60 p-4">
-              <h3 className="text-muted-foreground mb-3 text-xs font-semibold uppercase tracking-wide">
+            <div className="border-border/60 bg-muted/60 rounded-[14px] border p-4">
+              <h3 className="text-muted-foreground mb-3 text-xs font-semibold tracking-wide uppercase">
                 {t('newsPage.comments.write')}
               </h3>
               <Textarea
@@ -353,7 +368,7 @@ export default function NewsCommentSection({ newsId, t }) {
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder={t('newsPage.comments.placeholder')}
                 maxLength={500}
-                className="min-h-20 resize-none rounded-[10px] border-border bg-card text-sm focus:border-primary"
+                className="border-border bg-card focus:border-primary min-h-20 resize-none rounded-[10px] text-sm"
               />
               <div className="mt-2.5 flex items-center justify-between">
                 <span className="text-muted-foreground text-xs">{newComment.length}/500</span>
@@ -373,10 +388,8 @@ export default function NewsCommentSection({ newsId, t }) {
               </div>
             </div>
           ) : (
-            <div className="rounded-[14px] bg-muted/60 px-4 py-5 text-center">
-              <p className="text-muted-foreground text-sm">
-                {t('newsPage.comments.login_prompt')}
-              </p>
+            <div className="bg-muted/60 rounded-[14px] px-4 py-5 text-center">
+              <p className="text-muted-foreground text-sm">{t('newsPage.comments.login_prompt')}</p>
               <Button
                 variant="ghost"
                 type="button"

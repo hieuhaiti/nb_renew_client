@@ -108,18 +108,23 @@ function normalizeSpotMediaUrls(response) {
 
   return source
     .filter((item) => {
-      const mediaType = String(item?.media_type || item?.type || item?.file_type || '').toLowerCase();
+      const mediaType = String(
+        item?.media_type || item?.type || item?.file_type || ''
+      ).toLowerCase();
       const mimeType = String(item?.mime_type || '').toLowerCase();
       return !(mediaType.includes('video') || mimeType.startsWith('video/'));
     })
-    .map((item) => item?.url || item?.file_url || item?.file_path || item?.path || item?.image_url || '')
+    .map(
+      (item) =>
+        item?.url || item?.file_url || item?.file_path || item?.path || item?.image_url || ''
+    )
     .filter(Boolean);
 }
 
 function getTicketDisplay(tour, t) {
   const price = Number(tour?.price_from_vnd ?? 0);
   if (Number.isFinite(price) && price > 0) return formatVND(price);
-  return t('tourPage.contact', 'Liên hệ');
+  return t('tourPage.contact');
 }
 
 export function useTourDetailPageModel(t) {
@@ -147,7 +152,12 @@ export function useTourDetailPageModel(t) {
     const firstStopWithSpot = tourStops.find((stop) =>
       Boolean(stop?.spot_id || stop?.point_id || stop?.spot?.id)
     );
-    return firstStopWithSpot?.spot_id || firstStopWithSpot?.point_id || firstStopWithSpot?.spot?.id || null;
+    return (
+      firstStopWithSpot?.spot_id ||
+      firstStopWithSpot?.point_id ||
+      firstStopWithSpot?.spot?.id ||
+      null
+    );
   }, [tourStops]);
 
   const { data: primarySpotMediaResp } = useGetSpotMedia({
@@ -201,8 +211,7 @@ export function useTourDetailPageModel(t) {
       const newFavs = exists ? favs.filter((x) => x !== slugStr) : [...favs, slugStr];
       localStorage.setItem('tour_favorites', JSON.stringify(newFavs));
       setIsLiked(!exists);
-    } catch {
-    }
+    } catch {}
   };
 
   const [shareStatus, setShareStatus] = useState('idle');
@@ -210,7 +219,7 @@ export function useTourDetailPageModel(t) {
     const url = window.location.href;
     try {
       if (navigator.share) {
-        await navigator.share({ title: tourName || t('tourPage.shareTitle', 'Tour details'), url });
+        await navigator.share({ title: tourName || t('tourPage.shareTitle'), url });
         setShareStatus('shared');
       } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
@@ -269,12 +278,7 @@ export function useTourDetailPageModel(t) {
   const handleCreateReview = async () => {
     if (!tour?.business_id) return;
     if (!cleanlinessRating || !serviceRating || !valueRating || !accessibilityRating) {
-      toast.error(
-        t(
-          'tourPage.reviewErrorRatings',
-          'Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và tiếp cận.'
-        )
-      );
+      toast.error(t('tourPage.reviewErrorRatings'));
       return;
     }
     const avg =
@@ -307,11 +311,7 @@ export function useTourDetailPageModel(t) {
       const sortedStops = sortStops(stops);
 
       if (sortedStops.length < 2) {
-        throw new Error(
-          t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
       }
 
       const panelPayload = {
@@ -353,11 +353,7 @@ export function useTourDetailPageModel(t) {
       ).filter(Boolean);
 
       if (routePoints.length < 2) {
-        throw new Error(
-          t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
       }
 
       const routeResult = await createRouteFromPoints(
@@ -366,11 +362,7 @@ export function useTourDetailPageModel(t) {
         lang === 'en' ? 'en' : 'vi'
       );
       if (!routeResult?.geometry?.coordinates?.length) {
-        throw new Error(
-          t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeFailed'));
       }
 
       navigate('/map', {
@@ -396,28 +388,15 @@ export function useTourDetailPageModel(t) {
         },
       });
 
-      toast.success(
-        t('mapPage.tourPanel.routeReady', {
-          defaultValue: 'Đã hiển thị tuyến tour trên bản đồ.',
-        })
-      );
+      toast.success(t('mapPage.tourPanel.routeReady'));
     } catch (error) {
-      toast.error(
-        error?.message ||
-          t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
-          })
-      );
+      toast.error(error?.message || t('mapPage.tourPanel.routeFailed'));
     }
   };
 
   const handleContact = () => {
     const name = tour?.business_name;
-    toast.info(
-      name
-        ? t('tourPage.contactBusiness', 'Liên hệ nhà cung cấp: {{name}}', { name })
-        : t('tourPage.contactNotAvailable', 'Chưa có thông tin liên hệ.')
-    );
+    toast.info(name ? t('tourPage.contactBusiness', { name }) : t('tourPage.contactNotAvailable'));
   };
 
   const qs = useMemo(() => new URLSearchParams(location.search), [location.search]);
@@ -476,7 +455,7 @@ export function useTourDetailPageModel(t) {
       value: (
         <span
           className={`inline-flex items-center gap-1 text-sm font-medium ${
-            ticketDisplay === t('tourPage.contact', 'Liên hệ') ? 'text-foreground' : 'text-primary'
+            ticketDisplay === t('tourPage.contact') ? 'text-foreground' : 'text-primary'
           }`}
         >
           <Ticket className="h-3.5 w-3.5" />

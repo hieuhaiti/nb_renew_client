@@ -1,5 +1,6 @@
 import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import i18n from '@/i18n';
 import { useEffect, useRef } from 'react';
 import { fetcher } from '@/services/fetcher';
 import { mutater } from '@/services/mutater';
@@ -105,7 +106,7 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
     if (status === 401 && !isAuthRequest) {
       tokenManager.clearTokens();
       useAuthStore.getState().clearAuth();
-      toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+      toastError(message || i18n.t('common.errors.session_expired'), 3000);
       navigate('/login');
       return;
     }
@@ -181,7 +182,7 @@ export function useApiQueries(config = {}, loading = true) {
 
     if (status === 401 && !isAuthRequest) {
       tokenManager.clearTokens();
-      toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+      toastError(message || i18n.t('common.errors.session_expired'), 3000);
       navigate('/login');
       return;
     }
@@ -243,7 +244,7 @@ export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
       if (status === 401 && !isAuthRequest) {
         // TODO: if backend uses httpOnly cookies, no tokenManager.clearTokens() needed
         tokenManager.clearTokens();
-        toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+        toastError(message || i18n.t('common.errors.session_expired'), 3000);
         navigate('/login');
       } else if (status === 400 && Array.isArray(errors) && errors.length) {
         toastError(renderValidationErrors(errors), 8000);

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import i18n from '@/i18n';
 import { tokenManager } from '@/lib/tokenManager';
 import { env } from '@/config/env';
 import useAuthStore from '@/stores/useAuthStore';
@@ -33,6 +34,10 @@ const AUTH_ENDPOINTS = [
   'auth/forgot-password',
   'auth/reset-password',
 ];
+
+function getSessionExpiredMessage() {
+  return i18n.t('common.errors.session_expired');
+}
 
 function isAuthEndpoint(url = '') {
   return AUTH_ENDPOINTS.some((e) => url.includes(e));
@@ -139,7 +144,7 @@ async function refreshAccessTokenForRequest(config) {
     clearSession();
     return Promise.reject({
       status: 401,
-      message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      message: getSessionExpiredMessage(),
       isAuthRequest: false,
     });
   }
@@ -163,7 +168,7 @@ async function refreshAccessTokenForRequest(config) {
     clearSession();
     return Promise.reject({
       status: 401,
-      message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      message: getSessionExpiredMessage(),
       isAuthRequest: false,
     });
   } finally {
@@ -189,7 +194,7 @@ apiClient.interceptors.request.use(
         clearSession();
         return Promise.reject({
           status: 401,
-          message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+          message: getSessionExpiredMessage(),
           isAuthRequest: false,
         });
       }
@@ -213,7 +218,7 @@ apiClient.interceptors.request.use(
         clearSession();
         return Promise.reject({
           status: 401,
-          message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+          message: getSessionExpiredMessage(),
           isAuthRequest: false,
         });
       } finally {
@@ -262,7 +267,7 @@ apiClient.interceptors.response.use(
         clearSession();
         return Promise.reject({
           status: 401,
-          message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+          message: getSessionExpiredMessage(),
           isAuthRequest: false,
         });
       } finally {

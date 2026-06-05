@@ -15,10 +15,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 const REFRESH_MS = 5 * 60 * 1000;
 
 const FLOW_LEGEND = [
-  { color: '#10b981', vi: 'Thông thoáng', en: 'Free flow' },
-  { color: '#eab308', vi: 'Vừa phải', en: 'Moderate' },
-  { color: '#f97316', vi: 'Đông đúc', en: 'Heavy' },
-  { color: '#ef4444', vi: 'Kẹt xe', en: 'Severe' },
+  { color: '#10b981', labelKey: 'mapPage.traffic.flowLevels.free_flow' },
+  { color: '#eab308', labelKey: 'mapPage.traffic.flowLevels.moderate' },
+  { color: '#f97316', labelKey: 'mapPage.traffic.flowLevels.heavy' },
+  { color: '#ef4444', labelKey: 'mapPage.traffic.flowLevels.severe' },
 ];
 
 export default function TrafficPanel() {
@@ -78,7 +78,7 @@ export default function TrafficPanel() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
       {/* Header */}
-      <div className="shrink-0 flex items-start justify-between gap-3 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+      <div className="flex shrink-0 items-start justify-between gap-3 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span
@@ -87,20 +87,16 @@ export default function TrafficPanel() {
                 isLive ? 'animate-pulse bg-emerald-500' : 'bg-muted-foreground/40'
               )}
             />
-            <p className="typo-section-title text-foreground">
-              {t('mapPage.traffic.title', { defaultValue: 'Giao thông' })}
-            </p>
+            <p className="typo-section-title text-foreground">{t('mapPage.traffic.title')}</p>
           </div>
           <p className="typo-meta text-muted-foreground ml-4">
             {isTrafficEnabled
               ? isLoading
-                ? t('mapPage.traffic.loading', { defaultValue: 'Đang cập nhật...' })
+                ? t('mapPage.traffic.loading')
                 : error
-                  ? t('mapPage.traffic.error', { defaultValue: 'Không thể tải dữ liệu' })
-                  : t('mapPage.traffic.subtitle', {
-                      defaultValue: 'Flow và sự cố theo thời gian thực',
-                    })
-              : t('mapPage.traffic.disabled', { defaultValue: 'Đã tắt' })}
+                  ? t('mapPage.traffic.error')
+                  : t('mapPage.traffic.subtitle')
+              : t('mapPage.traffic.disabled')}
           </p>
         </div>
         <Switch
@@ -110,177 +106,175 @@ export default function TrafficPanel() {
         />
       </div>
 
-      <ScrollArea className="flex-1 min-h-0">
+      <ScrollArea className="min-h-0 flex-1">
         {isTrafficEnabled && (
-        <div className="space-y-3">
-          {/* Quick stats grid */}
-          <div className="grid grid-cols-4 gap-1.5">
-            {[
-              {
-                icon: <AlertTriangle className="h-3 w-3" />,
-                value: stats.total,
-                label: lang === 'en' ? 'Total' : 'Tổng',
-                color: '#f97316',
-                bg: '#f9731612',
-              },
-              {
-                icon: <Car className="h-3 w-3" />,
-                value: stats.accidents,
-                label: lang === 'en' ? 'Accident' : 'Tai nạn',
-                color: '#dc2626',
-                bg: '#dc262612',
-              },
-              {
-                icon: <Activity className="h-3 w-3" />,
-                value: stats.jams,
-                label: lang === 'en' ? 'Jam' : 'Ùn tắc',
-                color: '#ef4444',
-                bg: '#ef444412',
-              },
-              {
-                icon: <Construction className="h-3 w-3" />,
-                value: stats.works,
-                label: lang === 'en' ? 'Works' : 'Thi công',
-                color: '#3b82f6',
-                bg: '#3b82f612',
-              },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="flex flex-col items-center gap-0.5 rounded-xl px-1.5 py-2"
-                style={{ backgroundColor: s.bg }}
+          <div className="space-y-3">
+            {/* Quick stats grid */}
+            <div className="grid grid-cols-4 gap-1.5">
+              {[
+                {
+                  icon: <AlertTriangle className="h-3 w-3" />,
+                  value: stats.total,
+                  label: t('mapPage.traffic.summary.total'),
+                  color: '#f97316',
+                  bg: '#f9731612',
+                },
+                {
+                  icon: <Car className="h-3 w-3" />,
+                  value: stats.accidents,
+                  label: t('mapPage.traffic.summary.accident'),
+                  color: '#dc2626',
+                  bg: '#dc262612',
+                },
+                {
+                  icon: <Activity className="h-3 w-3" />,
+                  value: stats.jams,
+                  label: t('mapPage.traffic.summary.jam'),
+                  color: '#ef4444',
+                  bg: '#ef444412',
+                },
+                {
+                  icon: <Construction className="h-3 w-3" />,
+                  value: stats.works,
+                  label: t('mapPage.traffic.summary.works'),
+                  color: '#3b82f6',
+                  bg: '#3b82f612',
+                },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="flex flex-col items-center gap-0.5 rounded-xl px-1.5 py-2"
+                  style={{ backgroundColor: s.bg }}
+                >
+                  <span style={{ color: s.color }}>{s.icon}</span>
+                  <span
+                    className="text-sm leading-none font-black tabular-nums"
+                    style={{ color: s.color }}
+                  >
+                    {s.value}
+                  </span>
+                  <span
+                    className="text-center text-[9px] leading-none font-medium"
+                    style={{ color: s.color, opacity: 0.75 }}
+                  >
+                    {s.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Avg delay badge */}
+            {stats.avgDelayMin !== null && (
+              <div className="bg-muted/50 border-border flex items-center justify-between rounded-xl border px-3 py-2">
+                <span className="typo-meta text-muted-foreground">
+                  {t('mapPage.traffic.summary.avg_delay')}
+                </span>
+                <span className="typo-meta font-semibold text-orange-500">
+                  +{stats.avgDelayMin} {t('mapPage.traffic.summary.minutes')}
+                </span>
+              </div>
+            )}
+
+            {/* Layer toggles */}
+            <div className="bg-muted/40 border-border space-y-0.5 rounded-xl border p-2">
+              <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors">
+                <Checkbox id="traffic-flow" checked={showFlow} onCheckedChange={setShowFlow} />
+                <Activity className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                <span className="typo-body text-foreground flex-1 font-medium">
+                  {t('mapPage.traffic.flow')}
+                </span>
+              </label>
+              <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors">
+                <Checkbox
+                  id="traffic-incidents"
+                  checked={showIncidents}
+                  onCheckedChange={setShowIncidents}
+                />
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-orange-500" />
+                <span className="typo-body text-foreground flex-1 font-medium">
+                  {t('mapPage.traffic.incidents')}
+                </span>
+              </label>
+            </div>
+
+            {/* Status + refresh */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5">
+                {error ? (
+                  <>
+                    <WifiOff className="text-destructive h-3.5 w-3.5 shrink-0" />
+                    <span className="typo-meta text-destructive">{t('mapPage.traffic.error')}</span>
+                  </>
+                ) : isLoading ? (
+                  <span className="typo-meta text-muted-foreground animate-pulse">
+                    {t('mapPage.traffic.loading')}
+                  </span>
+                ) : (
+                  <>
+                    <Wifi className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                    <span className="typo-meta text-muted-foreground">
+                      {t('mapPage.traffic.live')}
+                    </span>
+                  </>
+                )}
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="typo-meta h-7 shrink-0"
+                disabled={isLoading}
+                onClick={doLoad}
               >
-                <span style={{ color: s.color }}>{s.icon}</span>
-                <span
-                  className="text-sm leading-none font-black tabular-nums"
-                  style={{ color: s.color }}
-                >
-                  {s.value}
-                </span>
-                <span
-                  className="text-center text-[9px] leading-none font-medium"
-                  style={{ color: s.color, opacity: 0.75 }}
-                >
-                  {s.label}
-                </span>
+                <RefreshCw className={cn('h-3.5 w-3.5', isLoading && 'animate-spin')} />
+                {t('mapPage.traffic.refresh')}
+              </Button>
+            </div>
+
+            {/* Flow legend */}
+            {showFlow && (
+              <div className="space-y-1.5">
+                <p className="typo-meta text-muted-foreground font-medium">
+                  {t('mapPage.traffic.flowLegend')}
+                </p>
+                <div className="grid grid-cols-2 gap-1">
+                  {FLOW_LEGEND.map((item) => (
+                    <div key={item.labelKey} className="flex items-center gap-1.5">
+                      <span
+                        className="inline-block h-2 w-4 shrink-0 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className="typo-meta text-muted-foreground">{t(item.labelKey)}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+            )}
 
-          {/* Avg delay badge */}
-          {stats.avgDelayMin !== null && (
-            <div className="bg-muted/50 border-border flex items-center justify-between rounded-xl border px-3 py-2">
-              <span className="typo-meta text-muted-foreground">
-                {lang === 'en' ? 'Avg. delay' : 'Delay trung bình'}
-              </span>
-              <span className="typo-meta font-semibold text-orange-500">
-                +{stats.avgDelayMin} {lang === 'en' ? 'min' : 'phút'}
-              </span>
-            </div>
-          )}
-
-          {/* Layer toggles */}
-          <div className="bg-muted/40 border-border space-y-0.5 rounded-xl border p-2">
-            <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors">
-              <Checkbox id="traffic-flow" checked={showFlow} onCheckedChange={setShowFlow} />
-              <Activity className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-              <span className="typo-body text-foreground flex-1 font-medium">
-                {t('mapPage.traffic.flow', { defaultValue: 'Traffic Flow' })}
-              </span>
-            </label>
-            <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors">
-              <Checkbox
-                id="traffic-incidents"
-                checked={showIncidents}
-                onCheckedChange={setShowIncidents}
-              />
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-orange-500" />
-              <span className="typo-body text-foreground flex-1 font-medium">
-                {t('mapPage.traffic.incidents', { defaultValue: 'Sự cố giao thông' })}
-              </span>
-            </label>
-          </div>
-
-          {/* Status + refresh */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5">
-              {error ? (
-                <>
-                  <WifiOff className="text-destructive h-3.5 w-3.5 shrink-0" />
-                  <span className="typo-meta text-destructive">
-                    {t('mapPage.traffic.error', { defaultValue: 'Không thể tải dữ liệu' })}
-                  </span>
-                </>
-              ) : isLoading ? (
-                <span className="typo-meta text-muted-foreground animate-pulse">
-                  {t('mapPage.traffic.loading', { defaultValue: 'Đang cập nhật...' })}
-                </span>
-              ) : (
-                <>
-                  <Wifi className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                  <span className="typo-meta text-muted-foreground">
-                    {t('mapPage.traffic.live', { defaultValue: 'Dữ liệu thời gian thực' })}
-                  </span>
-                </>
-              )}
-            </div>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="typo-meta h-7 shrink-0"
-              disabled={isLoading}
-              onClick={doLoad}
-            >
-              <RefreshCw className={cn('h-3.5 w-3.5', isLoading && 'animate-spin')} />
-              {t('mapPage.traffic.refresh', { defaultValue: 'Làm mới' })}
-            </Button>
-          </div>
-
-          {/* Flow legend */}
-          {showFlow && (
-            <div className="space-y-1.5">
-              <p className="typo-meta text-muted-foreground font-medium">
-                {t('mapPage.traffic.flowLegend', { defaultValue: 'Mức độ lưu thông' })}
-              </p>
-              <div className="grid grid-cols-2 gap-1">
-                {FLOW_LEGEND.map((item) => (
-                  <div key={item.en} className="flex items-center gap-1.5">
-                    <span
-                      className="inline-block h-2 w-4 shrink-0 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="typo-meta text-muted-foreground">{item[lang] ?? item.vi}</span>
-                  </div>
-                ))}
+            {/* Incident legend */}
+            {showIncidents && (
+              <div className="space-y-1.5">
+                <p className="typo-meta text-muted-foreground font-medium">
+                  {t('mapPage.traffic.incidentLegend')}
+                </p>
+                <div className="grid grid-cols-2 gap-1">
+                  {INCIDENT_LEGEND.map((item) => (
+                    <div key={item.en} className="flex items-center gap-1.5">
+                      <span
+                        className="inline-block h-2 w-2 shrink-0 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className="typo-meta text-muted-foreground">
+                        {item[lang] ?? item.vi}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-
-          {/* Incident legend */}
-          {showIncidents && (
-            <div className="space-y-1.5">
-              <p className="typo-meta text-muted-foreground font-medium">
-                {t('mapPage.traffic.incidentLegend', { defaultValue: 'Loại sự cố' })}
-              </p>
-              <div className="grid grid-cols-2 gap-1">
-                {INCIDENT_LEGEND.map((item) => (
-                  <div key={item.en} className="flex items-center gap-1.5">
-                    <span
-                      className="inline-block h-2 w-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="typo-meta text-muted-foreground">{item[lang] ?? item.vi}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         )}
       </ScrollArea>
     </div>
   );
 }
-
-

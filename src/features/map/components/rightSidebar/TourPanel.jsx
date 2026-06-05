@@ -149,44 +149,37 @@ function buildStopRouteCandidate(stop, pointDetail) {
 
 const TOUR_CAPACITY_STATUS_META = {
   overloaded: {
-    labelVi: 'Quá tải',
-    labelEn: 'Overloaded',
+    labelKey: 'mapPage.capacityPanel.status.overloaded',
     toneClass: 'text-destructive',
     barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
   },
   near_full: {
-    labelVi: 'Gần đầy',
-    labelEn: 'Near full',
+    labelKey: 'mapPage.capacityPanel.status.near_full',
     toneClass: 'text-orange-600',
     barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
   },
   busy: {
-    labelVi: 'Đông',
-    labelEn: 'Busy',
+    labelKey: 'mapPage.capacityPanel.status.busy',
     toneClass: 'text-warning',
     barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
   },
   moderate: {
-    labelVi: 'Vừa phải',
-    labelEn: 'Moderate',
+    labelKey: 'mapPage.capacityPanel.status.moderate',
     toneClass: 'text-sky-600',
     barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
   },
   normal: {
-    labelVi: 'Bình thường',
-    labelEn: 'Normal',
+    labelKey: 'mapPage.capacityPanel.status.normal',
     toneClass: 'text-emerald-600',
     barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
   },
   low: {
-    labelVi: 'Thưa thớt',
-    labelEn: 'Low',
+    labelKey: 'mapPage.capacityPanel.status.low',
     toneClass: 'text-emerald-500',
     barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
   },
   unknown: {
-    labelVi: 'Chưa rõ',
-    labelEn: 'Unknown',
+    labelKey: 'mapPage.capacityPanel.status.unknown',
     toneClass: 'text-muted-foreground',
     barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
   },
@@ -197,7 +190,7 @@ function getTourCapacityStatusMeta(status) {
   return TOUR_CAPACITY_STATUS_META[key] ?? TOUR_CAPACITY_STATUS_META.unknown;
 }
 
-function TourCapacitySummary({ tourId, t, isVi }) {
+function TourCapacitySummary({ tourId, t }) {
   const { data, isLoading, isError } = useGetTourCurrentCapacity(tourId, {
     enabled: Boolean(tourId),
     retry: 0,
@@ -219,11 +212,7 @@ function TourCapacitySummary({ tourId, t, isVi }) {
   if (isError || !summary) {
     return (
       <div className="rounded-md border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-2">
-        <p className="typo-meta text-muted-foreground">
-          {t('mapPage.tourPanel.capacityNoData', {
-            defaultValue: 'Chưa có dữ liệu tải tuyến.',
-          })}
-        </p>
+        <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.capacityNoData')}</p>
       </div>
     );
   }
@@ -231,11 +220,9 @@ function TourCapacitySummary({ tourId, t, isVi }) {
   return (
     <div className="space-y-1.5 rounded-md border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-2">
       <div className="flex items-center justify-between gap-2">
-        <p className="typo-meta text-muted-foreground">
-          {t('mapPage.tourPanel.routeCapacity', { defaultValue: 'Tải tuyến hiện tại' })}
-        </p>
+        <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.routeCapacity')}</p>
         <span className={cn('typo-meta font-semibold', statusMeta.toneClass)}>
-          {isVi ? statusMeta.labelVi : statusMeta.labelEn}
+          {t(statusMeta.labelKey)}
         </span>
       </div>
 
@@ -264,7 +251,6 @@ export default function TourPanel() {
   const navigate = useNavigate();
   const lang = useLanguageStore((state) => state.lang);
   const locale = getLocaleFromLanguage(lang);
-  const isVi = String(lang || '').startsWith('vi');
 
   const filters = useTourPanelStore((state) => state.filters);
   const selectedTour = useTourPanelStore((state) => state.selectedTour);
@@ -314,11 +300,7 @@ export default function TourPanel() {
       const sortedStops = sortStops(stops);
 
       if (sortedStops.length < 2) {
-        throw new Error(
-          t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
       }
 
       const routePoints = (
@@ -349,11 +331,7 @@ export default function TourPanel() {
       ).filter(Boolean);
 
       if (routePoints.length < 2) {
-        throw new Error(
-          t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
       }
 
       const routeResult = await createRouteFromPoints(
@@ -362,11 +340,7 @@ export default function TourPanel() {
         lang === 'en' ? 'en' : 'vi'
       );
       if (!routeResult?.geometry?.coordinates?.length) {
-        throw new Error(
-          t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeFailed'));
       }
 
       openTourPanel({ tourId: tour.id, tourName: tour.name, stops: sortedStops });
@@ -388,18 +362,9 @@ export default function TourPanel() {
       });
       setShowOnlyHighlightedRoute(true);
 
-      toast.success(
-        t('mapPage.tourPanel.routeReady', {
-          defaultValue: 'Đã hiển thị tuyến tour trên bản đồ.',
-        })
-      );
+      toast.success(t('mapPage.tourPanel.routeReady'));
     } catch (error) {
-      toast.error(
-        error?.message ||
-          t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
-          })
-      );
+      toast.error(error?.message || t('mapPage.tourPanel.routeFailed'));
     } finally {
       setRouteLoadingTourId(null);
     }
@@ -408,16 +373,11 @@ export default function TourPanel() {
     <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
       <div className="flex shrink-0 items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
-          <p className="typo-section-title text-foreground">
-            {t('mapPage.tourPanel.title', { defaultValue: 'Tour du lịch' })}
-          </p>
+          <p className="typo-section-title text-foreground">{t('mapPage.tourPanel.title')}</p>
           <p className="typo-meta text-muted-foreground">
             {isFetching
-              ? t('mapPage.tourPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
-              : t('mapPage.tourPanel.count', {
-                  defaultValue: '{{count}} tour',
-                  count: tours.length,
-                })}
+              ? t('mapPage.tourPanel.syncing')
+              : t('mapPage.tourPanel.count', { count: tours.length })}
           </p>
         </div>
         <Button
@@ -427,7 +387,7 @@ export default function TourPanel() {
           className="typo-meta h-7"
           onClick={resetTourPanelFilters}
         >
-          {t('mapPage.tourPanel.reset', { defaultValue: 'Đặt lại' })}
+          {t('mapPage.tourPanel.reset')}
         </Button>
       </div>
 
@@ -443,12 +403,8 @@ export default function TourPanel() {
             <Eye className="h-3.5 w-3.5" />
             <span className="truncate">
               {showOnlyHighlightedRoute
-                ? t('mapPage.tourPanel.showOtherPoints', {
-                    defaultValue: 'Hiện điểm khác',
-                  })
-                : t('mapPage.tourPanel.hideOtherPoints', {
-                    defaultValue: 'Ẩn điểm khác',
-                  })}
+                ? t('mapPage.tourPanel.showOtherPoints')
+                : t('mapPage.tourPanel.hideOtherPoints')}
             </span>
           </Button>
           <Button
@@ -478,15 +434,11 @@ export default function TourPanel() {
                 });
               });
 
-              toast.info(
-                t('mapPage.tourPanel.routeCleared', {
-                  defaultValue: 'Đã xóa tuyến tour khỏi bản đồ.',
-                })
-              );
+              toast.info(t('mapPage.tourPanel.routeCleared'));
             }}
           >
             <Trash2 className="h-3.5 w-3.5" />
-            {t('mapPage.tourPanel.clearRoute', { defaultValue: 'Xóa tuyến' })}
+            {t('mapPage.tourPanel.clearRoute')}
           </Button>
         </div>
       ) : null}
@@ -497,9 +449,7 @@ export default function TourPanel() {
           <Input
             value={filters.search}
             onChange={(event) => setTourPanelFilters({ search: event.target.value, page: 1 })}
-            placeholder={t('mapPage.tourPanel.searchPlaceholder', {
-              defaultValue: 'Tìm tour...',
-            })}
+            placeholder={t('mapPage.tourPanel.searchPlaceholder')}
             className="h-9 border-[var(--event-panel-border)] bg-[var(--event-panel-control-bg)] pr-2 pl-8 text-sm"
           />
         </div>
@@ -512,13 +462,9 @@ export default function TourPanel() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('common.all', { defaultValue: 'All' })}</SelectItem>
-            <SelectItem value="featured">
-              {t('mapPage.tourPanel.featuredOnly', { defaultValue: 'Nổi bật' })}
-            </SelectItem>
-            <SelectItem value="regular">
-              {t('mapPage.tourPanel.nonFeatured', { defaultValue: 'Không nổi bật' })}
-            </SelectItem>
+            <SelectItem value="all">{t('common.all')}</SelectItem>
+            <SelectItem value="featured">{t('mapPage.tourPanel.featuredOnly')}</SelectItem>
+            <SelectItem value="regular">{t('mapPage.tourPanel.nonFeatured')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -532,11 +478,11 @@ export default function TourPanel() {
           </div>
         ) : isError ? (
           <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
-            {t('mapPage.tourPanel.error', { defaultValue: 'Không thể tải danh sách tour.' })}
+            {t('mapPage.tourPanel.error')}
           </div>
         ) : tours.length === 0 ? (
           <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
-            {t('mapPage.tourPanel.empty', { defaultValue: 'Không có tour phù hợp với bộ lọc.' })}
+            {t('mapPage.tourPanel.empty')}
           </div>
         ) : (
           <div className="space-y-2 pr-0.5">
@@ -579,7 +525,7 @@ export default function TourPanel() {
                       {tour.is_featured && (
                         <Badge variant="secondary" className="shrink-0 gap-1">
                           <Star className="fill-gold text-gold h-3 w-3" />
-                          {t('tourPage.featured', { defaultValue: 'Featured' })}
+                          {t('tourPage.featured')}
                         </Badge>
                       )}
                     </div>
@@ -594,7 +540,6 @@ export default function TourPanel() {
                         <MapPin className="h-3.5 w-3.5 shrink-0" />
                         {tour.start_location && tour.end_location
                           ? t('mapPage.tourPanel.routeSummary', {
-                              defaultValue: '{{from}} → {{to}}',
                               from: tour.start_location,
                               to: tour.end_location,
                             })
@@ -606,15 +551,14 @@ export default function TourPanel() {
                       className="typo-body text-muted-foreground line-clamp-3"
                       title={tour.description || ''}
                     >
-                      {tour.description ||
-                        t('tourPage.noDescription', { defaultValue: 'No description' })}
+                      {tour.description || t('tourPage.noDescription')}
                     </p>
 
                     <div className="typo-body text-foreground font-semibold">
                       {formatTourPriceLabel(tour, locale)}
                     </div>
 
-                    <TourCapacitySummary tourId={tour.id} t={t} isVi={isVi} />
+                    <TourCapacitySummary tourId={tour.id} t={t} />
                   </div>
 
                   <div className="flex flex-wrap gap-1.5">
@@ -627,10 +571,8 @@ export default function TourPanel() {
                     >
                       <Map className="h-3.5 w-3.5" />
                       {isRouteLoading
-                        ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Đang mở...' })
-                        : t('mapPage.tourPanel.openTourOnMap', {
-                            defaultValue: 'Mở tour trên bản đồ',
-                          })}
+                        ? t('mapPage.tourPanel.loadingRoute')
+                        : t('mapPage.tourPanel.openTourOnMap')}
                     </Button>
                     <Button
                       type="button"
@@ -639,7 +581,7 @@ export default function TourPanel() {
                       className="typo-meta h-8"
                       onClick={() => navigate(`/tour/${tour.slug}`)}
                     >
-                      {t('tourismPointPage.view_detail', { defaultValue: 'Xem chi tiết' })}
+                      {t('tourismPointPage.view_detail')}
                     </Button>
                   </div>
                 </article>

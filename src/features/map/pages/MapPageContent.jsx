@@ -140,6 +140,22 @@ export default function MapPage() {
     () => normalizeSpotsSearchResults(searchSpotsData),
     [searchSpotsData]
   );
+  const resolvedMapDestinations = useMemo(
+    () =>
+      mapDestinations.map((item) => ({
+        ...item,
+        description: item.descriptionKey ? t(item.descriptionKey) : item.description,
+      })),
+    [t]
+  );
+  const resolvedTourSuggestions = useMemo(
+    () =>
+      mapTourSuggestions.map((item) => ({
+        ...item,
+        text: item.textKey ? t(item.textKey) : item.text,
+      })),
+    [t]
+  );
 
   const categoryDropdown = useMemo(() => {
     const sourceItems = Array.isArray(categoriesData?.data?.tree)
@@ -231,22 +247,24 @@ export default function MapPage() {
   };
 
   const selectedPlace =
-    mapDestinations.find((item) => item.id === selectedPlaceId) ?? mapDestinations[0] ?? null;
+    resolvedMapDestinations.find((item) => item.id === selectedPlaceId) ??
+    resolvedMapDestinations[0] ??
+    null;
 
   const monitoringItems = [
     {
       name: t('mapPage.layout.monitoringAreaTrangAn', { defaultValue: 'Trang An' }),
-      load: mapDestinations[0]?.loadPercent ?? 62,
+      load: resolvedMapDestinations[0]?.loadPercent ?? 62,
       badgeClass: 'bg-destructive/15 text-destructive',
     },
     {
       name: t('mapPage.layout.monitoringAreaHangMua', { defaultValue: 'Hang Mua' }),
-      load: mapDestinations[1]?.loadPercent ?? 68,
+      load: resolvedMapDestinations[1]?.loadPercent ?? 68,
       badgeClass: 'bg-warning-soft text-warning',
     },
     {
       name: t('mapPage.layout.monitoringAreaTamCoc', { defaultValue: 'Tam Coc' }),
-      load: mapDestinations[2]?.loadPercent ?? 44,
+      load: resolvedMapDestinations[2]?.loadPercent ?? 44,
       badgeClass: 'bg-secondary/15 text-secondary',
     },
   ];
@@ -260,7 +278,7 @@ export default function MapPage() {
           .map((value) => String(value).toLowerCase())
       : [];
 
-    return mapDestinations.filter((item) => {
+    return resolvedMapDestinations.filter((item) => {
       const destinationTokens = [item.category, item.label, item.slug]
         .filter((value) => value != null)
         .map((value) => String(value).toLowerCase());
@@ -274,7 +292,7 @@ export default function MapPage() {
       const matchesKeyword = !normalizedKeyword || haystack.includes(normalizedKeyword);
       return matchesChip && matchesKeyword;
     });
-  }, [activeChip, keyword, selectedChipCategory]);
+  }, [activeChip, keyword, selectedChipCategory, resolvedMapDestinations]);
 
   const hasDirectionDetails = Boolean(directions?.legs?.[0]?.steps?.length || directions);
 
@@ -395,7 +413,7 @@ export default function MapPage() {
   };
 
   const handleSelectPlace = (placeId) => {
-    const next = mapDestinations.find((item) => item.id === placeId);
+    const next = resolvedMapDestinations.find((item) => item.id === placeId);
     if (!next) return;
     setSelectedPlaceId(placeId);
     setHighlightedPoint({
@@ -860,11 +878,11 @@ export default function MapPage() {
                 activeSidebar={activeSidebar}
                 tab={activeTab}
                 onTabChange={handleSidebarTabChange}
-                destinations={mapDestinations}
+                destinations={resolvedMapDestinations}
                 selectedPlace={selectedPlace}
                 onSelectPlace={handleSelectPlace}
                 monitoringItems={monitoringItems}
-                tourSuggestions={mapTourSuggestions}
+                tourSuggestions={resolvedTourSuggestions}
                 onOpenRoute={handleOpenRoute}
                 onOpenVr={handleOpenVr}
                 onOpenSuggestTab={() => setActiveTab('tour')}

@@ -6,8 +6,7 @@ export const CAPACITY_STATUS_META = {
       'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
     toneClass: 'text-destructive',
     barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
-    labelVi: 'Quá tải',
-    labelEn: 'Overloaded',
+    labelKey: 'mapPage.capacityPanel.status.overloaded',
   },
   near_full: {
     activeBadgeClass:
@@ -16,8 +15,7 @@ export const CAPACITY_STATUS_META = {
       'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
     toneClass: 'text-orange-600',
     barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
-    labelVi: 'Gần đầy',
-    labelEn: 'Near full',
+    labelKey: 'mapPage.capacityPanel.status.near_full',
   },
   busy: {
     activeBadgeClass: 'border-border/60 bg-warning text-white hover:bg-warning/80 hover:text-white',
@@ -25,8 +23,7 @@ export const CAPACITY_STATUS_META = {
       'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
     toneClass: 'text-warning',
     barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
-    labelVi: 'Đông',
-    labelEn: 'Busy',
+    labelKey: 'mapPage.capacityPanel.status.busy',
   },
   moderate: {
     activeBadgeClass: 'border-border/60 bg-sky-500 text-white hover:bg-sky-500/80 hover:text-white',
@@ -34,8 +31,7 @@ export const CAPACITY_STATUS_META = {
       'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
     toneClass: 'text-sky-600',
     barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
-    labelVi: 'Vừa phải',
-    labelEn: 'Moderate',
+    labelKey: 'mapPage.capacityPanel.status.moderate',
   },
   normal: {
     activeBadgeClass:
@@ -44,8 +40,7 @@ export const CAPACITY_STATUS_META = {
       'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
     toneClass: 'text-emerald-600',
     barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
-    labelVi: 'Bình thường',
-    labelEn: 'Normal',
+    labelKey: 'mapPage.capacityPanel.status.normal',
   },
   low: {
     activeBadgeClass:
@@ -54,16 +49,14 @@ export const CAPACITY_STATUS_META = {
       'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
     toneClass: 'text-emerald-500',
     barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
-    labelVi: 'Thưa thớt',
-    labelEn: 'Low',
+    labelKey: 'mapPage.capacityPanel.status.low',
   },
   unknown: {
     activeBadgeClass: 'border-border/60 bg-muted text-muted-foreground hover:bg-muted/80',
     badgeClass: 'border-border/40 bg-muted/60 text-muted-foreground hover:bg-muted',
     toneClass: 'text-muted-foreground',
     barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
-    labelVi: 'Chưa rõ',
-    labelEn: 'Unknown',
+    labelKey: 'mapPage.capacityPanel.status.unknown',
   },
 };
 
@@ -82,9 +75,9 @@ export function getCapacityStatusMeta(status, fallbackStatus = FALLBACK_STATUS) 
   return CAPACITY_STATUS_META[key] ?? CAPACITY_STATUS_META[fallbackKey] ?? CAPACITY_STATUS_META.low;
 }
 
-export function getCapacityStatusLabel(status, isVi) {
+export function getCapacityStatusLabel(status, t) {
   const meta = getCapacityStatusMeta(status);
-  return isVi ? meta.labelVi : meta.labelEn;
+  return t(meta.labelKey);
 }
 
 export function resolveCapacityStatus(status, pct) {

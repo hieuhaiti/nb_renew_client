@@ -295,6 +295,43 @@ export default function HomePageContent() {
     QUICK_LINKS,
     VLOG_STORIES,
   } = homeData;
+  const resolvedHeroStats = useMemo(
+    () => HERO_STATS.map((item) => ({ ...item, label: t(item.labelKey) })),
+    [HERO_STATS, t]
+  );
+  const resolvedQuickLinks = useMemo(
+    () =>
+      QUICK_LINKS.map((item) => ({
+        ...item,
+        title: t(item.titleKey),
+        description: t(item.descriptionKey),
+      })),
+    [QUICK_LINKS, t]
+  );
+  const resolvedItineraryItems = useMemo(
+    () => ITINERARY_ITEMS.map((item) => ({ ...item, activity: t(item.activityKey) })),
+    [ITINERARY_ITEMS, t]
+  );
+  const resolvedFeaturedFallbacks = useMemo(
+    () =>
+      FEATURED_DESTINATIONS.map((item) => ({
+        ...item,
+        name: t(item.nameKey),
+        province: t(item.provinceKey),
+        subtitle: t(item.subtitleKey),
+        description: t(item.descriptionKey),
+      })),
+    [FEATURED_DESTINATIONS, t]
+  );
+  const resolvedVlogStories = useMemo(
+    () =>
+      VLOG_STORIES.map((item) => ({
+        ...item,
+        title: t(item.titleKey),
+        description: t(item.descriptionKey),
+      })),
+    [VLOG_STORIES, t]
+  );
 
   const [keyword, setKeyword] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -324,7 +361,13 @@ export default function HomePageContent() {
     [festivalsData, lang]
   );
   const heroEvents = useMemo(() => {
-    if (upcomingFestivals.length === 0) return HERO_EVENTS;
+    if (upcomingFestivals.length === 0) {
+      return HERO_EVENTS.map((item) => ({
+        ...item,
+        title: t(item.titleKey),
+        time: t(item.timeKey),
+      }));
+    }
     return upcomingFestivals.map((f) => ({
       title: f.name,
       time: formatFestivalDateRange(f.start_date, f.end_date, locale),
@@ -338,7 +381,7 @@ export default function HomePageContent() {
         coordinates: f.coordinates || null,
       },
     }));
-  }, [upcomingFestivals, locale, HERO_EVENTS]);
+  }, [upcomingFestivals, locale, HERO_EVENTS, t]);
 
   /* ── live search ─────────────────── */
   const {
@@ -404,10 +447,10 @@ export default function HomePageContent() {
     }));
     if (mapped.length >= 3) return mapped.slice(0, 3);
     const padded = [...mapped];
-    for (let i = mapped.length; i < 3 && i < FEATURED_DESTINATIONS.length; i++)
-      padded.push(FEATURED_DESTINATIONS[i]);
-    return padded.length > 0 ? padded : FEATURED_DESTINATIONS;
-  }, [featuredSpotsData, FEATURED_DESTINATIONS]);
+    for (let i = mapped.length; i < 3 && i < resolvedFeaturedFallbacks.length; i++)
+      padded.push(resolvedFeaturedFallbacks[i]);
+    return padded.length > 0 ? padded : resolvedFeaturedFallbacks;
+  }, [featuredSpotsData, resolvedFeaturedFallbacks]);
 
   const newsList = useMemo(() => {
     const raw =
@@ -722,7 +765,7 @@ export default function HomePageContent() {
 
             {/* Quick actions */}
             <div className="mb-4 grid grid-cols-3 gap-2 sm:grid-cols-5">
-              {QUICK_LINKS.map((item, i) => (
+              {resolvedQuickLinks.map((item, i) => (
                 <Button
                   key={item.id}
                   type="button"
@@ -745,7 +788,7 @@ export default function HomePageContent() {
 
             {/* Quick stats */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {HERO_STATS.map((stat) => (
+              {resolvedHeroStats.map((stat) => (
                 <div
                   key={stat.label}
                   className="border-border bg-card rounded-[20px] border p-3.5 shadow-[var(--ambient-shadow)]"
@@ -1147,7 +1190,7 @@ export default function HomePageContent() {
 
               {/* TODO: ITINERARY_ITEMS is static mock data – replace with user's saved itinerary from API */}
               <div className="grid gap-3.5">
-                {ITINERARY_ITEMS.slice(0, 4).map((item, i) => (
+                {resolvedItineraryItems.slice(0, 4).map((item, i) => (
                   <div key={`${item.time}-${i}`} className="grid grid-cols-[64px_1fr] gap-3">
                     <div className="rounded-[14px] bg-(--secondary-soft) px-2 py-2.5 text-center">
                       <span className="text-secondary block text-[12px] font-black">
@@ -1359,20 +1402,20 @@ export default function HomePageContent() {
                 variant="ghost"
                 className="h-[200px] w-full rounded-[22px] text-white shadow-[var(--ambient-shadow)]"
                 style={{
-                  background: `linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.55)),url('${VLOG_STORIES[0]?.image || 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=80'}') center/cover`,
+                  background: `linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.55)),url('${resolvedVlogStories[0]?.image || 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=80'}') center/cover`,
                 }}
                 onClick={() => navigate('/vr360')}
               >
                 <Play size={52} />
               </Button>
 
-              {VLOG_STORIES[0] && (
+              {resolvedVlogStories[0] && (
                 <div className="mt-3">
                   <p className="text-muted-foreground text-[12px]">
-                    {t('home.vlog_section.author_prefix')} {VLOG_STORIES[0].author}
+                    {t('home.vlog_section.author_prefix')} {resolvedVlogStories[0].author}
                   </p>
                   <h4 className="text-foreground mt-0.5 text-[14px] leading-snug font-black">
-                    {VLOG_STORIES[0].title}
+                    {resolvedVlogStories[0].title}
                   </h4>
                 </div>
               )}

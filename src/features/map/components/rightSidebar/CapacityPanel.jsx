@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Clock, LocateFixed, RefreshCw, Search, Users } from 'lucide-react';
@@ -69,16 +69,16 @@ function normalizeItem(raw, defaultName) {
   };
 }
 
-function formatRelativeTime(isoStr) {
+function formatRelativeTime(isoStr, t, locale) {
   if (!isoStr) return null;
   try {
     const diffMs = Date.now() - new Date(isoStr).getTime();
     const minutes = Math.floor(diffMs / 60_000);
-    if (minutes < 1) return 'Vừa cập nhật';
-    if (minutes < 60) return `${minutes} phút trước`;
+    if (minutes < 1) return t('common.just_updated');
+    if (minutes < 60) return t('common.minutes_ago', { count: minutes });
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} giờ trước`;
-    return new Date(isoStr).toLocaleDateString('vi-VN');
+    if (hours < 24) return t('common.hours_ago', { count: hours });
+    return new Date(isoStr).toLocaleDateString(locale);
   } catch {
     return null;
   }
@@ -93,6 +93,7 @@ function patchCapacityCache(old, sseData) {
     status: sseData.status,
     recorded_at: sseData.recorded_at,
   };
+
   function patchArr(arr) {
     if (!Array.isArray(arr)) return arr;
     return arr.map((item) => {
@@ -100,6 +101,7 @@ function patchCapacityCache(old, sseData) {
       return id === spotId ? { ...item, ...patch } : item;
     });
   }
+
   const d = old?.data;
   if (!d) return old;
   if (Array.isArray(d.capacity)) return { ...old, data: { ...d, capacity: patchArr(d.capacity) } };
@@ -125,6 +127,7 @@ function CapacityRowSkeleton() {
 export default function CapacityPanel() {
   const { t, i18n } = useTranslation();
   const isVi = i18n.language?.startsWith('vi');
+  const locale = isVi ? 'vi-VN' : 'en-US';
   const lang = useLanguageStore((state) => state.lang);
   const mapRef = useMapStore((state) => state.mapRef);
 
@@ -132,7 +135,7 @@ export default function CapacityPanel() {
   const [search, setSearch] = useState('');
 
   const queryClient = useQueryClient();
-  const numberFormatter = useMemo(() => new Intl.NumberFormat(isVi ? 'vi-VN' : 'en-US'), [isVi]);
+  const numberFormatter = useMemo(() => new Intl.NumberFormat(locale), [locale]);
 
   const { data, isLoading, isError, isFetching, refetch } = useGetCurrentCapacity();
   const { data: sseData, status: sseStatus } = useCapacityStream();
@@ -147,9 +150,7 @@ export default function CapacityPanel() {
   const items = useMemo(() => {
     const raw = data?.data?.capacity ?? data?.data?.spots ?? data?.data?.items ?? data?.data ?? [];
     if (!Array.isArray(raw)) return [];
-    return raw.map((item) =>
-      normalizeItem(item, t('mapPage.capacityPanel.defaultName', { defaultValue: 'Địa điểm' }))
-    );
+    return raw.map((item) => normalizeItem(item, t('mapPage.capacityPanel.defaultName')));
   }, [data, t]);
 
   const filtered = useMemo(() => {
@@ -185,42 +186,37 @@ export default function CapacityPanel() {
 
   const latestRecordedAt = useMemo(() => {
     if (!items.length) return null;
-    const times = items.map((i) => i.recordedAt).filter(Boolean);
+    const times = items.map((item) => item.recordedAt).filter(Boolean);
     if (!times.length) return null;
     return times.reduce((a, b) => (a > b ? a : b));
   }, [items]);
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
-      {/* Header */}
       <div className="flex shrink-0 items-start justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div className="min-w-0">
-          <p className="typo-section-title text-foreground">
-            {t('mapPage.capacityPanel.title', { defaultValue: 'Sức chứa điểm đến' })}
-          </p>
+          <p className="typo-section-title text-foreground">{t('mapPage.capacityPanel.title')}</p>
           <p className="typo-meta text-muted-foreground truncate">
             {sseStatus === 'open' ? (
               <span className="flex items-center gap-1 text-emerald-600">
                 <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" />
-                {t('mapPage.capacityPanel.live', { defaultValue: 'Trực tiếp' })}
+                {t('mapPage.capacityPanel.live')}
               </span>
             ) : sseStatus === 'connecting' ? (
-              t('mapPage.capacityPanel.connecting', { defaultValue: 'Đang kết nối...' })
+              t('mapPage.capacityPanel.connecting')
             ) : isFetching ? (
-              t('mapPage.capacityPanel.syncing', { defaultValue: 'Đang cập nhật...' })
+              t('mapPage.capacityPanel.syncing')
             ) : latestRecordedAt ? (
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3 shrink-0" />
-                {formatRelativeTime(latestRecordedAt)}
+                {formatRelativeTime(latestRecordedAt, t, locale)}
               </span>
             ) : (
-              t('mapPage.capacityPanel.count', {
-                defaultValue: '{{count}} điểm',
-                count: items.length,
-              })
+              t('mapPage.capacityPanel.count', { count: items.length })
             )}
           </p>
         </div>
+
         {sseStatus !== 'open' && (
           <Button
             type="button"
@@ -231,27 +227,23 @@ export default function CapacityPanel() {
             onClick={() => refetch()}
           >
             <RefreshCw className={cn('h-3.5 w-3.5', isFetching && 'animate-spin')} />
-            {t('mapPage.capacityPanel.refresh', { defaultValue: 'Làm mới' })}
+            {t('mapPage.capacityPanel.refresh')}
           </Button>
         )}
       </div>
 
-      {/* Search */}
       {!isLoading && items.length > 0 && (
         <div className="relative shrink-0">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('mapPage.capacityPanel.searchPlaceholder', {
-              defaultValue: 'Tìm điểm đến...',
-            })}
+            placeholder={t('mapPage.capacityPanel.searchPlaceholder')}
             className="typo-search h-9 pl-8"
           />
         </div>
       )}
 
-      {/* Status filter chips */}
       {!isLoading && items.length > 0 && (
         <div className="flex shrink-0 flex-wrap gap-1.5">
           <Button
@@ -265,7 +257,7 @@ export default function CapacityPanel() {
                 : 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'
             )}
           >
-            {t('mapPage.capacityPanel.all', { defaultValue: 'Tất cả' })}
+            {t('mapPage.capacityPanel.all')}
             <span className="opacity-90">{items.length}</span>
           </Button>
 
@@ -283,7 +275,7 @@ export default function CapacityPanel() {
                   isActive ? meta.activeBadgeClass : meta.badgeClass
                 )}
               >
-                {getCapacityStatusLabel(status, isVi)}
+                {getCapacityStatusLabel(status, t)}
                 <span className="opacity-90">{statusCounts[status]}</span>
               </Button>
             );
@@ -292,28 +284,29 @@ export default function CapacityPanel() {
       )}
 
       <ScrollArea className="min-h-0 flex-1">
-        {/* Content */}
         {isLoading ? (
           <div className="space-y-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <CapacityRowSkeleton key={i} />
+            {Array.from({ length: 4 }).map((_, index) => (
+              <CapacityRowSkeleton key={index} />
             ))}
           </div>
         ) : isError ? (
           <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
-            {t('mapPage.capacityPanel.error', { defaultValue: 'Không thể tải dữ liệu sức chứa.' })}
+            {t('mapPage.capacityPanel.error')}
           </div>
         ) : filtered.length === 0 ? (
           <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
-            {t('mapPage.capacityPanel.empty', { defaultValue: 'Không có điểm phù hợp.' })}
+            {t('mapPage.capacityPanel.empty')}
           </div>
         ) : (
           <div className="space-y-2 pr-0.5">
-            {/* Result count */}
             <p className="typo-meta text-muted-foreground px-0.5">
               {filtered.length !== items.length
-                ? `${filtered.length} / ${items.length} điểm`
-                : `${items.length} điểm đang theo dõi`}
+                ? t('mapPage.capacityPanel.filteredCount', {
+                    filtered: filtered.length,
+                    total: items.length,
+                  })
+                : t('mapPage.capacityPanel.trackedCount', { count: items.length })}
             </p>
 
             {filtered.map((item) => {
@@ -321,8 +314,13 @@ export default function CapacityPanel() {
               const hasCoords = typeof item.lat === 'number' && typeof item.lng === 'number';
               const capacityText =
                 item.max > 0
-                  ? `${numberFormatter.format(item.current)} / ${numberFormatter.format(item.max)} người`
-                  : `${numberFormatter.format(item.current)} người`;
+                  ? t('mapPage.capacityPanel.capacityWithMax', {
+                      current: numberFormatter.format(item.current),
+                      max: numberFormatter.format(item.max),
+                    })
+                  : t('mapPage.capacityPanel.capacityCurrent', {
+                      current: numberFormatter.format(item.current),
+                    });
 
               return (
                 <article
@@ -337,7 +335,7 @@ export default function CapacityPanel() {
                       {item.name}
                     </h4>
                     <Badge variant="outline" className={cn('typo-badge shrink-0', meta.badgeClass)}>
-                      {getCapacityStatusLabel(item.status, isVi)}
+                      {getCapacityStatusLabel(item.status, t)}
                     </Badge>
                   </div>
 
@@ -350,7 +348,7 @@ export default function CapacityPanel() {
                       <span
                         className={cn(
                           'typo-meta font-semibold tabular-nums',
-                          meta.badgeClass.split(' ').find((c) => c.startsWith('text-'))
+                          meta.badgeClass.split(' ').find((token) => token.startsWith('text-'))
                         )}
                       >
                         {item.pct}%
@@ -373,7 +371,7 @@ export default function CapacityPanel() {
                       onClick={() => handleFlyTo(item)}
                     >
                       <LocateFixed className="h-3 w-3" />
-                      {t('mapPage.capacityPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
+                      {t('mapPage.capacityPanel.viewOnMap')}
                     </Button>
                   )}
                 </article>

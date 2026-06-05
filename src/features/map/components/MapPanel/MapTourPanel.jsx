@@ -248,10 +248,7 @@ function TourStopCard({ stop, day, order, accent, onFlyTo }) {
   const spot = resolveSpot(stop);
   const label = resolveStopLabel(
     stop,
-    t('mapPage.tourPanel.stopFallbackLabel', {
-      defaultValue: 'Stop {{index}}',
-      index: order,
-    }),
+    t('mapPage.tourPanel.stopFallbackLabel', { index: order }),
     isEnglish
   );
   const description = resolveStopDescription(stop, spot, isEnglish);
@@ -289,11 +286,7 @@ function TourStopCard({ stop, day, order, accent, onFlyTo }) {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <p className="typo-meta text-muted-foreground">
-              {t('mapPage.tourPanel.dayStopLabel', {
-                defaultValue: 'Day {{day}} - Stop {{order}}',
-                day,
-                order,
-              })}
+              {t('mapPage.tourPanel.dayStopLabel', { day, order })}
             </p>
             <h4 className="typo-body text-foreground line-clamp-1 font-semibold" title={label}>
               {label}
@@ -345,7 +338,7 @@ function TourStopCard({ stop, day, order, accent, onFlyTo }) {
           <div className="space-y-1.5 rounded-md border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-2">
             <div className="flex items-center justify-between gap-2">
               <p className="typo-meta text-muted-foreground">
-                {t('mapPage.tourPanel.stopCapacity', { defaultValue: 'Tải điểm dừng' })}
+                {t('mapPage.tourPanel.stopCapacity')}
               </p>
               <span className={`typo-meta font-semibold ${statusMeta.toneClass}`}>
                 {isEnglish ? statusMeta.labelEn : statusMeta.labelVi}
@@ -435,9 +428,7 @@ function TourStopList({ stops, tourName, onFlyToStop }) {
   if (sortedStops.length === 0) {
     return (
       <div className="typo-meta text-muted-foreground border-border/70 rounded-xl border border-dashed px-3 py-6 text-center">
-        {t('mapPage.tourPanel.noStopsAvailable', {
-          defaultValue: 'No stops available for this tour.',
-        })}
+        {t('mapPage.tourPanel.noStopsAvailable')}
       </div>
     );
   }
@@ -448,23 +439,17 @@ function TourStopList({ stops, tourName, onFlyToStop }) {
     <div className="space-y-3 pb-1">
       <div className="grid grid-cols-3 gap-2">
         <div className="border-border/70 rounded-lg border bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 p-2">
-          <p className="typo-meta text-muted-foreground">
-            {t('mapPage.tourPanel.statsDays', { defaultValue: 'Days' })}
-          </p>
+          <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.statsDays')}</p>
           <p className="typo-body text-foreground font-semibold">{totalDays}</p>
         </div>
 
         <div className="border-border/70 rounded-lg border bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 p-2">
-          <p className="typo-meta text-muted-foreground">
-            {t('mapPage.tourPanel.statsStops', { defaultValue: 'Stops' })}
-          </p>
+          <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.statsStops')}</p>
           <p className="typo-body text-foreground font-semibold">{sortedStops.length}</p>
         </div>
 
         <div className="border-border/70 rounded-lg border bg-gradient-to-br from-amber-500/10 to-amber-500/5 p-2">
-          <p className="typo-meta text-muted-foreground">
-            {t('mapPage.tourPanel.statsDuration', { defaultValue: 'Duration' })}
-          </p>
+          <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.statsDuration')}</p>
           <p className="typo-body text-foreground font-semibold">{totalDurationLabel}</p>
         </div>
       </div>
@@ -476,16 +461,10 @@ function TourStopList({ stops, tourName, onFlyToStop }) {
           <div className="flex items-center justify-between gap-2">
             <span className="typo-badge border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5">
               <CalendarDays className="h-3.5 w-3.5" />
-              {t('mapPage.tourPanel.dayLabel', {
-                defaultValue: 'Day {{day}}',
-                day,
-              })}
+              {t('mapPage.tourPanel.dayLabel', { day })}
             </span>
             <span className="typo-meta text-muted-foreground">
-              {t('mapPage.tourPanel.stopCount', {
-                defaultValue: '{{count}} stops',
-                count: dayStops.length,
-              })}
+              {t('mapPage.tourPanel.stopCount', { count: dayStops.length })}
             </span>
           </div>
 
@@ -511,11 +490,10 @@ function TourStopList({ stops, tourName, onFlyToStop }) {
 
       <div className="border-border/70 bg-muted/25 rounded-lg border px-3 py-2">
         <p className="typo-meta text-muted-foreground line-clamp-1">
-          {tourName || t('mapPage.tourPanel.itineraryTitle', { defaultValue: 'Itinerary details' })}
+          {tourName || t('mapPage.tourPanel.itineraryTitle')}
         </p>
         <p className="typo-meta text-muted-foreground mt-1">
           {t('mapPage.tourPanel.filteredStopCount', {
-            defaultValue: '{{filtered}}/{{total}} stops',
             filtered: sortedStops.length,
             total: sortedStops.length,
           })}
@@ -540,24 +518,18 @@ function TourPanelBody({ tourName, stops, selectedTour, onClose, onFocusRoute, o
         <div className="min-w-0 flex-1">
           <div className="mb-0.5 flex items-center gap-1.5">
             <Sparkles className="text-primary h-3.5 w-3.5" />
-            <p className="typo-overline text-primary/85">
-              {t('mapPage.tourPanel.label', { defaultValue: 'Tour' })}
-            </p>
+            <p className="typo-overline text-primary/85">{t('mapPage.tourPanel.label')}</p>
           </div>
 
           <p
             className="text-foreground line-clamp-2 text-sm font-bold 2xl:text-base"
             title={tourName ?? undefined}
           >
-            {tourName ||
-              t('mapPage.tourPanel.itineraryTitle', { defaultValue: 'Itinerary details' })}
+            {tourName || t('mapPage.tourPanel.itineraryTitle')}
           </p>
 
           <p className="typo-meta text-muted-foreground">
-            {t('mapPage.tourPanel.totalStopCount', {
-              defaultValue: '{{count}} stops in this itinerary',
-              count: sortedStops.length,
-            })}
+            {t('mapPage.tourPanel.totalStopCount', { count: sortedStops.length })}
           </p>
         </div>
 

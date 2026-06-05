@@ -30,13 +30,9 @@ export default function DirectionDetails({ className }) {
     >
       {/* Header — fixed, không scroll */}
       <div className="shrink-0 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
-        <p className="typo-section-title text-foreground">
-          {t('mapPage.direction.title', { defaultValue: 'Chỉ đường' })}
-        </p>
+        <p className="typo-section-title text-foreground">{t('mapPage.direction.title')}</p>
         <p className="typo-meta text-muted-foreground">
-          {directions
-            ? t('mapPage.direction.subtitle', { defaultValue: 'Chi tiết lộ trình' })
-            : t('mapPage.direction.empty', { defaultValue: 'Chọn 2 điểm để xem chỉ đường' })}
+          {directions ? t('mapPage.direction.subtitle') : t('mapPage.direction.empty')}
         </p>
       </div>
 
@@ -47,13 +43,13 @@ export default function DirectionDetails({ className }) {
           <div className="bg-muted/40 grid shrink-0 grid-cols-2 gap-2 rounded-lg border p-2.5">
             <div className="bg-background rounded-md px-2 py-1.5">
               <p className="text-muted-foreground text-sm">
-                {t('mapPage.direction.totalDistance', { defaultValue: 'Total distance' })}
+                {t('mapPage.direction.totalDistance')}
               </p>
               <p className="text-sm font-semibold">{formatDistance(directions.distance)}</p>
             </div>
             <div className="bg-background rounded-md px-2 py-1.5">
               <p className="text-muted-foreground text-sm">
-                {t('mapPage.direction.totalDuration', { defaultValue: 'Total duration' })}
+                {t('mapPage.direction.totalDuration')}
               </p>
               <p className="text-sm font-semibold">{formatDuration(directions.duration)}</p>
             </div>
@@ -61,9 +57,7 @@ export default function DirectionDetails({ className }) {
 
           {/* Steps box — flex-1 min-h-0: chiếm phần còn lại, title cố định, list scroll */}
           <div className="flex min-h-0 flex-1 flex-col space-y-1.5 rounded-lg border p-2.5">
-            <p className="shrink-0 text-sm font-semibold">
-              {t('mapPage.direction.stepsTitle', { defaultValue: 'Step-by-step guidance' })}
-            </p>
+            <p className="shrink-0 text-sm font-semibold">{t('mapPage.direction.stepsTitle')}</p>
             <ScrollArea className="min-h-0 flex-1">
               <div className="space-y-1.5 pr-1">
                 {(directions.legs?.[0]?.steps || []).map((step, index) => (
@@ -74,7 +68,7 @@ export default function DirectionDetails({ className }) {
                       hoveredIndex === index
                         ? 'bg-primary/15'
                         : activeIndex === index
-                          ? 'bg-muted ring-1 ring-border'
+                          ? 'bg-muted ring-border ring-1'
                           : 'bg-muted/40'
                     )}
                     title={step?.maneuver?.instruction || ''}
@@ -98,8 +92,7 @@ export default function DirectionDetails({ className }) {
                     }}
                   >
                     <p className="line-clamp-3 font-medium">
-                      {step?.maneuver?.instruction ||
-                        t('mapPage.direction.noInstruction', { defaultValue: 'No instruction' })}
+                      {step?.maneuver?.instruction || t('mapPage.direction.noInstruction')}
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-sm">
                       {formatDistance(step?.distance || 0)}

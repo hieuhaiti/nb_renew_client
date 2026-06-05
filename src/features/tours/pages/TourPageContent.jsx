@@ -247,7 +247,7 @@ function TourCard({ tour, onOpen, t, lang }) {
         <div className="bg-muted/40 mb-3 rounded-[14px] border border-dashed p-2.5">
           <div className="flex items-center justify-between gap-2">
             <span className="text-foreground text-[12px] font-black">
-              {t('tourPage.routeCapacitySummary', { defaultValue: 'Tải tuyến' })}
+              {t('tourPage.routeCapacitySummary')}
             </span>
             <span
               className={`rounded-full border px-2 py-0.5 text-[11px] font-black ${summaryMeta.badgeClass}`}

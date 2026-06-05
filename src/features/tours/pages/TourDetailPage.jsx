@@ -490,7 +490,7 @@ export default function TourDetailPage() {
                 style={{ backgroundImage: `url('${coverImg}')` }}
               >
                 <span className="text-secondary absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-[11px] py-2 text-[12px] font-black">
-                  Toàn cảnh tuyến
+                  {t('tourPage.routeOverview')}
                 </span>
               </div>
               {[startLocation, endLocation].map((label, i) => (
@@ -525,27 +525,27 @@ export default function TourDetailPage() {
                   {[
                     {
                       icon: <Clock size={18} />,
-                      label: `${tour.duration_days} ngày`,
-                      sub: '08:00 - 17:30',
+                      label: `${tour.duration_days} ${t('tourPage.days')}`,
+                      sub: t('tourPage.defaultSchedule'),
                     },
                     {
                       icon: <MapPin size={18} />,
-                      label: `${tourStopsWithCapacity.length} điểm dừng`,
+                      label: `${tourStopsWithCapacity.length} ${t('tourPage.stops')}`,
                       sub:
                         tourStopsWithCapacity
                           .slice(0, 2)
                           .map((s) => s.title_vi || s.spot_name)
-                          .join(', ') || 'Ninh Bình',
+                          .join(', ') || t('tourPage.defaultProvince'),
                     },
                     {
                       icon: <Route size={18} />,
-                      label: startLocation?.split(',')[0] || 'Ninh Bình',
-                      sub: 'Điểm khởi hành',
+                      label: startLocation?.split(',')[0] || t('tourPage.defaultProvince'),
+                      sub: t('tourPage.startLocation'),
                     },
                     {
                       icon: <Users size={18} />,
-                      label: `2-${tour.max_guests || 20} khách`,
-                      sub: 'Phù hợp gia đình, nhóm bạn',
+                      label: t('tourPage.guestRange', { min: 2, max: tour.max_guests || 20 }),
+                      sub: t('tourPage.suitableForGroups'),
                     },
                   ].map((item, i) => (
                     <div key={i} className="bg-muted rounded-[18px] border p-3.5">
@@ -586,10 +586,15 @@ export default function TourDetailPage() {
                           style={{ background: 'linear-gradient(135deg,#eafafb,#fff7e6)' }}
                         >
                           <span className="flex items-center gap-2">
-                            Ngày {group.day}: {tour.name_vi || tourName}
+                            {t('tourPage.dayHeading', {
+                              day: group.day,
+                              name: tour.name_vi || tourName,
+                            })}
                           </span>
                           <span className="text-muted-foreground text-[13px] font-bold">
-                            {tour.duration_days === 1 ? '08:00 - 17:30' : `Ngày ${group.day}`}
+                            {tour.duration_days === 1
+                              ? t('tourPage.defaultSchedule')
+                              : t('tourPage.dayLabel', { day: group.day })}
                           </span>
                         </div>
                         {group.stops.map((stop, stopIdx) => {
@@ -612,12 +617,14 @@ export default function TourDetailPage() {
                               </div>
                               <div>
                                 <h4 className="text-foreground mb-1 font-black">
-                                  {stop.title_vi || stop.spot_name || `Điểm ${stopIdx + 1}`}
+                                  {stop.title_vi ||
+                                    stop.spot_name ||
+                                    t('tourPage.stopLabel', { index: stopIdx + 1 })}
                                 </h4>
                                 <p className="text-muted-foreground text-[13px] leading-[1.6]">
                                   {stop.description_vi || ''}
                                   {stop.planned_duration_min
-                                    ? ` (${stop.planned_duration_min} phút)`
+                                    ? ` (${t('tourPage.minutesLabel', { count: stop.planned_duration_min })})`
                                     : ''}
                                 </p>
                                 {hasCapacityInfo && (
@@ -625,10 +632,10 @@ export default function TourDetailPage() {
                                     <div className="flex flex-wrap items-center gap-2">
                                       <span className="text-muted-foreground text-[12px] font-bold">
                                         {Number.isFinite(Number(stop?.visitor_count))
-                                          ? `Tải: ${Number(stop.visitor_count)}`
+                                          ? `${t('tourPage.capacityLoad')}: ${Number(stop.visitor_count)}`
                                           : Number.isFinite(Number(stop?.current_visitors))
-                                            ? `Tải: ${Number(stop.current_visitors)}`
-                                            : 'Tải: --'}
+                                            ? `${t('tourPage.capacityLoad')}: ${Number(stop.current_visitors)}`
+                                            : `${t('tourPage.capacityLoad')}: --`}
                                         {Number.isFinite(Number(stop?.max_capacity)) &&
                                         Number(stop.max_capacity) > 0
                                           ? ` / ${Number(stop.max_capacity)}`
@@ -738,7 +745,7 @@ export default function TourDetailPage() {
                         </small>
                       </div>
                       <p className="text-muted-foreground mt-2 text-[12px] leading-[1.5] font-bold">
-                        Giá khởi điểm cho một hành khách, cập nhật theo tuyến và thời điểm đặt.
+                        {t('tourPage.priceNote')}
                       </p>
                     </div>
 
@@ -751,7 +758,7 @@ export default function TourDetailPage() {
                               window.open(QR_BOOKING_URL, '_blank', 'noopener,noreferrer')
                             }
                             className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-white/70 bg-white p-2 shadow-[0_14px_35px_rgba(15,23,42,.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,.16)] sm:h-[92px] sm:w-[92px]"
-                            aria-label="Đặt vé chuyến đi"
+                            aria-label={t('tourPage.bookTrip')}
                           >
                             <img
                               src={qrImage}
@@ -761,7 +768,7 @@ export default function TourDetailPage() {
                           </button>
                         </TooltipTrigger>
                         <TooltipContent side="top" sideOffset={8}>
-                          Đặt vé chuyến đi
+                          {t('tourPage.bookTrip')}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>

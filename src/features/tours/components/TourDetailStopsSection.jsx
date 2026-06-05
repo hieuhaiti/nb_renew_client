@@ -39,7 +39,7 @@ function StopMediaStrip({ spot_id }) {
           type="button"
           className="relative h-12 w-16 shrink-0 overflow-hidden rounded-[8px] border border-[#cfe0f4] focus:outline-none"
           onClick={() => openCarouselModal(images)}
-          aria-label="Xem ảnh địa điểm"
+          aria-label={t('tourPage.viewStopGallery')}
         >
           <img
             src={withBaseUrl(url)}

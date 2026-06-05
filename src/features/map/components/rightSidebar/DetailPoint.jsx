@@ -304,11 +304,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
     return (
       <div className="text-muted-foreground flex min-h-32 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-4 text-center text-sm">
         <MapPin className="text-muted-foreground/60 h-6 w-6" />
-        <p>
-          {t('mapPage.destination.empty', {
-            defaultValue: 'Chọn một điểm trên bản đồ để xem thông tin chi tiết.',
-          })}
-        </p>
+        <p>{t('mapPage.destination.empty')}</p>
       </div>
     );
   }
@@ -318,12 +314,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
       <div className="space-y-3">
         <div className="text-warning border-warning/50 bg-warning-soft/30 flex items-start gap-2 rounded-lg border border-dashed p-3 text-sm">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          <p>
-            {t('mapPage.destination.inactiveSubcategory', {
-              defaultValue:
-                'Điểm bạn đang xem thuộc subcategory đã tắt. Hãy bật lại lớp dữ liệu hoặc chọn điểm khác trên bản đồ.',
-            })}
-          </p>
+          <p>{t('mapPage.destination.inactiveSubcategory')}</p>
         </div>
         <DestinationSkeleton />
       </div>
@@ -350,7 +341,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
       ) : (
         <div className="text-muted-foreground bg-muted/30 flex h-49 items-center justify-center gap-2 text-sm">
           <ImageOff className="h-4 w-4" />
-          {t('mapPage.destination.noImage', { defaultValue: 'Không có ảnh đại diện' })}
+          {t('mapPage.destination.noImage')}
         </div>
       )}
 
@@ -381,10 +372,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
           />
         ) : (
           <p className="text-muted-foreground text-sm leading-relaxed">
-            {detailDescription ||
-              t('mapPage.destination.noDescription', {
-                defaultValue: 'Chưa có mô tả cho điểm này.',
-              })}
+            {detailDescription || t('mapPage.destination.noDescription')}
           </p>
         )}
 
@@ -396,7 +384,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
             className="h-11.5 w-full rounded-[14px] font-bold"
             onClick={() => {}}
           >
-            {t('mapPage.destination.viewDetail', { defaultValue: 'Xem chi tiết bài viết' })}
+            {t('mapPage.destination.viewDetail')}
           </Button>
           <Button
             type="button"
@@ -404,7 +392,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
             className="h-11.5 w-full rounded-[14px] font-bold"
             onClick={() => onOpenVr?.(destination)}
           >
-            {t('mapPage.destination.openVr', { defaultValue: 'Mở tham quan VR360' })}
+            {t('mapPage.destination.openVr')}
           </Button>
           <Button
             type="button"
@@ -412,29 +400,23 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
             className="h-11.5 w-full rounded-[14px] font-bold"
             onClick={() => onOpenRoute?.(destination)}
           >
-            {t('mapPage.destination.openRoute', { defaultValue: 'Chỉ đường thông minh' })}
+            {t('mapPage.destination.openRoute')}
           </Button>
         </div>
 
         <div className="mt-4 space-y-2.5">
           <div className="flex items-center justify-between gap-2">
             <p className="text-foreground text-sm font-bold">
-              {t('mapPage.destination.featuredSuggestions', {
-                defaultValue: 'Gợi ý điểm nổi bật',
-              })}
+              {t('mapPage.destination.featuredSuggestions')}
             </p>
             {isFeaturedLoading ? (
-              <span className="text-muted-foreground text-sm">
-                {t('common.loading', { defaultValue: 'Đang tải...' })}
-              </span>
+              <span className="text-muted-foreground text-sm">{t('common.loading')}</span>
             ) : null}
           </div>
 
           {featuredSuggestions.length === 0 ? (
             <div className="text-muted-foreground rounded-lg border border-dashed p-2.5 text-sm">
-              {t('mapPage.destination.noFeaturedSuggestions', {
-                defaultValue: 'Chưa có dữ liệu gợi ý.',
-              })}
+              {t('mapPage.destination.noFeaturedSuggestions')}
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -452,10 +434,7 @@ export default function Destination({ onOpenRoute, onOpenVr }) {
                     </span>
                     <span className="text-muted-foreground flex items-center gap-1.5 text-sm font-normal">
                       <span className="max-w-[70%] truncate">
-                        {item.displayCategory ||
-                          t('mapPage.destination.unknownCategory', {
-                            defaultValue: 'Chưa phân loại',
-                          })}
+                        {item.displayCategory || t('mapPage.destination.unknownCategory')}
                       </span>
                       {item.ratingText ? (
                         <span className="shrink-0">• {item.ratingText} ★</span>

@@ -1,4 +1,5 @@
 import { env } from '@/config/env';
+import i18n from '@/i18n';
 
 function toNumber(value) {
   const parsed = Number(value);
@@ -122,7 +123,7 @@ export const createRouteFromPoints = async (points, vehicle = 'driving', languag
 
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw new Error(i18n.t('common.errors.http_status', { status: response.status }));
   }
 
   const data = await response.json();

@@ -1,4 +1,5 @@
 import { MapPin, ShoppingBag, Star, Building2, Tag } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,22 +19,8 @@ function formatPriceVnd(price) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
 }
 
-function StarRating({ count }) {
-  return (
-    <div className="flex items-center gap-0.5">
-      {Array.from({ length: 5 }, (_, i) => (
-        <Star
-          key={i}
-          size={13}
-          className={i < count ? 'fill-amber-400 text-amber-400' : 'fill-muted text-muted'}
-        />
-      ))}
-      <span className="text-muted-foreground ml-1 text-xs font-medium">{count} sao OCOP</span>
-    </div>
-  );
-}
-
 export default function OcopProductModal() {
+  const { t } = useTranslation();
   const { isOpen, ocopData, closeOcopModal } = useOcopModalStore();
   const { openSpotModal } = useSpotDetailModalStore();
 
@@ -55,11 +42,10 @@ export default function OcopProductModal() {
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeOcopModal()}>
       <DialogContent className="w-full max-w-sm overflow-hidden rounded-2xl p-0">
         <DialogHeader className="sr-only">
-          <DialogTitle>{name_vi ?? 'Sản phẩm OCOP'}</DialogTitle>
-          <DialogDescription>Thông tin sản phẩm OCOP Ninh Bình</DialogDescription>
+          <DialogTitle>{name_vi ?? t('mapPage.ocopPanel.fallbackProductName')}</DialogTitle>
+          <DialogDescription>{t('mapPage.ocopPanel.productModalDescription')}</DialogDescription>
         </DialogHeader>
 
-        {/* Hero image with green gradient overlay */}
         <div className="relative h-44 w-full overflow-hidden">
           <img
             src={imageUrl}
@@ -72,7 +58,6 @@ export default function OcopProductModal() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-green-900/70 via-transparent to-transparent" />
 
-          {/* OCOP badge overlay */}
           <div className="absolute top-3 left-3">
             <Badge className="gap-1 border-0 bg-amber-400 text-xs font-bold text-amber-900 shadow">
               <Star size={10} className="fill-amber-900" />
@@ -80,63 +65,59 @@ export default function OcopProductModal() {
             </Badge>
           </div>
 
-          {/* Star rating on image */}
           {star_rating > 0 && (
             <div className="absolute bottom-3 left-3">
               <div className="flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 shadow">
-                {Array.from({ length: star_rating }, (_, i) => (
-                  <Star key={i} size={11} className="fill-amber-400 text-amber-400" />
+                {Array.from({ length: star_rating }, (_, index) => (
+                  <Star key={index} size={11} className="fill-amber-400 text-amber-400" />
                 ))}
-                <span className="text-xs font-semibold text-amber-700">{star_rating} sao</span>
+                <span className="text-xs font-semibold text-amber-700">
+                  {t('mapPage.ocopPanel.ocopStars', { count: star_rating })}
+                </span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Content */}
         <div className="flex flex-col gap-3 p-4">
-          {/* Product name */}
-          <h2 className="text-foreground line-clamp-2 text-base font-bold leading-tight">
+          <h2 className="text-foreground line-clamp-2 text-base leading-tight font-bold">
             {name_vi}
           </h2>
 
-          {/* Producer */}
           {producer_name && (
             <div className="flex items-center gap-2">
-              <Building2 size={13} className="text-green-600 shrink-0" />
+              <Building2 size={13} className="shrink-0 text-green-600" />
               <span className="text-muted-foreground text-sm">{producer_name}</span>
             </div>
           )}
 
-          {/* Price */}
           {formattedPrice && (
             <div className="flex items-center gap-2">
-              <Tag size={13} className="text-green-600 shrink-0" />
+              <Tag size={13} className="shrink-0 text-green-600" />
               <span className="text-sm font-semibold text-green-700">{formattedPrice}</span>
             </div>
           )}
 
-          {/* Spot location */}
           {spot_name && (
             <div className="flex items-start gap-2">
-              <MapPin size={13} className="text-green-600 mt-0.5 shrink-0" />
+              <MapPin size={13} className="mt-0.5 shrink-0 text-green-600" />
               <span className="text-muted-foreground text-sm">{spot_name}</span>
             </div>
           )}
 
-          {/* Divider */}
           <div className="border-muted border-t" />
 
-          {/* OCOP program badge row */}
-          <div className="bg-green-50 dark:bg-green-950/30 flex items-center gap-2 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 dark:bg-green-950/30">
             <ShoppingBag size={14} className="shrink-0 text-green-700" />
             <p className="text-xs text-green-700">
-              Sản phẩm đạt chứng nhận{' '}
-              <span className="font-semibold">OCOP {star_rating} sao</span> — Mỗi xã một sản phẩm
+              {t('mapPage.ocopPanel.productCertified')}{' '}
+              <span className="font-semibold">
+                {t('mapPage.ocopPanel.ocopStars', { count: star_rating })}
+              </span>{' '}
+              {t('mapPage.ocopPanel.oneCommuneOneProduct')}
             </p>
           </div>
 
-          {/* Actions */}
           {spot_id && (
             <Button
               size="sm"
@@ -144,7 +125,7 @@ export default function OcopProductModal() {
               onClick={handleViewSpot}
             >
               <MapPin size={14} />
-              Xem điểm tham quan
+              {t('mapPage.ocopPanel.viewDestination')}
             </Button>
           )}
         </div>

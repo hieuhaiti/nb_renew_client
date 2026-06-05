@@ -109,11 +109,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
     return (
       <div className="text-muted-foreground flex flex-col items-center gap-3 rounded-xl border border-dashed p-6 text-center text-sm">
         <Layers size={28} className="text-muted-foreground/50" />
-        <span>
-          {t('mapPage.layerData.selectCategory', {
-            defaultValue: 'Vui lòng chọn danh mục để tải lớp dữ liệu.',
-          })}
-        </span>
+        <span>{t('mapPage.layerData.selectCategory')}</span>
       </div>
     );
   }
@@ -121,8 +117,8 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
   if (isLoading || isFetching || isLoadingAll) {
     return (
       <div className="flex flex-col gap-2">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-muted/40 h-14 animate-pulse rounded-lg" />
+        {[...Array(4)].map((_, index) => (
+          <div key={index} className="bg-muted/40 h-14 animate-pulse rounded-lg" />
         ))}
       </div>
     );
@@ -132,7 +128,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
     return (
       <div className="text-destructive flex items-center gap-2 rounded-xl border border-dashed p-4 text-sm">
         <AlertCircle size={16} className="shrink-0" />
-        <span>{t('mapPage.layerData.error', { defaultValue: 'Không thể tải lớp dữ liệu.' })}</span>
+        <span>{t('mapPage.layerData.error')}</span>
       </div>
     );
   }
@@ -143,17 +139,13 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
   return (
     <TooltipProvider delayDuration={300}>
       <div className="flex h-full min-h-0 flex-col gap-3">
-        {/* Header */}
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-foreground text-sm font-semibold">
-            {t('mapPage.layerData.title', { defaultValue: 'Lớp dữ liệu' })}
-          </h2>
+          <h2 className="text-foreground text-sm font-semibold">{t('mapPage.layerData.title')}</h2>
           <span className="text-muted-foreground bg-muted rounded-full px-2 py-0.5 text-sm font-medium">
             {selectedSubcategoryIds.length}/{subcategories.length}
           </span>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -162,7 +154,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
             className="h-7 text-sm"
             onClick={selectAllSubcategories}
           >
-            {t('mapPage.layerData.selectAll', { defaultValue: 'Chọn tất cả' })}
+            {t('mapPage.layerData.selectAll')}
           </Button>
           <Button
             type="button"
@@ -172,7 +164,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
             onClick={clearSelectedSubcategories}
             disabled={selectedSubcategoryIds.length === 0}
           >
-            {t('mapPage.layerData.clearAll', { defaultValue: 'Bỏ chọn' })}
+            {t('mapPage.layerData.clearAll')}
           </Button>
         </div>
 
@@ -181,9 +173,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
         {subcategories.length === 0 ? (
           <div className="text-muted-foreground flex flex-col items-center gap-3 rounded-xl border border-dashed p-6 text-center text-sm">
             <MapPin size={24} className="text-muted-foreground/50" />
-            <span>
-              {t('mapPage.layerData.empty', { defaultValue: 'Không có lớp dữ liệu phù hợp.' })}
-            </span>
+            <span>{t('mapPage.layerData.empty')}</span>
           </div>
         ) : (
           <div className="min-h-0 space-y-1.5 overflow-y-auto pr-0.5">
@@ -204,8 +194,6 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                       htmlFor={checkboxId}
                       className="group hover:bg-muted/50 relative flex cursor-pointer items-center gap-3 rounded-lg border p-2 transition-colors"
                     >
-                      {/* Color accent bar */}
-
                       <Checkbox
                         id={checkboxId}
                         checked={checked}
@@ -213,7 +201,6 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                         className="ml-2 shrink-0"
                       />
 
-                      {/* Icon badge */}
                       <span
                         aria-hidden="true"
                         className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
@@ -237,17 +224,7 @@ export default function DataLayer({ categoryId, categoryIds = [], showAllCategor
                         )}
                       </span>
 
-                      {/* Name */}
                       <span className="truncate text-sm font-medium">{itemName}</span>
-
-                      {/* Active indicator dot */}
-                      {/* {checked && (
-                        <span
-                          aria-hidden="true"
-                          className="ml-auto h-2 w-2 shrink-0 rounded-full"
-                          style={{ backgroundColor: colorCode }}
-                        />
-                      )} */}
                     </label>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-45 text-sm">

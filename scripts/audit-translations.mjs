@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { parse } from '@babel/parser';
 
 const rootDir = process.cwd();
 const srcDir = path.join(rootDir, 'src');
@@ -27,6 +28,36 @@ const technicalContextPattern =
   /\b(className|style|background|backgroundImage|src|href|path|to|url|id|key|type|variant|size|method|queryKey|endPoint|endpoint|baseURL|headers|params|data|icon|bg|color|coords|coordinates|slug|token|access_token|appid|apiKey|sortBy|sortOrder|status|enabled|name|code)\s*[:=]\s*$/;
 const visibleFunctionPattern =
   /\b(toast\.(?:success|error|info|warning|warn)|alert|confirm|setError|throw new Error|Error)\s*\(\s*$/;
+const translationKeyPattern = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/;
+const resolvableKeyPropertyPattern = /^[A-Za-z_$][\w$]*Key$/;
+const genericContextTokens = new Set([
+  'data',
+  'item',
+  'meta',
+  'config',
+  'cfg',
+  'cls',
+  'obj',
+  'value',
+  'values',
+  'label',
+  'title',
+  'description',
+  'text',
+  'key',
+  'keys',
+  'entry',
+  'entries',
+  'result',
+  'results',
+  'list',
+  'map',
+  'card',
+  'role',
+  'info',
+  'detail',
+  'details',
+]);
 
 const args = process.argv.slice(2);
 const writeIndex = args.indexOf('--write');
@@ -152,10 +183,56 @@ function readStringLiteralAt(content, index) {
   return null;
 }
 
+function readIdentifierAt(content, index) {
+  const char = content[index];
+  if (!char || !/[A-Za-z_$]/.test(char)) return null;
+
+  let cursor = index + 1;
+  while (cursor < content.length && /[\w$]/.test(content[cursor])) cursor += 1;
+
+  return {
+    name: content.slice(index, cursor),
+    start: index,
+    end: cursor,
+  };
+}
+
 function skipWhitespace(content, index) {
   let cursor = index;
   while (cursor < content.length && /\s/.test(content[cursor])) cursor += 1;
   return cursor;
+}
+
+function readPropertyAccessAt(content, index) {
+  let cursor = skipWhitespace(content, index);
+  const firstIdentifier = readIdentifierAt(content, cursor);
+  if (!firstIdentifier) return null;
+
+  const segments = [firstIdentifier.name];
+  cursor = firstIdentifier.end;
+
+  while (cursor < content.length) {
+    cursor = skipWhitespace(content, cursor);
+
+    if (content.slice(cursor, cursor + 2) === '?.') cursor += 2;
+    else if (content[cursor] === '.') cursor += 1;
+    else break;
+
+    cursor = skipWhitespace(content, cursor);
+    const nextIdentifier = readIdentifierAt(content, cursor);
+    if (!nextIdentifier) return null;
+
+    segments.push(nextIdentifier.name);
+    cursor = nextIdentifier.end;
+  }
+
+  if (segments.length < 2) return null;
+
+  return {
+    segments,
+    start: index,
+    end: cursor,
+  };
 }
 
 function extractFallback(content, index) {
@@ -167,6 +244,185 @@ function extractFallback(content, index) {
   if (!literal || (literal.quote === '`' && literal.raw.includes('${'))) return null;
 
   return literal.value;
+}
+
+function collectResolvableKeyProperties(content) {
+  const ast = parseSourceAst(content);
+  if (!ast) return new Map();
+
+  const properties = new Map();
+
+  function addEntry(propertyName, key, contextName) {
+    if (!resolvableKeyPropertyPattern.test(propertyName)) return;
+    if (!translationKeyPattern.test(key)) return;
+
+    if (!properties.has(propertyName)) properties.set(propertyName, []);
+    properties.get(propertyName).push({
+      key,
+      contextTokens: tokenizeContextName(contextName),
+    });
+  }
+
+  function collectFromObjectExpression(node, contextName) {
+    for (const property of node.properties || []) {
+      if (property.type !== 'ObjectProperty' && property.type !== 'Property') continue;
+      if (property.computed) continue;
+
+      const propertyName = getPropertyName(property.key);
+      const propertyValue = getStaticStringValue(property.value);
+      if (!propertyName || !propertyValue) continue;
+
+      addEntry(propertyName, propertyValue, contextName);
+    }
+  }
+
+  function walk(node, contextName = null) {
+    if (!node || typeof node !== 'object') return;
+
+    if (node.type === 'VariableDeclarator' && node.id?.type === 'Identifier') {
+      walk(node.init, node.id.name);
+      return;
+    }
+
+    if (
+      (node.type === 'FunctionDeclaration' ||
+        node.type === 'FunctionExpression' ||
+        node.type === 'ArrowFunctionExpression') &&
+      node.body
+    ) {
+      const nextContextName = node.id?.name || contextName;
+      walk(node.body, nextContextName);
+      return;
+    }
+
+    if (node.type === 'ReturnStatement' && node.argument?.type === 'ObjectExpression') {
+      collectFromObjectExpression(node.argument, contextName);
+      walk(node.argument, contextName);
+      return;
+    }
+
+    if (node.type === 'ObjectExpression') {
+      collectFromObjectExpression(node, contextName);
+    }
+
+    for (const value of Object.values(node)) {
+      if (!value) continue;
+      if (Array.isArray(value)) {
+        for (const item of value) walk(item, contextName);
+      } else if (typeof value === 'object') {
+        walk(value, contextName);
+      }
+    }
+  }
+
+  walk(ast.program);
+  return properties;
+}
+
+function buildResolvableKeyPropertyMap(sourceDocuments) {
+  const propertyMap = new Map();
+
+  for (const document of sourceDocuments) {
+    const localProperties = collectResolvableKeyProperties(document.content);
+    for (const [propertyName, entries] of localProperties.entries()) {
+      if (!propertyMap.has(propertyName)) propertyMap.set(propertyName, []);
+      propertyMap.get(propertyName).push(...entries);
+    }
+  }
+
+  return new Map(
+    [...propertyMap.entries()].map(([propertyName, entries]) => [
+      propertyName,
+      dedupePropertyEntries(entries),
+    ])
+  );
+}
+
+function resolvePropertyAccessTranslationKeys(content, index, propertyKeyMap) {
+  const propertyAccess = readPropertyAccessAt(content, index);
+  if (!propertyAccess) return null;
+
+  const baseIdentifier = propertyAccess.segments[0];
+  const propertyName = propertyAccess.segments[propertyAccess.segments.length - 1];
+  if (!resolvableKeyPropertyPattern.test(propertyName)) return null;
+
+  const entries = propertyKeyMap.get(propertyName);
+  if (!entries?.length) return null;
+
+  const baseTokens = tokenizeContextName(baseIdentifier).filter((token) => !genericContextTokens.has(token));
+  if (!baseTokens.length) return null;
+
+  const matchingEntries = entries.filter((entry) =>
+    entry.contextTokens.some((token) => baseTokens.includes(token))
+  );
+  const keys = [...new Set(matchingEntries.map((entry) => entry.key))].sort((a, b) =>
+    a.localeCompare(b)
+  );
+  if (!keys.length) return null;
+
+  return {
+    baseIdentifier,
+    propertyName,
+    keys,
+    end: propertyAccess.end,
+  };
+}
+
+function parseSourceAst(content) {
+  try {
+    return parse(content, {
+      sourceType: 'module',
+      plugins: ['jsx'],
+    });
+  } catch {
+    return null;
+  }
+}
+
+function getPropertyName(node) {
+  if (!node) return null;
+  if (node.type === 'Identifier') return node.name;
+  if (node.type === 'StringLiteral' || node.type === 'Literal') return node.value;
+  return null;
+}
+
+function getStaticStringValue(node) {
+  if (!node) return null;
+  if (node.type === 'StringLiteral' || node.type === 'Literal') {
+    return typeof node.value === 'string' ? node.value : null;
+  }
+  if (
+    node.type === 'TemplateLiteral' &&
+    node.expressions?.length === 0 &&
+    node.quasis?.length === 1
+  ) {
+    return node.quasis[0].value?.cooked ?? null;
+  }
+  return null;
+}
+
+function tokenizeContextName(value) {
+  return String(value || '')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function dedupePropertyEntries(entries) {
+  const seen = new Set();
+  const output = [];
+
+  for (const entry of entries) {
+    const contextId = [...entry.contextTokens].sort().join(',');
+    const id = `${entry.key}:${contextId}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    output.push(entry);
+  }
+
+  return output.sort((a, b) => a.key.localeCompare(b.key));
 }
 
 function extractStaticTranslationCalls(content, relPath, lineStarts) {
@@ -226,7 +482,61 @@ function extractStaticI18nKeys(content, relPath, lineStarts) {
   return usages;
 }
 
-function extractDynamicUsages(content, relPath, lineStarts) {
+function extractResolvedTranslationCalls(content, relPath, lineStarts, propertyKeyMap) {
+  const usages = [];
+  const callRegex = /\b(?:i18n\.)?t\s*\(/g;
+  let match;
+
+  while ((match = callRegex.exec(content))) {
+    const argStart = skipWhitespace(content, callRegex.lastIndex);
+    const literal = readStringLiteralAt(content, argStart);
+    if (literal && !(literal.quote === '`' && literal.raw.includes('${'))) continue;
+
+    const resolved = resolvePropertyAccessTranslationKeys(content, argStart, propertyKeyMap);
+    if (!resolved) continue;
+
+    for (const key of resolved.keys) {
+      usages.push({
+        key,
+        source: `t().${resolved.propertyName}`,
+        file: relPath,
+        line: lineForIndex(lineStarts, match.index),
+        fallback: extractFallback(content, resolved.end),
+      });
+    }
+  }
+
+  return usages;
+}
+
+function extractResolvedI18nKeys(content, relPath, lineStarts, propertyKeyMap) {
+  const usages = [];
+  const attrRegex = /\bi18nKey\s*=\s*{\s*/g;
+  let match;
+
+  while ((match = attrRegex.exec(content))) {
+    const argStart = skipWhitespace(content, attrRegex.lastIndex);
+    const literal = readStringLiteralAt(content, argStart);
+    if (literal && !(literal.quote === '`' && literal.raw.includes('${'))) continue;
+
+    const resolved = resolvePropertyAccessTranslationKeys(content, argStart, propertyKeyMap);
+    if (!resolved) continue;
+
+    for (const key of resolved.keys) {
+      usages.push({
+        key,
+        source: `i18nKey.${resolved.propertyName}`,
+        file: relPath,
+        line: lineForIndex(lineStarts, match.index),
+        fallback: null,
+      });
+    }
+  }
+
+  return usages;
+}
+
+function extractDynamicUsages(content, relPath, lineStarts, propertyKeyMap) {
   const dynamic = [];
   const callRegex = /\b(?:i18n\.)?t\s*\(/g;
   const attrRegex = /\bi18nKey\s*=\s*{/g;
@@ -235,7 +545,8 @@ function extractDynamicUsages(content, relPath, lineStarts) {
   while ((match = callRegex.exec(content))) {
     const argStart = skipWhitespace(content, callRegex.lastIndex);
     const literal = readStringLiteralAt(content, argStart);
-    if (!literal || (literal.quote === '`' && literal.raw.includes('${'))) {
+    const resolved = resolvePropertyAccessTranslationKeys(content, argStart, propertyKeyMap);
+    if ((!literal || (literal.quote === '`' && literal.raw.includes('${'))) && !resolved) {
       dynamic.push({
         source: 't()',
         file: relPath,
@@ -247,7 +558,8 @@ function extractDynamicUsages(content, relPath, lineStarts) {
   while ((match = attrRegex.exec(content))) {
     const argStart = skipWhitespace(content, attrRegex.lastIndex);
     const literal = readStringLiteralAt(content, argStart);
-    if (!literal || (literal.quote === '`' && literal.raw.includes('${'))) {
+    const resolved = resolvePropertyAccessTranslationKeys(content, argStart, propertyKeyMap);
+    if ((!literal || (literal.quote === '`' && literal.raw.includes('${'))) && !resolved) {
       dynamic.push({
         source: 'i18nKey',
         file: relPath,
@@ -669,18 +981,25 @@ for (const [locale, entries] of [
 }
 
 const sourceFiles = collectSourceFiles(srcDir);
+const sourceDocuments = sourceFiles.map((filePath) => ({
+  filePath,
+  relPath: path.relative(rootDir, filePath).replace(/\\/g, '/'),
+  content: fs.readFileSync(filePath, 'utf8'),
+}));
+const resolvableKeyPropertyMap = buildResolvableKeyPropertyMap(sourceDocuments);
 const staticUsages = [];
 const dynamicUsages = [];
 const hardcodedVisibleText = [];
 
-for (const filePath of sourceFiles) {
-  const relPath = path.relative(rootDir, filePath).replace(/\\/g, '/');
-  const content = fs.readFileSync(filePath, 'utf8');
+for (const document of sourceDocuments) {
+  const { relPath, content } = document;
   const lineStarts = makeLineStarts(content);
 
   staticUsages.push(...extractStaticTranslationCalls(content, relPath, lineStarts));
   staticUsages.push(...extractStaticI18nKeys(content, relPath, lineStarts));
-  dynamicUsages.push(...extractDynamicUsages(content, relPath, lineStarts));
+  staticUsages.push(...extractResolvedTranslationCalls(content, relPath, lineStarts, resolvableKeyPropertyMap));
+  staticUsages.push(...extractResolvedI18nKeys(content, relPath, lineStarts, resolvableKeyPropertyMap));
+  dynamicUsages.push(...extractDynamicUsages(content, relPath, lineStarts, resolvableKeyPropertyMap));
   hardcodedVisibleText.push(...extractJsxTextNodes(content, relPath, lineStarts));
   hardcodedVisibleText.push(...extractVisibleAttributes(content, relPath, lineStarts));
   hardcodedVisibleText.push(...extractVisibleStringLiterals(content, relPath, lineStarts));

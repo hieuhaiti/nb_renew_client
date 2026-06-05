@@ -22,8 +22,8 @@ import placeholderImg from '@/assets/images/placeholder.png';
 function SectionHeading({ title, description }) {
   return (
     <div className="mb-4">
-      <h2 className="truncate text-lg font-bold text-foreground md:text-xl xl:text-2xl">{title}</h2>
-      {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
+      <h2 className="text-foreground truncate text-lg font-bold md:text-xl xl:text-2xl">{title}</h2>
+      {description ? <p className="text-muted-foreground mt-1 text-sm">{description}</p> : null}
     </div>
   );
 }
@@ -31,8 +31,30 @@ function SectionHeading({ title, description }) {
 export default function VlogPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const initialPosts = useMemo(
+    () =>
+      VLOG_INITIAL_POSTS.map((item) => ({
+        ...item,
+        title: t(item.titleKey),
+        place: t(item.placeKey),
+        type: t(item.typeKey),
+        topic: t(item.topicKey),
+        description: t(item.descriptionKey),
+        dateLabel: t(item.dateLabelKey, item.dateLabelOptions),
+      })),
+    [t]
+  );
+  const trendingItems = useMemo(
+    () =>
+      VLOG_TRENDING.map((item) => ({
+        ...item,
+        title: t(item.titleKey),
+        text: t(item.textKey),
+      })),
+    [t]
+  );
 
-  const [posts, setPosts] = useState(VLOG_INITIAL_POSTS);
+  const [posts, setPosts] = useState(initialPosts);
   const [keyword, setKeyword] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [placeFilter, setPlaceFilter] = useState('all');
@@ -40,8 +62,13 @@ export default function VlogPage() {
   const [debouncedKeyword] = useDebounce(keyword.trim(), 400);
 
   const [newTitle, setNewTitle] = useState('');
-  const [newPlace, setNewPlace] = useState('Tràng An');
+  const [newPlace, setNewPlace] = useState(initialPosts[0]?.place ?? '');
   const [newDescription, setNewDescription] = useState('');
+
+  React.useEffect(() => {
+    setPosts(initialPosts);
+    setNewPlace((prev) => prev || initialPosts[0]?.place || '');
+  }, [initialPosts]);
 
   const TYPE_ALL_VALUE = 'all';
   const typePost = t('vlogPage.types.post');
@@ -53,7 +80,14 @@ export default function VlogPage() {
   const filteredPosts = useMemo(() => {
     const normalizedKeyword = debouncedKeyword.toLowerCase();
     return posts.filter((item) => {
-      const haystack = [item.title, item.place, item.type, item.topic, item.description, item.author]
+      const haystack = [
+        item.title,
+        item.place,
+        item.type,
+        item.topic,
+        item.description,
+        item.author,
+      ]
         .join(' ')
         .toLowerCase();
       const matchedKeyword = !normalizedKeyword || haystack.includes(normalizedKeyword);
@@ -91,7 +125,8 @@ export default function VlogPage() {
       author: t('vlogPage.post.author_default'),
       likes: 0,
       comments: 0,
-      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+      image:
+        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
       description: nextDescription,
       dateLabel: t('vlogPage.just_now'),
     };
@@ -104,21 +139,21 @@ export default function VlogPage() {
 
   return (
     <RootLayout>
-      <div className="min-h-screen bg-background py-4 lg:py-6">
+      <div className="bg-background min-h-screen py-4 lg:py-6">
         <div className="mx-auto w-full px-4 sm:px-6 lg:w-[88%] lg:px-0">
           {/* Hero + Composer */}
           <section className="grid gap-4 lg:grid-cols-5">
-            <Card className="relative gap-0 overflow-hidden rounded-3xl border-border/70 py-0 shadow-sm lg:col-span-3">
+            <Card className="border-border/70 relative gap-0 overflow-hidden rounded-3xl py-0 shadow-sm lg:col-span-3">
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center" />
               <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/85 to-white/75" />
               <CardContent className="relative px-6 py-8 sm:px-8 sm:py-9">
                 <span className="inline-flex rounded-full bg-pink-100 px-3 py-1 text-sm font-semibold text-pink-700">
                   {t('vlogPage.hero.badge')}
                 </span>
-                <h1 className="mt-4 max-w-4xl text-xl font-extrabold tracking-tight text-foreground md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl">
+                <h1 className="text-foreground mt-4 max-w-4xl text-xl font-extrabold tracking-tight md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl">
                   {t('vlogPage.hero.title')}
                 </h1>
-                <p className="mt-3 max-w-3xl text-sm 2xl:text-base leading-relaxed text-muted-foreground">
+                <p className="text-muted-foreground mt-3 max-w-3xl text-sm leading-relaxed 2xl:text-base">
                   {t('vlogPage.hero.description')}
                 </p>
 
@@ -144,17 +179,28 @@ export default function VlogPage() {
 
                 {/* Stats — values come from static data; these counts are mock/demo figures */}
                 <div className="mt-6 grid gap-2 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-border/60 bg-white/90 p-4">
+                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
                     <p className="text-lg font-bold md:text-xl xl:text-2xl">1.240</p>
-                    <p className="text-sm font-medium text-muted-foreground">{t('vlogPage.stats.posts')}</p>
+                    <p className="text-muted-foreground text-sm font-medium">
+                      {t('vlogPage.stats.posts')}
+                    </p>
                   </div>
-                  <div className="rounded-2xl border border-border/60 bg-white/90 p-4">
+                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
                     <p className="text-lg font-bold md:text-xl xl:text-2xl">286</p>
-                    <p className="text-sm font-medium text-muted-foreground">{t('vlogPage.stats.authors')}</p>
+                    <p className="text-muted-foreground text-sm font-medium">
+                      {t('vlogPage.stats.authors')}
+                    </p>
                   </div>
-                  <div className="rounded-2xl border border-border/60 bg-white/90 p-4">
-                    <p className="text-lg font-bold md:text-xl xl:text-2xl">18,5K</p>
-                    <p className="text-sm font-medium text-muted-foreground">{t('vlogPage.stats.views')}</p>
+                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
+                    <p className="text-lg font-bold md:text-xl xl:text-2xl">
+                      {new Intl.NumberFormat(undefined, {
+                        notation: 'compact',
+                        maximumFractionDigits: 1,
+                      }).format(18500)}
+                    </p>
+                    <p className="text-muted-foreground text-sm font-medium">
+                      {t('vlogPage.stats.views')}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -162,15 +208,15 @@ export default function VlogPage() {
 
             <Card
               id="composer"
-              className="gap-0 rounded-3xl border-border/70 py-0 shadow-sm lg:col-span-2"
+              className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm lg:col-span-2"
             >
-              <CardHeader className="px-5 pb-0 pt-5">
+              <CardHeader className="px-5 pt-5 pb-0">
                 <CardTitle className="text-xl">{t('vlogPage.composer.title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 px-5 py-5">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-semibold">
                       {t('vlogPage.composer.title_label')}
                     </label>
                     <Input
@@ -181,7 +227,7 @@ export default function VlogPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-semibold">
                       {t('vlogPage.filters.location_label')}
                     </label>
                     <Select value={newPlace} onValueChange={setNewPlace}>
@@ -200,7 +246,7 @@ export default function VlogPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-muted-foreground">
+                  <label className="text-muted-foreground text-sm font-semibold">
                     {t('vlogPage.composer.content_label')}
                   </label>
                   <Textarea
@@ -236,17 +282,17 @@ export default function VlogPage() {
 
           {/* Filters */}
           <section className="mt-4">
-            <Card className="gap-0 rounded-3xl border-border/70 py-0 shadow-sm">
+            <Card className="border-border/70 gap-0 rounded-3xl py-0 shadow-sm">
               <CardContent className="space-y-4 px-5 py-5">
                 <SectionHeading title={t('vlogPage.filters.title')} />
 
                 <div className="grid gap-3 lg:grid-cols-[2fr_1fr_1fr_auto]">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-semibold">
                       {t('vlogPage.filters.keyword_label')}
                     </label>
                     <div className="relative">
-                      <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                       <Input
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
@@ -257,7 +303,7 @@ export default function VlogPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-semibold">
                       {t('vlogPage.filters.type_label')}
                     </label>
                     <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -273,7 +319,7 @@ export default function VlogPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-semibold">
                       {t('vlogPage.filters.location_label')}
                     </label>
                     <Select value={placeFilter} onValueChange={setPlaceFilter}>
@@ -292,7 +338,11 @@ export default function VlogPage() {
                   </div>
 
                   <div className="flex items-end">
-                    <Button variant="outline" className="h-11 rounded-xl" onClick={handleResetFilter}>
+                    <Button
+                      variant="outline"
+                      className="h-11 rounded-xl"
+                      onClick={handleResetFilter}
+                    >
                       {t('vlogPage.filters.refresh')}
                     </Button>
                   </div>
@@ -332,28 +382,33 @@ export default function VlogPage() {
               />
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {filteredPosts.length === 0 ? (
-                  <div className="col-span-full rounded-2xl border border-[#cfe0f4] bg-white py-16 text-center text-muted-foreground">
-                    <p className="text-sm 2xl:text-base font-semibold text-foreground">{t('vlogPage.states.empty_title')}</p>
+                  <div className="text-muted-foreground col-span-full rounded-2xl border border-[#cfe0f4] bg-white py-16 text-center">
+                    <p className="text-foreground text-sm font-semibold 2xl:text-base">
+                      {t('vlogPage.states.empty_title')}
+                    </p>
                     <p className="mt-1 text-sm">{t('vlogPage.states.empty_desc')}</p>
                   </div>
                 ) : (
                   filteredPosts.map((item) => (
                     <Card
                       key={item.id}
-                      className="gap-0 overflow-hidden rounded-2xl border-border/70 py-0 shadow-sm"
+                      className="border-border/70 gap-0 overflow-hidden rounded-2xl py-0 shadow-sm"
                     >
                       <div className="relative h-52">
                         <img
                           src={item.image}
                           alt={item.title}
                           className="h-full w-full object-cover"
-                          onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = placeholderImg;
+                          }}
                         />
                         <span className="typo-badge absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1">
                           {item.type} · {item.place}
                         </span>
                         <div className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90">
-                          {item.type === 'Video' || item.type === typeVideo ? (
+                          {item.kind === 'video' || item.type === typeVideo ? (
                             <Play className="h-4 w-4" />
                           ) : (
                             <Sparkles className="h-4 w-4" />
@@ -361,15 +416,17 @@ export default function VlogPage() {
                         </div>
                       </div>
                       <CardContent className="space-y-2 px-4 py-4">
-                        <div className="typo-meta flex items-center justify-between font-semibold text-muted-foreground">
+                        <div className="typo-meta text-muted-foreground flex items-center justify-between font-semibold">
                           <span>{item.author}</span>
                           <span>{item.dateLabel}</span>
                         </div>
                         <h3 className="typo-section-title truncate">{item.title}</h3>
-                        <p className="typo-body line-clamp-3 text-muted-foreground">{item.description}</p>
+                        <p className="typo-body text-muted-foreground line-clamp-3">
+                          {item.description}
+                        </p>
 
                         <div className="flex items-center justify-between">
-                          <div className="typo-meta flex items-center gap-3 font-semibold text-muted-foreground">
+                          <div className="typo-meta text-muted-foreground flex items-center gap-3 font-semibold">
                             <span className="inline-flex items-center gap-1">
                               <Heart className="h-3.5 w-3.5" /> {item.likes}
                             </span>
@@ -391,18 +448,21 @@ export default function VlogPage() {
             <aside>
               <SectionHeading title={t('vlogPage.trending.title')} />
               <div className="grid gap-3">
-                {VLOG_TRENDING.map((item) => (
-                  <Card key={item.id} className="gap-0 rounded-2xl border-border/70 py-0 shadow-sm">
+                {trendingItems.map((item) => (
+                  <Card key={item.id} className="border-border/70 gap-0 rounded-2xl py-0 shadow-sm">
                     <CardContent className="flex gap-3 px-4 py-4">
                       <img
                         src={item.image}
                         alt={item.title}
                         className="h-20 w-28 rounded-xl object-cover"
-                        onError={(e) => { e.target.onerror = null; e.target.src = placeholderImg; }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                       <div className="min-w-0">
                         <h4 className="typo-body truncate font-semibold">{item.title}</h4>
-                        <p className="typo-body line-clamp-3 text-muted-foreground">{item.text}</p>
+                        <p className="typo-body text-muted-foreground line-clamp-3">{item.text}</p>
                       </div>
                     </CardContent>
                   </Card>

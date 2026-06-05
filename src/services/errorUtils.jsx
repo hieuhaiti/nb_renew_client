@@ -1,9 +1,8 @@
 import React from 'react';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import i18n from '@/i18n';
 
 function getValidationHeading() {
-  const lang = useLanguageStore.getState().lang || 'vi';
-  return lang === 'en' ? 'An error occurred:' : 'Có lỗi xảy ra:';
+  return i18n.t('common.errors.occurred');
 }
 
 export function renderValidationErrors(errors) {

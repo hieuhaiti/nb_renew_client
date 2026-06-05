@@ -120,7 +120,7 @@ export function TourismPointFeaturedCard({
         <div className="text-primary mb-2.5 flex flex-wrap items-center gap-2.5 text-sm font-bold">
           {point?.is_featured && (
             <span className="bg-primary rounded-[7px] px-2 py-0.5 text-xs font-bold text-white">
-              Mới
+              {t('common.new')}
             </span>
           )}
           <span className="flex items-center gap-1">
