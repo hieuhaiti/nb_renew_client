@@ -425,6 +425,15 @@ function NoSpotEmptyState({ onBack }) {
           cursor: 'pointer',
           fontFamily: 'inherit',
           boxShadow: '0 12px 26px rgba(15,159,143,.25)',
+          transition: 'opacity 0.2s, transform 0.2s',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.opacity = '0.9';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.opacity = '1';
+          e.currentTarget.style.transform = 'translateY(0)';
         }}
       >
         <ArrowLeft
@@ -684,6 +693,15 @@ export default function Vr360PageContent() {
                   fontFamily: 'inherit',
                   borderRadius: '999px',
                   padding: '2px 0',
+                  transition: 'background 0.2s, color 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#eefaf9';
+                  e.currentTarget.style.color = C.primaryDark;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none';
+                  e.currentTarget.style.color = C.muted;
                 }}
               >
                 <ArrowLeft
@@ -975,6 +993,18 @@ export default function Vr360PageContent() {
                     : 'transparent',
                 color: mobilePanelTab === 'scenes' ? '#fff' : C.muted,
               }}
+              onMouseEnter={(e) => {
+                if (mobilePanelTab !== 'scenes') {
+                  e.currentTarget.style.background = '#eefaf9';
+                  e.currentTarget.style.color = C.primaryDark;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (mobilePanelTab !== 'scenes') {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = C.muted;
+                }
+              }}
             >
               {t('vr360.tab_scenes')}
             </button>
@@ -995,6 +1025,18 @@ export default function Vr360PageContent() {
                     ? `linear-gradient(135deg,${C.primary},${C.blue})`
                     : 'transparent',
                 color: mobilePanelTab === 'info' ? '#fff' : C.muted,
+              }}
+              onMouseEnter={(e) => {
+                if (mobilePanelTab !== 'info') {
+                  e.currentTarget.style.background = '#eefaf9';
+                  e.currentTarget.style.color = C.primaryDark;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (mobilePanelTab !== 'info') {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = C.muted;
+                }
               }}
             >
               {t('vr360.tab_info')}

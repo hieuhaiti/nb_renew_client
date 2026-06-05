@@ -436,7 +436,7 @@ export default function ChatbotPanel() {
               </div>
             ) : (
               <div className="space-y-1">
-                {sessions.map((session) => (
+                {sessions.map((session, index) => (
                   <div
                     key={session.id}
                     role="button"
@@ -450,7 +450,7 @@ export default function ChatbotPanel() {
                       <p className="typo-body text-foreground truncate">
                         {session.title ??
                           session.name ??
-                          t('mapPage.chatbot.sessionLabel', { id: session.id })}
+                          t('mapPage.chatbot.sessionLabel', { index: index + 1 })}
                       </p>
                       {session.created_at && (
                         <p className="typo-meta text-muted-foreground">

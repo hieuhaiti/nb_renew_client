@@ -591,8 +591,8 @@ export default function TourismPointPage() {
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className={`mb-3 flex w-full items-center justify-between rounded-[18px] border px-4 py-3 text-sm font-extrabold transition-colors lg:hidden ${
                   sidebarOpen
-                    ? 'border-secondary bg-secondary/5 text-secondary'
-                    : 'border-border bg-card text-foreground'
+                    ? 'border-secondary bg-secondary/5 text-secondary hover:bg-secondary/10'
+                    : 'border-border bg-card text-foreground hover:border-secondary hover:bg-muted hover:text-secondary'
                 }`}
               >
                 <span className="flex items-center gap-2">

@@ -300,6 +300,7 @@ function OcopNearbyPanel({ spot, isModalOpen, onSelectOcop }) {
           {[5, 10, 20].map((r) => (
             <button
               key={r}
+              type="button"
               onClick={() => setRadiusKm(r)}
               className={`cursor-pointer rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors ${radiusKm === r ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary border-transparent'}`}
             >
@@ -671,7 +672,7 @@ export default function ModalMarker() {
         </div>
         <div className="bg-background relative flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border shadow-lg sm:w-[38rem] sm:flex-none lg:w-[42rem] xl:w-2xl">
           {/* Close button */}
-          <DialogClose className="absolute top-4 right-4 z-10 rounded-xs border border-white/80 bg-white opacity-90 shadow-sm transition-opacity [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+          <DialogClose className="absolute top-4 right-4 z-10 cursor-pointer rounded-xs border border-white/80 bg-white opacity-90 shadow-sm transition-all hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
             <XIcon />
             <span className="sr-only">Close</span>
           </DialogClose>
@@ -814,7 +815,7 @@ export default function ModalMarker() {
                                 onClick={() =>
                                   window.open(QR_BOOKING_URL, '_blank', 'noopener,noreferrer')
                                 }
-                                className="bg-background focus-visible:ring-ring flex h-full min-h-47 w-full cursor-pointer items-center justify-center rounded-lg border p-2 shadow-xs focus-visible:ring-2 focus-visible:outline-none"
+                                className="bg-background focus-visible:ring-ring flex h-full min-h-47 w-full cursor-pointer items-center justify-center rounded-lg border p-2 shadow-xs transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:outline-none"
                                 aria-label={t('mapPage.spotModal.scanToBook', {
                                   defaultValue: 'Scan to book tickets',
                                 })}

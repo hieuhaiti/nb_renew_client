@@ -26,19 +26,22 @@
     "open": "Open",
     "close": "Close",
     "loading": "Loading...",
-    "open_in_new_tab": "Open in new tab",
     "errors": {
-      "session_expired": "Your session has expired. Please sign in again.",
-      "occurred": "An error occurred:",
-      "carousel_context": "useCarousel must be used within a Carousel.",
-      "file_upload_root_context": "{{consumer}} must be used within FileUpload.",
-      "file_upload_item_context": "{{consumer}} must be used within FileUploadItem.",
-      "http_status": "HTTP error! status: {{status}}"
+      "carousel_context": "useCarousel must be used within a Carousel component",
+      "file_upload_root_context": "{{consumer}} must be used within FileUpload",
+      "file_upload_item_context": "{{consumer}} must be used within FileUploadItem",
+      "http_status": "HTTP error {{status}}",
+      "occurred": "An error occurred",
+      "session_expired": "Your session has expired. Please sign in again."
     },
     "just_updated": "Just updated",
     "minutes_ago": "{{count}} minutes ago",
     "hours_ago": "{{count}} hours ago",
-    "new": "New"
+    "new": "New",
+    "open_in_new_tab": "Open in new tab",
+    "natural": "Nature",
+    "culture": "Culture",
+    "infrastructure": "Infrastructure"
   },
   "notifications": {
     "title": "Notifications",
@@ -105,6 +108,24 @@
       "title": "Explore destinations with integrated tools",
       "see_all": "See all features"
     },
+    "feature_cards": {
+      "map": {
+        "title": "Smart Tourism Map",
+        "desc": "Tourism spots, services, basemaps, and search by name or radius."
+      },
+      "weather": {
+        "title": "Weather, AQI & Alerts",
+        "desc": "Wind, rain, air quality updates and extreme weather warnings."
+      },
+      "capacity": {
+        "title": "Tourist Capacity Tracking",
+        "desc": "Load levels, overload alerts, and alternative routing suggestions."
+      },
+      "satellite": {
+        "title": "Conservation Zone Monitoring",
+        "desc": "Satellite imagery search, time comparison, classification and change detection."
+      }
+    },
     "featured_destinations": {
       "label": "Featured Destinations",
       "title": "Top attractions in Ninh Binh",
@@ -157,6 +178,32 @@
       "title": "Built for tourists, businesses and managers all at once",
       "desc": "The homepage guides each user to the right module: search destinations, post services, collect feedback, manage alerts, and view reports."
     },
+    "role_cards": {
+      "tourist": {
+        "title": "Tourists",
+        "item_1": "Find destinations, tours, services",
+        "item_2": "Create and share itineraries",
+        "item_3": "View VR 360°, leave reviews"
+      },
+      "business": {
+        "title": "Businesses",
+        "item_1": "Post listings and create vouchers",
+        "item_2": "Receive feedback and reviews",
+        "item_3": "Revenue and crowd dashboard"
+      },
+      "manager": {
+        "title": "Managers",
+        "item_1": "Receive automated reports",
+        "item_2": "Capacity overload alerts",
+        "item_3": "Monitor conservation zones"
+      },
+      "admin": {
+        "title": "System Admins",
+        "item_1": "Manage accounts and APIs",
+        "item_2": "Manage map layers",
+        "item_3": "Audit logs and permissions"
+      }
+    },
     "footer_section": {
       "brand_name": "SmartTour WebGIS",
       "brand": "Ninh Binh Tourism Information Portal — Integrated GIS, VR360, OCOP and smart itinerary platform",
@@ -169,6 +216,163 @@
       "link_feedback": "Manage feedback",
       "link_voucher": "Create vouchers",
       "link_dashboard": "Stats dashboard"
+    },
+    "mock": {
+      "common": {
+        "ninh_binh": "Ninh Binh",
+        "quang_ninh": "Quang Ninh"
+      },
+      "hero_stats": {
+        "featured": "Featured spots",
+        "average_load": "Average load",
+        "events_offers": "Events & offers",
+        "vr360": "VR360 ready"
+      },
+      "hero_events": {
+        "hoa_lu": {
+          "title": "Hoa Lu Festival opening ceremony",
+          "time": "This weekend"
+        },
+        "tourism_week": {
+          "title": "Ninh Binh Tourism Week 2026",
+          "time": "April 20-27"
+        },
+        "light_show": {
+          "title": "Trang An riverside light show",
+          "time": "Every Friday night"
+        }
+      },
+      "promo_banner": {
+        "title": "Plan a smarter trip with real-time tourism data",
+        "description": "Open the tourism map, check weather, crowd levels and nearby services before you go.",
+        "cta": "Open the tourism map"
+      },
+      "quick_links": {
+        "map": {
+          "title": "Interactive map",
+          "description": "Browse destinations, layers and live tourism information on one map."
+        },
+        "vr": {
+          "title": "VR 360 experience",
+          "description": "Preview scenic highlights through immersive panoramic scenes."
+        },
+        "plan": {
+          "title": "Plan a route",
+          "description": "Build a day trip with suggested stops, timing and travel flow."
+        },
+        "service": {
+          "title": "Tourism services",
+          "description": "Find transport, dining and booking support near your destination."
+        },
+        "ocop": {
+          "title": "OCOP corner",
+          "description": "Discover local specialties and gift ideas from trusted producers."
+        }
+      },
+      "featured_destinations": {
+        "trang_an": {
+          "name": "Trang An Scenic Landscape Complex",
+          "subtitle": "Boat routes through caves and limestone valleys",
+          "description": "A signature Ninh Binh journey with river caves, temple stops and dramatic karst scenery."
+        },
+        "hoa_lu": {
+          "name": "Hoa Lu Ancient Capital",
+          "subtitle": "Historic temples and the first imperial capital",
+          "description": "Walk through courtyards, shrines and heritage landmarks connected to early Vietnamese dynasties."
+        },
+        "bai_dinh": {
+          "name": "Bai Dinh Pagoda",
+          "subtitle": "A vast spiritual complex with mountain views",
+          "description": "Explore large temple halls, bell towers and peaceful uphill walks around the pagoda grounds."
+        }
+      },
+      "news_items": {
+        "item_1": {
+          "title": "Peak-season traffic guidance updated for Trang An",
+          "excerpt": "New routing and parking instructions help visitors avoid congestion during the upcoming weekend."
+        },
+        "item_2": {
+          "title": "Bai Dinh night visit experience opens for holiday week",
+          "excerpt": "The evening program adds lighting, shuttle support and guided temple highlights for families."
+        },
+        "item_3": {
+          "title": "Weather watch issued for river tourism activities",
+          "excerpt": "Travelers are advised to review weather and water conditions before booking outdoor routes."
+        }
+      },
+      "itinerary": {
+        "item_1": "Depart from central Ninh Binh and head to Trang An pier",
+        "item_2": "Start the morning boat route through key cave sections",
+        "item_3": "Stop for lunch with local goat and crispy rice specialties",
+        "item_4": "Continue to Bai Dinh or Hang Mua for afternoon exploration",
+        "item_5": "Wrap up with sunset photos and return to the city center"
+      },
+      "food_bullets": {
+        "item_1": {
+          "label": "Guest rating"
+        },
+        "item_2": {
+          "label": "Best time to visit",
+          "value": "Lunch and early evening"
+        },
+        "item_3": {
+          "label": "Featured voucher"
+        }
+      },
+      "services": {
+        "item_1": {
+          "name": "Ninh Binh Riverside Stay",
+          "type": "Boutique stay",
+          "price": "From 850,000 VND/night",
+          "description": "Quiet riverside rooms with shuttle support to major tourism spots."
+        },
+        "item_2": {
+          "name": "Tam Coc Garden Kitchen",
+          "type": "Restaurant",
+          "price": "From 120,000 VND/person",
+          "description": "Regional dishes, scenic seating and family-friendly group menus."
+        },
+        "item_3": {
+          "name": "Trang An Boat Booking Desk",
+          "type": "Ticket service",
+          "price": "From 250,000 VND/route",
+          "description": "Quick booking support for popular boat lines and group departures."
+        }
+      },
+      "ocop_products": {
+        "item_1": {
+          "name": "Ninh Binh roasted coffee blend",
+          "stars": "4-star OCOP",
+          "price": "From 135,000 VND",
+          "description": "A smooth local roast suitable for gifts and daily brewing."
+        },
+        "item_2": {
+          "name": "Mountain herbal tea set",
+          "stars": "4-star OCOP",
+          "price": "From 95,000 VND",
+          "description": "A fragrant herbal mix inspired by ingredients from the limestone hills."
+        },
+        "item_3": {
+          "name": "Handcrafted specialty sweets",
+          "stars": "3-star OCOP",
+          "price": "From 80,000 VND",
+          "description": "Traditional sweets prepared for visitors looking for a portable local treat."
+        }
+      },
+      "vlog_stories": {
+        "item_1": {
+          "title": "A sunrise walk above the limestone ridges",
+          "description": "A short story about catching first light, quiet trails and the mood of early Ninh Binh mornings."
+        },
+        "item_2": {
+          "title": "What I learned after one slow day in Tam Coc",
+          "description": "Cafes, cycling paths and simple stops that made the trip feel calm and memorable."
+        },
+        "item_3": {
+          "title": "Three photo spots worth the extra climb",
+          "description": "A practical list of viewpoints with the best angles for wide landscape shots and sunset color."
+        }
+      }
     }
   },
   "newsPage": {
@@ -260,7 +464,7 @@
       "login_btn": "Sign in",
       "error": "Something went wrong. Please try again.",
       "admin": "Admin",
-      "admin_role": "Administrator"
+      "admin_role": "Admin"
     }
   },
   "auth": {
@@ -574,24 +778,38 @@
     },
     "routeCapacitySummary": "Route capacity summary",
     "routeOverview": "Route overview",
-    "defaultSchedule": "08:00 - 17:30",
+    "defaultSchedule": "Default schedule",
     "stops": "stops",
     "guestRange": "{{min}}-{{max}} guests",
-    "suitableForGroups": "Suitable for families and groups",
+    "suitableForGroups": "Suitable for groups",
     "dayHeading": "Day {{day}}: {{name}}",
     "dayLabel": "Day {{day}}",
     "stopLabel": "Stop {{index}}",
     "minutesLabel": "{{count}} minutes",
-    "capacityLoad": "Load",
-    "priceNote": "Starting price per traveler, updated by route and booking time.",
+    "capacityLoad": "Capacity",
+    "priceNote": "Prices are for reference and may change by provider.",
     "bookTrip": "Book trip"
   },
   "mapStyle": {
     "toggle": "Switch base map",
+    "outdoor": "Outdoor",
+    "street": "Street",
+    "satellite": "Satellite",
+    "satelliteStreet": "Hybrid",
+    "outdoorDesc": "Topographic and nature-oriented map style",
+    "streetDesc": "Urban-focused map with roads and labels",
+    "satelliteDesc": "High-resolution satellite imagery",
+    "satelliteStreetDesc": "Satellite imagery with road ",
     "unavailable": "Map style unavailable"
   },
   "headerAside": {
-    "tour": "Tours"
+    "chatbot": "Chatbot",
+    "event": "Events",
+    "tour": "Tours",
+    "capacity": "Capacity",
+    "traffic": "Traffic",
+    "satellite": "Satellite",
+    "compareSatellite": "Compare satellite"
   },
   "vr360": {
     "main_badge": "Main",
@@ -638,20 +856,20 @@
       "tool3dDesc": "Switch to 3D mode (enable terrain and 3D buildings)",
       "floatWeather": "Weather",
       "weatherAlert": "Alert",
-      "weatherAlertAirPollutionHigh": "Air quality is unhealthy for sensitive groups",
-      "weatherAlertHeat": "High temperature detected outdoors",
-      "weatherAlertWind": "Strong winds may affect outdoor activities",
-      "weatherAlertThunderstorm": "Thunderstorm risk in the area",
       "weatherNoAlert": "No alert",
+      "weatherUnknown": "Unknown",
+      "weatherUnknownLocation": "Ninh Binh",
+      "weatherUnavailable": "Unable to load weather data",
+      "weatherAlertAirPollutionHigh": "High air pollution detected",
+      "weatherAlertHeat": "High temperature warning",
+      "weatherAlertWind": "Strong wind warning",
+      "weatherAlertThunderstorm": "Thunderstorm warning",
       "aqiGood": "Good",
       "aqiFair": "Fair",
       "aqiModerate": "Moderate",
       "aqiPoor": "Poor",
       "aqiVeryPoor": "Very poor",
-      "aqiUnknown": "Unknown AQI",
-      "weatherUnknown": "Unknown",
-      "weatherUnknownLocation": "Ninh Binh",
-      "weatherUnavailable": "Unable to load weather data",
+      "aqiUnknown": "Unknown",
       "unsupportedTitle": "Map is not supported on this device",
       "unsupportedMessage": "Please use a laptop/desktop screen (>= 1024px) for the full map experience",
       "toolResetDesc": "Reset map to the default center and viewing angle",
@@ -747,27 +965,26 @@
       "syncing": "Updating..",
       "count": "{{count}} tracked spots",
       "refresh": "Refresh",
-      "all": "All",
       "defaultName": "Tourism spot",
+      "status": {
+        "overloaded": "Overloaded",
+        "near_full": "Near full",
+        "busy": "Busy",
+        "normal": "Normal",
+        "low": "Low",
+        "moderate": "Moderate",
+        "unknown": "Unknown"
+      },
       "error": "Unable to load capacity data",
       "empty": "No matching spots found",
       "viewOnMap": "View on map",
       "live": "Live",
       "connecting": "Connecting...",
       "searchPlaceholder": "Search monitored spots...",
-      "filteredCount": "{{filtered}} / {{total}} places",
-      "trackedCount": "{{count}} places being tracked",
+      "filteredCount": "{{filtered}} of {{total}} spots",
+      "trackedCount": "{{count}} tracked spots",
       "capacityWithMax": "{{current}} / {{max}} people",
-      "capacityCurrent": "{{current}} people",
-      "status": {
-        "overloaded": "Overloaded",
-        "near_full": "Near full",
-        "busy": "Busy",
-        "moderate": "Moderate",
-        "normal": "Normal",
-        "low": "Low",
-        "unknown": "Unknown"
-      }
+      "capacityCurrent": "{{current}} people"
     },
     "direction": {
       "title": "Directions",
@@ -825,11 +1042,17 @@
       "live": "Live",
       "summary": {
         "total": "Total",
-        "accident": "Accident",
-        "jam": "Jam",
-        "works": "Works",
-        "avg_delay": "Avg. delay",
-        "minutes": "min"
+        "accident": "Accidents",
+        "jam": "Jams",
+        "works": "Roadworks",
+        "avg_delay": "Average delay",
+        "minutes": "minutes"
+      },
+      "flowLevels": {
+        "free_flow": "Free flow",
+        "moderate": "Moderate",
+        "heavy": "Heavy",
+        "severe": "Severe"
       }
     },
     "spotModal": {
@@ -859,11 +1082,28 @@
       "distFrom": "From",
       "missingCoordinates": "Product coordinates are unavailable",
       "fallbackProductName": "OCOP product",
-      "productModalDescription": "Ninh Binh OCOP product information",
-      "productCertified": "Certified product",
-      "ocopStars": "OCOP {{count}} stars",
-      "oneCommuneOneProduct": "One commune, one product",
+      "productModalDescription": "OCOP product details",
+      "ocopStars": "{{count}} stars",
+      "productCertified": "Certified",
+      "oneCommuneOneProduct": "One Commune One Product",
       "viewDestination": "View destination"
+    },
+    "mock": {
+      "destinations": {
+        "trangAn": {
+          "description": "A cultural and nature highlight with winding waterways, limestone caves and temple stops."
+        },
+        "tamCoc": {
+          "description": "A scenic river destination known for rice field views, cycling routes and relaxed boat rides."
+        },
+        "hoaLuOldTown": {
+          "description": "A lively evening area for food, walking and quick access to nearby heritage attractions."
+        }
+      },
+      "tourSuggestions": {
+        "softDay": "A gentle route with short transfers, calm scenery and flexible meal stops.",
+        "cultureFocus": "Combine heritage sites, temple visits and local stories for a culture-first day trip."
+      }
     }
   },
   "satellite": {
@@ -896,6 +1136,44 @@
       "auto_detect_change": "Auto-detect change",
       "auto_detect_change_desc": "Detect vegetation change, forest gain and road/construction between 2 periods",
       "auto_detect_change_single_desc": "Compare current period with the same period one year ago"
+    },
+    "layers": {
+      "rgb": "True Color",
+      "rgb_desc": "RGB composite image",
+      "ndvi": "NDVI",
+      "ndvi_desc": "Normalized Difference Vegetation Index",
+      "heatmap": "Heat Map",
+      "heatmap_desc": "Land Surface Temperature (LST)",
+      "classified": "Classification",
+      "classified_desc": "Land cover classification (7 classes)",
+      "change": "Change Detection",
+      "change_desc": "Detect vegetation loss/gain and road/construction"
+    },
+    "legend": {
+      "heatmap": {
+        "very_cool": "Very cool",
+        "cool": "Cool",
+        "moderate": "Moderate",
+        "warm": "Warm",
+        "hot": "Hot",
+        "very_hot": "Very hot"
+      },
+      "classified": {
+        "water": "Water",
+        "bare_land": "Bare land",
+        "shrub_grass": "Shrub and grass",
+        "agriculture": "Agriculture",
+        "open_forest": "Open forest",
+        "evergreen_forest": "Evergreen forest",
+        "urban": "Urban area"
+      },
+      "change": {
+        "no_change": "No change",
+        "vegetation_loss": "Vegetation loss",
+        "vegetation_gain": "Vegetation gain",
+        "road_construction": "Road or construction",
+        "vegetation_loss_road": "Vegetation loss near roadworks"
+      }
     },
     "stats": {
       "title": "Area statistics",
@@ -1068,7 +1346,13 @@
       "video": "Video"
     },
     "topics": {
-      "all": "All topics"
+      "all": "All topics",
+      "experience": "Experience",
+      "food": "Food",
+      "photo": "Photography",
+      "culture": "Culture",
+      "nature": "Nature",
+      "checkin": "Check-in"
     },
     "post": {
       "read_more": "Read more",
@@ -1089,7 +1373,63 @@
       "place": "📍 Location",
       "hashtag": "🏷 Hashtag"
     },
-    "just_now": "Just now"
+    "just_now": "Just now",
+    "mock": {
+      "places": {
+        "trang_an": "Trang An",
+        "tam_coc": "Tam Coc",
+        "bai_dinh": "Bai Dinh",
+        "ha_long": "Ha Long",
+        "ninh_binh": "Ninh Binh"
+      },
+      "posts": {
+        "item_1": {
+          "title": "Filming a calm morning boat ride in Trang An",
+          "description": "The water was still, the caves were quiet and every turn looked like a postcard frame."
+        },
+        "item_2": {
+          "title": "A food-first afternoon around Tam Coc",
+          "description": "I spent the day trying local dishes, talking with shop owners and saving my favorite stops."
+        },
+        "item_3": {
+          "title": "Bai Dinh through the lens of first-time visitors",
+          "description": "The temple scale is impressive, but the peaceful corners and mountain backdrop stayed with me most."
+        },
+        "item_4": {
+          "title": "Quick check-in ideas for a bright coastal day",
+          "description": "Easy outfit, simple route, strong light and a few reliable frames for a weekend post."
+        },
+        "item_5": {
+          "title": "How to spend half a day when Ninh Binh feels crowded",
+          "description": "I switched to a slower plan with open viewpoints, short walks and one really good meal."
+        },
+        "item_6": {
+          "title": "Photo notes from a soft golden-hour session",
+          "description": "A few composition tips helped me make the most of haze, reflections and the last light."
+        }
+      },
+      "time": {
+        "today": "Today",
+        "hours_ago": "{{count}} hours ago",
+        "yesterday": "Yesterday",
+        "days_ago": "{{count}} days ago",
+        "weeks_ago": "{{count}} weeks ago"
+      },
+      "trending": {
+        "item_1": {
+          "title": "Boat route mood",
+          "text": "Peaceful river scenes and cave passages are drawing the most saves this week."
+        },
+        "item_2": {
+          "title": "Sunset viewpoint guide",
+          "text": "Viewers are bookmarking practical tips for late-day climbs and skyline shots."
+        },
+        "item_3": {
+          "title": "Street food short list",
+          "text": "Quick recommendations for local plates near tourism hubs are getting strong attention."
+        }
+      }
+    }
   },
   "feedbackPage": {
     "hero": {

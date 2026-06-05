@@ -30,6 +30,14 @@ const visibleFunctionPattern =
   /\b(toast\.(?:success|error|info|warning|warn)|alert|confirm|setError|throw new Error|Error)\s*\(\s*$/;
 const translationKeyPattern = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/;
 const resolvableKeyPropertyPattern = /^[A-Za-z_$][\w$]*Key$/;
+const declaredTranslationKeyPropertyNames = new Set([
+  'label',
+  'title',
+  'description',
+  'placeholder',
+  'tooltip',
+  'ariaLabel',
+]);
 const genericContextTokens = new Set([
   'data',
   'item',
@@ -69,6 +77,61 @@ const reportPath =
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function collectDuplicateJsonKeys(filePath, locale) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const prefix = 'const __translation = ';
+  const lineStarts = makeLineStarts(content);
+  let ast;
+
+  try {
+    ast = parse(`${prefix}${content};`, { sourceType: 'module' });
+  } catch {
+    return [];
+  }
+
+  const rootObject = ast.program.body[0]?.declarations?.[0]?.init;
+  if (rootObject?.type !== 'ObjectExpression') return [];
+
+  const duplicates = [];
+
+  function originalLine(start) {
+    return lineForIndex(lineStarts, Math.max(0, start - prefix.length));
+  }
+
+  function walkObject(node, keyPath = []) {
+    if (!node || node.type !== 'ObjectExpression') return;
+
+    const seen = new Map();
+    for (const property of node.properties || []) {
+      if (property.type !== 'ObjectProperty' && property.type !== 'Property') continue;
+      if (property.computed) continue;
+
+      const propertyName = getPropertyName(property.key);
+      if (!propertyName) continue;
+
+      const line = originalLine(property.key.start ?? property.start ?? 0);
+      if (seen.has(propertyName)) {
+        duplicates.push({
+          locale,
+          file: path.relative(rootDir, filePath).replace(/\\/g, '/'),
+          key: [...keyPath, propertyName].join('.'),
+          firstLine: seen.get(propertyName),
+          line,
+        });
+      } else {
+        seen.set(propertyName, line);
+      }
+
+      if (property.value?.type === 'ObjectExpression') {
+        walkObject(property.value, [...keyPath, propertyName]);
+      }
+    }
+  }
+
+  walkObject(rootObject);
+  return duplicates;
 }
 
 function valueType(value) {
@@ -482,6 +545,113 @@ function extractStaticI18nKeys(content, relPath, lineStarts) {
   return usages;
 }
 
+function extractDeclaredTranslationKeyLiterals(content, relPath, lineStarts) {
+  const ast = parseSourceAst(content);
+  if (!ast) return [];
+
+  const usages = [];
+  const excludedPropertyNames = new Set([
+    'queryKey',
+    'mutationKey',
+    'cacheKey',
+    'storageKey',
+    'invalidateKey',
+  ]);
+
+  function addUsage(key, start, source) {
+    if (!translationKeyPattern.test(key) || !key.includes('.')) return;
+    usages.push({
+      key,
+      source,
+      file: relPath,
+      line: lineForIndex(lineStarts, start),
+      fallback: null,
+    });
+  }
+
+  function collectArrayElements(elements, start, source) {
+    const keys = elements
+      .map((element) => getStaticStringValue(element))
+      .filter((value) => typeof value === 'string' && translationKeyPattern.test(value) && value.includes('.'));
+
+    if (!keys.length) return;
+
+    for (const key of keys) addUsage(key, start, source);
+  }
+
+  function walk(node) {
+    if (!node || typeof node !== 'object') return;
+
+    if (node.type === 'ObjectProperty' || node.type === 'Property') {
+      const propertyName = getPropertyName(node.key);
+      const staticValue = getStaticStringValue(node.value);
+      if (excludedPropertyNames.has(propertyName)) {
+        // Common non-i18n `...Key` fields should not be treated as translation declarations.
+      } else {
+        if (propertyName?.endsWith('Key') && staticValue) {
+          addUsage(staticValue, node.value.start ?? node.start, `declared:${propertyName}`);
+        }
+
+        if (
+          declaredTranslationKeyPropertyNames.has(propertyName) &&
+          staticValue &&
+          staticValue.includes('.') &&
+          /[A-Za-z_]/.test(staticValue)
+        ) {
+          addUsage(staticValue, node.value.start ?? node.start, `declared:${propertyName}`);
+        }
+
+        if (propertyName?.endsWith('Keys') && node.value?.type === 'ArrayExpression') {
+          collectArrayElements(
+            node.value.elements || [],
+            node.value.start ?? node.start,
+            `declared:${propertyName}`
+          );
+        }
+      }
+    }
+
+    if (node.type === 'VariableDeclarator' && node.id?.type === 'Identifier') {
+      const variableName = node.id.name;
+      const staticValue = getStaticStringValue(node.init);
+
+      if (variableName.endsWith('Key') && staticValue) {
+        addUsage(staticValue, node.init.start ?? node.start, `declared:${variableName}`);
+      }
+
+      if (node.init?.type === 'ArrayExpression') {
+        const shouldCollect =
+          variableName.endsWith('Keys') ||
+          (variableName === variableName.toUpperCase() &&
+            (node.init.elements || []).some((element) => {
+              const key = getStaticStringValue(element);
+              return key && translationKeyPattern.test(key) && key.includes('.');
+            }));
+
+        if (shouldCollect) {
+          collectArrayElements(
+            node.init.elements || [],
+            node.init.start ?? node.start,
+            `declared:${variableName}`
+          );
+        }
+      }
+    }
+
+    for (const value of Object.values(node)) {
+      if (!value) continue;
+      if (Array.isArray(value)) {
+        for (const item of value) walk(item);
+      } else if (typeof value === 'object') {
+        walk(value);
+      }
+    }
+  }
+
+  walk(ast.program);
+  return usages;
+}
+
 function extractResolvedTranslationCalls(content, relPath, lineStarts, propertyKeyMap) {
   const usages = [];
   const callRegex = /\b(?:i18n\.)?t\s*\(/g;
@@ -749,6 +919,16 @@ function formatKeyList(keys) {
   return formatList(keys.map((key) => `\`${key}\``));
 }
 
+function formatDuplicateJsonKeyList(items) {
+  if (!items.length) return '- None';
+  return items
+    .map(
+      (item) =>
+        `- \`${item.key}\` in \`${item.file}:${item.line}\` duplicates first declaration at line ${item.firstLine}`
+    )
+    .join('\n');
+}
+
 function formatUsageList(items, emptyText = 'None') {
   if (!items.length) return `- ${emptyText}`;
   return items
@@ -865,7 +1045,12 @@ Dynamic i18n usages are listed for manual review because static analysis cannot 
 - Hardcoded visible text review: ${result.counts.hardcodedReview}
 - Unique used keys missing in EN: ${result.missingKeyCandidates.en.length}
 - Unique used keys missing in VI: ${result.missingKeyCandidates.vi.length}
+- Duplicate JSON keys: ${result.counts.duplicateJsonKeys}
 - Keys unused by static scan: ${result.counts.unusedKeys}
+
+## Duplicate JSON Keys
+
+${formatDuplicateJsonKeyList(result.duplicateJsonKeys)}
 
 ## Missing Between Locale Files
 
@@ -949,6 +1134,10 @@ ${formatKeyList(result.unusedKeys)}
 `;
 }
 
+const duplicateJsonKeys = [
+  ...collectDuplicateJsonKeys(enPath, 'en'),
+  ...collectDuplicateJsonKeys(viPath, 'vi'),
+];
 const en = flattenTranslations(readJson(enPath));
 const vi = flattenTranslations(readJson(viPath));
 const enKeys = Object.keys(en).sort();
@@ -997,6 +1186,7 @@ for (const document of sourceDocuments) {
 
   staticUsages.push(...extractStaticTranslationCalls(content, relPath, lineStarts));
   staticUsages.push(...extractStaticI18nKeys(content, relPath, lineStarts));
+  staticUsages.push(...extractDeclaredTranslationKeyLiterals(content, relPath, lineStarts));
   staticUsages.push(...extractResolvedTranslationCalls(content, relPath, lineStarts, resolvableKeyPropertyMap));
   staticUsages.push(...extractResolvedI18nKeys(content, relPath, lineStarts, resolvableKeyPropertyMap));
   dynamicUsages.push(...extractDynamicUsages(content, relPath, lineStarts, resolvableKeyPropertyMap));
@@ -1027,6 +1217,7 @@ const reviewHardcodedText = uniqueHardcodedVisibleText.filter(
 
 const result = {
   failed:
+    duplicateJsonKeys.length > 0 ||
     missingInEn.length > 0 ||
     missingInVi.length > 0 ||
     typeMismatches.length > 0 ||
@@ -1043,8 +1234,10 @@ const result = {
     inlineFallbacks: inlineFallbacks.length,
     hardcodedMustI18n: mustI18nHardcodedText.length,
     hardcodedReview: reviewHardcodedText.length,
+    duplicateJsonKeys: duplicateJsonKeys.length,
     unusedKeys: unusedKeys.length,
   },
+  duplicateJsonKeys,
   missingInEn,
   missingInVi,
   typeMismatches,

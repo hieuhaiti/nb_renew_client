@@ -126,7 +126,7 @@ export function TourismPointFeaturedCard({
           <span className="flex items-center gap-1">
             <Star size={13} className="fill-[#d99200] text-[#d99200]" />
             {rating ? Number(rating).toFixed(1) : '—'} &mdash; {reviewCount}{' '}
-            {t('tourismPointPage.reviews', 'đánh giá')}
+            {t('tourismPointPage.reviews')}
           </span>
         </div>
 
@@ -161,7 +161,7 @@ export function TourismPointFeaturedCard({
           <div className="text-primary text-2xl font-black">
             {price && parseInt(price) > 0
               ? formatVND(price)
-              : t('tourismPointPage.free', 'Miễn phí')}
+              : t('tourismPointPage.free')}
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -169,7 +169,7 @@ export function TourismPointFeaturedCard({
               className="h-10.5 rounded-full px-4.5 text-sm font-bold text-white hover:text-white"
               style={BTN_GRADIENT}
             >
-              {t('tourismPointPage.view_detail', 'Xem chi tiết')}
+              {t('tourismPointPage.view_detail')}
             </Button>
             <Button
               variant="ghost"
@@ -235,7 +235,7 @@ export function TourismPointStandardCard({
             <span className="text-foreground font-bold">
               {price && parseInt(price) > 0
                 ? formatVND(price)
-                : t('tourismPointPage.free', 'Miễn phí')}
+                : t('tourismPointPage.free')}
             </span>
           </div>
         </div>
@@ -301,7 +301,7 @@ export function TourismPointStandardCard({
             <span>
               {price && parseInt(price) > 0
                 ? formatVND(price)
-                : t('tourismPointPage.free', 'Miễn phí')}
+                : t('tourismPointPage.free')}
             </span>
           </div>
         </div>

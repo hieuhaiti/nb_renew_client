@@ -247,7 +247,7 @@ export default function FeedbackSubmitDialog({ open, onOpenChange, onSuccess }) 
               <button
                 type="button"
                 onClick={() => setLocationMode(LOC_TEXT)}
-                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 typo-badge transition-all ${
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 typo-badge transition-all hover:bg-card/70 ${
                   locationMode === LOC_TEXT
                     ? 'bg-card text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -259,7 +259,7 @@ export default function FeedbackSubmitDialog({ open, onOpenChange, onSuccess }) 
               <button
                 type="button"
                 onClick={() => setLocationMode(LOC_GEO)}
-                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 typo-badge transition-all ${
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 typo-badge transition-all hover:bg-card/70 ${
                   locationMode === LOC_GEO
                     ? 'bg-card text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'

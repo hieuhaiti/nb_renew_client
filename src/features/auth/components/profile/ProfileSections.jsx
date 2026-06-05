@@ -31,7 +31,7 @@ export function ProfileSidebar({ avatarPreview, isEditing, onAvatarChange, form,
           <label className="text-primary absolute inset-0 flex cursor-pointer flex-col items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
             <Camera className="text-primary mb-1 h-8 w-8" />
             <span className="text-primary text-sm">
-              {t('profile.avatar.change', 'Change photo')}
+              {t('profile.avatar.change')}
             </span>
             <input type="file" className="hidden" accept="image/*" onChange={onAvatarChange} />
           </label>
@@ -41,7 +41,7 @@ export function ProfileSidebar({ avatarPreview, isEditing, onAvatarChange, form,
         {form.name || form.username || 'User'}
       </h2>
       <p className="text-muted-foreground mb-4 text-sm">
-        {user?.role?.name || t('profile.role.member', 'Member')}
+        {user?.role?.name || t('profile.role.member')}
       </p>
 
       <div className="bg-border my-4 h-px w-full" />
@@ -49,15 +49,15 @@ export function ProfileSidebar({ avatarPreview, isEditing, onAvatarChange, form,
       <div className="w-full space-y-3 text-sm">
         <div className="text-muted-foreground flex items-center">
           <Mail className="mr-3 h-4 w-4" />
-          <span className="truncate">{form.email || t('profile.notUpdated', 'Not updated')}</span>
+          <span className="truncate">{form.email || t('profile.notUpdated')}</span>
         </div>
         <div className="text-muted-foreground flex items-center">
           <Phone className="mr-3 h-4 w-4" />
-          <span className="truncate">{form.phone || t('profile.notUpdated', 'Not updated')}</span>
+          <span className="truncate">{form.phone || t('profile.notUpdated')}</span>
         </div>
         <div className="text-muted-foreground flex items-center">
           <MapPin className="mr-3 h-4 w-4" />
-          <span className="truncate">{form.address || t('profile.notUpdated', 'Not updated')}</span>
+          <span className="truncate">{form.address || t('profile.notUpdated')}</span>
         </div>
       </div>
     </div>
@@ -73,15 +73,15 @@ export function ProfileHeaderActions({
 }) {
   return (
     <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h1 className="text-2xl font-bold">{t('profile.title', 'My Profile')}</h1>
+      <h1 className="text-2xl font-bold">{t('profile.title')}</h1>
       {!isEditing && !showChangePassword && (
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           <Button variant="outline" onClick={onStartPassword} className="w-full gap-2 sm:w-auto">
             <Lock className="h-4 w-4" />
-            {t('profile.changePasswordSecure', 'Change secure password')}
+            {t('profile.changePasswordSecure')}
           </Button>
           <Button onClick={onStartEdit} className="w-full sm:w-auto">
-            {t('profile.editProfile', 'Edit profile')}
+            {t('profile.editProfile')}
           </Button>
         </div>
       )}
@@ -101,37 +101,37 @@ export function ProfileEditForm({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Field label={t('profile.username', 'Username')} icon={User}>
+        <Field label={t('profile.username')} icon={User}>
           <Input name="username" value={form.username} onChange={onChange} />
           {fieldErrors.username && (
             <p className="text-destructive text-sm">{fieldErrors.username}</p>
           )}
         </Field>
-        <Field label={t('profile.fullName', 'Full name')}>
+        <Field label={t('profile.fullName')}>
           <Input name="name" value={form.name} onChange={onChange} />
           {fieldErrors.name && <p className="text-destructive text-sm">{fieldErrors.name}</p>}
         </Field>
-        <Field label={t('profile.email', 'Email')} icon={Mail}>
+        <Field label={t('profile.email')} icon={Mail}>
           <Input name="email" value={form.email} onChange={onChange} disabled />
         </Field>
-        <Field label={t('profile.phone', 'Phone number')} icon={Phone}>
+        <Field label={t('profile.phone')} icon={Phone}>
           <Input name="phone" value={form.phone} onChange={onChange} />
           {fieldErrors.phone && <p className="text-destructive text-sm">{fieldErrors.phone}</p>}
         </Field>
       </div>
 
-      <Field label={t('profile.address', 'Address')} icon={MapPin}>
+      <Field label={t('profile.address')} icon={MapPin}>
         <Input name="address" value={form.address} onChange={onChange} />
       </Field>
 
       <div className="border-border flex flex-col-reverse justify-end gap-3 border-t pt-6 sm:flex-row">
         <Button variant="outline" type="button" onClick={onCancel} className="w-full sm:w-auto">
-          {t('profile.cancel', 'Cancel')}
+          {t('profile.cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
           {isSubmitting
-            ? t('profile.saving', 'Saving...')
-            : t('profile.saveChanges', 'Save changes')}
+            ? t('profile.saving')
+            : t('profile.saveChanges')}
         </Button>
       </div>
     </form>
@@ -150,10 +150,10 @@ export function ProfilePasswordForm({
   return (
     <form onSubmit={onSubmit} className="max-w-lg space-y-6">
       <h3 className="border-border mb-4 border-b pb-2 text-lg font-semibold">
-        {t('profile.changePassword', 'Change password')}
+        {t('profile.changePassword')}
       </h3>
       <div className="space-y-4">
-        <Field label={t('profile.currentPassword', 'Current password')} icon={Lock}>
+        <Field label={t('profile.currentPassword')} icon={Lock}>
           <Input
             type="password"
             value={pwd.current}
@@ -161,7 +161,7 @@ export function ProfilePasswordForm({
           />
           {fieldErrors.current && <p className="text-destructive text-sm">{fieldErrors.current}</p>}
         </Field>
-        <Field label={t('profile.newPassword', 'New password')} icon={Lock}>
+        <Field label={t('profile.newPassword')} icon={Lock}>
           <Input
             type="password"
             value={pwd.newPassword}
@@ -171,7 +171,7 @@ export function ProfilePasswordForm({
             <p className="text-destructive text-sm">{fieldErrors.newPassword}</p>
           )}
         </Field>
-        <Field label={t('profile.confirmNewPassword', 'Confirm new password')}>
+        <Field label={t('profile.confirmNewPassword')}>
           <Input
             type="password"
             value={pwd.confirm}
@@ -182,10 +182,10 @@ export function ProfilePasswordForm({
       </div>
       <div className="flex flex-col-reverse justify-end gap-3 pt-4 sm:flex-row">
         <Button variant="outline" type="button" onClick={onCancel} className="w-full sm:w-auto">
-          {t('profile.cancelShort', 'Cancel')}
+          {t('profile.cancelShort')}
         </Button>
         <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
-          {t('profile.confirmAction', 'Confirm')}
+          {t('profile.confirmAction')}
         </Button>
       </div>
     </form>
@@ -198,25 +198,25 @@ export function ProfileOverview({ form, createdAt, t }) {
       <div className="grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
         <div>
           <div className="text-muted-foreground mb-1 text-sm font-medium">
-            {t('profile.username', 'Username')}
+            {t('profile.username')}
           </div>
           <div className="font-semibold">{form.username || '-'}</div>
         </div>
         <div>
           <div className="text-muted-foreground mb-1 text-sm font-medium">
-            {t('profile.phone', 'Phone number')}
+            {t('profile.phone')}
           </div>
           <div className="font-semibold">{form.phone || '-'}</div>
         </div>
         <div>
           <div className="text-muted-foreground mb-1 text-sm font-medium">
-            {t('profile.address', 'Address')}
+            {t('profile.address')}
           </div>
           <div className="font-semibold">{form.address || '-'}</div>
         </div>
         <div>
           <div className="text-muted-foreground mb-1 text-sm font-medium">
-            {t('profile.joinDate', 'Join date')}
+            {t('profile.joinDate')}
           </div>
           <div className="font-semibold">
             {createdAt ? new Date(createdAt).toLocaleDateString() : '-'}

@@ -978,22 +978,25 @@ export default function MiniMap({
 
       <div className="absolute top-2 left-2 z-10 flex gap-1">
         <button
+          type="button"
           onClick={switchToOverview}
-          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'overview' ? 'bg-amber-500 text-white' : 'bg-white/90 text-gray-700 hover:bg-white'}`}
+          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'overview' ? 'bg-amber-500 text-white' : 'bg-white/90 text-gray-700 hover:bg-white hover:text-gray-900'}`}
         >
           Toàn cảnh
         </button>
 
         <button
+          type="button"
           onClick={switchToCloseup}
-          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'closeup' ? 'bg-blue-600 text-white' : 'bg-white/90 text-gray-700 hover:bg-white'}`}
+          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'closeup' ? 'bg-blue-600 text-white' : 'bg-white/90 text-gray-700 hover:bg-white hover:text-gray-900'}`}
         >
           Cận cảnh
         </button>
         <button
+          type="button"
           onClick={handleLocateUser}
           disabled={isLocating}
-          className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${isLocating ? 'bg-slate-300 text-slate-700' : 'bg-white/90 text-gray-700 hover:bg-white'}`}
+          className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors disabled:cursor-not-allowed ${isLocating ? 'bg-slate-300 text-slate-700' : 'bg-white/90 text-gray-700 hover:bg-white hover:text-gray-900'}`}
         >
           <LocateFixed size={12} />
           {isLocating ? 'GPS...' : 'GPS'}

@@ -757,7 +757,7 @@ export default function TourDetailPage() {
                             onClick={() =>
                               window.open(QR_BOOKING_URL, '_blank', 'noopener,noreferrer')
                             }
-                            className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-white/70 bg-white p-2 shadow-[0_14px_35px_rgba(15,23,42,.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,.16)] sm:h-[92px] sm:w-[92px]"
+                            className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-white/70 bg-white p-2 shadow-[0_14px_35px_rgba(15,23,42,.12)] transition hover:-translate-y-0.5 hover:bg-muted hover:shadow-[0_18px_45px_rgba(15,23,42,.16)] sm:h-[92px] sm:w-[92px]"
                             aria-label={t('tourPage.bookTrip')}
                           >
                             <img

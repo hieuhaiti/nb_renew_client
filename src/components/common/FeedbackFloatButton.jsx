@@ -36,7 +36,7 @@ export default function FeedbackFloatButton() {
               shadow-[0_4px_20px_rgba(0,0,0,0.18)]
               ring-2 ring-white/20
               transition-all duration-200
-              hover:scale-105 hover:shadow-[0_6px_28px_rgba(0,0,0,0.25)]
+              hover:scale-105 hover:from-primary-hover hover:to-secondary-hover hover:shadow-[0_6px_28px_rgba(0,0,0,0.25)]
               active:scale-95
               sm:py-3
             "

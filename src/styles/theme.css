@@ -116,7 +116,7 @@
   --loading-spinner: var(--primary);
 
   /* Neutral interactive surface */
-  --surface-hover: #edf4fa;
+  --surface-hover: #d6dde4;
   --surface-active: #e3edf6;
 
   /* Errors */

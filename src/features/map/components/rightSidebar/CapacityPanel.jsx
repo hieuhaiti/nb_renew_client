@@ -39,6 +39,44 @@ function getViewOnMapVariant(status) {
   }
 }
 
+function getCapacityCardClass(status) {
+  switch (status) {
+    case 'overloaded':
+      return 'border-destructive/30 bg-destructive/5 hover:border-destructive/50 hover:bg-destructive/10';
+    case 'near_full':
+      return 'border-orange-500/30 bg-orange-500/5 hover:border-orange-500/50 hover:bg-orange-500/10';
+    case 'busy':
+      return 'border-warning/40 bg-warning/5 hover:border-warning/60 hover:bg-warning/10';
+    case 'moderate':
+      return 'border-sky-500/30 bg-sky-500/5 hover:border-sky-500/50 hover:bg-sky-500/10';
+    case 'normal':
+      return 'border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/50 hover:bg-emerald-500/10';
+    case 'low':
+      return 'border-emerald-400/30 bg-emerald-400/5 hover:border-emerald-400/50 hover:bg-emerald-400/10';
+    default:
+      return 'border-border/40 bg-muted/30 hover:border-border/60 hover:bg-muted/50';
+  }
+}
+
+function getCapacityActiveBorderClass(status) {
+  switch (status) {
+    case 'overloaded':
+      return 'border-destructive';
+    case 'near_full':
+      return 'border-orange-500';
+    case 'busy':
+      return 'border-warning';
+    case 'moderate':
+      return 'border-sky-500';
+    case 'normal':
+      return 'border-emerald-500';
+    case 'low':
+      return 'border-emerald-400';
+    default:
+      return 'border-border';
+  }
+}
+
 function resolveCapacityPct(item) {
   const direct = item.capacity_pct ?? item.occupancy_pct;
   if (direct != null) return Math.min(Math.round(Number(direct)), 100);
@@ -131,7 +169,7 @@ export default function CapacityPanel() {
   const lang = useLanguageStore((state) => state.lang);
   const mapRef = useMapStore((state) => state.mapRef);
 
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('overloaded');
   const [search, setSearch] = useState('');
 
   const queryClient = useQueryClient();
@@ -170,9 +208,9 @@ export default function CapacityPanel() {
     return counts;
   }, [items]);
 
-  const presentStatuses = useMemo(
-    () => Object.keys(CAPACITY_STATUS_META).filter((s) => s !== 'unknown' && statusCounts[s] > 0),
-    [statusCounts]
+  const filterStatuses = useMemo(
+    () => Object.keys(CAPACITY_STATUS_META).filter((s) => s !== 'unknown'),
+    []
   );
 
   const handleFlyTo = (item) => {
@@ -244,24 +282,9 @@ export default function CapacityPanel() {
         </div>
       )}
 
-      {!isLoading && items.length > 0 && (
+      {!isLoading && !isError && (
         <div className="flex shrink-0 flex-wrap gap-1.5">
-          <Button
-            variant="ghost"
-            type="button"
-            onClick={() => setStatusFilter('all')}
-            className={cn(
-              'typo-badge inline-flex h-auto items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
-              statusFilter === 'all'
-                ? 'border-border/60 bg-primary hover:bg-primary/80 text-white hover:text-white'
-                : 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'
-            )}
-          >
-            {t('mapPage.capacityPanel.all')}
-            <span className="opacity-90">{items.length}</span>
-          </Button>
-
-          {presentStatuses.map((status) => {
+          {filterStatuses.map((status) => {
             const meta = getCapacityStatusMeta(status);
             const isActive = statusFilter === status;
             return (
@@ -272,11 +295,12 @@ export default function CapacityPanel() {
                 onClick={() => setStatusFilter(status)}
                 className={cn(
                   'typo-badge inline-flex h-auto items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
-                  isActive ? meta.activeBadgeClass : meta.badgeClass
+                  isActive ? meta.activeBadgeClass : meta.badgeClass,
+                  isActive && getCapacityActiveBorderClass(status)
                 )}
               >
                 {getCapacityStatusLabel(status, t)}
-                <span className="opacity-90">{statusCounts[status]}</span>
+                <span className="opacity-90">{statusCounts[status] ?? 0}</span>
               </Button>
             );
           })}
@@ -325,7 +349,10 @@ export default function CapacityPanel() {
               return (
                 <article
                   key={item.id}
-                  className="border-primary/60 bg-primary/5 hover:bg-primary/10 hover:border-primary/80 w-full min-w-0 space-y-2 overflow-hidden rounded-xl border p-3 shadow-sm transition-colors"
+                  className={cn(
+                    'w-full min-w-0 space-y-2 overflow-hidden rounded-xl border p-3 shadow-sm transition-colors',
+                    getCapacityCardClass(item.status)
+                  )}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <h4

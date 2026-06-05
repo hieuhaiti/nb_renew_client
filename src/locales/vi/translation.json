@@ -26,19 +26,22 @@
     "open": "Mở",
     "close": "Đóng",
     "loading": "Đang tải...",
-    "open_in_new_tab": "M? trong tab m?i",
     "errors": {
-      "session_expired": "Phi?n ??ng nh?p ?? h?t h?n. Vui l?ng ??ng nh?p l?i.",
-      "occurred": "C? l?i x?y ra:",
-      "carousel_context": "useCarousel ph?i ???c d?ng b?n trong Carousel.",
-      "file_upload_root_context": "{{consumer}} ph?i ???c d?ng b?n trong FileUpload.",
-      "file_upload_item_context": "{{consumer}} ph?i ???c d?ng b?n trong FileUploadItem.",
-      "http_status": "L?i HTTP! M? tr?ng th?i: {{status}}"
+      "carousel_context": "useCarousel phải được dùng bên trong Carousel",
+      "file_upload_root_context": "{{consumer}} phải được dùng bên trong FileUpload",
+      "file_upload_item_context": "{{consumer}} phải được dùng bên trong FileUploadItem",
+      "http_status": "Lỗi HTTP {{status}}",
+      "occurred": "Đã xảy ra lỗi",
+      "session_expired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
     },
-    "just_updated": "V?a c?p nh?t",
-    "minutes_ago": "{{count}} ph?t tr??c",
-    "hours_ago": "{{count}} gi? tr??c",
-    "new": "M?i"
+    "just_updated": "Vừa cập nhật",
+    "minutes_ago": "{{count}} phút trước",
+    "hours_ago": "{{count}} giờ trước",
+    "new": "Mới",
+    "open_in_new_tab": "Mở trong tab mới",
+    "natural": "Thiên nhiên",
+    "culture": "Văn hóa",
+    "infrastructure": "Hạ tầng"
   },
   "notifications": {
     "title": "Thông báo",
@@ -105,6 +108,24 @@
       "title": "Khám phá điểm đến với công cụ tích hợp",
       "see_all": "Xem toàn bộ chức năng"
     },
+    "feature_cards": {
+      "map": {
+        "title": "Bản đồ du lịch thông minh",
+        "desc": "Lớp điểm du lịch, dịch vụ, bản đồ nền, tìm kiếm theo tên và bán kính vị trí."
+      },
+      "weather": {
+        "title": "Thời tiết, AQI, cảnh báo",
+        "desc": "Cập nhật gió, mưa, chất lượng không khí và cảnh báo thời tiết cực đoan."
+      },
+      "capacity": {
+        "title": "Theo dõi tải khách",
+        "desc": "Hiển thị mức tải, cảnh báo quá tải và đề xuất điều hướng thay thế."
+      },
+      "satellite": {
+        "title": "Giám sát khu bảo tồn",
+        "desc": "Tìm kiếm ảnh vệ tinh, so sánh thời gian, phân loại và phát hiện biến động."
+      }
+    },
     "featured_destinations": {
       "label": "Điểm đến nổi bật",
       "title": "Điểm tham quan hàng đầu tại Ninh Bình",
@@ -157,6 +178,32 @@
       "title": "Bố cục phục vụ đồng thời du khách, doanh nghiệp và nhà quản lý",
       "desc": "Trang chủ không chỉ giới thiệu điểm đến mà còn dẫn người dùng vào đúng phân hệ: tra cứu, đăng tin dịch vụ, nhận phản ánh, quản lý cảnh báo và xem báo cáo."
     },
+    "role_cards": {
+      "tourist": {
+        "title": "Khách du lịch",
+        "item_1": "Tìm điểm đến, tour, dịch vụ",
+        "item_2": "Tạo và chia sẻ lịch trình",
+        "item_3": "Xem VR 360, đánh giá"
+      },
+      "business": {
+        "title": "Doanh nghiệp",
+        "item_1": "Đăng tin, voucher",
+        "item_2": "Nhận phản hồi, đánh giá",
+        "item_3": "Dashboard doanh thu, tải khách"
+      },
+      "manager": {
+        "title": "Nhà quản lý",
+        "item_1": "Nhận báo cáo tự động",
+        "item_2": "Cảnh báo quá tải",
+        "item_3": "Giám sát khu bảo tồn"
+      },
+      "admin": {
+        "title": "Quản trị hệ thống",
+        "item_1": "Quản trị tài khoản, API",
+        "item_2": "Quản trị lớp bản đồ",
+        "item_3": "Nhật ký và phân quyền"
+      }
+    },
     "footer_section": {
       "brand_name": "SmartTour WebGIS",
       "brand": "Cổng thông tin du lịch Ninh Bình – Nền tảng GIS, VR360, OCOP và lịch trình thông minh tích hợp",
@@ -169,6 +216,163 @@
       "link_feedback": "Quản lý phản hồi",
       "link_voucher": "Tạo voucher",
       "link_dashboard": "Dashboard thống kê"
+    },
+    "mock": {
+      "common": {
+        "ninh_binh": "Ninh Bình",
+        "quang_ninh": "Quảng Ninh"
+      },
+      "hero_stats": {
+        "featured": "Điểm nổi bật",
+        "average_load": "Tải khách trung bình",
+        "events_offers": "Sự kiện và ưu đãi",
+        "vr360": "VR360 sẵn sàng"
+      },
+      "hero_events": {
+        "hoa_lu": {
+          "title": "Khai mạc lễ hội Hoa Lư",
+          "time": "Cuối tuần này"
+        },
+        "tourism_week": {
+          "title": "Tuần du lịch Ninh Bình 2026",
+          "time": "20-27/04"
+        },
+        "light_show": {
+          "title": "Trình diễn ánh sáng ven sông Tràng An",
+          "time": "Tối thứ Sáu hằng tuần"
+        }
+      },
+      "promo_banner": {
+        "title": "Lên kế hoạch thông minh hơn với dữ liệu du lịch thời gian thực",
+        "description": "Mở bản đồ du lịch để xem thời tiết, tải khách và dịch vụ lân cận trước khi khởi hành.",
+        "cta": "Mở bản đồ du lịch"
+      },
+      "quick_links": {
+        "map": {
+          "title": "Bản đồ tương tác",
+          "description": "Xem điểm đến, lớp dữ liệu và thông tin du lịch trực tiếp trên cùng một bản đồ."
+        },
+        "vr": {
+          "title": "Trải nghiệm VR 360",
+          "description": "Khám phá trước các điểm nhấn bằng không gian toàn cảnh sống động."
+        },
+        "plan": {
+          "title": "Lập tuyến đi",
+          "description": "Tạo hành trình trong ngày với điểm dừng gợi ý, thời gian và hướng di chuyển."
+        },
+        "service": {
+          "title": "Dịch vụ du lịch",
+          "description": "Tìm phương tiện, ăn uống và hỗ trợ đặt chỗ gần điểm bạn sắp đến."
+        },
+        "ocop": {
+          "title": "Góc OCOP",
+          "description": "Khám phá đặc sản địa phương và quà tặng từ các nhà sản xuất uy tín."
+        }
+      },
+      "featured_destinations": {
+        "trang_an": {
+          "name": "Quần thể danh thắng Tràng An",
+          "subtitle": "Tuyến thuyền qua hang động và thung lũng núi đá",
+          "description": "Hành trình đặc trưng của Ninh Bình với sông nước, hang xuyên núi, điểm dừng tâm linh và cảnh quan karst ấn tượng."
+        },
+        "hoa_lu": {
+          "name": "Cố đô Hoa Lư",
+          "subtitle": "Đền cổ và dấu tích kinh đô đầu tiên",
+          "description": "Không gian di sản gắn với các triều đại đầu tiên của Việt Nam, phù hợp cho chuyến đi tìm hiểu lịch sử và kiến trúc."
+        },
+        "bai_dinh": {
+          "name": "Chùa Bái Đính",
+          "subtitle": "Quần thể tâm linh quy mô lớn với tầm nhìn núi non",
+          "description": "Khám phá điện chùa, tháp chuông và những cung đường dạo yên tĩnh quanh khuôn viên rộng lớn của Bái Đính."
+        }
+      },
+      "news_items": {
+        "item_1": {
+          "title": "Cập nhật phương án giao thông mùa cao điểm cho Tràng An",
+          "excerpt": "Hướng dẫn mới về bãi đỗ và luồng di chuyển giúp du khách hạn chế ùn tắc vào dịp cuối tuần tới."
+        },
+        "item_2": {
+          "title": "Mở trải nghiệm tham quan đêm tại Bái Đính dịp nghỉ lễ",
+          "excerpt": "Chương trình buổi tối bổ sung ánh sáng, xe điện và hành trình gợi ý dành cho nhóm gia đình."
+        },
+        "item_3": {
+          "title": "Khuyến cáo thời tiết cho các hoạt động du lịch đường sông",
+          "excerpt": "Du khách nên kiểm tra điều kiện thời tiết và mực nước trước khi đặt các tuyến tham quan ngoài trời."
+        }
+      },
+      "itinerary": {
+        "item_1": "Khởi hành từ trung tâm Ninh Bình và di chuyển đến bến Tràng An",
+        "item_2": "Bắt đầu hành trình thuyền buổi sáng qua các hang nổi bật",
+        "item_3": "Dừng ăn trưa với dê núi và cơm cháy đặc sản địa phương",
+        "item_4": "Tiếp tục tham quan Bái Đính hoặc Hang Múa vào buổi chiều",
+        "item_5": "Kết thúc bằng chụp ảnh hoàng hôn rồi quay về trung tâm thành phố"
+      },
+      "food_bullets": {
+        "item_1": {
+          "label": "Đánh giá thực khách"
+        },
+        "item_2": {
+          "label": "Thời điểm phù hợp",
+          "value": "Buổi trưa và đầu buổi tối"
+        },
+        "item_3": {
+          "label": "Voucher nổi bật"
+        }
+      },
+      "services": {
+        "item_1": {
+          "name": "Ninh Binh Riverside Stay",
+          "type": "Lưu trú boutique",
+          "price": "Từ 850.000 VND/đêm",
+          "description": "Phòng yên tĩnh ven sông, thuận tiện đưa đón tới các điểm du lịch lớn."
+        },
+        "item_2": {
+          "name": "Tam Coc Garden Kitchen",
+          "type": "Nhà hàng",
+          "price": "Từ 120.000 VND/người",
+          "description": "Món địa phương, không gian đẹp và thực đơn phù hợp cho nhóm gia đình."
+        },
+        "item_3": {
+          "name": "Quầy đặt thuyền Tràng An",
+          "type": "Dịch vụ vé",
+          "price": "Từ 250.000 VND/tuyến",
+          "description": "Hỗ trợ đặt nhanh các tuyến thuyền phổ biến và khởi hành theo nhóm."
+        }
+      },
+      "ocop_products": {
+        "item_1": {
+          "name": "Cà phê rang xay Ninh Bình",
+          "stars": "OCOP 4 sao",
+          "price": "Từ 135.000 VND",
+          "description": "Hương vị dịu, phù hợp làm quà tặng và dùng hằng ngày."
+        },
+        "item_2": {
+          "name": "Bộ trà thảo mộc vùng núi",
+          "stars": "OCOP 4 sao",
+          "price": "Từ 95.000 VND",
+          "description": "Sự kết hợp thảo mộc thơm nhẹ lấy cảm hứng từ vùng núi đá vôi."
+        },
+        "item_3": {
+          "name": "Bánh kẹo thủ công đặc sản",
+          "stars": "OCOP 3 sao",
+          "price": "Từ 80.000 VND",
+          "description": "Món quà địa phương gọn nhẹ, dễ mang theo cho hành trình ngắn ngày."
+        }
+      },
+      "vlog_stories": {
+        "item_1": {
+          "title": "Một buổi dạo sớm trên đỉnh núi đá vôi",
+          "description": "Câu chuyện ngắn về ánh sáng đầu ngày, lối đi yên tĩnh và không khí rất riêng của Ninh Bình buổi sáng."
+        },
+        "item_2": {
+          "title": "Điều mình nhận ra sau một ngày chậm ở Tam Cốc",
+          "description": "Quán nhỏ, đường đạp xe và vài điểm dừng giản dị khiến chuyến đi trở nên thư thả và đáng nhớ."
+        },
+        "item_3": {
+          "title": "Ba điểm chụp ảnh đáng để leo thêm một đoạn",
+          "description": "Danh sách ngắn các góc ngắm rộng, hợp chụp phong cảnh và bắt được ánh hoàng hôn đẹp."
+        }
+      }
     }
   },
   "newsPage": {
@@ -260,7 +464,7 @@
       "login_btn": "Đăng nhập ngay",
       "error": "Đã có lỗi xảy ra. Vui lòng thử lại.",
       "admin": "Quản trị viên",
-      "admin_role": "Qu?n tr? vi?n"
+      "admin_role": "Quản trị"
     }
   },
   "auth": {
@@ -573,25 +777,39 @@
       "share": "Chia sẻ"
     },
     "routeCapacitySummary": "Tổng quan sức chứa tuyến",
-    "routeOverview": "To?n c?nh tuy?n",
-    "defaultSchedule": "08:00 - 17:30",
-    "stops": "?i?m d?ng",
-    "guestRange": "{{min}}-{{max}} kh?ch",
-    "suitableForGroups": "Ph? h?p gia ??nh, nh?m b?n",
-    "dayHeading": "Ng?y {{day}}: {{name}}",
-    "dayLabel": "Ng?y {{day}}",
-    "stopLabel": "?i?m {{index}}",
-    "minutesLabel": "{{count}} ph?t",
-    "capacityLoad": "T?i",
-    "priceNote": "Gi? kh?i ?i?m cho m?t h?nh kh?ch, c?p nh?t theo tuy?n v? th?i ?i?m ??t.",
-    "bookTrip": "??t v? chuy?n ?i"
+    "routeOverview": "Tổng quan tuyến",
+    "defaultSchedule": "Lịch trình mặc định",
+    "stops": "điểm dừng",
+    "guestRange": "{{min}}-{{max}} khách",
+    "suitableForGroups": "Phù hợp cho nhóm",
+    "dayHeading": "Ngày {{day}}: {{name}}",
+    "dayLabel": "Ngày {{day}}",
+    "stopLabel": "Điểm dừng {{index}}",
+    "minutesLabel": "{{count}} phút",
+    "capacityLoad": "Tải khách",
+    "priceNote": "Giá chỉ mang tính tham khảo và có thể thay đổi theo nhà cung cấp.",
+    "bookTrip": "Đặt chuyến"
   },
   "mapStyle": {
     "toggle": "Chuyển bản đồ nền",
+    "outdoor": "Ngoài trời",
+    "street": "Đường phố",
+    "satellite": "Vệ tinh",
+    "satelliteStreet": "Kết hợp",
+    "outdoorDesc": "Kiểu bản đồ địa hình và thiên nhiên",
+    "streetDesc": "Bản đồ đô thị với đường và nhãn",
+    "satelliteDesc": "Ảnh vệ tinh độ phân giải cao",
+    "satelliteStreetDesc": "Ảnh vệ tinh kèm đường giao thông",
     "unavailable": "Kiểu bản đồ không khả dụng"
   },
   "headerAside": {
-    "tour": "Tuyến du lịch"
+    "chatbot": "Trợ lý AI",
+    "event": "Sự kiện",
+    "tour": "Tuyến du lịch",
+    "capacity": "Sức chứa",
+    "traffic": "Giao thông",
+    "satellite": "Vệ tinh",
+    "compareSatellite": "So sánh vệ tinh"
   },
   "vr360": {
     "main_badge": "Chính",
@@ -638,20 +856,20 @@
       "tool3dDesc": "Chuyển sang chế độ 3D (bật địa hình và tòa nhà 3D)",
       "floatWeather": "Thời tiết",
       "weatherAlert": "Cảnh báo",
-      "weatherAlertAirPollutionHigh": "Chất lượng không khí ở mức không tốt cho nhóm nhạy cảm",
-      "weatherAlertHeat": "Nhiệt độ ngoài trời đang ở mức cao",
-      "weatherAlertWind": "Gió mạnh có thể ảnh hưởng hoạt động ngoài trời",
-      "weatherAlertThunderstorm": "Có nguy cơ dông trong khu vực",
       "weatherNoAlert": "Không có cảnh báo",
+      "weatherUnknown": "Không xác định",
+      "weatherUnknownLocation": "Ninh Bình",
+      "weatherUnavailable": "Không thể tải dữ liệu thời tiết",
+      "weatherAlertAirPollutionHigh": "Phát hiện ô nhiễm không khí cao",
+      "weatherAlertHeat": "Cảnh báo nhiệt độ cao",
+      "weatherAlertWind": "Cảnh báo gió mạnh",
+      "weatherAlertThunderstorm": "Cảnh báo dông",
       "aqiGood": "Tốt",
       "aqiFair": "Khá",
       "aqiModerate": "Trung bình",
       "aqiPoor": "Kém",
       "aqiVeryPoor": "Rất kém",
-      "aqiUnknown": "AQI chưa xác định",
-      "weatherUnknown": "Không xác định",
-      "weatherUnknownLocation": "Ninh Bình",
-      "weatherUnavailable": "Không thể tải dữ liệu thời tiết",
+      "aqiUnknown": "Không xác định",
       "unsupportedTitle": "Bản đồ không hỗ trợ trên thiết bị này",
       "unsupportedMessage": "Vui lòng dùng màn hình máy tính xách tay/máy bàn (>= 1024px) để có trải nghiệm bản đồ đầy đủ",
       "toolResetDesc": "Đặt lại bản đồ về tâm và góc nhìn mặc định",
@@ -747,27 +965,26 @@
       "syncing": "Đang cập nhật..",
       "count": "{{count}} điểm theo dõi",
       "refresh": "Làm mới",
-      "all": "Tất cả",
       "defaultName": "Điểm du lịch",
+      "status": {
+        "overloaded": "Quá tải",
+        "near_full": "Gần đầy",
+        "busy": "Đông đúc",
+        "normal": "Bình thường",
+        "low": "Thấp",
+        "moderate": "Trung bình",
+        "unknown": "Không rõ"
+      },
       "error": "Không thể tải dữ liệu sức chứa",
       "empty": "Không tìm thấy điểm phù hợp",
       "viewOnMap": "Xem trên bản đồ",
       "live": "Trực tiếp",
       "connecting": "Đang kết nối...",
       "searchPlaceholder": "Tìm điểm theo dõi...",
-      "filteredCount": "{{filtered}} / {{total}} ?i?m",
-      "trackedCount": "{{count}} ?i?m ?ang theo d?i",
-      "capacityWithMax": "{{current}} / {{max}} ng??i",
-      "capacityCurrent": "{{current}} ng??i",
-      "status": {
-        "overloaded": "Quá tải",
-        "near_full": "Gần đầy",
-        "busy": "Đông",
-        "moderate": "Trung bình",
-        "normal": "Bình thường",
-        "low": "Thấp",
-        "unknown": "Chưa rõ"
-      }
+      "filteredCount": "{{filtered}}/{{total}} điểm",
+      "trackedCount": "{{count}} điểm đang theo dõi",
+      "capacityWithMax": "{{current}} / {{max}} người",
+      "capacityCurrent": "{{current}} người"
     },
     "direction": {
       "title": "Chỉ đường",
@@ -824,12 +1041,18 @@
       "disabled": "Lớp giao thông đang tắt",
       "live": "Trực tiếp",
       "summary": {
-        "total": "T?ng",
-        "accident": "Tai n?n",
-        "jam": "?n t?c",
-        "works": "Thi c?ng",
-        "avg_delay": "Delay trung b?nh",
-        "minutes": "ph?t"
+        "total": "Tổng",
+        "accident": "Tai nạn",
+        "jam": "Ùn tắc",
+        "works": "Thi công",
+        "avg_delay": "Độ trễ trung bình",
+        "minutes": "phút"
+      },
+      "flowLevels": {
+        "free_flow": "Thông thoáng",
+        "moderate": "Trung bình",
+        "heavy": "Đông",
+        "severe": "Ùn tắc nặng"
       }
     },
     "spotModal": {
@@ -858,12 +1081,29 @@
       "noProducts": "Không có sản phẩm OCOP lân cận",
       "distFrom": "Cách",
       "missingCoordinates": "Chưa có tọa độ sản phẩm",
-      "fallbackProductName": "S?n ph?m OCOP",
-      "productModalDescription": "Th?ng tin s?n ph?m OCOP Ninh B?nh",
-      "productCertified": "S?n ph?m ??t ch?ng nh?n",
-      "ocopStars": "OCOP {{count}} sao",
-      "oneCommuneOneProduct": "M?i x? m?t s?n ph?m",
-      "viewDestination": "Xem ?i?m tham quan"
+      "fallbackProductName": "Sản phẩm OCOP",
+      "productModalDescription": "Chi tiết sản phẩm OCOP",
+      "ocopStars": "{{count}} sao",
+      "productCertified": "Đã chứng nhận",
+      "oneCommuneOneProduct": "Mỗi xã một sản phẩm",
+      "viewDestination": "Xem điểm đến"
+    },
+    "mock": {
+      "destinations": {
+        "trangAn": {
+          "description": "Điểm đến nổi bật kết hợp văn hóa và thiên nhiên với đường sông uốn lượn, hang đá và điểm dừng tâm linh."
+        },
+        "tamCoc": {
+          "description": "Khu du lịch sông nước nổi tiếng với ruộng lúa, đường đạp xe và hành trình thuyền thư thái."
+        },
+        "hoaLuOldTown": {
+          "description": "Không gian buổi tối sôi động, phù hợp dạo chơi, thưởng thức ẩm thực và kết nối nhanh tới các điểm di sản lân cận."
+        }
+      },
+      "tourSuggestions": {
+        "softDay": "Lộ trình nhẹ nhàng với quãng di chuyển ngắn, cảnh quan êm dịu và điểm ăn uống linh hoạt.",
+        "cultureFocus": "Kết hợp di sản, đền chùa và câu chuyện địa phương cho một ngày khám phá thiên về văn hóa."
+      }
     }
   },
   "satellite": {
@@ -896,6 +1136,44 @@
       "auto_detect_change": "Tự động phát hiện thay đổi",
       "auto_detect_change_desc": "Phát hiện thay đổi thực vật, tăng trưởng rừng và đường/công trình giữa 2 giai đoạn",
       "auto_detect_change_single_desc": "So sánh giai đoạn hiện tại với cùng giai đoạn một năm trước"
+    },
+    "layers": {
+      "rgb": "Màu thực",
+      "rgb_desc": "Ảnh tổ hợp RGB",
+      "ndvi": "NDVI",
+      "ndvi_desc": "Chỉ số thực vật chuẩn hóa",
+      "heatmap": "Bản đồ nhiệt",
+      "heatmap_desc": "Nhiệt độ bề mặt đất (LST)",
+      "classified": "Phân loại",
+      "classified_desc": "Phân loại lớp phủ đất (7 lớp)",
+      "change": "Phát hiện thay đổi",
+      "change_desc": "Phát hiện mất/tăng thực vật và đường/công trình"
+    },
+    "legend": {
+      "heatmap": {
+        "very_cool": "Rất mát",
+        "cool": "Mát",
+        "moderate": "Trung bình",
+        "warm": "Ấm",
+        "hot": "Nóng",
+        "very_hot": "Rất nóng"
+      },
+      "classified": {
+        "water": "Mặt nước",
+        "bare_land": "Đất trống",
+        "shrub_grass": "Cây bụi và cỏ",
+        "agriculture": "Đất nông nghiệp",
+        "open_forest": "Rừng thưa",
+        "evergreen_forest": "Rừng thường xanh",
+        "urban": "Khu đô thị"
+      },
+      "change": {
+        "no_change": "Không thay đổi",
+        "vegetation_loss": "Suy giảm thảm thực vật",
+        "vegetation_gain": "Tăng trưởng thảm thực vật",
+        "road_construction": "Đường hoặc công trình",
+        "vegetation_loss_road": "Suy giảm thực vật gần khu thi công"
+      }
     },
     "stats": {
       "title": "Thống kê khu vực",
@@ -1068,7 +1346,13 @@
       "video": "Video"
     },
     "topics": {
-      "all": "Tất cả chủ đề"
+      "all": "Tất cả chủ đề",
+      "experience": "Trải nghiệm",
+      "food": "Ẩm thực",
+      "photo": "Nhiếp ảnh",
+      "culture": "Văn hóa",
+      "nature": "Thiên nhiên",
+      "checkin": "Check-in"
     },
     "post": {
       "read_more": "Đọc thêm",
@@ -1089,7 +1373,63 @@
       "place": "📍 Địa điểm",
       "hashtag": "🏷 Hashtag"
     },
-    "just_now": "Vừa xong"
+    "just_now": "Vừa xong",
+    "mock": {
+      "places": {
+        "trang_an": "Tràng An",
+        "tam_coc": "Tam Cốc",
+        "bai_dinh": "Bái Đính",
+        "ha_long": "Hạ Long",
+        "ninh_binh": "Ninh Bình"
+      },
+      "posts": {
+        "item_1": {
+          "title": "Quay lại chuyến thuyền sáng sớm ở Tràng An",
+          "description": "Mặt nước yên, hang đá vắng và mỗi khúc cua đều cho cảm giác như đang đi trong một khung hình bưu thiếp."
+        },
+        "item_2": {
+          "title": "Một buổi chiều đi Tam Cốc theo kiểu ăn uống là chính",
+          "description": "Mình dành cả buổi thử món địa phương, trò chuyện với chủ quán và lưu lại vài điểm dừng đáng quay lại."
+        },
+        "item_3": {
+          "title": "Bái Đính qua góc nhìn của người lần đầu ghé thăm",
+          "description": "Quy mô ngôi chùa rất ấn tượng, nhưng điều mình nhớ nhất lại là những khoảng lặng và nền núi phía sau."
+        },
+        "item_4": {
+          "title": "Gợi ý check-in nhanh cho một ngày biển thật sáng",
+          "description": "Trang phục gọn, lịch đi đơn giản và vài khung hình dễ chụp cho chuyến đi cuối tuần."
+        },
+        "item_5": {
+          "title": "Đi đâu nửa ngày khi Ninh Bình trở nên đông hơn thường lệ",
+          "description": "Mình chuyển sang nhịp chậm hơn với điểm ngắm thoáng, quãng đi ngắn và một bữa ăn thật ổn."
+        },
+        "item_6": {
+          "title": "Ghi chú chụp ảnh trong giờ vàng dịu nhẹ",
+          "description": "Một vài mẹo nhỏ về bố cục, phản chiếu và ánh sáng cuối ngày giúp bộ ảnh dễ lên mood hơn nhiều."
+        }
+      },
+      "time": {
+        "today": "Hôm nay",
+        "hours_ago": "{{count}} giờ trước",
+        "yesterday": "Hôm qua",
+        "days_ago": "{{count}} ngày trước",
+        "weeks_ago": "{{count}} tuần trước"
+      },
+      "trending": {
+        "item_1": {
+          "title": "Không khí tuyến thuyền",
+          "text": "Những khung cảnh sông nước yên bình và hang động đang được lưu lại nhiều nhất tuần này."
+        },
+        "item_2": {
+          "title": "Cẩm nang điểm ngắm hoàng hôn",
+          "text": "Người xem đang lưu nhiều mẹo thực tế cho các cung leo chiều muộn và góc chụp skyline đẹp."
+        },
+        "item_3": {
+          "title": "Danh sách món ăn đường phố",
+          "text": "Các gợi ý ăn nhanh gần khu du lịch đang nhận được nhiều lượt quan tâm từ cộng đồng."
+        }
+      }
+    }
   },
   "feedbackPage": {
     "hero": {

@@ -58,9 +58,9 @@ export default function ModalCarousel() {
     >
       <DialogContent className="bg-card h-[95vh] min-w-4xl xl:h-[80vh]">
         <DialogHeader>
-          <DialogTitle>{t('images_gallery', 'Thư viện ảnh')}</DialogTitle>
+          <DialogTitle>{t('images_gallery')}</DialogTitle>
           <DialogDescription>
-            {t('explore_images', 'Khám phá những hình ảnh đẹp của địa điểm này')}
+            {t('explore_images')}
           </DialogDescription>
         </DialogHeader>
 
@@ -73,7 +73,7 @@ export default function ModalCarousel() {
                     <CardContent className="relative aspect-video w-full">
                       <img
                         src={withBaseUrl(img)}
-                        alt={`${t('image', 'Ảnh')} ${(idx % imageData.length) + 1}`}
+                        alt={`${t('image')} ${(idx % imageData.length) + 1}`}
                         className="absolute inset-0 h-full w-full cursor-zoom-in rounded-lg object-cover shadow-lg"
                         onClick={() => setZoomImage(withBaseUrl(img))}
                       />
@@ -131,7 +131,7 @@ export default function ModalCarousel() {
           className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 p-4"
           onClick={() => setZoomImage(null)}
           role="dialog"
-          aria-label={t('zoomed_image', 'Ảnh phóng to')}
+          aria-label={t('zoomed_image')}
         >
           <Button variant="ghost"
             type="button"
@@ -141,11 +141,11 @@ export default function ModalCarousel() {
               setZoomImage(null);
             }}
           >
-            {t('close', 'Đóng')}
+            {t('close')}
           </Button>
           <img
             src={zoomImage}
-            alt={t('zoomed_image', 'Ảnh phóng to')}
+            alt={t('zoomed_image')}
             className="max-h-[92vh] max-w-[92vw] rounded-md object-contain"
             onClick={(event) => event.stopPropagation()}
           />
