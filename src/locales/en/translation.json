@@ -879,6 +879,7 @@
     },
     "toolbar": {
       "searchPlaceholder": "Search destination, service, food, event..",
+      "searchButton": "Search",
       "category": "Category",
       "radius": "Radius",
       "radiusAll": "No radius limit",
@@ -1240,7 +1241,9 @@
     "cta_section": {
       "badge": "Plan your journey",
       "title": "Combine festivals into your travel itinerary",
-      "description": "Use the GIS map to find nearby attractions and plan the perfect trip around festival dates"
+      "description": "Use the GIS map to find nearby attractions and plan the perfect trip around festival dates",
+      "cta_map": "Open map",
+      "cta_points": "View destinations"
     }
   },
   "festivalDetail": {
@@ -1443,6 +1446,19 @@
     "filters": {
       "search_placeholder": "Search reports...",
       "all_priorities": "All priorities"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "status": {
+      "pending": "Pending",
+      "in_progress": "In progress",
+      "resolved": "Resolved",
+      "rejected": "Rejected",
+      "closed": "Closed"
     },
     "toolbar": {
       "refresh": "Refresh"

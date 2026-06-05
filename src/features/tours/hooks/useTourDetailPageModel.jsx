@@ -441,8 +441,8 @@ export function useTourDetailPageModel(t) {
 
   const heroTags = useMemo(() => {
     const tags = [];
-    if (tour?.is_featured) tags.push(t('tourPage.featured', 'Nổi bật'));
-    if (tour?.duration_days) tags.push(`${tour.duration_days} ${t('tourPage.days', 'ngày')}`);
+    if (tour?.is_featured) tags.push(t('tourPage.featured'));
+    if (tour?.duration_days) tags.push(`${tour.duration_days} ${t('tourPage.days')}`);
     return tags;
   }, [tour, t]);
 
@@ -451,7 +451,7 @@ export function useTourDetailPageModel(t) {
   const quickStats = [
     {
       key: 'price',
-      label: t('tourPage.price', 'Giá từ'),
+      label: t('tourPage.price'),
       value: (
         <span
           className={`inline-flex items-center gap-1 text-sm font-medium ${
@@ -465,7 +465,7 @@ export function useTourDetailPageModel(t) {
     },
     {
       key: 'duration',
-      label: t('tourPage.duration', 'Thời lượng'),
+      label: t('tourPage.duration'),
       value: (
         <span className="text-foreground inline-flex items-center gap-1 text-sm font-medium">
           <Clock3 className="text-primary h-3.5 w-3.5" />
@@ -475,17 +475,17 @@ export function useTourDetailPageModel(t) {
     },
     {
       key: 'guests',
-      label: t('tourPage.maxGuests', 'Sức chứa'),
+      label: t('tourPage.maxGuests'),
       value: (
         <span className="text-foreground inline-flex items-center gap-1 text-sm font-medium">
           <Users className="text-primary h-3.5 w-3.5" />
-          {tour?.max_guests ? `${tour.max_guests} ${t('tourPage.people', 'người')}` : '-'}
+          {tour?.max_guests ? `${tour.max_guests} ${t('tourPage.people')}` : '-'}
         </span>
       ),
     },
     {
       key: 'rating',
-      label: t('tourPage.rating', 'Đánh giá'),
+      label: t('tourPage.rating'),
       value:
         averageDisplayRating > 0 ? (
           <div className="text-primary flex items-center gap-1 text-sm font-medium">
@@ -500,29 +500,29 @@ export function useTourDetailPageModel(t) {
   const sidebarRows = [
     {
       key: 'start_location',
-      label: t('tourPage.startLocation', 'Địa điểm đi'),
-      value: tour?.start_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
+      label: t('tourPage.startLocation'),
+      value: tour?.start_location_vi || t('tourPage.unknown'),
       dotClass: 'bg-primary',
       icon: <MapPin className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'end_location',
-      label: t('tourPage.endLocation', 'Địa điểm đến'),
-      value: tour?.end_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
+      label: t('tourPage.endLocation'),
+      value: tour?.end_location_vi || t('tourPage.unknown'),
       dotClass: 'bg-primary',
       icon: <Flag className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'duration',
-      label: t('tourPage.duration', 'Thời lượng'),
+      label: t('tourPage.duration'),
       value: durationLabel,
       dotClass: 'bg-primary',
       icon: <Clock3 className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'provider',
-      label: t('tourPage.provider', 'Nhà cung cấp'),
-      value: tour?.business_name || t('tourPage.unknown', 'Chưa cập nhật'),
+      label: t('tourPage.provider'),
+      value: tour?.business_name || t('tourPage.unknown'),
       dotClass: 'bg-primary',
       icon: <Building2 className="text-primary h-3.5 w-3.5" />,
     },

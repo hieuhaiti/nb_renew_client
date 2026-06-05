@@ -8,7 +8,7 @@ export function TourDetailHero({ imageSrc, title, subtitle, tags, totalImages, t
     <section className="border-primary/20 bg-card relative overflow-hidden border-[0.5px]">
       <img
         src={withBaseUrl(imageSrc)}
-        alt={title || t('tourPage.unknown', 'Tour')}
+        alt={title || t('tourPage.unknown')}
         className="h-70 w-full object-cover"
         onError={(e) => {
           e.target.onerror = null;
@@ -35,7 +35,7 @@ export function TourDetailHero({ imageSrc, title, subtitle, tags, totalImages, t
         </h1>
 
         <p className="text-primary-foreground/75 mt-1 truncate text-sm" title={subtitle}>
-          {subtitle || t('tourPage.locationPending', 'Đang cập nhật vị trí')}
+          {subtitle || t('tourPage.locationPending')}
         </p>
       </div>
 

@@ -24,10 +24,7 @@ export const ReviewTextarea = memo(({ onCommentChange, t }) => {
     <div>
       <Textarea
         id="review"
-        placeholder={t(
-          'tourism.leave_comment_placeholder',
-          'Chia sẻ trải nghiệm, cảm nhận của bạn về địa điểm này...'
-        )}
+        placeholder={t('tourism.leave_comment_placeholder')}
         value={displayValue}
         onChange={handleChange}
         className={`min-h-25 resize-none focus:ring-0! focus:outline-none! ${
@@ -41,10 +38,10 @@ export const ReviewTextarea = memo(({ onCommentChange, t }) => {
       />
       <div className="mt-1 flex justify-between text-sm">
         <span className={`${newComment.length < 10 ? 'text-destructive' : 'text-primary'}`}>
-          {t('tourism.min_characters', 'Tối thiểu 10 ký tự')}{' '}
+          {t('tourism.min_characters')}{' '}
           {newComment.length >= 10
             ? '✓'
-            : `(${t('tourism.characters_left', 'còn')} ${10 - newComment.length})`}
+            : `(${t('tourism.characters_left')} ${10 - newComment.length})`}
         </span>
         <span className="text-muted-foreground">{newComment.length}/500</span>
       </div>

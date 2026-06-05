@@ -170,7 +170,7 @@ export default function TourismPointPage() {
   const getCategoryName = (point) =>
     point?.category_name ||
     categoryNameById.get(String(point?.category_id)) ||
-    t('tourismPointPage.unknown_category', 'Unknown category');
+    t('tourismPointPage.unknown_category');
 
   useEffect(() => {
     try {

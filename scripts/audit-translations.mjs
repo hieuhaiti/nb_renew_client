@@ -31,6 +31,8 @@ const visibleFunctionPattern =
 const translationKeyPattern = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/;
 const resolvableKeyPropertyPattern = /^[A-Za-z_$][\w$]*Key$/;
 const declaredTranslationKeyPropertyNames = new Set([
+  'key',
+  'name',
   'label',
   'title',
   'description',
@@ -77,6 +79,36 @@ const reportPath =
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function isTranslationKeyLiteral(value) {
+  return (
+    typeof value === 'string' &&
+    translationKeyPattern.test(value) &&
+    value.includes('.') &&
+    /[A-Za-z_]/.test(value)
+  );
+}
+
+function isResolvableTranslationPropertyName(propertyName) {
+  return (
+    resolvableKeyPropertyPattern.test(propertyName) ||
+    declaredTranslationKeyPropertyNames.has(propertyName)
+  );
+}
+
+function hasInlineDefaultValue(content, index) {
+  const tail = content.slice(index, index + 250);
+  return /,\s*{[\s\S]*?\bdefaultValue\s*:/.test(tail);
+}
+
+function resolveTemplateTranslationKeys(literal, localeKeys) {
+  if (!literal || literal.quote !== '`' || !literal.raw.includes('${')) return [];
+
+  const prefix = unescapeStringLiteral(literal.raw.split('${')[0] || '');
+  if (!isTranslationKeyLiteral(`${prefix}x`)) return [];
+
+  return localeKeys.filter((key) => key.startsWith(prefix));
 }
 
 function collectDuplicateJsonKeys(filePath, locale) {
@@ -316,8 +348,8 @@ function collectResolvableKeyProperties(content) {
   const properties = new Map();
 
   function addEntry(propertyName, key, contextName) {
-    if (!resolvableKeyPropertyPattern.test(propertyName)) return;
-    if (!translationKeyPattern.test(key)) return;
+    if (!isResolvableTranslationPropertyName(propertyName)) return;
+    if (!isTranslationKeyLiteral(key)) return;
 
     if (!properties.has(propertyName)) properties.set(propertyName, []);
     properties.get(propertyName).push({
@@ -407,18 +439,17 @@ function resolvePropertyAccessTranslationKeys(content, index, propertyKeyMap) {
 
   const baseIdentifier = propertyAccess.segments[0];
   const propertyName = propertyAccess.segments[propertyAccess.segments.length - 1];
-  if (!resolvableKeyPropertyPattern.test(propertyName)) return null;
+  if (!isResolvableTranslationPropertyName(propertyName)) return null;
 
   const entries = propertyKeyMap.get(propertyName);
   if (!entries?.length) return null;
 
   const baseTokens = tokenizeContextName(baseIdentifier).filter((token) => !genericContextTokens.has(token));
-  if (!baseTokens.length) return null;
-
-  const matchingEntries = entries.filter((entry) =>
-    entry.contextTokens.some((token) => baseTokens.includes(token))
-  );
-  const keys = [...new Set(matchingEntries.map((entry) => entry.key))].sort((a, b) =>
+  const matchingEntries = baseTokens.length
+    ? entries.filter((entry) => entry.contextTokens.some((token) => baseTokens.includes(token)))
+    : [];
+  const resolvedEntries = matchingEntries.length ? matchingEntries : entries;
+  const keys = [...new Set(resolvedEntries.map((entry) => entry.key))].sort((a, b) =>
     a.localeCompare(b)
   );
   if (!keys.length) return null;
@@ -545,6 +576,31 @@ function extractStaticI18nKeys(content, relPath, lineStarts) {
   return usages;
 }
 
+function extractTemplateTranslationCalls(content, relPath, lineStarts, localeKeys) {
+  const usages = [];
+  const callRegex = /\b(?:i18n\.)?t\s*\(/g;
+  let match;
+
+  while ((match = callRegex.exec(content))) {
+    const literalStart = skipWhitespace(content, callRegex.lastIndex);
+    const literal = readStringLiteralAt(content, literalStart);
+    const keys = resolveTemplateTranslationKeys(literal, localeKeys);
+    if (!keys.length) continue;
+
+    for (const key of keys) {
+      usages.push({
+        key,
+        source: 't().template',
+        file: relPath,
+        line: lineForIndex(lineStarts, match.index),
+        fallback: null,
+      });
+    }
+  }
+
+  return usages;
+}
+
 function extractDeclaredTranslationKeyLiterals(content, relPath, lineStarts) {
   const ast = parseSourceAst(content);
   if (!ast) return [];
@@ -559,7 +615,7 @@ function extractDeclaredTranslationKeyLiterals(content, relPath, lineStarts) {
   ]);
 
   function addUsage(key, start, source) {
-    if (!translationKeyPattern.test(key) || !key.includes('.')) return;
+    if (!isTranslationKeyLiteral(key)) return;
     usages.push({
       key,
       source,
@@ -572,7 +628,7 @@ function extractDeclaredTranslationKeyLiterals(content, relPath, lineStarts) {
   function collectArrayElements(elements, start, source) {
     const keys = elements
       .map((element) => getStaticStringValue(element))
-      .filter((value) => typeof value === 'string' && translationKeyPattern.test(value) && value.includes('.'));
+      .filter((value) => isTranslationKeyLiteral(value));
 
     if (!keys.length) return;
 
@@ -595,8 +651,7 @@ function extractDeclaredTranslationKeyLiterals(content, relPath, lineStarts) {
         if (
           declaredTranslationKeyPropertyNames.has(propertyName) &&
           staticValue &&
-          staticValue.includes('.') &&
-          /[A-Za-z_]/.test(staticValue)
+          isTranslationKeyLiteral(staticValue)
         ) {
           addUsage(staticValue, node.value.start ?? node.start, `declared:${propertyName}`);
         }
@@ -706,7 +761,27 @@ function extractResolvedI18nKeys(content, relPath, lineStarts, propertyKeyMap) {
   return usages;
 }
 
-function extractDynamicUsages(content, relPath, lineStarts, propertyKeyMap) {
+function isResolvableDynamicArgument(content, index, propertyKeyMap, localeKeys) {
+  const literal = readStringLiteralAt(content, index);
+  if (literal) {
+    if (literal.quote !== '`' || !literal.raw.includes('${')) return true;
+    return (
+      resolveTemplateTranslationKeys(literal, localeKeys).length > 0 ||
+      hasInlineDefaultValue(content, literal.end)
+    );
+  }
+
+  const resolved = resolvePropertyAccessTranslationKeys(content, index, propertyKeyMap);
+  if (resolved) return true;
+
+  const identifier = readIdentifierAt(content, index);
+  return Boolean(
+    identifier &&
+      (isResolvableTranslationPropertyName(identifier.name) || hasInlineDefaultValue(content, identifier.end))
+  );
+}
+
+function extractDynamicUsages(content, relPath, lineStarts, propertyKeyMap, localeKeys) {
   const dynamic = [];
   const callRegex = /\b(?:i18n\.)?t\s*\(/g;
   const attrRegex = /\bi18nKey\s*=\s*{/g;
@@ -714,9 +789,7 @@ function extractDynamicUsages(content, relPath, lineStarts, propertyKeyMap) {
 
   while ((match = callRegex.exec(content))) {
     const argStart = skipWhitespace(content, callRegex.lastIndex);
-    const literal = readStringLiteralAt(content, argStart);
-    const resolved = resolvePropertyAccessTranslationKeys(content, argStart, propertyKeyMap);
-    if ((!literal || (literal.quote === '`' && literal.raw.includes('${'))) && !resolved) {
+    if (!isResolvableDynamicArgument(content, argStart, propertyKeyMap, localeKeys)) {
       dynamic.push({
         source: 't()',
         file: relPath,
@@ -727,9 +800,7 @@ function extractDynamicUsages(content, relPath, lineStarts, propertyKeyMap) {
 
   while ((match = attrRegex.exec(content))) {
     const argStart = skipWhitespace(content, attrRegex.lastIndex);
-    const literal = readStringLiteralAt(content, argStart);
-    const resolved = resolvePropertyAccessTranslationKeys(content, argStart, propertyKeyMap);
-    if ((!literal || (literal.quote === '`' && literal.raw.includes('${'))) && !resolved) {
+    if (!isResolvableDynamicArgument(content, argStart, propertyKeyMap, localeKeys)) {
       dynamic.push({
         source: 'i18nKey',
         file: relPath,
@@ -1032,7 +1103,11 @@ ${status}: translation completeness ${
       : 'has no blocking key/type/empty-value issues in the static audit.'
   }
 
-Dynamic i18n usages are listed for manual review because static analysis cannot resolve their keys safely.
+${
+    result.counts.dynamicUsages > 0
+      ? 'Dynamic i18n usages are listed for manual review because static analysis cannot resolve their keys safely.'
+      : 'No unresolved dynamic i18n usages remain.'
+  }
 
 ## Summary
 
@@ -1186,10 +1261,13 @@ for (const document of sourceDocuments) {
 
   staticUsages.push(...extractStaticTranslationCalls(content, relPath, lineStarts));
   staticUsages.push(...extractStaticI18nKeys(content, relPath, lineStarts));
+  staticUsages.push(...extractTemplateTranslationCalls(content, relPath, lineStarts, allLocaleKeys));
   staticUsages.push(...extractDeclaredTranslationKeyLiterals(content, relPath, lineStarts));
   staticUsages.push(...extractResolvedTranslationCalls(content, relPath, lineStarts, resolvableKeyPropertyMap));
   staticUsages.push(...extractResolvedI18nKeys(content, relPath, lineStarts, resolvableKeyPropertyMap));
-  dynamicUsages.push(...extractDynamicUsages(content, relPath, lineStarts, resolvableKeyPropertyMap));
+  dynamicUsages.push(
+    ...extractDynamicUsages(content, relPath, lineStarts, resolvableKeyPropertyMap, allLocaleKeys)
+  );
   hardcodedVisibleText.push(...extractJsxTextNodes(content, relPath, lineStarts));
   hardcodedVisibleText.push(...extractVisibleAttributes(content, relPath, lineStarts));
   hardcodedVisibleText.push(...extractVisibleStringLiterals(content, relPath, lineStarts));

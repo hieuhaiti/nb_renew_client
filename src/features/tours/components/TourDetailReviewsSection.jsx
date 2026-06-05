@@ -24,14 +24,14 @@ function StarsDisplay({ count, size = 12 }) {
 
 function TourReviewCard({ r, t }) {
   const stars = Number(r.stars || r.rating || 0);
-  const userName = r.user_name || r.user?.name || r.author || t('tourPage.guest', 'Khách');
+  const userName = r.user_name || r.user?.name || r.author || t('tourPage.guest');
   const dateStr = r.created_at || r.createdAt || r.date;
 
   const subRatings = [
-    { label: t('tourPage.cleanliness', 'Sạch sẽ'), value: Number(r.cleanliness_rating ?? 0) },
-    { label: t('tourPage.service', 'Dịch vụ'), value: Number(r.service_rating ?? 0) },
-    { label: t('tourPage.value', 'Giá trị'), value: Number(r.value_rating ?? 0) },
-    { label: t('tourPage.accessibility', 'Tiếp cận'), value: Number(r.accessibility_rating ?? 0) },
+    { label: t('tourPage.cleanliness'), value: Number(r.cleanliness_rating ?? 0) },
+    { label: t('tourPage.service'), value: Number(r.service_rating ?? 0) },
+    { label: t('tourPage.value'), value: Number(r.value_rating ?? 0) },
+    { label: t('tourPage.accessibility'), value: Number(r.accessibility_rating ?? 0) },
   ].filter((m) => m.value > 0);
 
   return (
@@ -110,18 +110,18 @@ export function TourDetailReviewsSection({
   return (
     <section className="bg-card border-border mb-3 rounded-[16px] border px-5 py-4">
       <h2 className="text-foreground mb-4 text-sm font-bold 2xl:text-base">
-        {t('tourPage.reviews', 'Đánh giá')}
+        {t('tourPage.reviews')}
       </h2>
 
       {reviewId && (
         <div className="mb-4 rounded-[10px] border-border bg-primary-soft px-4 py-3">
           <h3 className="text-foreground text-sm font-semibold">
-            {t('tourPage.review', 'Đánh giá')} #{singleReview?.id || reviewId}
+            {t('tourPage.review')} #{singleReview?.id || reviewId}
           </h3>
           <p className="text-muted-foreground mt-1 text-sm">
             {singleReview?.comment ||
               singleReview?.content ||
-              t('tourPage.reviewNotFound', 'Không tìm thấy đánh giá')}
+              t('tourPage.reviewNotFound')}
           </p>
         </div>
       )}
@@ -139,7 +139,7 @@ export function TourDetailReviewsSection({
               <StarsDisplay count={Math.round(criteria.averageRating)} size={14} />
             </div>
             <div className="text-muted-foreground mt-1 text-center text-xs">
-              {totalReviews} {t('tourPage.reviewsCount', 'đánh giá')}
+              {totalReviews} {t('tourPage.reviewsCount')}
             </div>
           </div>
 
@@ -177,7 +177,7 @@ export function TourDetailReviewsSection({
           reviews.map((r) => <TourReviewCard key={r.id} r={r} t={t} />)
         ) : (
           <div className="text-muted-foreground rounded-[14px] border-border bg-muted px-4 py-6 text-center text-sm">
-            {t('tourPage.noReviews', 'Chưa có đánh giá nào.')}
+            {t('tourPage.noReviews')}
           </div>
         )}
       </div>
@@ -186,7 +186,7 @@ export function TourDetailReviewsSection({
       {pagesDisplay > 1 && (
         <div className="mt-3 mb-4 flex items-center justify-between">
           <span className="text-muted-foreground text-xs">
-            {t('tourPage.page', 'Trang')} {pageDisplay} / {pagesDisplay}
+            {t('tourPage.page')} {pageDisplay} / {pagesDisplay}
           </span>
           <div className="flex items-center gap-1.5">
             <Button variant="ghost"
@@ -196,7 +196,7 @@ export function TourDetailReviewsSection({
               className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border-border bg-card px-2.5 text-xs font-semibold hover:bg-muted disabled:opacity-40"
             >
               <ChevronLeft size={13} />
-              {t('common.prev', 'Trước')}
+              {t('common.prev')}
             </Button>
             <Button variant="ghost"
               type="button"
@@ -204,7 +204,7 @@ export function TourDetailReviewsSection({
               onClick={onNextPage}
               className="text-foreground flex h-7 items-center gap-1 rounded-[8px] border-border bg-card px-2.5 text-xs font-semibold hover:bg-muted disabled:opacity-40"
             >
-              {t('common.next', 'Sau')}
+              {t('common.next')}
               <ChevronRight size={13} />
             </Button>
           </div>
@@ -214,13 +214,13 @@ export function TourDetailReviewsSection({
       {/* Write review form */}
       <div className="mt-4 rounded-[14px] border-border bg-muted p-4">
         <h3 className="text-foreground mb-4 text-sm font-bold">
-          {t('tourPage.leaveReview', 'Viết đánh giá của bạn')}
+          {t('tourPage.leaveReview')}
         </h3>
 
         {/* Criteria */}
         <div className="mb-4 space-y-2">
           <p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-            {t('tourPage.rateCriteria', 'Đánh giá theo tiêu chí')}
+            {t('tourPage.rateCriteria')}
           </p>
           {criteria.items.map((criterion) => (
             <div
@@ -255,7 +255,7 @@ export function TourDetailReviewsSection({
         {newRating > 0 && (
           <div className="mb-4 flex items-center gap-2 rounded-[10px] border-border bg-card px-3 py-2">
             <span className="text-muted-foreground text-xs">
-              {t('tourPage.avgScore', 'Điểm trung bình')}
+              {t('tourPage.avgScore')}
             </span>
             <span className="ml-auto text-sm font-black text-primary">{newRating}/5</span>
             <StarsDisplay count={newRating} size={14} />
@@ -268,17 +268,14 @@ export function TourDetailReviewsSection({
             htmlFor="tour-review-comment"
             className="text-muted-foreground mb-1.5 block text-xs font-medium"
           >
-            {t('tourPage.comment', 'Nội dung đánh giá')}
+            {t('tourPage.comment')}
           </label>
           <Textarea
             id="tour-review-comment"
             value={newComment}
             maxLength={500}
             onChange={(e) => onCommentChange(e.target.value)}
-            placeholder={t(
-              'tourPage.leave_comment_placeholder',
-              'Chia sẻ trải nghiệm, cảm nhận của bạn về tour này...'
-            )}
+            placeholder={t('tourPage.leave_comment_placeholder')}
             className="min-h-20 resize-none rounded-[10px] border-border bg-card text-sm focus:border-primary"
           />
         </div>
@@ -290,7 +287,7 @@ export function TourDetailReviewsSection({
             onClick={onResetForm}
             className="text-foreground h-9 rounded-[10px] border-border bg-card px-4 text-sm font-semibold hover:bg-muted"
           >
-            {t('tourPage.cancel', 'Huỷ')}
+            {t('tourPage.cancel')}
           </Button>
           <Button variant="ghost"
             type="button"
@@ -300,8 +297,8 @@ export function TourDetailReviewsSection({
             style={BTN_GRADIENT}
           >
             {isSubmitting
-              ? t('tourPage.sending', 'Đang gửi...')
-              : t('tourPage.sendReview', 'Gửi đánh giá')}
+              ? t('tourPage.sending')
+              : t('tourPage.sendReview')}
           </Button>
         </div>
       </div>

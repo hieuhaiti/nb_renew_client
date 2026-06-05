@@ -8,7 +8,7 @@ export function TourDetailTopBar({ onBack, isLiked, onToggleFavorite, onShare, t
       <div className="border-primary/20 bg-card mb-3 flex items-center justify-between rounded-[10px] border-[0.5px] px-2.5 py-1.5">
         <Button onClick={onBack} variant="outline" size="sm" className="h-8 gap-1.5">
           <ArrowLeft className="h-4 w-4" />
-          {t('tourPage.back', 'Quay lại')}
+          {t('tourPage.back')}
         </Button>
 
         <div className="flex items-center gap-1.5">
@@ -20,11 +20,11 @@ export function TourDetailTopBar({ onBack, isLiked, onToggleFavorite, onShare, t
             className="h-8 w-8 rounded-md"
           >
             <Heart className="h-4 w-4" />
-            <span className="sr-only">{t('tourPage.actions.save', 'Lưu')}</span>
+            <span className="sr-only">{t('tourPage.actions.save')}</span>
           </Button>
           <Button onClick={onShare} variant="outline" size="icon-sm" className="h-8 w-8 rounded-md">
             <Share2 className="h-4 w-4" />
-            <span className="sr-only">{t('tourPage.actions.share', 'Chia sẻ')}</span>
+            <span className="sr-only">{t('tourPage.actions.share')}</span>
           </Button>
         </div>
       </div>
@@ -32,8 +32,8 @@ export function TourDetailTopBar({ onBack, isLiked, onToggleFavorite, onShare, t
       {shareStatus !== 'idle' && (
         <div className="border-primary/20 bg-card text-muted-foreground mb-3 rounded-[8px] border-[0.5px] px-3 py-1.5 text-sm">
           {shareStatus === 'copied'
-            ? t('tourPage.copied', 'Đã sao chép liên kết')
-            : t('tourPage.shared', 'Đã chia sẻ')}
+            ? t('tourPage.copied')
+            : t('tourPage.shared')}
         </div>
       )}
     </>

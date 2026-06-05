@@ -879,6 +879,7 @@
     },
     "toolbar": {
       "searchPlaceholder": "Tìm điểm đến, dịch vụ, ẩm thực, sự kiện..",
+      "searchButton": "Tìm kiếm",
       "category": "Danh mục",
       "radius": "Bán kính",
       "radiusAll": "Không giới hạn bán kính",
@@ -1240,7 +1241,9 @@
     "cta_section": {
       "badge": "Lên kế hoạch hành trình",
       "title": "Kết hợp lễ hội vào lịch trình du lịch",
-      "description": "Dùng bản đồ GIS để tìm các điểm tham quan lân cận và lên kế hoạch chuyến đi hoàn hảo quanh các ngày lễ hội"
+      "description": "Dùng bản đồ GIS để tìm các điểm tham quan lân cận và lên kế hoạch chuyến đi hoàn hảo quanh các ngày lễ hội",
+      "cta_map": "Mở bản đồ",
+      "cta_points": "Xem điểm du lịch"
     }
   },
   "festivalDetail": {
@@ -1443,6 +1446,19 @@
     "filters": {
       "search_placeholder": "Tìm kiếm phản ánh...",
       "all_priorities": "Tất cả mức độ"
+    },
+    "priority": {
+      "low": "Thấp",
+      "normal": "Bình thường",
+      "high": "Cao",
+      "critical": "Khẩn cấp"
+    },
+    "status": {
+      "pending": "Chờ xử lý",
+      "in_progress": "Đang xử lý",
+      "resolved": "Đã xử lý",
+      "rejected": "Từ chối",
+      "closed": "Đóng"
     },
     "toolbar": {
       "refresh": "Làm mới"

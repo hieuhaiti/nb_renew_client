@@ -96,8 +96,8 @@ function StopMediaTrigger({ stop, t }) {
       type="button"
       onClick={() => openCarouselModal(images)}
       className="relative h-10 w-10 overflow-hidden rounded-[15px] border border-white/50 p-0"
-      aria-label={t('tourPage.viewStopGallery', 'Xem thư viện ảnh điểm dừng')}
-      title={t('tourPage.viewStopGallery', 'Xem thư viện ảnh điểm dừng')}
+      aria-label={t('tourPage.viewStopGallery')}
+      title={t('tourPage.viewStopGallery')}
     >
       <img src={withBaseUrl(images[0])} alt="" className="h-full w-full object-cover" />
       <div className="absolute inset-0 bg-black/20" />
@@ -106,7 +106,7 @@ function StopMediaTrigger({ stop, t }) {
           +{images.length - 1}
         </span>
       )}
-      <span className="sr-only">{t('tourPage.viewStopGallery', 'Xem thư viện ảnh điểm dừng')}</span>
+      <span className="sr-only">{t('tourPage.viewStopGallery')}</span>
     </Button>
   );
 }

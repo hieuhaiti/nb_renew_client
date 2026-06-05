@@ -85,7 +85,7 @@ export function TourDetailStopsSection({ stops, t }) {
   return (
     <section className="bg-card border-border mb-3 rounded-[10px] border-[0.5px] px-4 py-3.5">
       <h2 className="text-foreground mb-3 text-sm font-medium">
-        {t('tourPage.itinerary', 'Lịch trình')}
+        {t('tourPage.itinerary')}
       </h2>
 
       <div className="space-y-4">
@@ -94,7 +94,7 @@ export function TourDetailStopsSection({ stops, t }) {
             {byDay.length > 1 && (
               <div className="mb-2 flex items-center gap-2">
                 <span className="bg-primary text-primary-foreground rounded-[6px] px-2 py-0.5 text-sm font-semibold">
-                  {t('tourPage.day', 'Ngày')} {day}
+                  {t('tourPage.day')} {day}
                 </span>
                 <div className="bg-muted h-px flex-1" />
               </div>
@@ -119,7 +119,7 @@ export function TourDetailStopsSection({ stops, t }) {
                         className="text-foreground text-sm font-medium"
                         title={stop.title_vi || ''}
                       >
-                        {stop.title_vi || t('tourPage.unknown', 'Điểm dừng')}
+                        {stop.title_vi || t('tourPage.unknown')}
                       </p>
                       {stop.description_vi && (
                         <p className="text-muted-foreground mt-0.5 text-sm">
