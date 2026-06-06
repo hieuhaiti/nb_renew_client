@@ -205,41 +205,41 @@
       }
     },
     "footer_section": {
-      "brand_name": "SmartTour WebGIS",
-      "brand": "Cổng thông tin du lịch Ninh Bình – Nền tảng GIS, VR360, OCOP và lịch trình thông minh tích hợp",
-      "tourist_col": "Du khách",
-      "business_col": "Doanh nghiệp",
-      "manager_col": "Nhà quản lý",
+      "brand_name": "Du lịch thông minh Ninh Bình",
+      "brand": "Cổng du lịch số kết nối điểm đến, tuyến tham quan, lễ hội, OCOP, phản ánh cộng đồng và bản đồ WebGIS của Ninh Bình.",
+      "tourist_col": "Khám phá",
+      "business_col": "Dịch vụ",
+      "manager_col": "Thông tin",
       "link_schedule": "Lịch trình",
-      "link_vr360": "VR 360",
-      "link_services": "Đăng tin dịch vụ",
-      "link_feedback": "Quản lý phản hồi",
-      "link_voucher": "Tạo voucher",
-      "link_dashboard": "Dashboard thống kê"
+      "link_vr360": "Bản đồ VR 360",
+      "link_services": "Dịch vụ du lịch",
+      "link_feedback": "Phản ánh du khách",
+      "link_voucher": "Voucher & OCOP",
+      "link_dashboard": "Bảng điều khiển bản đồ"
     },
     "mock": {
       "common": {
         "ninh_binh": "Ninh Bình",
-        "quang_ninh": "Quảng Ninh"
+        "kim_son": "Kim Sơn, Ninh Bình"
       },
       "hero_stats": {
         "featured": "Điểm nổi bật",
-        "average_load": "Tải khách trung bình",
+        "average_load": "Tour gợi ý",
         "events_offers": "Sự kiện và ưu đãi",
-        "vr360": "VR360 sẵn sàng"
+        "vr360": "Cảnh tương tác"
       },
       "hero_events": {
         "hoa_lu": {
-          "title": "Khai mạc lễ hội Hoa Lư",
-          "time": "Cuối tuần này"
+          "title": "Lễ hội tái hiện lịch sử hoàng gia",
+          "time": "15-20/06/2026"
         },
         "tourism_week": {
-          "title": "Tuần du lịch Ninh Bình 2026",
-          "time": "20-27/04"
+          "title": "Festival âm nhạc & du thuyền Tràng An",
+          "time": "01-10/07/2026"
         },
         "light_show": {
-          "title": "Trình diễn ánh sáng ven sông Tràng An",
-          "time": "Tối thứ Sáu hằng tuần"
+          "title": "Mùa thu Hang Múa - trekking & nhiếp ảnh",
+          "time": "01/09-30/11/2026"
         }
       },
       "promo_banner": {
@@ -271,33 +271,33 @@
       },
       "featured_destinations": {
         "trang_an": {
-          "name": "Quần thể danh thắng Tràng An",
-          "subtitle": "Tuyến thuyền qua hang động và thung lũng núi đá",
-          "description": "Hành trình đặc trưng của Ninh Bình với sông nước, hang xuyên núi, điểm dừng tâm linh và cảnh quan karst ấn tượng."
+          "name": "Khu bảo tồn đất ngập nước Vân Long",
+          "subtitle": "Đầm nước yên tĩnh, núi đá vôi và hệ sinh thái đất ngập nước",
+          "description": "Tuyến tham quan thiên nhiên nhẹ nhàng với thuyền chèo, mặt nước rộng và cơ hội quan sát sinh cảnh chim nước."
         },
         "hoa_lu": {
-          "name": "Cố đô Hoa Lư",
-          "subtitle": "Đền cổ và dấu tích kinh đô đầu tiên",
-          "description": "Không gian di sản gắn với các triều đại đầu tiên của Việt Nam, phù hợp cho chuyến đi tìm hiểu lịch sử và kiến trúc."
+          "name": "Núi Non Nước",
+          "subtitle": "Ngọn núi ven sông gần trung tâm thành phố",
+          "description": "Điểm dừng gọn trong lịch trình thành phố, có cảnh quan sông núi, dấu tích văn hóa và góc nhìn thoáng."
         },
         "bai_dinh": {
-          "name": "Chùa Bái Đính",
-          "subtitle": "Quần thể tâm linh quy mô lớn với tầm nhìn núi non",
-          "description": "Khám phá điện chùa, tháp chuông và những cung đường dạo yên tĩnh quanh khuôn viên rộng lớn của Bái Đính."
+          "name": "Động Thiên Hà",
+          "subtitle": "Tuyến hang động đá vôi tại Nho Quan",
+          "description": "Trải nghiệm hang động thường được kết hợp trong các tuyến đồng quê, nổi bật với nhũ đá và không khí mát trong lòng núi."
         }
       },
       "news_items": {
         "item_1": {
-          "title": "Cập nhật phương án giao thông mùa cao điểm cho Tràng An",
-          "excerpt": "Hướng dẫn mới về bãi đỗ và luồng di chuyển giúp du khách hạn chế ùn tắc vào dịp cuối tuần tới."
+          "title": "Động Tiên Cá được giới thiệu như kỳ quan dưới lòng núi vùng Tam Cốc",
+          "excerpt": "Bài viết điểm đến giới thiệu hệ thống hang động ẩn mình và gợi ý cách kết nối với các tuyến tham quan lân cận."
         },
         "item_2": {
-          "title": "Mở trải nghiệm tham quan đêm tại Bái Đính dịp nghỉ lễ",
-          "excerpt": "Chương trình buổi tối bổ sung ánh sáng, xe điện và hành trình gợi ý dành cho nhóm gia đình."
+          "title": "Cố đô Hoa Lư tiếp tục thu hút du khách yêu di sản",
+          "excerpt": "Cập nhật biên tập nhắc lại giá trị kinh đô đầu tiên qua đền, dấu tích lịch sử và cảnh quan xung quanh."
         },
         "item_3": {
-          "title": "Khuyến cáo thời tiết cho các hoạt động du lịch đường sông",
-          "excerpt": "Du khách nên kiểm tra điều kiện thời tiết và mực nước trước khi đặt các tuyến tham quan ngoài trời."
+          "title": "Các tuyến sông và hang động Ninh Bình sẵn sàng đón khách mùa hè",
+          "excerpt": "Du khách được khuyến nghị kiểm tra thời tiết, trạng thái hoạt động và chỉ dẫn bản đồ trước khi chọn trải nghiệm ngoài trời."
         }
       },
       "itinerary": {
@@ -321,56 +321,56 @@
       },
       "services": {
         "item_1": {
-          "name": "Ninh Binh Riverside Stay",
-          "type": "Lưu trú boutique",
-          "price": "Từ 850.000 VND/đêm",
-          "description": "Phòng yên tĩnh ven sông, thuận tiện đưa đón tới các điểm du lịch lớn."
+          "name": "HTX Cơm Cháy Thành Nhân",
+          "type": "Cửa hàng đặc sản",
+          "price": "Voucher COMCHAY50",
+          "description": "Điểm mua quà đặc sản cơm cháy Ninh Bình, có ưu đãi kết nối trong hệ sinh thái du lịch."
         },
         "item_2": {
-          "name": "Tam Coc Garden Kitchen",
-          "type": "Nhà hàng",
-          "price": "Từ 120.000 VND/người",
-          "description": "Món địa phương, không gian đẹp và thực đơn phù hợp cho nhóm gia đình."
+          "name": "Cơ sở mắm tép Bà Quý Gia Viễn",
+          "type": "Nhà sản xuất truyền thống",
+          "price": "Voucher MAMTEP40",
+          "description": "Đơn vị sản xuất thực phẩm địa phương được kết nối với dịch vụ du lịch và voucher."
         },
         "item_3": {
-          "name": "Quầy đặt thuyền Tràng An",
-          "type": "Dịch vụ vé",
-          "price": "Từ 250.000 VND/tuyến",
-          "description": "Hỗ trợ đặt nhanh các tuyến thuyền phổ biến và khởi hành theo nhóm."
+          "name": "Công ty Rượu Kim Sơn",
+          "type": "Nhà sản xuất OCOP",
+          "price": "Voucher RUOUKIM30",
+          "description": "Nhà sản xuất Kim Sơn cung cấp sản phẩm vùng miền cho du khách và nhu cầu mua quà."
         }
       },
       "ocop_products": {
         "item_1": {
-          "name": "Cà phê rang xay Ninh Bình",
-          "stars": "OCOP 4 sao",
-          "price": "Từ 135.000 VND",
-          "description": "Hương vị dịu, phù hợp làm quà tặng và dùng hằng ngày."
+          "name": "Muối hạt Kim Sơn",
+          "stars": "OCOP 3 sao",
+          "price": "Từ 25.000 VND",
+          "description": "Muối biển truyền thống vùng Kim Sơn, giàu khoáng tự nhiên và phù hợp cho nấu ăn, bảo quản thực phẩm."
         },
         "item_2": {
-          "name": "Bộ trà thảo mộc vùng núi",
-          "stars": "OCOP 4 sao",
-          "price": "Từ 95.000 VND",
-          "description": "Sự kết hợp thảo mộc thơm nhẹ lấy cảm hứng từ vùng núi đá vôi."
+          "name": "Thịt dê núi Ninh Bình khô tẩm gia vị",
+          "stars": "OCOP 3 sao",
+          "price": "Từ 280.000 VND",
+          "description": "Đặc sản quà tặng chế biến từ dê núi và gia vị địa phương, phù hợp với du khách muốn mang hương vị Ninh Bình về nhà."
         },
         "item_3": {
-          "name": "Bánh kẹo thủ công đặc sản",
+          "name": "Tinh dầu tràm Ninh Bình",
           "stars": "OCOP 3 sao",
-          "price": "Từ 80.000 VND",
-          "description": "Món quà địa phương gọn nhẹ, dễ mang theo cho hành trình ngắn ngày."
+          "price": "Từ 95.000 VND",
+          "description": "Sản phẩm chăm sóc sức khỏe hằng ngày được chưng cất từ lá và cành tràm non vùng Nho Quan, Kim Sơn."
         }
       },
       "vlog_stories": {
         "item_1": {
-          "title": "Một buổi dạo sớm trên đỉnh núi đá vôi",
-          "description": "Câu chuyện ngắn về ánh sáng đầu ngày, lối đi yên tĩnh và không khí rất riêng của Ninh Bình buổi sáng."
+          "title": "Một chuyến thuyền thật yên ở Vân Long",
+          "description": "Câu chuyện ngắn về mặt nước lặng, bóng núi đá vôi và nhịp đi chậm của một buổi sáng thiên nhiên."
         },
         "item_2": {
-          "title": "Điều mình nhận ra sau một ngày chậm ở Tam Cốc",
-          "description": "Quán nhỏ, đường đạp xe và vài điểm dừng giản dị khiến chuyến đi trở nên thư thả và đáng nhớ."
+          "title": "Điều làm mình đổi góc nhìn về trung tâm Ninh Bình",
+          "description": "Những điểm dừng trong thành phố, cảnh ven sông và các lát cắt văn hóa ngắn xen giữa những điểm tham quan lớn."
         },
         "item_3": {
-          "title": "Ba điểm chụp ảnh đáng để leo thêm một đoạn",
-          "description": "Danh sách ngắn các góc ngắm rộng, hợp chụp phong cảnh và bắt được ánh hoàng hôn đẹp."
+          "title": "Ba tuyến hang động nên lưu trước chuyến đi tới",
+          "description": "Danh sách thực tế cho những ngày cần cân bằng thời tiết, thời gian và cảnh quan trong lịch trình."
         }
       }
     }
@@ -563,6 +563,31 @@
     }
   },
   "error": {
+    "400": {
+      "title": "Yêu cầu không hợp lệ",
+      "message": "Yêu cầu không hợp lệ hoặc thiếu thông tin bắt buộc. Vui lòng kiểm tra và thử lại"
+    },
+    "401": {
+      "title": "Chưa xác thực",
+      "message": "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập để tiếp tục"
+    },
+    "403": {
+      "title": "Không có quyền truy cập",
+      "message": "Bạn không có quyền truy cập nội dung này. Hãy liên hệ quản trị viên nếu cần hỗ trợ"
+    },
+    "404": {
+      "title": "Không tìm thấy trang",
+      "message": "Trang bạn đang tìm có thể đã bị xóa, đổi tên hoặc tạm thời không khả dụng"
+    },
+    "500": {
+      "title": "Lỗi máy chủ",
+      "message": "Đã xảy ra lỗi phía hệ thống. Vui lòng thử lại sau vài phút"
+    },
+    "503": {
+      "title": "Dịch vụ không khả dụng",
+      "message": "Dịch vụ đang tạm ngưng do bảo trì hoặc quá tải. Vui lòng quay lại sau"
+    },
+    "back_home": "Về trang chủ",
     "login": "Đăng nhập"
   },
   "tourism": {
@@ -647,6 +672,9 @@
     "title": "Điểm du lịch",
     "hero_title": "Khám phá điểm du lịch Ninh Bình",
     "hero_desc": "Tìm kiếm, lọc theo loại, xem vị trí bản đồ, ảnh 360°, mô tả và chỉ đường đến các điểm tham quan hàng đầu",
+    "stat_spots": "Điểm tham quan",
+    "stat_categories": "Danh mục",
+    "stat_subcategories": "Danh mục con",
     "is_featured_label": "Nổi bật",
     "is_featured_all": "Tất cả",
     "is_featured_yes": "Chỉ nổi bật",

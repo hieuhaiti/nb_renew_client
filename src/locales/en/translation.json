@@ -205,41 +205,41 @@
       }
     },
     "footer_section": {
-      "brand_name": "SmartTour WebGIS",
-      "brand": "Ninh Binh Tourism Information Portal — Integrated GIS, VR360, OCOP and smart itinerary platform",
-      "tourist_col": "Tourists",
-      "business_col": "Businesses",
-      "manager_col": "Managers",
+      "brand_name": "Ninh Binh Smart Tourism",
+      "brand": "Official digital tourism gateway connecting destinations, routes, festivals, OCOP products, feedback and WebGIS maps for Ninh Binh.",
+      "tourist_col": "Explore",
+      "business_col": "Services",
+      "manager_col": "Information",
       "link_schedule": "Itinerary",
-      "link_vr360": "VR 360",
-      "link_services": "Post services",
-      "link_feedback": "Manage feedback",
-      "link_voucher": "Create vouchers",
-      "link_dashboard": "Stats dashboard"
+      "link_vr360": "VR 360 map",
+      "link_services": "Tourism services",
+      "link_feedback": "Visitor feedback",
+      "link_voucher": "Vouchers & OCOP",
+      "link_dashboard": "Tourism map dashboard"
     },
     "mock": {
       "common": {
         "ninh_binh": "Ninh Binh",
-        "quang_ninh": "Quang Ninh"
+        "kim_son": "Kim Son, Ninh Binh"
       },
       "hero_stats": {
         "featured": "Featured spots",
-        "average_load": "Average load",
+        "average_load": "Suggested tours",
         "events_offers": "Events & offers",
-        "vr360": "VR360 ready"
+        "vr360": "Immersive scenes"
       },
       "hero_events": {
         "hoa_lu": {
-          "title": "Hoa Lu Festival opening ceremony",
-          "time": "This weekend"
+          "title": "Royal history reenactment festival",
+          "time": "June 15-20, 2026"
         },
         "tourism_week": {
-          "title": "Ninh Binh Tourism Week 2026",
-          "time": "April 20-27"
+          "title": "Trang An music & cruise festival",
+          "time": "July 1-10, 2026"
         },
         "light_show": {
-          "title": "Trang An riverside light show",
-          "time": "Every Friday night"
+          "title": "Hang Mua autumn trekking and photography season",
+          "time": "September 1-November 30, 2026"
         }
       },
       "promo_banner": {
@@ -271,33 +271,33 @@
       },
       "featured_destinations": {
         "trang_an": {
-          "name": "Trang An Scenic Landscape Complex",
-          "subtitle": "Boat routes through caves and limestone valleys",
-          "description": "A signature Ninh Binh journey with river caves, temple stops and dramatic karst scenery."
+          "name": "Van Long Wetland Reserve",
+          "subtitle": "Quiet lagoon, limestone mountains and wetland ecosystem",
+          "description": "A peaceful nature route with rowing boats, open water views and chances to observe wetland wildlife."
         },
         "hoa_lu": {
-          "name": "Hoa Lu Ancient Capital",
-          "subtitle": "Historic temples and the first imperial capital",
-          "description": "Walk through courtyards, shrines and heritage landmarks connected to early Vietnamese dynasties."
+          "name": "Non Nuoc Mountain",
+          "subtitle": "Riverside mountain near the city center",
+          "description": "A compact stop with river scenery, cultural traces and an easy viewpoint for visitors staying in central Ninh Binh."
         },
         "bai_dinh": {
-          "name": "Bai Dinh Pagoda",
-          "subtitle": "A vast spiritual complex with mountain views",
-          "description": "Explore large temple halls, bell towers and peaceful uphill walks around the pagoda grounds."
+          "name": "Thien Ha Cave",
+          "subtitle": "Limestone cave route in Nho Quan",
+          "description": "A cave experience often combined with countryside routes, known for rock formations and a cooler underground atmosphere."
         }
       },
       "news_items": {
         "item_1": {
-          "title": "Peak-season traffic guidance updated for Trang An",
-          "excerpt": "New routing and parking instructions help visitors avoid congestion during the upcoming weekend."
+          "title": "Tien Ca Cave highlighted as an underground wonder near Tam Coc",
+          "excerpt": "The destination story introduces a hidden cave system and suggests how visitors can connect it with nearby routes."
         },
         "item_2": {
-          "title": "Bai Dinh night visit experience opens for holiday week",
-          "excerpt": "The evening program adds lighting, shuttle support and guided temple highlights for families."
+          "title": "Hoa Lu Ancient Capital keeps drawing heritage travelers",
+          "excerpt": "Editorial updates revisit the first imperial capital with context on temples, history and surrounding landscapes."
         },
         "item_3": {
-          "title": "Weather watch issued for river tourism activities",
-          "excerpt": "Travelers are advised to review weather and water conditions before booking outdoor routes."
+          "title": "Ninh Binh river and cave routes prepared for summer visitors",
+          "excerpt": "Travelers are encouraged to check weather, operating status and map guidance before choosing outdoor activities."
         }
       },
       "itinerary": {
@@ -321,56 +321,56 @@
       },
       "services": {
         "item_1": {
-          "name": "Ninh Binh Riverside Stay",
-          "type": "Boutique stay",
-          "price": "From 850,000 VND/night",
-          "description": "Quiet riverside rooms with shuttle support to major tourism spots."
+          "name": "Thanh Nhan crispy rice cooperative",
+          "type": "Local specialty shop",
+          "price": "Voucher COMCHAY50",
+          "description": "A Ninh Binh gift stop for crispy rice products with nearby voucher support."
         },
         "item_2": {
-          "name": "Tam Coc Garden Kitchen",
-          "type": "Restaurant",
-          "price": "From 120,000 VND/person",
-          "description": "Regional dishes, scenic seating and family-friendly group menus."
+          "name": "Ba Quy Gia Vien shrimp paste",
+          "type": "Traditional producer",
+          "price": "Voucher MAMTEP40",
+          "description": "A local food producer connected to the tourism service and voucher ecosystem."
         },
         "item_3": {
-          "name": "Trang An Boat Booking Desk",
-          "type": "Ticket service",
-          "price": "From 250,000 VND/route",
-          "description": "Quick booking support for popular boat lines and group departures."
+          "name": "Kim Son rice wine company",
+          "type": "OCOP producer",
+          "price": "Voucher RUOUKIM30",
+          "description": "A Kim Son producer offering regional products for visitors and local gift shopping."
         }
       },
       "ocop_products": {
         "item_1": {
-          "name": "Ninh Binh roasted coffee blend",
-          "stars": "4-star OCOP",
-          "price": "From 135,000 VND",
-          "description": "A smooth local roast suitable for gifts and daily brewing."
+          "name": "Kim Son grain salt",
+          "stars": "3-star OCOP",
+          "price": "From 25,000 VND",
+          "description": "Traditional sea salt from Kim Son, naturally mineral-rich and suitable for cooking and food preservation."
         },
         "item_2": {
-          "name": "Mountain herbal tea set",
-          "stars": "4-star OCOP",
-          "price": "From 95,000 VND",
-          "description": "A fragrant herbal mix inspired by ingredients from the limestone hills."
+          "name": "Seasoned dried Ninh Binh mountain goat",
+          "stars": "3-star OCOP",
+          "price": "From 280,000 VND",
+          "description": "A specialty gift made from mountain goat meat and local spices, suited for travelers looking for regional flavors."
         },
         "item_3": {
-          "name": "Handcrafted specialty sweets",
+          "name": "Ninh Binh cajeput essential oil",
           "stars": "3-star OCOP",
-          "price": "From 80,000 VND",
-          "description": "Traditional sweets prepared for visitors looking for a portable local treat."
+          "price": "From 95,000 VND",
+          "description": "A daily wellness product distilled from cajeput leaves and young branches in Nho Quan and Kim Son areas."
         }
       },
       "vlog_stories": {
         "item_1": {
-          "title": "A sunrise walk above the limestone ridges",
-          "description": "A short story about catching first light, quiet trails and the mood of early Ninh Binh mornings."
+          "title": "A quiet rowing trip through Van Long",
+          "description": "A short story about calm water, limestone reflections and the slow rhythm of a nature-focused morning."
         },
         "item_2": {
-          "title": "What I learned after one slow day in Tam Coc",
-          "description": "Cafes, cycling paths and simple stops that made the trip feel calm and memorable."
+          "title": "What changed my mind about central Ninh Binh",
+          "description": "Small city stops, riverside views and quick cultural detours that work well between bigger attractions."
         },
         "item_3": {
-          "title": "Three photo spots worth the extra climb",
-          "description": "A practical list of viewpoints with the best angles for wide landscape shots and sunset color."
+          "title": "Three cave routes to save before the next trip",
+          "description": "A practical list of cooler indoor routes for travelers balancing weather, time and scenery."
         }
       }
     }
@@ -563,6 +563,31 @@
     }
   },
   "error": {
+    "400": {
+      "title": "Bad request",
+      "message": "The request is invalid or missing required information. Please review and try again"
+    },
+    "401": {
+      "title": "Unauthorized",
+      "message": "Your session is invalid or has expired. Please sign in to continue"
+    },
+    "403": {
+      "title": "Access forbidden",
+      "message": "You do not have permission to access this content. Contact an administrator if you need help"
+    },
+    "404": {
+      "title": "Page not found",
+      "message": "The page you are looking for may have been removed, renamed, or is temporarily unavailable"
+    },
+    "500": {
+      "title": "Internal server error",
+      "message": "Something went wrong on our side. Please try again in a few minutes"
+    },
+    "503": {
+      "title": "Service unavailable",
+      "message": "The service is temporarily unavailable due to maintenance or high load. Please come back later"
+    },
+    "back_home": "Back to home",
     "login": "Login"
   },
   "tourism": {
@@ -647,6 +672,9 @@
     "title": "Tourism Points",
     "hero_title": "Explore Tourism Spots in Ninh Binh",
     "hero_desc": "Search, filter by type, view map locations, 360° photos, descriptions and directions to top attractions",
+    "stat_spots": "Attractions",
+    "stat_categories": "Categories",
+    "stat_subcategories": "Subcategories",
     "is_featured_label": "Featured",
     "is_featured_all": "All",
     "is_featured_yes": "Featured only",

@@ -78,7 +78,7 @@ const reportPath =
     : defaultReportPath;
 
 function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return JSON.parse(fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, ''));
 }
 
 function isTranslationKeyLiteral(value) {
@@ -476,6 +476,7 @@ function parseSourceAst(content) {
 function getPropertyName(node) {
   if (!node) return null;
   if (node.type === 'Identifier') return node.name;
+  if (node.type === 'JSXIdentifier') return node.name;
   if (node.type === 'StringLiteral' || node.type === 'Literal') return node.value;
   return null;
 }
@@ -637,6 +638,34 @@ function extractDeclaredTranslationKeyLiterals(content, relPath, lineStarts) {
 
   function walk(node) {
     if (!node || typeof node !== 'object') return;
+
+    if (node.type === 'JSXAttribute') {
+      const attributeName = getPropertyName(node.name);
+      const expression = node.value?.type === 'JSXExpressionContainer' ? node.value.expression : null;
+      const staticValue = getStaticStringValue(node.value) || getStaticStringValue(expression);
+
+      if (!excludedPropertyNames.has(attributeName)) {
+        if (attributeName?.endsWith('Key') && staticValue) {
+          addUsage(staticValue, node.value?.start ?? node.start, `jsx:${attributeName}`);
+        }
+
+        if (
+          declaredTranslationKeyPropertyNames.has(attributeName) &&
+          staticValue &&
+          isTranslationKeyLiteral(staticValue)
+        ) {
+          addUsage(staticValue, node.value?.start ?? node.start, `jsx:${attributeName}`);
+        }
+
+        if (attributeName?.endsWith('Keys') && expression?.type === 'ArrayExpression') {
+          collectArrayElements(
+            expression.elements || [],
+            expression.start ?? node.start,
+            `jsx:${attributeName}`
+          );
+        }
+      }
+    }
 
     if (node.type === 'ObjectProperty' || node.type === 'Property') {
       const propertyName = getPropertyName(node.key);
@@ -1165,6 +1194,10 @@ ${formatUsageList(result.usedButMissing.en)}
 
 ${formatUsageList(result.usedButMissing.vi)}
 
+## Tracked JSX Key Props
+
+${formatUsageList(result.trackedJsxKeyProps)}
+
 ## Inline Fallbacks
 
 ${formatUsageList(result.inlineFallbacks)}
@@ -1282,6 +1315,7 @@ const usedButMissing = {
   vi: uniqueStaticUsages.filter((usage) => !viKeySet.has(usage.key)),
 };
 const inlineFallbacks = uniqueStaticUsages.filter((usage) => usage.fallback);
+const trackedJsxKeyProps = uniqueStaticUsages.filter((usage) => usage.source.startsWith('jsx:'));
 const unusedKeys = allLocaleKeys.filter((key) => !usedKeys.has(key));
 const uniqueHardcodedVisibleText = uniqueHardcodedCandidates(hardcodedVisibleText).sort((a, b) =>
   `${a.file}:${a.line}:${a.text}`.localeCompare(`${b.file}:${b.line}:${b.text}`)
@@ -1321,6 +1355,7 @@ const result = {
   typeMismatches,
   emptyOrPlaceholder,
   usedButMissing,
+  trackedJsxKeyProps,
   inlineFallbacks,
   hardcodedVisibleText: {
     mustI18n: mustI18nHardcodedText,

@@ -1,9 +1,9 @@
 const HOME_DATA = {
   HERO_STATS: [
-    { labelKey: 'home.mock.hero_stats.featured', value: '03' },
-    { labelKey: 'home.mock.hero_stats.average_load', value: '70%' },
-    { labelKey: 'home.mock.hero_stats.events_offers', value: '12+' },
-    { labelKey: 'home.mock.hero_stats.vr360', value: 'Ready' },
+    { labelKey: 'home.mock.hero_stats.featured', value: '12+' },
+    { labelKey: 'home.mock.hero_stats.average_load', value: '17' },
+    { labelKey: 'home.mock.hero_stats.events_offers', value: '16+' },
+    { labelKey: 'home.mock.hero_stats.vr360', value: 'VR360' },
   ],
   HERO_EVENTS: [
     {
@@ -64,17 +64,17 @@ const HOME_DATA = {
   ],
   FEATURED_DESTINATIONS: [
     {
-      id: 'trang-an',
+      id: 'van-long',
       nameKey: 'home.mock.featured_destinations.trang_an.name',
       provinceKey: 'home.mock.common.ninh_binh',
       subtitleKey: 'home.mock.featured_destinations.trang_an.subtitle',
-      rating: 4.9,
+      rating: 4.7,
       descriptionKey: 'home.mock.featured_destinations.trang_an.description',
       image:
         'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&q=80',
     },
     {
-      id: 'hoa-lu',
+      id: 'non-nuoc',
       nameKey: 'home.mock.featured_destinations.hoa_lu.name',
       provinceKey: 'home.mock.common.ninh_binh',
       subtitleKey: 'home.mock.featured_destinations.hoa_lu.subtitle',
@@ -84,11 +84,11 @@ const HOME_DATA = {
         'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80',
     },
     {
-      id: 'bai-dinh',
+      id: 'thien-ha',
       nameKey: 'home.mock.featured_destinations.bai_dinh.name',
       provinceKey: 'home.mock.common.ninh_binh',
       subtitleKey: 'home.mock.featured_destinations.bai_dinh.subtitle',
-      rating: 4.8,
+      rating: 4.7,
       descriptionKey: 'home.mock.featured_destinations.bai_dinh.description',
       image:
         'https://images.unsplash.com/photo-1549692520-acc6669e2f0c?auto=format&fit=crop&w=1200&q=80',
@@ -125,7 +125,7 @@ const HOME_DATA = {
     'home.mock.food_tags.item_4',
   ],
   FOOD_BULLETS: [
-    { labelKey: 'home.mock.food_bullets.item_1.label', value: '⭐ 4.7' },
+    { labelKey: 'home.mock.food_bullets.item_1.label', value: '4.7/5' },
     {
       labelKey: 'home.mock.food_bullets.item_2.label',
       valueKey: 'home.mock.food_bullets.item_2.value',
@@ -186,7 +186,7 @@ const HOME_DATA = {
     {
       nameKey: 'home.mock.ocop_products.item_3.name',
       starsKey: 'home.mock.ocop_products.item_3.stars',
-      originKey: 'home.mock.common.quang_ninh',
+      originKey: 'home.mock.common.kim_son',
       priceKey: 'home.mock.ocop_products.item_3.price',
       descriptionKey: 'home.mock.ocop_products.item_3.description',
       image:

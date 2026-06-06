@@ -311,22 +311,25 @@ export default function TourismPointPage() {
 
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {[
-                { val: activeIsLoading ? '…' : total > 0 ? `${total}+` : '0', key: 'stat_spots' },
-                { val: categories.length || '…', key: 'stat_categories' },
+                {
+                  val: activeIsLoading ? '…' : total > 0 ? `${total}+` : '0',
+                  labelKey: 'tourismPointPage.stat_spots',
+                },
+                { val: categories.length || '…', labelKey: 'tourismPointPage.stat_categories' },
                 {
                   val: subcategories.length > 0 ? subcategories.length : '24+',
-                  key: 'stat_subcategories',
+                  labelKey: 'tourismPointPage.stat_subcategories',
                 },
-              ].map(({ val, key }) => (
+              ].map(({ val, labelKey }) => (
                 <div
-                  key={key}
+                  key={labelKey}
                   className="rounded-[16px] bg-white/92 p-3 backdrop-blur-md sm:rounded-[20px] sm:p-4"
                 >
                   <b className="text-secondary block text-[20px] font-black sm:text-[24px]">
                     {val}
                   </b>
                   <span className="text-muted-foreground text-[11px] font-extrabold sm:text-[12px]">
-                    {t(`tourismPointPage.${key}`)}
+                    {t(labelKey)}
                   </span>
                 </div>
               ))}

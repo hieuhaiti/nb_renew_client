@@ -1611,9 +1611,9 @@ export default function HomePageContent() {
             {
               title: t('home.footer_section.business_col'),
               links: [
-                { label: t('home.footer_section.link_services'), path: '/map' },
-                { label: t('home.footer_section.link_feedback'), path: '/map' },
-                { label: t('home.footer_section.link_voucher'), path: '/map' },
+                { label: t('home.footer_section.link_services'), path: '/tourism-point' },
+                { label: t('home.footer_section.link_feedback'), path: '/feedback' },
+                { label: t('home.footer_section.link_voucher'), path: '/ocop' },
               ],
             },
             {

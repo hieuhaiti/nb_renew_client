@@ -73,6 +73,7 @@ export function AppRouter() {
           <Route path="/news" element={<NewsPage />} />
           <Route path="/news/:slug" element={<NewsDetailPage />} />
           <Route path="/vlog" element={<VlogPage />} />
+          <Route path="/vr360" element={<Vr360Page />} />
           <Route path="/vr360/:id" element={<Vr360Page />} />
           <Route path="/feedback" element={<FeedbackPage />} />
 
