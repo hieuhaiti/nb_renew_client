@@ -1,0 +1,774 @@
+https://apidulich.tourismpj.pro.vn/api/v1/businesses/vouchers/nearby?lat=20.229159&lng=105.917443&radius_m=50000
+{
+    "message": "Voucher gần đây",
+    "status": 200,
+    "data": {
+        "vouchers": [
+            {
+                "id": "912f84f3-98e6-4a1d-b634-9306bb3af49c",
+                "code": "COMCHAY50",
+                "title_vi": "Giảm 50k Cơm Cháy Thành Nhân",
+                "discount_type": "fixed_amount",
+                "discount_value": "50000.00",
+                "min_order_value": "100000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "HTX Cơm Cháy Thành Nhân",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "9f946cc9-e8fa-4490-bfc5-04f28aa1743f",
+                "code": "MAMTEP40",
+                "title_vi": "Giảm 40k Mắm Tép Gia Viễn",
+                "discount_type": "fixed_amount",
+                "discount_value": "40000.00",
+                "min_order_value": "150000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Cơ Sở Mắm Tép Bà Quý Gia Viễn",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "2b1dc648-bc3c-48d3-b98f-51a0a302df8c",
+                "code": "RUOUKIM30",
+                "title_vi": "Giảm 30% Rượu Kim Sơn",
+                "discount_type": "percentage",
+                "discount_value": "30.00",
+                "min_order_value": "200000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Công Ty TNHH Rượu Kim Sơn",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "00b62ae7-f264-43de-9148-228282dc2c6b",
+                "code": "THEUREM20",
+                "title_vi": "Giảm 20% Thêu Ren Văn Lâm",
+                "discount_type": "percentage",
+                "discount_value": "20.00",
+                "min_order_value": "300000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Làng Nghề Thêu Ren Văn Lâm",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "1300ba06-6147-48c4-852d-f0540a40681e",
+                "code": "MATONG35",
+                "title_vi": "Giảm 35% Mật Ong Nho Quan",
+                "discount_type": "percentage",
+                "discount_value": "35.00",
+                "min_order_value": "150000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "HTX Mật Ong Rừng Nho Quan",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "3b8f6dd7-fdd1-4029-8de2-32296b35393d",
+                "code": "DENUICO25",
+                "title_vi": "Giảm 25% Dê Núi Cố Đô",
+                "discount_type": "percentage",
+                "discount_value": "25.00",
+                "min_order_value": "500000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Nhà Hàng Dê Núi Cố Đô",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "78c41d82-e9bc-4023-973d-5e18ebe7775d",
+                "code": "COMCHAY25",
+                "title_vi": "Giảm 25% Cơm Cháy Tam Cốc",
+                "discount_type": "percentage",
+                "discount_value": "25.00",
+                "min_order_value": "400000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Nhà Hàng Cơm Cháy Tam Cốc",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "d28df711-2c53-42de-a7f3-4ed4d4b7f92d",
+                "code": "TRANGAN20",
+                "title_vi": "Giảm 20% Tour Tràng An",
+                "discount_type": "percentage",
+                "discount_value": "20.00",
+                "min_order_value": "1000000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Công Ty Du Lịch Tràng An Xanh",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "1c8e4a64-f9de-45ed-8747-61b93b6c77fc",
+                "code": "TOURGROUPS25",
+                "title_vi": "Giảm 25% Tour Nhóm Tràng An",
+                "discount_type": "percentage",
+                "discount_value": "25.00",
+                "min_order_value": "5000000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Công Ty Du Lịch Tràng An Xanh",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "1419b381-2b57-4eee-a9a4-e81f29240fce",
+                "code": "BAIDINH25",
+                "title_vi": "Giảm 25% Tour Bái Đính",
+                "discount_type": "percentage",
+                "discount_value": "25.00",
+                "min_order_value": "800000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Công Ty TNHH Du Lịch Tâm Linh Bái Đính",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "1133801b-0e62-4d5c-832f-65e11475ee77",
+                "code": "BUDDHATEM30",
+                "title_vi": "Giảm 30% Lễ Phật Đản",
+                "discount_type": "percentage",
+                "discount_value": "30.00",
+                "min_order_value": "600000",
+                "valid_from": "2026-04-15T05:00:00.000Z",
+                "valid_until": "2026-05-31T05:00:00.000Z",
+                "business_name": "Công Ty TNHH Du Lịch Tâm Linh Bái Đính",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "2ee38d7d-a1d0-424c-bb67-af794e6d05e0",
+                "code": "DACSANGIF100",
+                "title_vi": "Giảm 100k Đặc Sản Ninh Bình",
+                "discount_type": "fixed_amount",
+                "discount_value": "100000.00",
+                "min_order_value": "300000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Cửa Hàng Đặc Sản Ninh Bình Sạch",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "ccf781ca-6358-48e5-b574-0aaf0f9e54dc",
+                "code": "DACSANSET15",
+                "title_vi": "Giảm 15% Gói Quà Đặc Sản",
+                "discount_type": "percentage",
+                "discount_value": "15.00",
+                "min_order_value": "800000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Cửa Hàng Đặc Sản Ninh Bình Sạch",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "f62caab9-dd09-4b2a-b8a6-0d3328f85ccc",
+                "code": "SOUVENIRPACK20",
+                "title_vi": "Giảm 20% Gói Lưu Niệm",
+                "discount_type": "percentage",
+                "discount_value": "20.00",
+                "min_order_value": "500000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Cửa Hàng Đặc Sản Ninh Bình Sạch",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "ba149e23-d37b-451c-ba9e-86c6a14df8c1",
+                "code": "FULLDAY50",
+                "title_vi": "Giảm 50% Gói Full Day - Tour + Ăn + Mua",
+                "discount_type": "percentage",
+                "discount_value": "50.00",
+                "min_order_value": "2000000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Công Ty Du Lịch Tràng An Xanh",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            },
+            {
+                "id": "e88c740e-f566-419f-961c-0e4ce06887b3",
+                "code": "SPIRITUAL3DAYS35",
+                "title_vi": "Giảm 35% Tour 3 Ngày Tâm Linh - Bái Đính + Cố Đô + Mua Đặc Sản",
+                "discount_type": "percentage",
+                "discount_value": "35.00",
+                "min_order_value": "3000000",
+                "valid_from": "2026-01-01T06:00:00.000Z",
+                "valid_until": "2026-12-31T06:00:00.000Z",
+                "business_name": "Công Ty TNHH Du Lịch Tâm Linh Bái Đính",
+                "geo_lng": null,
+                "geo_lat": null,
+                "geo_radius_m": null,
+                "distance_m": null
+            }
+        ]
+    }
+}
+
+
+
+
+https://apidulich.tourismpj.pro.vn/api/v1/tours?page=1&limit=1
+{
+    "message": "Danh sách tour",
+    "status": 200,
+    "data": {
+        "tours": [
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000011",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Bái Đính - Đền Trình - Đền Thái Vi 1 ngày",
+                "slug": "tour-bai-dinh-den-trinh-den-thai-vi-1-ngay",
+                "description_vi": "Tuyến tâm linh 1 ngày kết nối các đền chùa active trong hệ thống.",
+                "duration_days": 1,
+                "price_from_vnd": "690000",
+                "max_guests": 28,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên",
+                    "Xe đưa đón trong lịch trình"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "VAT"
+                ],
+                "start_location_vi": "Chùa Bái Đính cổ",
+                "end_location_vi": "Đền Thái Vi",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-bai-dinh-den-trinh-den-thai-vi-1-ngay.jpg",
+                "rating_avg": "4.72",
+                "rating_count": 38,
+                "status": "published",
+                "is_featured": false,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 1,
+            "total": 17,
+            "totalPages": 17
+        }
+    }
+}
+
+
+https://apidulich.tourismpj.pro.vn/api/v1/ocop?page=1&limit=3
+{
+    "message": "Danh sách sản phẩm OCOP",
+    "status": 200,
+    "data": {
+        "items": [
+            {
+                "id": "550cb000-e29b-41d4-a716-000000000011",
+                "name": "Muối Hạt Kim Sơn",
+                "category": "thuc_pham",
+                "description": "Muối hạt Kim Sơn được sản xuất theo phương pháp phơi nước biển truyền thống tại vùng đồng muối Kim Sơn – một trong những vùng muối lớn nhất miền Bắc Việt Nam. Muối có hạt to, trắng tinh, chứa hàm lượng khoáng chất tự nhiên cao (NaCl ≥ 97%), không tẩy trắng hóa học. Sản phẩm đạt chứng nhận vệ sinh an toàn thực phẩm, phù hợp cho nấu ăn, bảo quản thực phẩm và chăm sóc sức khỏe.",
+                "star_rating": 3,
+                "certification_no": "OCOP-NB-2022-011",
+                "price_vnd": "25000",
+                "unit": "túi 1kg",
+                "cover_image_url": "/uploads/images/wiki-ocop-muoi-hat-kim-son.jpg",
+                "media_urls": [
+                    "/uploads/images/wiki-ocop-muoi-hat-kim-son.jpg"
+                ],
+                "shop_url": null,
+                "producer_name": "HTX Muối Kim Sơn",
+                "province_code": "37",
+                "business_id": null,
+                "is_active": true,
+                "created_at": "2026-05-04T03:04:08.742Z",
+                "province_name": "Ninh Bình",
+                "business_name": null,
+                "lng": null,
+                "lat": null
+            },
+            {
+                "id": "550cb000-e29b-41d4-a716-000000000006",
+                "name": "Thịt Dê Núi Ninh Bình Khô Tẩm Gia Vị",
+                "category": "thuc_pham",
+                "description": "Dê núi Ninh Bình được nuôi thả tự do trên các vách đá vôi vùng Hoa Lư – Gia Viễn, ăn cỏ rừng và thảo dược tự nhiên nên thịt có màu đỏ tươi, chắc, thơm và ít mỡ. Sản phẩm thịt dê khô tẩm gia vị được chế biến từ thịt dê tươi, tẩm sả, gừng, nghệ, hạt tiêu rừng và các loại gia vị đặc trưng, phơi sấy đúng kỹ thuật. Thích hợp làm quà biếu, nhâm nhi cùng rượu Kim Sơn.",
+                "star_rating": 3,
+                "certification_no": "OCOP-NB-2024-006",
+                "price_vnd": "280000",
+                "unit": "túi 200g",
+                "cover_image_url": "/uploads/images/wiki-ocop-thit-de-nui-ninh-binh-kho-tam-gia-vi.jpg",
+                "media_urls": [
+                    "/uploads/images/wiki-ocop-thit-de-nui-ninh-binh-kho-tam-gia-vi.jpg"
+                ],
+                "shop_url": null,
+                "producer_name": "Nhà Hàng Dê Núi Cố Đô",
+                "province_code": "37",
+                "business_id": "550ba000-e29b-41d4-a716-000000000006",
+                "is_active": true,
+                "created_at": "2026-05-04T03:04:08.742Z",
+                "province_name": "Ninh Bình",
+                "business_name": "Nhà Hàng Dê Núi Cố Đô",
+                "lng": null,
+                "lat": null
+            },
+            {
+                "id": "550cb000-e29b-41d4-a716-000000000012",
+                "name": "Tinh Dầu Tràm Ninh Bình",
+                "category": "thuoc_và_cskh",
+                "description": "Tinh dầu tràm Ninh Bình được chưng cất từ lá và cành non của cây tràm (Melaleuca cajuputi) trồng tại vùng đầm lầy Nho Quan – Kim Sơn. Quy trình chưng cất hơi nước lạnh đảm bảo bảo toàn tối đa hoạt chất cineole (hàm lượng ≥ 55%). Tinh dầu có màu vàng nhạt, mùi thơm mát đặc trưng, kháng khuẩn, chống viêm, thông mũi và ấm người. Được sử dụng rộng rãi cho trẻ sơ sinh, người lớn tuổi và chăm sóc sức khỏe hàng ngày.",
+                "star_rating": 3,
+                "certification_no": "OCOP-NB-2024-012",
+                "price_vnd": "95000",
+                "unit": "chai 20ml",
+                "cover_image_url": "/uploads/images/wiki-ocop-tinh-dau-tram-ninh-binh.png",
+                "media_urls": [
+                    "/uploads/images/wiki-ocop-tinh-dau-tram-ninh-binh.png"
+                ],
+                "shop_url": null,
+                "producer_name": "Công Ty TNHH Tinh Dầu Tràm Xanh Ninh Bình",
+                "province_code": "37",
+                "business_id": null,
+                "is_active": true,
+                "created_at": "2026-05-04T03:04:08.742Z",
+                "province_name": "Ninh Bình",
+                "business_name": null,
+                "lng": null,
+                "lat": null
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 3,
+            "total": 12,
+            "totalPages": 4
+        }
+    }
+}
+
+
+https://apidulich.tourismpj.pro.vn/api/v1/news?page=1&limit=3&is_published=true
+{
+    "message": "Danh sách tin tức",
+    "status": 200,
+    "data": {
+        "items": [
+            {
+                "id": "550db000-e29b-41d4-a716-000000000008",
+                "title": "Động Tiên Cá – Kỳ Quan Dưới Lòng Núi Tại Vùng Tam Cốc Ninh Bình",
+                "slug": "dong-tien-ca-ky-quan-duoi-long-nui-tai-vung-tam-coc",
+                "author_name": "Ban Biên Tập Du Lịch Ninh Bình",
+                "summary": "Động Tiên Cá là hang động bí ẩn với hệ thống nhũ đá lung linh mang hình dáng đàn cá tiên huyền bí. Nằm trong vùng Tam Cốc, đây là điểm tham quan còn ít người biết, lý tưởng cho những ai muốn khám phá vẻ đẹp hoang sơ.",
+                "thumbnail_url": "/uploads/images/wiki-news-dong-tien-ca-ky-quan-duoi-long-nui-tai-vung-tam-coc.jpg",
+                "is_published": true,
+                "is_featured": false,
+                "published_at": "2026-02-15T14:00:00.000Z",
+                "tags": [
+                    "dong-tien-ca",
+                    "hang-dong",
+                    "tam-coc",
+                    "kham-pha",
+                    "ninh-binh"
+                ],
+                "view_count": 3,
+                "created_at": "2026-05-04T03:04:08.742Z",
+                "updated_at": "2026-05-09T13:40:39.284Z"
+            },
+            {
+                "id": "550db000-e29b-41d4-a716-000000000017",
+                "title": "Bái Đính Garden Resort & Spa – Nghỉ Dưỡng Cao Cấp Giữa Lòng Di Sản",
+                "slug": "bai-dinh-garden-resort-spa-nghi-duong-cao-cap-giua-long-di-san",
+                "author_name": "Hoàng Minh Tuấn",
+                "summary": "Bái Đính Garden Resort & Spa – khu nghỉ dưỡng 5 sao nằm trong quần thể Bái Đính, bao quanh bởi hồ nước và núi đá vôi hùng vĩ. Lý tưởng cho du khách muốn trải nghiệm nghỉ dưỡng cao cấp kết hợp khám phá di sản thiên nhiên và văn hóa Ninh Bình.",
+                "thumbnail_url": "/uploads/images/wiki-news-bai-dinh-garden-resort-spa-nghi-duong-cao-cap-giua-long-di-san.jpg",
+                "is_published": true,
+                "is_featured": false,
+                "published_at": "2026-03-30T14:00:00.000Z",
+                "tags": [
+                    "bai-dinh-garden-resort-spa",
+                    "nghi-duong",
+                    "khach-san-5-sao",
+                    "ninh-binh",
+                    "spa"
+                ],
+                "view_count": 0,
+                "created_at": "2026-05-04T03:04:08.742Z",
+                "updated_at": "2026-05-09T04:17:51.474Z"
+            },
+            {
+                "id": "550db000-e29b-41d4-a716-000000000001",
+                "title": "Cố Đô Hoa Lư – Kinh Đô Đầu Tiên Của Nhà Nước Phong Kiến Việt Nam",
+                "slug": "co-do-hoa-lu-kinh-do-dau-tien-cua-nha-nuoc-phong-kien-viet-nam",
+                "author_name": "Ban Biên Tập Du Lịch Ninh Bình",
+                "summary": "Cố Đô Hoa Lư là kinh đô đầu tiên của nhà nước Đại Cồ Việt, nơi lưu giữ hào quang của triều Đinh – Tiền Lê. Khám phá lịch sử nghìn năm, kiến trúc đền đài và cảnh quan thiên nhiên hùng vĩ tại vùng đất thiêng Ninh Bình.",
+                "thumbnail_url": "/uploads/images/wiki-news-co-do-hoa-lu-kinh-do-dau-tien-cua-nha-nuoc-phong-kien-viet-nam.jpg",
+                "is_published": true,
+                "is_featured": true,
+                "published_at": "2026-04-01T13:00:00.000Z",
+                "tags": [
+                    "co-do-hoa-lu",
+                    "lich-su",
+                    "den-dinh-tien-hoang",
+                    "ninh-binh",
+                    "di-san-the-gioi"
+                ],
+                "view_count": 1,
+                "created_at": "2026-05-04T03:04:08.742Z",
+                "updated_at": "2026-05-09T04:17:51.474Z"
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 3,
+            "total": 18,
+            "totalPages": 6
+        }
+    }
+}
+
+
+https://apidulich.tourismpj.pro.vn/api/v1/spots/featured
+{
+    "message": "Lấy danh sách điểm nổi bật thành công",
+    "status": 200,
+    "data": {
+        "spots": [
+            {
+                "id": "b1111111-1111-4111-8111-111111111120",
+                "slug": "chua-tam-chuc-ha-nam",
+                "name": "Chùa Tam Chúc",
+                "description": "Chùa Tam Chúc là quần thể chùa lớn nhất thế giới tọa lạc tại huyện Kim Bảng, tỉnh Hà Nam. Nằm giữa vùng núi đá vôi và hồ nước mênh mông, Tam Chúc sở hữu kiến trúc Phật giáo tráng lệ gồm Tam Quan Ngoại, Tam Quan Nội, Điện Tam Thế, Điện Pháp Chủ và Điện Quan Âm. Khu phức hợp rộng hơn 5.000 ha này là điểm hành hương tâm linh và du lịch sinh thái nổi bật của vùng đồng bằng Bắc Bộ.",
+                "rating_avg": "4.75",
+                "rating_count": 1250,
+                "ticket_price_adult": "0",
+                "ticket_currency": "VND",
+                "longitude": 105.9232,
+                "latitude": 20.5471,
+                "category_name": "Đền, chùa",
+                "category_color": "#F59E0B",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-chua-tam-chuc-ha-nam.jpg"
+            },
+            {
+                "id": "ab632684-bc10-4750-ad0f-fc04ccc715d1",
+                "slug": "ben-thuyen-van-long-ninh-binh",
+                "name": "Bến thuyền Vân Long",
+                "description": "Bến thuyền phục vụ tuyến tham quan khu bảo tồn đất ngập nước Vân Long.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.88,
+                "latitude": 20.374,
+                "category_name": "Nhà thuyền",
+                "category_color": "#0284C7",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-ben-thuyen-van-long-ninh-binh.jpg"
+            },
+            {
+                "id": "c52303b1-b7ec-4fae-ab07-973f96a5b6d6",
+                "slug": "nui-non-nuoc-ninh-binh",
+                "name": "Núi Non Nước",
+                "description": "Ngọn núi nằm gần trung tâm thành phố, có cảnh quan sông núi và dấu tích văn hóa lịch sử.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.975,
+                "latitude": 20.253,
+                "category_name": "Núi",
+                "category_color": "#65A30D",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-nui-non-nuoc-ninh-binh.png"
+            },
+            {
+                "id": "3ef4e1b8-fd22-44de-9907-3659bbf51980",
+                "slug": "dong-thien-ha-ninh-binh",
+                "name": "Động Thiên Hà",
+                "description": "Hang động có hệ thống nhũ đá đẹp, thường được kết hợp trong các tuyến tham quan Nho Quan.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.81,
+                "latitude": 20.255,
+                "category_name": "Hang động",
+                "category_color": "#7C3AED",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-dong-thien-ha-ninh-binh.jpg"
+            },
+            {
+                "id": "e36b3f07-6493-4b60-b699-7ad8667da622",
+                "slug": "dong-bich-dong-ninh-binh",
+                "name": "Động Bích Động",
+                "description": "Cụm hang nằm cùng tuyến chùa Bích Động, nổi bật với cảnh quan núi đá, hồ nước và kiến trúc chùa cổ.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.914,
+                "latitude": 20.218,
+                "category_name": "Hang động",
+                "category_color": "#7C3AED",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-dong-bich-dong-ninh-binh.jpg"
+            },
+            {
+                "id": "c2c4b9a9-ee83-402b-9ba9-7ba88592b2c5",
+                "slug": "phong-tuyen-tam-diep-ninh-binh",
+                "name": "Phòng tuyến Tam Điệp",
+                "description": "Di tích lịch sử gắn với tuyến phòng thủ Tam Điệp - Biện Sơn trong lịch sử chống ngoại xâm.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.9,
+                "latitude": 20.15,
+                "category_name": "Di tích lịch sử",
+                "category_color": "#DC2626",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-phong-tuyen-tam-diep-ninh-binh.jpg"
+            },
+            {
+                "id": "00f39716-754c-48e3-a254-2f5f5d8593be",
+                "slug": "lang-nghe-theu-ren-van-lam-ninh-binh",
+                "name": "Làng nghề thêu ren Văn Lâm",
+                "description": "Làng nghề truyền thống nổi tiếng với nghề thêu ren, nằm gần tuyến du lịch Tam Cốc.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.919,
+                "latitude": 20.214,
+                "category_name": "Làng nghề truyền thống",
+                "category_color": "#795548",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-lang-nghe-theu-ren-van-lam-ninh-binh.jpg"
+            },
+            {
+                "id": "33514304-3e28-433a-91e6-36b1385919fc",
+                "slug": "khu-bao-ton-van-long-ninh-binh",
+                "name": "Khu bảo tồn đất ngập nước Vân Long",
+                "description": "Khu bảo tồn đất ngập nước với cảnh quan núi đá vôi, đầm nước và hệ sinh thái chim nước đặc trưng.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.8605764,
+                "latitude": 20.3858631,
+                "category_name": "Khu bảo tồn thiên nhiên",
+                "category_color": "#047857",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-khu-bao-ton-van-long-ninh-binh.jpg"
+            },
+            {
+                "id": "bb0ae9ba-9613-4a2d-8975-63a775e503dc",
+                "slug": "vuon-quoc-gia-cuc-phuong-ninh-binh",
+                "name": "Vườn quốc gia Cúc Phương",
+                "description": "Vườn quốc gia lâu đời, nổi bật với rừng nguyên sinh, tuyến trekking, hang động và trung tâm cứu hộ linh trưởng.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.6176593,
+                "latitude": 20.3162835,
+                "category_name": "Vườn quốc gia",
+                "category_color": "#166534",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-vuon-quoc-gia-cuc-phuong-ninh-binh.jpg"
+            },
+            {
+                "id": "4e16fe1e-ab20-4ba8-968a-1b0e91f278ce",
+                "slug": "dong-am-tien-ninh-binh",
+                "name": "Động Am Tiên",
+                "description": "Điểm tham quan trong khu vực Tuyệt Tình Cốc, có hồ nước, vách núi đá và không gian cổ kính.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.9114446,
+                "latitude": 20.2815397,
+                "category_name": "Hang động",
+                "category_color": "#7C3AED",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-dong-am-tien-ninh-binh.jpg"
+            },
+            {
+                "id": "c94a0f44-175b-4a5c-a805-e3e6ac81054d",
+                "slug": "khu-du-lich-thung-nham-ninh-binh",
+                "name": "Khu du lịch sinh thái Thung Nham",
+                "description": "Khu du lịch sinh thái với vườn chim, hang động, thung lũng và các tuyến tham quan tự nhiên.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.888788,
+                "latitude": 20.2211319,
+                "category_name": "Khu du lịch",
+                "category_color": "#2563EB",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-khu-du-lich-thung-nham-ninh-binh.jpg"
+            },
+            {
+                "id": "c42f8a59-1d20-4eb7-a859-eaf04ef051fa",
+                "slug": "nha-tho-da-phat-diem-ninh-binh",
+                "name": "Nhà thờ đá Phát Diệm",
+                "description": "Quần thể nhà thờ đá nổi tiếng với kiến trúc giao thoa Đông - Tây, là điểm văn hóa đặc sắc của Kim Sơn.",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 106.0794722,
+                "latitude": 20.0930035,
+                "category_name": "Nhà thờ",
+                "category_color": "#CA8A04",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-nha-tho-da-phat-diem-ninh-binh.jpg"
+            }
+        ]
+    }
+}
+
+
+https://apidulich.tourismpj.pro.vn/api/v1/festivals?page=1&limit=4&upcoming=true&sortBy=start_date&sortOrder=ASC
+
+{
+    "message": "Danh sách lễ hội",
+    "status": 200,
+    "data": {
+        "items": [
+            {
+                "id": "1e2c982a-f19d-4f16-a18f-1671fa5732ab",
+                "name": "Lễ Phật Đản Bái Đính - Lễ Hội Tôn Giáo Lớn Nhất",
+                "festival_type": "religious",
+                "description": "Lễ Phật Đản kéo dài 10 ngày tại Chùa Bái Đính với hàng chục ngàn người tham dự. Có các buổi lễ cầu nguyện, thắp nến dâng Phật, các bài giảng pháp từ các cao tăng nổi tiếng, múa mâm (múa cầu bình an), và những pháp hành thiêng liêng trong hang động. Có các gian hàng bán hương, hoa, lưu niệm tôn giáo và ẩm thực chay.",
+                "start_date": "2026-05-15T05:00:00.000Z",
+                "end_date": "2026-05-25T05:00:00.000Z",
+                "cover_image_url": "/uploads/images/wiki-festival-le-phat-an-bai-inh-le-hoi-ton-giao-lon-nhat.jpg",
+                "location_name": "Chùa Bái Đính Cổ, Nho Quan, Ninh Bình",
+                "is_recurring": true,
+                "recurrence_rule": "FREQ=YEARLY;BYMONTH=5;BYMONTHDAY=15",
+                "website": null,
+                "province_code": "37",
+                "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
+                "is_published": true,
+                "created_at": "2026-05-05T09:15:36.450Z",
+                "province_name": "Ninh Bình",
+                "spot_name": "Chùa Bái Đính cổ",
+                "lng": 105.866,
+                "lat": 20.27
+            },
+            {
+                "id": "ac599de6-fa44-42f5-a3c7-e7b90e9d651c",
+                "name": "Lễ Hội Tái Hiện Lịch Sử Hoàng Gia",
+                "festival_type": "historical",
+                "description": "Lễ hội tái hiện lịch sử hoàng gia với các màn diễu hành tái hiện lịch sử các triều đại, các nghi lễ cổ xưa, cưỡi ngựa theo lối cũ, và các buổi hát ru truyền thống. Có các gian triển lãm về trang phục cổ, vũ khí cổ, và đồ dùng hoàng gia. Bán lưu niệm lịch sử và ẩm thực hoàng gia.",
+                "start_date": "2026-06-15T05:00:00.000Z",
+                "end_date": "2026-06-20T05:00:00.000Z",
+                "cover_image_url": "/uploads/images/wiki-festival-le-hoi-tai-hien-lich-su-hoang-gia.jpg",
+                "location_name": "Hành cung Vũ Lâm, Hoa Lư, Ninh Bình",
+                "is_recurring": false,
+                "recurrence_rule": null,
+                "website": null,
+                "province_code": "37",
+                "spot_id": "5f6bdde9-f49c-4a0d-9d38-c9ace94dd842",
+                "is_published": true,
+                "created_at": "2026-05-05T09:15:36.450Z",
+                "province_name": "Ninh Bình",
+                "spot_name": "Hành cung Vũ Lâm",
+                "lng": 105.915,
+                "lat": 20.247
+            },
+            {
+                "id": "2825f1cf-2721-4881-9427-e5f46fc15a7d",
+                "name": "Festival Âm Nhạc & Du Thuyền Tràng An",
+                "festival_type": "cultural",
+                "description": "Festival kết hợp âm nhạc truyền thống và hiện đại với các buổi biểu diễn trên du thuyền, hát rong, các ban nhạc truyền thống, và nhạc sống từ các nghệ sĩ nổi tiếng. Có các cuộc thi hát, múa, và các workshop về âm nhạc truyền thống Việt Nam. Ăn uống cao cấp trên thuyền.",
+                "start_date": "2026-07-01T05:00:00.000Z",
+                "end_date": "2026-07-10T05:00:00.000Z",
+                "cover_image_url": "/uploads/images/wiki-festival-festival-am-nhac-du-thuyen-trang-an.jpg",
+                "location_name": "Bến thuyền Tràng An, Cúc Phương, Ninh Bình",
+                "is_recurring": false,
+                "recurrence_rule": null,
+                "website": null,
+                "province_code": "37",
+                "spot_id": "179dbcbd-bc1d-422c-8588-050728111b1e",
+                "is_published": true,
+                "created_at": "2026-05-05T09:15:36.450Z",
+                "province_name": "Ninh Bình",
+                "spot_name": "Bến thuyền Tràng An",
+                "lng": 105.918,
+                "lat": 20.252
+            },
+            {
+                "id": "67162bb0-369a-4f2c-b99d-66bcaab00cb3",
+                "name": "Lễ Hội Mùa Thu Hang Múa - Trekking & Nhiếp Ảnh",
+                "festival_type": "nature",
+                "description": "Lễ hội kỷ niệm mùa thu với các hoạt động trekking vào sáng sớm, chạy bộ leo núi, và cuộc thi nhiếp ảnh khám phá cảnh đẹp mùa thu. Có các bài giảng từ các hướng dẫn viên leo núi chuyên nghiệp, buổi Yoga trên đỉnh núi vào lúc bình minh, và các workshop về nhiếp ảnh thiên nhiên.",
+                "start_date": "2026-09-01T05:00:00.000Z",
+                "end_date": "2026-11-30T06:00:00.000Z",
+                "cover_image_url": "/uploads/images/wiki-festival-le-hoi-mua-thu-hang-mua-trekking-nhiep-anh.jpg",
+                "location_name": "Hang Múa, Tam Cốc, Ninh Bình",
+                "is_recurring": true,
+                "recurrence_rule": "FREQ=YEARLY;BYMONTH=9",
+                "website": null,
+                "province_code": "37",
+                "spot_id": "7ffaf2c5-a665-4795-8fc3-8e5ec9060b4d",
+                "is_published": true,
+                "created_at": "2026-05-05T09:15:36.450Z",
+                "province_name": "Ninh Bình",
+                "spot_name": "Đường lên Hang Múa",
+                "lng": 105.957639,
+                "lat": 20.224444
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 4,
+            "total": 6,
+            "totalPages": 2
+        }
+    }
+}

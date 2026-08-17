@@ -1,0 +1,334 @@
+https://apidulich.tourismpj.pro.vn/api/v1/tours?page=1&limit=12
+
+
+{
+    "message": "Chi tiết tour",
+    "status": 200,
+    "data": {
+        "tour": {
+            "id": "550ea000-e29b-41d4-a716-100000000011",
+            "business_id": null,
+            "province_code": "37",
+            "name_vi": "Tour Bái Đính - Đền Trình - Đền Thái Vi 1 ngày",
+            "name_en": "Bai Dinh - Trinh Temple - Thai Vi Temple Day Tour",
+            "slug": "tour-bai-dinh-den-trinh-den-thai-vi-1-ngay",
+            "description_vi": "Tuyến tâm linh 1 ngày kết nối các đền chùa active trong hệ thống.",
+            "duration_days": 1,
+            "price_from_vnd": "690000",
+            "max_guests": 28,
+            "includes": [
+                "Vé tham quan",
+                "Hướng dẫn viên",
+                "Xe đưa đón trong lịch trình"
+            ],
+            "excludes": [
+                "Chi phí cá nhân",
+                "VAT"
+            ],
+            "start_location_vi": "Chùa Bái Đính cổ",
+            "end_location_vi": "Đền Thái Vi",
+            "cover_image_url": "/uploads/images/wiki-tour-tour-bai-dinh-den-trinh-den-thai-vi-1-ngay.jpg",
+            "rating_avg": "4.72",
+            "rating_count": 38,
+            "status": "published",
+            "is_featured": false,
+            "published_at": "2026-05-08T18:33:59.797Z",
+            "created_at": "2026-05-08T18:33:59.797Z",
+            "updated_at": "2026-05-09T05:18:02.964Z",
+            "name": "Tour Bái Đính - Đền Trình - Đền Thái Vi 1 ngày",
+            "business_name": null,
+            "province_name": "Ninh Bình",
+            "stops": [
+                {
+                    "id": "2570048c-51da-4c62-9ad1-bff100699526",
+                    "day_number": 1,
+                    "stop_order": 1,
+                    "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
+                    "business_id": null,
+                    "title_vi": "Chùa Bái Đính cổ",
+                    "description_vi": "Tham quan Chùa Bái Đính cổ.",
+                    "planned_duration_min": 100,
+                    "geom": {
+                        "type": "Point",
+                        "coordinates": [
+                            105.866,
+                            20.27
+                        ]
+                    },
+                    "spot_name": "Chùa Bái Đính cổ"
+                },
+                {
+                    "id": "a0b0ce5f-5e0d-4d88-9a93-949b8e9e6fa2",
+                    "day_number": 1,
+                    "stop_order": 2,
+                    "spot_id": "08cbb049-686b-4694-a4ab-f3e4fafc9842",
+                    "business_id": null,
+                    "title_vi": "Đền Trình",
+                    "description_vi": "Dừng tại Đền Trình.",
+                    "planned_duration_min": 45,
+                    "geom": {
+                        "type": "Point",
+                        "coordinates": [
+                            105.906917,
+                            20.257056
+                        ]
+                    },
+                    "spot_name": "Đền Trình"
+                },
+                {
+                    "id": "0ab5c59b-f73d-434a-8eba-6ef9317391fc",
+                    "day_number": 1,
+                    "stop_order": 3,
+                    "spot_id": "b9bb1115-e295-425f-ab03-98e83b5337c6",
+                    "business_id": null,
+                    "title_vi": "Đền Thái Vi",
+                    "description_vi": "Kết thúc tuyến tâm linh tại Đền Thái Vi.",
+                    "planned_duration_min": 60,
+                    "geom": {
+                        "type": "Point",
+                        "coordinates": [
+                            105.929882104,
+                            20.224220811
+                        ]
+                    },
+                    "spot_name": "Đền Thái Vi"
+                }
+            ]
+        }
+    }
+}
+
+
+https://apidulich.tourismpj.pro.vn/api/v1/spots/bf23dd39-7f14-4c70-893d-584bb616f4a0/media
+
+{
+    "message": "Lấy media điểm du lịch thành công",
+    "status": 200,
+    "data": {
+        "media": [
+            {
+                "id": "3b47d96a-dc37-44cd-ba0a-6656460322d8",
+                "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
+                "media_type": "image",
+                "url": "/uploads/images/wiki-chua-bai-dinh-co-ninh-binh.jpg",
+                "thumbnail_url": null,
+                "title_vi": "Chùa Bái Đính cổ",
+                "title_en": "Portaal-Vietnam-NL.jpg",
+                "duration_sec": null,
+                "file_size_kb": 595,
+                "resolution": "1600x900",
+                "is_primary": true,
+                "sort_order": 0,
+                "language": null,
+                "created_at": "2026-05-05T09:11:33.577Z"
+            },
+            {
+                "id": "27b37326-271d-4c9c-9028-1d12d6b01d6a",
+                "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
+                "media_type": "image",
+                "url": "/uploads/images/5-1761584791573-293369934.jpg",
+                "thumbnail_url": null,
+                "title_vi": null,
+                "title_en": null,
+                "duration_sec": null,
+                "file_size_kb": null,
+                "resolution": null,
+                "is_primary": false,
+                "sort_order": 1,
+                "language": null,
+                "created_at": "2026-05-05T09:11:33.577Z"
+            },
+            {
+                "id": "7c1959ed-e6fe-425b-a26e-b702da5e2870",
+                "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
+                "media_type": "image",
+                "url": "/uploads/images/bai-dinh2-1761584791604-695623853.JPG",
+                "thumbnail_url": null,
+                "title_vi": null,
+                "title_en": null,
+                "duration_sec": null,
+                "file_size_kb": null,
+                "resolution": null,
+                "is_primary": false,
+                "sort_order": 2,
+                "language": null,
+                "created_at": "2026-05-05T09:11:33.577Z"
+            },
+            {
+                "id": "223e6d70-e9f0-4fc9-94a4-70e2ebfa0cdc",
+                "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
+                "media_type": "image",
+                "url": "/uploads/images/dsc-5387---copy-1761584791635-359978275.jpg",
+                "thumbnail_url": null,
+                "title_vi": null,
+                "title_en": null,
+                "duration_sec": null,
+                "file_size_kb": null,
+                "resolution": null,
+                "is_primary": false,
+                "sort_order": 3,
+                "language": null,
+                "created_at": "2026-05-05T09:11:33.577Z"
+            }
+        ]
+    }
+}
+
+
+
+
+https://apidulich.tourismpj.pro.vn/api/v1/tours/550ea000-e29b-41d4-a716-100000000011/stops
+
+{
+    "message": "Danh sách điểm dừng",
+    "status": 200,
+    "data": {
+        "stops": [
+            {
+                "id": "2570048c-51da-4c62-9ad1-bff100699526",
+                "tour_package_id": "550ea000-e29b-41d4-a716-100000000011",
+                "day_number": 1,
+                "stop_order": 1,
+                "spot_id": "bf23dd39-7f14-4c70-893d-584bb616f4a0",
+                "business_id": null,
+                "title_vi": "Chùa Bái Đính cổ",
+                "description_vi": "Tham quan Chùa Bái Đính cổ.",
+                "planned_duration_min": 100,
+                "geom_json": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.866,
+                        20.27
+                    ]
+                },
+                "spot_name": "Chùa Bái Đính cổ"
+            },
+            {
+                "id": "a0b0ce5f-5e0d-4d88-9a93-949b8e9e6fa2",
+                "tour_package_id": "550ea000-e29b-41d4-a716-100000000011",
+                "day_number": 1,
+                "stop_order": 2,
+                "spot_id": "08cbb049-686b-4694-a4ab-f3e4fafc9842",
+                "business_id": null,
+                "title_vi": "Đền Trình",
+                "description_vi": "Dừng tại Đền Trình.",
+                "planned_duration_min": 45,
+                "geom_json": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.906917,
+                        20.257056
+                    ]
+                },
+                "spot_name": "Đền Trình"
+            },
+            {
+                "id": "0ab5c59b-f73d-434a-8eba-6ef9317391fc",
+                "tour_package_id": "550ea000-e29b-41d4-a716-100000000011",
+                "day_number": 1,
+                "stop_order": 3,
+                "spot_id": "b9bb1115-e295-425f-ab03-98e83b5337c6",
+                "business_id": null,
+                "title_vi": "Đền Thái Vi",
+                "description_vi": "Kết thúc tuyến tâm linh tại Đền Thái Vi.",
+                "planned_duration_min": 60,
+                "geom_json": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.929882104,
+                        20.224220811
+                    ]
+                },
+                "spot_name": "Đền Thái Vi"
+            }
+        ]
+    }
+}
+
+
+
+
+api/v1/ratings?page=1&limit=10&spot_id=46a7398d-386f-4449-af1f-b24dd5667649
+{
+    "message": "Lấy danh sách đánh giá thành công",
+    "status": 200,
+    "data": {
+        "ratings": [
+            {
+                "id": "4ed882e5-96ef-43d5-90e7-a6ca656bc664",
+                "user_id": null,
+                "spot_id": "46a7398d-386f-4449-af1f-b24dd5667649",
+                "business_id": null,
+                "stars": 5,
+                "title": "Trải nghiệm đáng ghé ở Ninh Bình",
+                "content": "Điểm này có cảnh quan và không khí rất đặc trưng của Ninh Bình. Thời gian tham quan vừa phải, phù hợp cho cả khách đi tự túc lẫn theo tour.",
+                "pros": "Cảnh quan đẹp, có bản sắc địa phương",
+                "cons": "Một số thời điểm khá đông khách",
+                "visit_date": "2026-03-14T05:00:00.000Z",
+                "photo_urls": null,
+                "status": "published",
+                "is_verified_visit": true,
+                "helpful_count": 10,
+                "reply_text": null,
+                "reply_at": null,
+                "created_at": "2026-03-14T05:23:44.371Z",
+                "updated_at": "2026-03-14T05:23:44.371Z",
+                "user_name": null,
+                "user_avatar": null,
+                "reply_by_name": null
+            },
+            {
+                "id": "02da7d7a-a3a6-416f-b3ca-715dc61e4aa7",
+                "user_id": null,
+                "spot_id": "46a7398d-386f-4449-af1f-b24dd5667649",
+                "business_id": null,
+                "stars": 4,
+                "title": "Không gian đẹp và dễ tham quan",
+                "content": "Vị trí thuận tiện, dễ kết hợp với các điểm lân cận. Nếu đi vào buổi sáng hoặc chiều muộn thì trải nghiệm sẽ dễ chịu hơn.",
+                "pros": "Dễ kết hợp trong hành trình, phù hợp chụp ảnh",
+                "cons": "Cần thêm biển chỉ dẫn hoặc thông tin thuyết minh",
+                "visit_date": "2026-02-21T06:00:00.000Z",
+                "photo_urls": null,
+                "status": "published",
+                "is_verified_visit": true,
+                "helpful_count": 12,
+                "reply_text": null,
+                "reply_at": null,
+                "created_at": "2026-02-21T06:23:44.371Z",
+                "updated_at": "2026-02-21T06:23:44.371Z",
+                "user_name": null,
+                "user_avatar": null,
+                "reply_by_name": null
+            },
+            {
+                "id": "da723c81-e0c3-48d0-96f1-5624cde02c10",
+                "user_id": null,
+                "spot_id": "46a7398d-386f-4449-af1f-b24dd5667649",
+                "business_id": null,
+                "stars": 4,
+                "title": "Phù hợp để thêm vào lịch trình",
+                "content": "Tổng thể ổn, đáng để ghé nếu lịch trình còn thời gian. Nên chuẩn bị trước thông tin đường đi và khung giờ cao điểm.",
+                "pros": "Không mất quá nhiều thời gian, trải nghiệm ổn",
+                "cons": "Nên tránh đi giữa trưa vào ngày nắng",
+                "visit_date": "2026-01-31T06:00:00.000Z",
+                "photo_urls": null,
+                "status": "published",
+                "is_verified_visit": true,
+                "helpful_count": 14,
+                "reply_text": null,
+                "reply_at": null,
+                "created_at": "2026-01-31T06:23:44.371Z",
+                "updated_at": "2026-01-31T06:23:44.371Z",
+                "user_name": null,
+                "user_avatar": null,
+                "reply_by_name": null
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 10,
+            "total": 3,
+            "totalPages": 1
+        }
+    }
+}
