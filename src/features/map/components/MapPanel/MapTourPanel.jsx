@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
+import { resolveCapacityPct } from '@/features/map/utils/capacityUtils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { withBaseUrl } from '@/lib/utils';
 
@@ -168,6 +169,8 @@ function formatTicketPrice(priceLike, currency = 'VND', locale = 'vi-VN') {
 function TourStopCard({ stop, day, order, accent }) {
   const { t, i18n } = useTranslation();
   const isEnglish = String(i18n.resolvedLanguage || i18n.language || '').startsWith('en');
+  const mapRef = useMapStore((state) => state.mapRef);
+  const mapRefObj = useMapStore((state) => state.mapRefObj);
 
   const spot = resolveSpot(stop);
   const label = resolveStopLabel(
@@ -189,12 +192,43 @@ function TourStopCard({ stop, day, order, accent }) {
 
   const rating = Number(spot?.rating_avg);
   const hasRating = Number.isFinite(rating) && rating > 0;
-  const capacityPct = Number(spot?.current_capacity_pct);
-  const hasCapacityPct = Number.isFinite(capacityPct);
+  const capacityPct = resolveCapacityPct(spot);
+  const hasCapacityPct = capacityPct != null;
+
+  const handleFlyToStop = () => {
+    if (!coords) return;
+    const targetMap = mapRef || mapRefObj?.current?.single || null;
+    if (!targetMap?.flyTo) return;
+
+    targetMap.flyTo({
+      center: [coords.lng, coords.lat],
+      zoom: Math.max(targetMap.getZoom(), 15),
+      duration: 800,
+      essential: true,
+    });
+  };
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-xl border ${accent.border} from-background via-background to-muted/35 bg-gradient-to-br p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md`}
+      role={coords ? 'button' : undefined}
+      tabIndex={coords ? 0 : undefined}
+      onClick={coords ? handleFlyToStop : undefined}
+      onKeyDown={
+        coords
+          ? (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleFlyToStop();
+              }
+            }
+          : undefined
+      }
+      title={
+        coords
+          ? t('mapPage.tourPanel.flyToStop', { defaultValue: 'Xem điểm dừng trên bản đồ' })
+          : undefined
+      }
+      className={`group relative overflow-hidden rounded-xl border ${accent.border} from-background via-background to-muted/35 bg-gradient-to-br p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${coords ? 'focus-visible:ring-primary/50 cursor-pointer focus-visible:ring-2 focus-visible:outline-none' : ''}`}
     >
       <div className={`absolute inset-y-0 left-0 w-1 bg-gradient-to-b ${accent.rail}`} />
 
@@ -249,7 +283,7 @@ function TourStopCard({ stop, day, order, accent }) {
           {hasCapacityPct ? (
             <span className="typo-meta border-border/70 bg-muted/70 text-foreground inline-flex items-center gap-1 rounded-md border px-2 py-1">
               <Users className="h-3.5 w-3.5" />
-              {capacityPct.toFixed(0)}%
+              {capacityPct}%
             </span>
           ) : null}
         </div>

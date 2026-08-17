@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl';
+import { resolveCapacityPct, resolveCapacityStatus } from '@/features/map/utils/capacityUtils';
 
 export {
   addTrafficFlowLayer,
@@ -123,8 +124,13 @@ function toFiniteNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+// The point layer's icon-image expression matches on CAPACITY_STATUS_PROPERTY. A `match`
+// input that is null (the API sends capacity_status: null for untracked spots) fails to
+// evaluate and the feature renders no icon at all, so always resolve to a valid status
+// string — derived from the percentage when the API omits it.
 function withCapacityProgressProperties(properties) {
-  return { ...properties };
+  const status = resolveCapacityStatus(properties) ?? 'normal';
+  return { ...properties, [CAPACITY_STATUS_PROPERTY]: status };
 }
 
 function buildPointGeometryFromCoordinates(input) {
@@ -979,16 +985,24 @@ export function applyCapacityUpdateToCollection(featureCollection, capacityUpdat
     const visitorCount =
       capacityUpdate.visitor_count != null ? capacityUpdate.visitor_count : props.visitor_count;
 
+    const hasNewPct = capacityUpdate.capacity_pct != null;
+    const nextPct = hasNewPct ? capacityUpdate.capacity_pct : props.capacity_pct;
+    // A fresh percentage invalidates the previous status: keeping it would pin the marker
+    // to a stale icon when the update omits an explicit status.
+    const nextStatus = capacityUpdate.status ?? (hasNewPct ? null : props.capacity_status);
+
     const patchedProps = {
       ...props,
       visitor_count: visitorCount,
       current_visitor_count: visitorCount,
-      capacity_pct: capacityUpdate.capacity_pct ?? props.capacity_pct,
-      capacity_status: capacityUpdate.status ?? props.capacity_status,
+      capacity_pct: nextPct,
+      current_capacity_pct: nextPct,
+      capacity_status: nextStatus,
+      current_capacity_status: nextStatus,
       recorded_at: capacityUpdate.recorded_at ?? props.recorded_at,
     };
 
-    return { ...feature, properties: patchedProps };
+    return { ...feature, properties: withCapacityProgressProperties(patchedProps) };
   });
 
   if (!matched) return featureCollection;

@@ -11,6 +11,7 @@ import {
 } from '@/services/api/capacity/capacityService';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
+import { resolveCapacityPct, resolveCapacityStatus } from '@/features/map/utils/capacityUtils';
 import { cn } from '@/lib/utils';
 
 const STATUS_META = {
@@ -88,29 +89,9 @@ function getViewOnMapVariant(status) {
   }
 }
 
-function resolveCapacityPct(item) {
-  const direct = item.capacity_pct ?? item.occupancy_pct;
-  if (direct != null) return Math.min(Math.round(Number(direct)), 100);
-  const current = Number(item.visitor_count ?? item.current_visitors ?? 0);
-  const max = Number(item.max_capacity ?? item.capacity ?? 0);
-  if (max <= 0) return 0;
-  return Math.min(Math.round((current / max) * 100), 100);
-}
-
-function resolveStatus(item, pct) {
-  const raw = String(item.status ?? item.capacity_status ?? '').trim();
-  if (STATUS_META[raw]) return raw;
-  if (pct >= 100) return 'overloaded';
-  if (pct >= 85) return 'near_full';
-  if (pct >= 70) return 'busy';
-  if (pct >= 40) return 'moderate';
-  if (pct > 0) return 'normal';
-  return 'low';
-}
-
 function normalizeItem(raw, defaultName) {
-  const pct = resolveCapacityPct(raw);
-  const status = resolveStatus(raw, pct);
+  const pct = resolveCapacityPct(raw) ?? 0;
+  const status = resolveCapacityStatus(raw, pct) ?? 'low';
   const coords = raw.geojson?.coordinates;
   return {
     id: raw.spot_id ?? raw.id,

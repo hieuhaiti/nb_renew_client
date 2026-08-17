@@ -38,7 +38,7 @@ export default function DirectionDetails({ className }) {
         </p>
       </div>
       {directions ? (
-        <div className="flex h-full flex-col space-y-2">
+        <div className="flex h-full min-h-0 flex-col space-y-2">
           <div className="bg-muted/40 grid flex-shrink-0 grid-cols-2 gap-2 rounded-lg border p-2.5">
             <div className="bg-background rounded-md px-2 py-1.5">
               <p className="text-muted-foreground text-sm">
@@ -54,7 +54,7 @@ export default function DirectionDetails({ className }) {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col space-y-1.5 overflow-hidden rounded-lg border p-2.5">
+          <div className="flex min-h-0 flex-1 flex-col space-y-1.5 overflow-hidden rounded-lg border p-2.5">
             <p className="text-sm font-semibold">
               {t('mapPage.direction.stepsTitle', { defaultValue: 'Step-by-step guidance' })}
             </p>
