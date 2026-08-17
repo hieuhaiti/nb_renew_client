@@ -26,7 +26,7 @@ export default function MapDirectionPanel({
             variant="ghost"
             size="icon-sm"
             aria-label={t('common.open', { defaultValue: 'Open' })}
-            className="bg-background/95 border-border/80 h-9 w-9 rounded-xl border shadow-sm backdrop-blur-sm"
+            className="pointer-events-auto bg-background/95 border-border/80 h-9 w-9 rounded-xl border shadow-sm backdrop-blur-sm"
             onClick={onOpen}
           >
             <ArrowRight className="size-4" />
@@ -55,7 +55,7 @@ export default function MapDirectionPanel({
     return (
       <div className={className}>
         <div
-          className={`bg-background/95 border-border/80 relative flex h-full min-h-0 ${resolvedPanelWidthClass} flex-col rounded-xl border shadow-sm backdrop-blur-sm transition-all duration-300`}
+          className={`pointer-events-auto bg-background/95 border-border/80 relative flex h-full min-h-0 ${resolvedPanelWidthClass} flex-col rounded-xl border shadow-sm backdrop-blur-sm transition-all duration-300`}
         >
           <header className="border-border/60 flex shrink-0 items-center justify-between border-b px-3 py-2">
             <p className="typo-section-title">

@@ -11,7 +11,6 @@ export default function DirectionDetails({ className }) {
   const { mapRef } = useMapStore();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
-  const isDirectionActive = activeIndex !== null;
 
   useEffect(() => {
     if (!directions) {
@@ -37,29 +36,28 @@ export default function DirectionDetails({ className }) {
       </div>
 
       {directions ? (
-        /* flex-1 min-h-0: lấy phần còn lại sau header, cho phép con dùng flex-1 */
-        <div className="flex min-h-0 flex-1 flex-col gap-2">
-          {/* Stats — fixed */}
-          <div className="bg-muted/40 grid shrink-0 grid-cols-2 gap-2 rounded-lg border p-2.5">
-            <div className="bg-background rounded-md px-2 py-1.5">
-              <p className="text-muted-foreground text-sm">
-                {t('mapPage.direction.totalDistance')}
-              </p>
-              <p className="text-sm font-semibold">{formatDistance(directions.distance)}</p>
+        <ScrollArea className="min-h-0 flex-1">
+          <div className="space-y-2 pr-0.5">
+            {/* Stats */}
+            <div className="bg-muted/40 grid grid-cols-2 gap-2 rounded-lg border p-2.5">
+              <div className="bg-background rounded-md px-2 py-1.5">
+                <p className="text-muted-foreground text-sm">
+                  {t('mapPage.direction.totalDistance')}
+                </p>
+                <p className="text-sm font-semibold">{formatDistance(directions.distance)}</p>
+              </div>
+              <div className="bg-background rounded-md px-2 py-1.5">
+                <p className="text-muted-foreground text-sm">
+                  {t('mapPage.direction.totalDuration')}
+                </p>
+                <p className="text-sm font-semibold">{formatDuration(directions.duration)}</p>
+              </div>
             </div>
-            <div className="bg-background rounded-md px-2 py-1.5">
-              <p className="text-muted-foreground text-sm">
-                {t('mapPage.direction.totalDuration')}
-              </p>
-              <p className="text-sm font-semibold">{formatDuration(directions.duration)}</p>
-            </div>
-          </div>
 
-          {/* Steps box — flex-1 min-h-0: chiếm phần còn lại, title cố định, list scroll */}
-          <div className="flex min-h-0 flex-1 flex-col space-y-1.5 rounded-lg border p-2.5">
-            <p className="shrink-0 text-sm font-semibold">{t('mapPage.direction.stepsTitle')}</p>
-            <ScrollArea className="min-h-0 flex-1">
-              <div className="space-y-1.5 pr-1">
+            {/* Steps */}
+            <div className="space-y-1.5 rounded-lg border p-2.5">
+              <p className="text-sm font-semibold">{t('mapPage.direction.stepsTitle')}</p>
+              <div className="space-y-1.5">
                 {(directions.legs?.[0]?.steps || []).map((step, index) => (
                   <div
                     key={`${step?.maneuver?.instruction || 'step'}-${index}`}
@@ -74,10 +72,8 @@ export default function DirectionDetails({ className }) {
                     title={step?.maneuver?.instruction || ''}
                     onMouseEnter={() => {
                       setHoveredIndex(index);
-                      if (isDirectionActive) {
-                        const [lng, lat] = step?.maneuver?.location || [];
-                        if (lng != null && lat != null) setHoveredStepPoint({ lng, lat });
-                      }
+                      const [lng, lat] = step?.maneuver?.location || [];
+                      if (lng != null && lat != null) setHoveredStepPoint({ lng, lat });
                     }}
                     onMouseLeave={() => {
                       setHoveredIndex(null);
@@ -86,8 +82,11 @@ export default function DirectionDetails({ className }) {
                     onClick={() => {
                       setActiveIndex(index);
                       const [lng, lat] = step?.maneuver?.location || [];
-                      if (lng != null && lat != null && mapRef?.flyTo) {
-                        mapRef.flyTo({ center: [lng, lat], zoom: 16, duration: 800 });
+                      if (lng != null && lat != null) {
+                        setHoveredStepPoint({ lng, lat });
+                        if (mapRef?.flyTo) {
+                          mapRef.flyTo({ center: [lng, lat], zoom: 16, duration: 800 });
+                        }
                       }
                     }}
                   >
@@ -100,9 +99,9 @@ export default function DirectionDetails({ className }) {
                   </div>
                 ))}
               </div>
-            </ScrollArea>
+            </div>
           </div>
-        </div>
+        </ScrollArea>
       ) : null}
     </div>
   );

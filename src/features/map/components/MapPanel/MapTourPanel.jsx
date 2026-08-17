@@ -220,11 +220,19 @@ function getCapacityStatusMeta(status) {
 }
 
 function resolveStopCapacity(stop) {
-  const pctRaw = stop?.capacity_pct ?? stop?.spot?.current_capacity_pct ?? null;
+  const pctRaw =
+    stop?.current_capacity_pct ??
+    stop?.capacity_pct ??
+    stop?.occupancy_pct ??
+    stop?.spot?.current_capacity_pct ??
+    stop?.spot?.capacity_pct ??
+    null;
   const pct = Number(pctRaw);
   const hasCapacityPct = Number.isFinite(pct);
-  const boundedPct = hasCapacityPct ? Math.max(0, Math.min(100, Math.round(pct))) : null;
-  const statusMeta = getCapacityStatusMeta(stop?.capacity_status);
+  const boundedPct = hasCapacityPct ? Math.max(0, Math.round(pct)) : null;
+  const rawStatus =
+    stop?.status ?? stop?.capacity_status ?? stop?.spot?.status ?? stop?.spot?.capacity_status;
+  const statusMeta = getCapacityStatusMeta(rawStatus);
   const visitorCount = Number(stop?.visitor_count ?? stop?.spot?.current_visitor_count ?? 0);
   const maxCapacity = Number(stop?.max_capacity ?? stop?.spot?.max_capacity ?? 0);
   const hasVisitorCount = Number.isFinite(visitorCount) && visitorCount >= 0;
@@ -362,7 +370,7 @@ function TourStopCard({ stop, day, order, accent, onFlyTo }) {
             <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
               <div
                 className="h-full rounded-full transition-all"
-                style={{ width: `${capacityPct ?? 0}%`, ...statusMeta.barStyle }}
+                style={{ width: `${Math.min(capacityPct ?? 0, 100)}%`, ...statusMeta.barStyle }}
               />
             </div>
           </div>

@@ -78,12 +78,12 @@ function getCapacityActiveBorderClass(status) {
 }
 
 function resolveCapacityPct(item) {
-  const direct = item.capacity_pct ?? item.occupancy_pct;
-  if (direct != null) return Math.min(Math.round(Number(direct)), 100);
+  const direct = item.current_capacity_pct ?? item.capacity_pct ?? item.occupancy_pct;
+  if (direct != null) return Math.max(0, Math.round(Number(direct)));
   const current = Number(item.visitor_count ?? item.current_visitors ?? 0);
   const max = Number(item.max_capacity ?? item.capacity ?? 0);
   if (max <= 0) return 0;
-  return Math.min(Math.round((current / max) * 100), 100);
+  return Math.max(0, Math.round((current / max) * 100));
 }
 
 function resolveStatus(item, pct) {
@@ -384,7 +384,7 @@ export default function CapacityPanel() {
                     <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
                       <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${item.pct}%`, ...meta.barStyle }}
+                        style={{ width: `${Math.min(item.pct, 100)}%`, ...meta.barStyle }}
                       />
                     </div>
                   </div>

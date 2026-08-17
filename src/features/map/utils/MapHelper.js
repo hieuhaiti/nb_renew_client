@@ -157,6 +157,11 @@ function toFeature(input, fallbackId) {
     ...(isObject(input.properties) ? input.properties : {}),
   };
 
+  const rawCapacityStatus = rawProperties.capacity_status ?? rawProperties.status ?? null;
+  const normalizedCapacityStatus = rawCapacityStatus
+    ? String(rawCapacityStatus).trim().toLowerCase().replace(/[\s-]+/g, '_')
+    : undefined;
+
   const mergedProperties = {
     ...rawProperties,
     id: input.id ?? rawProperties.id,
@@ -166,6 +171,7 @@ function toFeature(input, fallbackId) {
     address: toDisplayText(rawProperties.address),
     category_id: rawProperties.category_id,
     subcategory_id: rawProperties.subcategory_id,
+    ...(normalizedCapacityStatus != null ? { capacity_status: normalizedCapacityStatus } : {}),
   };
   const normalizedProperties = withCapacityProgressProperties(mergedProperties);
 
@@ -974,12 +980,17 @@ export function applyCapacityUpdateToCollection(featureCollection, capacityUpdat
     const visitorCount =
       capacityUpdate.visitor_count != null ? capacityUpdate.visitor_count : props.visitor_count;
 
+    const rawStatus = capacityUpdate.status ?? props.capacity_status;
+    const normalizedStatus = rawStatus
+      ? String(rawStatus).trim().toLowerCase().replace(/[\s-]+/g, '_')
+      : rawStatus;
+
     const patchedProps = {
       ...props,
       visitor_count: visitorCount,
       current_visitor_count: visitorCount,
       capacity_pct: capacityUpdate.capacity_pct ?? props.capacity_pct,
-      capacity_status: capacityUpdate.status ?? props.capacity_status,
+      capacity_status: normalizedStatus,
       recorded_at: capacityUpdate.recorded_at ?? props.recorded_at,
     };
 

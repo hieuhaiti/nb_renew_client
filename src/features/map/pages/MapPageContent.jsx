@@ -792,7 +792,7 @@ export default function MapPage() {
               </Card>
             </div>
 
-            <div className="border-border relative h-full min-h-0 overflow-hidden rounded-3xl p-0 shadow-sm">
+            <div className="border-border relative isolate h-full min-h-0 overflow-hidden rounded-3xl p-0 shadow-sm">
               <MapBaseArea />
               <div className="pointer-events-none absolute top-3 left-3 z-30 xl:hidden">
                 <MapNameOverlay
