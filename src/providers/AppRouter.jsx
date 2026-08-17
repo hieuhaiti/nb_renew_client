@@ -1,6 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PageSkeleton from '@/components/common/PageSkeleton';
+import i18n from '@/i18n';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 
 // Features
 const HomePage = lazy(() => import('@/features/home/pages/HomePage'));
@@ -23,6 +25,7 @@ const NewsPage = lazy(() => import('@/features/news/pages/NewsPage'));
 const NewsDetailPage = lazy(() => import('@/features/news/pages/NewsDetailPage'));
 const VlogPage = lazy(() => import('@/features/vlog/pages/VlogPage'));
 const Vr360Page = lazy(() => import('@/features/vr360/pages/Vr360Page'));
+const FeedbackPage = lazy(() => import('@/features/feedback/pages/FeedbackPage'));
 
 // Error pages
 const NotFoundPage = lazy(() => import('@/pages/Errors/404NotFoundPage'));
@@ -33,6 +36,17 @@ const InternalServerErrorPage = lazy(() => import('@/pages/Errors/500InternalSer
 const ServiceUnavailablePage = lazy(() => import('@/pages/Errors/503ServiceUnavailablePage'));
 
 export function AppRouter() {
+  const lang = useLanguageStore((state) => state.lang);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+
+    const currentLang = i18n.resolvedLanguage || i18n.language;
+    if (!String(currentLang || '').startsWith(lang)) {
+      i18n.changeLanguage(lang).catch(() => {});
+    }
+  }, [lang]);
+
   return (
     <BrowserRouter>
       <Suspense fallback={<PageSkeleton />}>
@@ -60,6 +74,8 @@ export function AppRouter() {
           <Route path="/news/:slug" element={<NewsDetailPage />} />
           <Route path="/vlog" element={<VlogPage />} />
           <Route path="/vr360" element={<Vr360Page />} />
+          <Route path="/vr360/:id" element={<Vr360Page />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
 
           {/* Error pages */}
           <Route path="/400" element={<BadRequestPage />} />

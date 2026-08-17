@@ -13,9 +13,7 @@ function normalizeTextValue(value, lang = 'vi') {
   if (!value || typeof value !== 'object') return '';
 
   const preferVi = lang !== 'en';
-  const note = preferVi
-    ? value?.note_vi || value?.note_en
-    : value?.note_en || value?.note_vi;
+  const note = preferVi ? value?.note_vi || value?.note_en : value?.note_en || value?.note_vi;
 
   return typeof note === 'string' ? note : '';
 }
@@ -25,9 +23,9 @@ function getLocalizedValue(item, lang = 'vi', baseField) {
   const viField = `${baseField}_vi`;
   const enField = `${baseField}_en`;
 
-  const localizedValue = preferVi
-    ? item?.[viField] || item?.[enField] || item?.[baseField]
-    : item?.[enField] || item?.[viField] || item?.[baseField];
+  const localizedValue =
+    item?.[baseField] ||
+    (preferVi ? item?.[viField] || item?.[enField] : item?.[enField] || item?.[viField]);
 
   return normalizeTextValue(localizedValue, lang);
 }

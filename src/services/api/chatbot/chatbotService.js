@@ -1,14 +1,26 @@
 import apiClient from '@/services/apiClient';
 
+function anonHeaders(anonymousId) {
+  return anonymousId ? { 'x-anonymous-id': anonymousId } : {};
+}
+
 /** POST /chatbot/sessions  →  { id, language, session_type, ... } */
-export async function createChatSession(language = 'vi') {
-  const res = await apiClient.post('/chatbot/sessions', { language });
+export async function createChatSession(language = 'vi', anonymousId = null) {
+  const res = await apiClient.post(
+    '/chatbot/sessions',
+    { language },
+    {
+      headers: anonHeaders(anonymousId),
+    }
+  );
   return res.data?.data ?? res.data;
 }
 
 /** GET /chatbot/sessions  →  { items: [...], pagination: {...} } */
-export async function listChatSessions() {
-  const res = await apiClient.get('/chatbot/sessions');
+export async function listChatSessions(anonymousId = null) {
+  const res = await apiClient.get('/chatbot/sessions', {
+    headers: anonHeaders(anonymousId),
+  });
   const payload = res.data?.data ?? res.data;
   return Array.isArray(payload) ? payload : (payload?.items ?? []);
 }
@@ -22,17 +34,25 @@ export async function getSessionMessages(sessionId) {
 }
 
 /** POST /chatbot/sessions/:id/messages  →  bot reply data */
-export async function sendMessage(sessionId, message, language = 'vi') {
-  const res = await apiClient.post(`/chatbot/sessions/${sessionId}/messages`, {
-    message,
-    language,
-  });
+export async function sendMessage(sessionId, message, language = 'vi', anonymousId = null) {
+  const res = await apiClient.post(
+    `/chatbot/sessions/${sessionId}/messages`,
+    {
+      message,
+      language,
+    },
+    {
+      headers: anonHeaders(anonymousId),
+    }
+  );
   return res.data?.data ?? res.data;
 }
 
 /** DELETE /chatbot/sessions/:id */
-export async function deleteChatSession(sessionId) {
-  const res = await apiClient.delete(`/chatbot/sessions/${sessionId}`);
+export async function deleteChatSession(sessionId, anonymousId = null) {
+  const res = await apiClient.delete(`/chatbot/sessions/${sessionId}`, {
+    headers: anonHeaders(anonymousId),
+  });
   return res.data;
 }
 
@@ -65,10 +85,7 @@ export function extractBotReply(data) {
 }
 
 function normalizeMessages(payload) {
-  const raw =
-    payload?.messages ??
-    payload?.items ??
-    (Array.isArray(payload) ? payload : []);
+  const raw = payload?.messages ?? payload?.items ?? (Array.isArray(payload) ? payload : []);
   return raw.map((m, i) => ({
     id: m.id ?? `msg-${i}`,
     role: m.role ?? (m.sender === 'bot' ? 'assistant' : 'user'),

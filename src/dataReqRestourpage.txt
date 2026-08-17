@@ -1,0 +1,405 @@
+api/v1/tours?page=1&limit=12
+{
+    "message": "Danh sách tour",
+    "status": 200,
+    "data": {
+        "tours": [
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000011",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Bái Đính - Đền Trình - Đền Thái Vi 1 ngày",
+                "slug": "tour-bai-dinh-den-trinh-den-thai-vi-1-ngay",
+                "description_vi": "Tuyến tâm linh 1 ngày kết nối các đền chùa active trong hệ thống.",
+                "duration_days": 1,
+                "price_from_vnd": "690000",
+                "max_guests": 28,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên",
+                    "Xe đưa đón trong lịch trình"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "VAT"
+                ],
+                "start_location_vi": "Chùa Bái Đính cổ",
+                "end_location_vi": "Đền Thái Vi",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-bai-dinh-den-trinh-den-thai-vi-1-ngay.jpg",
+                "rating_avg": "4.72",
+                "rating_count": 38,
+                "status": "published",
+                "is_featured": false,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000016",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Hang Ba - Hang Cả - Hang Đại 2 ngày 1 đêm",
+                "slug": "tour-hang-ba-hang-ca-hang-dai-2n1d",
+                "description_vi": "Tuyến chuyên đề hang động, dùng các điểm hang active còn lại trong hệ thống.",
+                "duration_days": 2,
+                "price_from_vnd": "1320000",
+                "max_guests": 16,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên",
+                    "1 đêm lưu trú tiêu chuẩn"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "Phụ thu phòng đơn",
+                    "VAT"
+                ],
+                "start_location_vi": "Hang Ba",
+                "end_location_vi": "Hang Vạng",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-hang-ba-hang-ca-hang-dai-2n1d.jpg",
+                "rating_avg": "4.55",
+                "rating_count": 29,
+                "status": "published",
+                "is_featured": false,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000013",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour hang động - Núi Ngũ Động 1 ngày",
+                "slug": "tour-hang-dong-nui-ngu-dong-1-ngay",
+                "description_vi": "Tuyến dành cho khách muốn đi các hang và kết thúc ở Núi Ngũ Động.",
+                "duration_days": 1,
+                "price_from_vnd": "640000",
+                "max_guests": 18,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "VAT"
+                ],
+                "start_location_vi": "Hang Ba",
+                "end_location_vi": "Núi Ngũ Động",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-hang-dong-nui-ngu-dong-1-ngay.jpg",
+                "rating_avg": "4.47",
+                "rating_count": 24,
+                "status": "published",
+                "is_featured": false,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000009",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Hoa Lư - Đền Vua Đinh - Đền Vua Lê nửa ngày",
+                "slug": "tour-hoa-lu-den-vua-dinh-den-vua-le-nua-ngay",
+                "description_vi": "Tuyến văn hóa lịch sử ngắn quanh Cố đô Hoa Lư.",
+                "duration_days": 1,
+                "price_from_vnd": "450000",
+                "max_guests": 30,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "VAT"
+                ],
+                "start_location_vi": "Cố đô Hoa Lư",
+                "end_location_vi": "Đền Vua Lê",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-hoa-lu-den-vua-dinh-den-vua-le-nua-ngay.jpg",
+                "rating_avg": "4.58",
+                "rating_count": 27,
+                "status": "published",
+                "is_featured": false,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000017",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Ninh Bình classic 4 ngày 3 đêm",
+                "slug": "tour-ninh-binh-classic-4n3d",
+                "description_vi": "Tuyến dài tổng hợp Tràng An, Hoa Lư, Bái Đính, Tam Cốc, Hang Múa và các hang động.",
+                "duration_days": 4,
+                "price_from_vnd": "3650000",
+                "max_guests": 18,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên",
+                    "3 đêm lưu trú tiêu chuẩn",
+                    "Xe đưa đón trong lịch trình"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "Phụ thu phòng đơn",
+                    "VAT"
+                ],
+                "start_location_vi": "Bến thuyền Tràng An",
+                "end_location_vi": "Núi Ngũ Động",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-ninh-binh-classic-4n3d.jpg",
+                "rating_avg": "4.86",
+                "rating_count": 91,
+                "status": "published",
+                "is_featured": true,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000015",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Bái Đính - Tràng An - Hang Múa 2 ngày 1 đêm",
+                "slug": "tour-bai-dinh-trang-an-hang-mua-2n1d",
+                "description_vi": "Tuyến 2 ngày cân bằng giữa tâm linh, hang nước và điểm ngắm cảnh.",
+                "duration_days": 2,
+                "price_from_vnd": "1580000",
+                "max_guests": 22,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên",
+                    "1 đêm lưu trú tiêu chuẩn"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "Phụ thu phòng đơn",
+                    "VAT"
+                ],
+                "start_location_vi": "Chùa Bái Đính cổ",
+                "end_location_vi": "Đường lên Hang Múa",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-bai-dinh-trang-an-hang-mua-2n1d.jpg",
+                "rating_avg": "4.78",
+                "rating_count": 56,
+                "status": "published",
+                "is_featured": true,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000010",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Tam Cốc - Hang Múa check-in 1 ngày",
+                "slug": "tour-tam-coc-hang-mua-checkin-1-ngay",
+                "description_vi": "Tuyến check-in cảnh quan sông nước Tam Cốc và điểm ngắm toàn cảnh Hang Múa.",
+                "duration_days": 1,
+                "price_from_vnd": "760000",
+                "max_guests": 24,
+                "includes": [
+                    "Vé tham quan",
+                    "Thuyền Tam Cốc",
+                    "Hướng dẫn viên"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "VAT"
+                ],
+                "start_location_vi": "Bến thuyền Trung tâm Tam Cốc",
+                "end_location_vi": "Đường lên Hang Múa",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-tam-coc-hang-mua-checkin-1-ngay.jpg",
+                "rating_avg": "4.68",
+                "rating_count": 43,
+                "status": "published",
+                "is_featured": true,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000014",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Tam Cốc - Hoa Lư 2 ngày 1 đêm",
+                "slug": "tour-tam-coc-hoa-lu-2n1d",
+                "description_vi": "Tuyến 2 ngày kết hợp Tam Cốc, Hang Múa và cụm di tích Hoa Lư.",
+                "duration_days": 2,
+                "price_from_vnd": "1450000",
+                "max_guests": 22,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên",
+                    "1 đêm lưu trú tiêu chuẩn"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "Phụ thu phòng đơn",
+                    "VAT"
+                ],
+                "start_location_vi": "Bến thuyền Trung tâm Tam Cốc",
+                "end_location_vi": "Đền Vua Lê",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-tam-coc-hoa-lu-2n1d.jpg",
+                "rating_avg": "4.70",
+                "rating_count": 52,
+                "status": "published",
+                "is_featured": true,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000012",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Tràng An - Hang Sáng - Hang Tối 1 ngày",
+                "slug": "tour-trang-an-hang-sang-hang-toi-1-ngay",
+                "description_vi": "Tuyến hang nước Tràng An với các điểm nổi bật trong cơ sở dữ liệu.",
+                "duration_days": 1,
+                "price_from_vnd": "720000",
+                "max_guests": 25,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên",
+                    "Nước uống"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "VAT"
+                ],
+                "start_location_vi": "Bến thuyền Tràng An",
+                "end_location_vi": "Hang Nấu Rượu",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-trang-an-hang-sang-hang-toi-1-ngay.jpg",
+                "rating_avg": "4.63",
+                "rating_count": 35,
+                "status": "published",
+                "is_featured": false,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000008",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Tràng An - Hành cung Vũ Lâm nửa ngày",
+                "slug": "tour-trang-an-hanh-cung-vu-lam-nua-ngay",
+                "description_vi": "Tuyến nửa ngày nhẹ, phù hợp khách muốn trải nghiệm nhanh cụm Tràng An.",
+                "duration_days": 1,
+                "price_from_vnd": "520000",
+                "max_guests": 25,
+                "includes": [
+                    "Vé tham quan",
+                    "Hướng dẫn viên",
+                    "Nước uống"
+                ],
+                "excludes": [
+                    "Chi phí cá nhân",
+                    "VAT"
+                ],
+                "start_location_vi": "Bến thuyền Tràng An",
+                "end_location_vi": "Hành cung Vũ Lâm",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-trang-an-hanh-cung-vu-lam-nua-ngay.jpg",
+                "rating_avg": "4.57",
+                "rating_count": 22,
+                "status": "published",
+                "is_featured": false,
+                "published_at": "2026-05-08T18:33:59.797Z",
+                "created_at": "2026-05-08T18:33:59.797Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000003",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour hang động Tràng An 1 ngày",
+                "slug": "tour-hang-dong-trang-an-1-ngay",
+                "description_vi": "Lịch trình tập trung vào cụm hang và điểm tham quan trong quần thể Tràng An.",
+                "duration_days": 1,
+                "price_from_vnd": "780000",
+                "max_guests": 25,
+                "includes": [
+                    "Ve tham quan",
+                    "Huong dan vien",
+                    "Nuoc uong",
+                    "Xe dua don trong lich trinh"
+                ],
+                "excludes": [
+                    "Chi phi ca nhan",
+                    "Bua an ngoai chuong trinh",
+                    "VAT"
+                ],
+                "start_location_vi": "Bến thuyền Tràng An",
+                "end_location_vi": "Hành cung Vũ Lâm",
+                "cover_image_url": "/uploads/images/wiki-tour-tour-hang-dong-trang-an-1-ngay.jpg",
+                "rating_avg": "4.69",
+                "rating_count": 44,
+                "status": "published",
+                "is_featured": true,
+                "published_at": "2026-05-08T18:28:05.666Z",
+                "created_at": "2026-05-08T18:28:05.666Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            },
+            {
+                "id": "550ea000-e29b-41d4-a716-100000000005",
+                "business_id": null,
+                "province_code": "37",
+                "name": "Tour Hoa Lư - Bái Đính tâm linh 1 ngày",
+                "slug": "tour-hoa-lu-bai-dinh-tam-linh-1-ngay",
+                "description_vi": "Lịch trình kết nối các điểm văn hóa, lịch sử và tâm linh nổi bật quanh Hoa Lư.",
+                "duration_days": 1,
+                "price_from_vnd": "820000",
+                "max_guests": 30,
+                "includes": [
+                    "Ve tham quan",
+                    "Huong dan vien",
+                    "Xe dua don trong lich trinh"
+                ],
+                "excludes": [
+                    "Chi phi ca nhan",
+                    "Bua an ngoai chuong trinh",
+                    "VAT"
+                ],
+                "start_location_vi": "Cố đô Hoa Lư",
+                "end_location_vi": "Chùa Bái Đính cổ",
+                "cover_image_url": "/uploads/images/wiki-chua-bai-dinh-co-ninh-binh.jpg",
+                "rating_avg": "4.71",
+                "rating_count": 36,
+                "status": "published",
+                "is_featured": false,
+                "published_at": "2026-05-08T18:28:05.666Z",
+                "created_at": "2026-05-08T18:28:05.666Z",
+                "updated_at": "2026-05-09T05:18:02.964Z",
+                "business_name": null,
+                "province_name": "Ninh Bình"
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 12,
+            "total": 17,
+            "totalPages": 2
+        }
+    }
+}

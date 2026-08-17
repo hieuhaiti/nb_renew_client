@@ -18,7 +18,10 @@ import {
   mapTourSuggestions,
 } from '@/features/map/constant/mapPageMockData';
 import DataLayer from '@/features/map/components/leftSidebar/DataLayer';
-import { currentHeaderSidebar } from '@/features/map/constant/sidebarConstant';
+import {
+  headerSidebar,
+  resolveDefaultHeaderSidebar,
+} from '@/features/map/constant/sidebarConstant';
 import MapToolbarCard from '@/features/map/components/toolbar/MapToolbarCard';
 import MapWeatherCard from '@/features/map/components/MapWeatherCard';
 import MapRightSidebar from '@/features/map/components/rightSidebar/MapRightSidebar';
@@ -34,12 +37,19 @@ import {
   normalizeSpotsSearchResults,
   useSearchSpotsQuery,
 } from '@/services/api/map/mapSearchService';
+import useAuthStore from '@/stores/useAuthStore.js';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import MapBaseArea from '../components/MapBase';
 import ModalMarker from '@/features/map/components/ModalMarker';
 import ModalCarousel from '@/features/map/components/ModalCarousel';
+import OcopProductModal from '@/features/map/components/OcopProductModal';
 import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
-import { clearHighlightedRouteLayers, highlightPointOnMap } from '@/features/map/utils/MapHelper';
+import {
+  clearHighlightedRouteLayers,
+  clearRadiusBuffer,
+  highlightPointOnMap,
+  showRadiusBuffer,
+} from '@/features/map/utils/MapHelper';
 import { getMapColorById } from '@/features/map/constant/mapColor';
 
 export default function MapPage() {
@@ -47,8 +57,10 @@ export default function MapPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const prefillHandledRef = useRef(false);
-  const [activeSidebar, setActiveSidebar] = useState(currentHeaderSidebar);
-  const [activeTab, setActiveTab] = useState(currentHeaderSidebar);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const initialSidebar = resolveDefaultHeaderSidebar(isAuthenticated);
+  const [activeSidebar, setActiveSidebar] = useState(initialSidebar);
+  const [activeTab, setActiveTab] = useState(initialSidebar);
   const [selectedPlaceId, setSelectedPlaceId] = useState(mapDestinations[0]?.id ?? 0);
   const [keyword, setKeyword] = useState('');
   const [activeChip, setActiveChip] = useState('all');
@@ -83,6 +95,7 @@ export default function MapPage() {
   );
   const openSpotModal = useSpotDetailModalStore((state) => state.openSpotModal);
   const mapRef = useMapStore((state) => state.mapRef);
+  const locateControl = useMapStore((state) => state.locateControl);
   const mapRefObj = useMapStore((state) => state.mapRefObj);
   const setHighlightedPoint = useMapStore((state) => state.setHighlightedPoint);
   const setHighlightedRoute = useMapStore((state) => state.setHighlightedRoute);
@@ -94,6 +107,7 @@ export default function MapPage() {
   const setEndLocation = useDirectionsStore((state) => state.setEndLocation);
   const clearDirections = useDirectionsStore((state) => state.clearDirections);
   const setSelectedTour = useTourPanelStore((state) => state.setSelectedTour);
+  const tourSidebarOpenSeq = useTourPanelStore((state) => state.sidebarOpenSeq);
   const dataLayerCategoryId = useDataLayerStore((state) => state.categoryId);
   const dataLayerSubcategories = useDataLayerStore((state) => state.subcategories);
   const setSelectedSubcategoryIds = useDataLayerStore((state) => state.setSelectedSubcategoryIds);
@@ -126,6 +140,22 @@ export default function MapPage() {
     () => normalizeSpotsSearchResults(searchSpotsData),
     [searchSpotsData]
   );
+  const resolvedMapDestinations = useMemo(
+    () =>
+      mapDestinations.map((item) => ({
+        ...item,
+        description: item.descriptionKey ? t(item.descriptionKey) : item.description,
+      })),
+    [t]
+  );
+  const resolvedTourSuggestions = useMemo(
+    () =>
+      mapTourSuggestions.map((item) => ({
+        ...item,
+        text: item.textKey ? t(item.textKey) : item.text,
+      })),
+    [t]
+  );
 
   const categoryDropdown = useMemo(() => {
     const sourceItems = Array.isArray(categoriesData?.data?.tree)
@@ -139,7 +169,10 @@ export default function MapPage() {
       .map((cat) => ({
         id: cat.id,
         code: cat.code,
-        label: lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en,
+        label:
+          lang === 'en'
+            ? cat.name || cat.name_en || cat.name_vi
+            : cat.name || cat.name_vi || cat.name_en,
         raw: cat,
       }));
   }, [categoriesData, lang]);
@@ -214,22 +247,24 @@ export default function MapPage() {
   };
 
   const selectedPlace =
-    mapDestinations.find((item) => item.id === selectedPlaceId) ?? mapDestinations[0] ?? null;
+    resolvedMapDestinations.find((item) => item.id === selectedPlaceId) ??
+    resolvedMapDestinations[0] ??
+    null;
 
   const monitoringItems = [
     {
       name: t('mapPage.layout.monitoringAreaTrangAn', { defaultValue: 'Trang An' }),
-      load: mapDestinations[0]?.loadPercent ?? 62,
+      load: resolvedMapDestinations[0]?.loadPercent ?? 62,
       badgeClass: 'bg-destructive/15 text-destructive',
     },
     {
       name: t('mapPage.layout.monitoringAreaHangMua', { defaultValue: 'Hang Mua' }),
-      load: mapDestinations[1]?.loadPercent ?? 68,
+      load: resolvedMapDestinations[1]?.loadPercent ?? 68,
       badgeClass: 'bg-warning-soft text-warning',
     },
     {
       name: t('mapPage.layout.monitoringAreaTamCoc', { defaultValue: 'Tam Coc' }),
-      load: mapDestinations[2]?.loadPercent ?? 44,
+      load: resolvedMapDestinations[2]?.loadPercent ?? 44,
       badgeClass: 'bg-secondary/15 text-secondary',
     },
   ];
@@ -243,7 +278,7 @@ export default function MapPage() {
           .map((value) => String(value).toLowerCase())
       : [];
 
-    return mapDestinations.filter((item) => {
+    return resolvedMapDestinations.filter((item) => {
       const destinationTokens = [item.category, item.label, item.slug]
         .filter((value) => value != null)
         .map((value) => String(value).toLowerCase());
@@ -257,9 +292,68 @@ export default function MapPage() {
       const matchesKeyword = !normalizedKeyword || haystack.includes(normalizedKeyword);
       return matchesChip && matchesKeyword;
     });
-  }, [activeChip, keyword, selectedChipCategory]);
+  }, [activeChip, keyword, selectedChipCategory, resolvedMapDestinations]);
 
   const hasDirectionDetails = Boolean(directions?.legs?.[0]?.steps?.length || directions);
+
+  const resolveCoordinatesFromResult = (result) => {
+    const parsePair = (value) => {
+      if (!Array.isArray(value) || value.length < 2) return null;
+      const lng = Number(value[0]);
+      const lat = Number(value[1]);
+      return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    };
+
+    const parseGeometryObject = (geometryLike) => {
+      if (!geometryLike || typeof geometryLike !== 'object') return null;
+      if (Array.isArray(geometryLike?.coordinates)) {
+        return parsePair(geometryLike.coordinates);
+      }
+      if (geometryLike?.type === 'Feature' && Array.isArray(geometryLike?.geometry?.coordinates)) {
+        return parsePair(geometryLike.geometry.coordinates);
+      }
+      return null;
+    };
+
+    const parseGeometryString = (value) => {
+      if (typeof value !== 'string') return null;
+      try {
+        const parsed = JSON.parse(value);
+        return parseGeometryObject(parsed);
+      } catch {
+        return null;
+      }
+    };
+
+    const parseLngLat = (lngValue, latValue) => {
+      const lng = Number(lngValue);
+      const lat = Number(latValue);
+      return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    };
+
+    const raw = result?.raw;
+    return (
+      parsePair(result?.coordinates) ||
+      parsePair(result?.coords) ||
+      parsePair(raw?.coordinates) ||
+      parsePair(raw?.coords) ||
+      parseLngLat(result?.lng, result?.lat) ||
+      parseLngLat(result?.longitude, result?.latitude) ||
+      parseLngLat(raw?.lng, raw?.lat) ||
+      parseLngLat(raw?.longitude, raw?.latitude) ||
+      parseLngLat(raw?.location?.lng, raw?.location?.lat) ||
+      parseLngLat(raw?.location?.longitude, raw?.location?.latitude) ||
+      parseGeometryObject(result?.geometry) ||
+      parseGeometryObject(raw?.geometry) ||
+      parseGeometryObject(result?.geojson) ||
+      parseGeometryObject(raw?.geojson) ||
+      parseGeometryString(result?.geom_json) ||
+      parseGeometryString(raw?.geom_json) ||
+      parseGeometryString(result?.geom) ||
+      parseGeometryString(raw?.geom) ||
+      null
+    );
+  };
 
   useEffect(() => {
     if (categoriesStoreID == null || categoriesStoreName) return;
@@ -294,6 +388,21 @@ export default function MapPage() {
     setActiveTab('event');
   }, [activeTab, hasDirectionDetails]);
 
+  useEffect(() => {
+    const visibleSidebarValues = headerSidebar
+      .filter((item) => !item.authen || isAuthenticated)
+      .map((item) => item.value);
+    const resolvedDefaultSidebar = resolveDefaultHeaderSidebar(isAuthenticated);
+
+    if (!visibleSidebarValues.includes(activeSidebar)) {
+      setActiveSidebar(resolvedDefaultSidebar);
+    }
+
+    if (!visibleSidebarValues.includes(activeTab)) {
+      setActiveTab(resolvedDefaultSidebar);
+    }
+  }, [activeSidebar, activeTab, isAuthenticated]);
+
   const flyToPlace = (place) => {
     if (!place || !mapRef) return;
     highlightPointOnMap(mapRef, {
@@ -304,7 +413,7 @@ export default function MapPage() {
   };
 
   const handleSelectPlace = (placeId) => {
-    const next = mapDestinations.find((item) => item.id === placeId);
+    const next = resolvedMapDestinations.find((item) => item.id === placeId);
     if (!next) return;
     setSelectedPlaceId(placeId);
     setHighlightedPoint({
@@ -322,6 +431,7 @@ export default function MapPage() {
 
   const handleSelectSearchResult = (result) => {
     if (!result) return;
+    const resolvedCoordinates = resolveCoordinatesFromResult(result);
 
     const normalizedCategoryId =
       result.category_id == null || result.category_id === ''
@@ -344,7 +454,7 @@ export default function MapPage() {
       category_id: normalizedCategoryId,
       subcategory_id: normalizedSubcategoryId,
       address: result.address,
-      coordinates: result.coordinates,
+      coordinates: resolvedCoordinates,
       source: 'spots-search',
       raw: result.raw,
     });
@@ -381,14 +491,14 @@ export default function MapPage() {
       setPendingSearchSelection(null);
     }
 
-    if (Array.isArray(result.coordinates) && result.coordinates.length >= 2 && mapRef) {
+    if (Array.isArray(resolvedCoordinates) && resolvedCoordinates.length >= 2 && mapRef) {
       highlightPointOnMap(mapRef, {
         id: result.id,
-        coordinates: result.coordinates,
+        coordinates: resolvedCoordinates,
         properties: result.raw?.properties || result.raw || result,
       });
-    } else if (Array.isArray(result.coordinates) && result.coordinates.length >= 2) {
-      setPendingFlyCoordinates(result.coordinates);
+    } else if (Array.isArray(resolvedCoordinates) && resolvedCoordinates.length >= 2) {
+      setPendingFlyCoordinates(resolvedCoordinates);
     }
 
     if (result.id) {
@@ -439,15 +549,21 @@ export default function MapPage() {
     const prefillResult = location.state?.selectedSearchResult;
     const prefillTourPanel = location.state?.prefillTourPanel;
     const prefillRoute = location.state?.highlightedRoute;
-    if (!prefillKeyword && !prefillResult && !prefillRoute && !prefillTourPanel) return;
+    const prefillActiveSidebar = location.state?.activeSidebar;
+    if (
+      !prefillKeyword &&
+      !prefillResult &&
+      !prefillRoute &&
+      !prefillTourPanel &&
+      !prefillActiveSidebar
+    )
+      return;
 
     prefillHandledRef.current = true;
     if (prefillKeyword) setKeyword(prefillKeyword);
     if (prefillRoute) {
       setHighlightedRoute(prefillRoute);
       setShowOnlyHighlightedRoute(Boolean(prefillRoute));
-    } else {
-      console.warn('[MapPage prefill] NO prefillRoute in location.state → route will NOT be drawn');
     }
     if (prefillTourPanel) {
       const { tourId, tourName, stops, selectedTour } = prefillTourPanel;
@@ -462,8 +578,21 @@ export default function MapPage() {
       setActiveTab('tour');
       setActiveSidebar('tour');
     }
+    if (prefillActiveSidebar && !prefillTourPanel) {
+      const isValid = headerSidebar.some((item) => item.value === prefillActiveSidebar);
+      if (isValid) {
+        setActiveSidebar(prefillActiveSidebar);
+        setActiveTab(prefillActiveSidebar);
+      }
+    }
     if (prefillResult) handleSelectSearchResult(prefillResult);
   }, [location.state, setHighlightedRoute, setShowOnlyHighlightedRoute, setSelectedTour]);
+
+  useEffect(() => {
+    if (!tourSidebarOpenSeq) return;
+    setActiveSidebar('tour');
+    setActiveTab('tour');
+  }, [tourSidebarOpenSeq]);
 
   const handleSearch = () => {
     if (searchResults.length > 0) {
@@ -575,7 +704,7 @@ export default function MapPage() {
 
   const handleOpenVr = (target) => {
     const spotId = target?.id || target?.spot_id || null;
-    navigate('/vr360', spotId ? { state: { spotId } } : undefined);
+    navigate(spotId ? `/vr360/${spotId}` : '/vr360');
   };
 
   function handleLayerToggle(key, checked) {
@@ -606,8 +735,20 @@ export default function MapPage() {
           ? nextRadiusFilter.lng
           : null,
     });
-    console.log('[MapPageContent] radius filter updated', nextRadiusFilter);
   };
+
+  useEffect(() => {
+    const { radius_km, lat, lng } = radiusFilter;
+    const hasCoords = typeof lat === 'number' && typeof lng === 'number';
+
+    if (radius_km > 0 && hasCoords) {
+      if (locateControl) locateControl.triggerLocate(lng, lat);
+      if (mapRef) showRadiusBuffer(mapRef, lng, lat, radius_km);
+    } else {
+      if (locateControl) locateControl.deactivate();
+      if (mapRef) clearRadiusBuffer(mapRef);
+    }
+  }, [radiusFilter, mapRef, locateControl]);
 
   useEffect(() => {
     const shouldSplitMode = activeTab === 'compareSatellite';
@@ -621,6 +762,7 @@ export default function MapPage() {
     <MapLayout>
       <ModalMarker />
       <ModalCarousel />
+      <OcopProductModal />
       <section className="bg-background h-full overflow-hidden p-3">
         <div className="mx-auto grid h-full min-h-0 w-full max-w-full grid-rows-[auto_1fr] gap-3">
           <MapToolbarCard
@@ -697,11 +839,11 @@ export default function MapPage() {
                   categoryColor={selectedCategoryColor}
                 />
 
-                <div className="pointer-events-auto my-3 min-h-0 flex-1">
+                <div className="pointer-events-none my-3 min-h-0 flex-1">
                   {showLeftPanelRail && activePanel === 'direction' && (
                     <MapDirectionPanel
                       embedded
-                      className="h-full min-h-0"
+                      className="pointer-events-none h-full min-h-0"
                       isOpen={isPanelOpen}
                       onOpen={() => setPanelOpen(true)}
                       onClose={() => setPanelOpen(false)}
@@ -711,7 +853,7 @@ export default function MapPage() {
                   {showLeftPanelRail && activePanel === 'tour' && (
                     <MapTourPanel
                       embedded
-                      className="h-full min-h-0"
+                      className="pointer-events-none h-full min-h-0"
                       isOpen={isPanelOpen}
                       onOpen={() => setPanelOpen(true)}
                       onClose={() => setPanelOpen(false)}
@@ -736,11 +878,11 @@ export default function MapPage() {
                 activeSidebar={activeSidebar}
                 tab={activeTab}
                 onTabChange={handleSidebarTabChange}
-                destinations={mapDestinations}
+                destinations={resolvedMapDestinations}
                 selectedPlace={selectedPlace}
                 onSelectPlace={handleSelectPlace}
                 monitoringItems={monitoringItems}
-                tourSuggestions={mapTourSuggestions}
+                tourSuggestions={resolvedTourSuggestions}
                 onOpenRoute={handleOpenRoute}
                 onOpenVr={handleOpenVr}
                 onOpenSuggestTab={() => setActiveTab('tour')}

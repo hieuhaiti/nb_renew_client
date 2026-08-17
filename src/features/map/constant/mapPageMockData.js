@@ -5,8 +5,7 @@ export const mapDestinations = [
     category: 'culture',
     label: 'Culture',
     coords: [105.8865, 20.2507],
-    description:
-      'Eco-cultural tourism route with boat caves, scenic heritage views, and day tour options.',
+    descriptionKey: 'mapPage.mock.destinations.trangAn.description',
     image:
       'https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=1200&auto=format&fit=crop',
     loadPercent: 62,
@@ -17,8 +16,7 @@ export const mapDestinations = [
     category: 'nature',
     label: 'Nature',
     coords: [105.8948, 20.2157],
-    description:
-      'River and cave landscape suitable for soft adventure, photography, and seasonal rice field views.',
+    descriptionKey: 'mapPage.mock.destinations.tamCoc.description',
     image:
       'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop',
     loadPercent: 78,
@@ -40,8 +38,7 @@ export const mapDestinations = [
     category: 'food',
     label: 'Food',
     coords: [105.9766, 20.2545],
-    description:
-      'Night tourism area with local cuisine, walking streets, events, and photo check-in spots.',
+    descriptionKey: 'mapPage.mock.destinations.hoaLuOldTown.description',
     image:
       'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop',
     loadPercent: 55,
@@ -83,12 +80,12 @@ export const mapTourSuggestions = [
   {
     id: 'soft-day',
     title: 'Soft day tour',
-    text: 'Morning Hang Mua, noon local food, afternoon Trang An after peak load.',
+    textKey: 'mapPage.mock.tourSuggestions.softDay',
   },
   {
     id: 'culture-focus',
     title: 'Culture focus route',
-    text: 'Hoa Lu ancient capital, temple route, old town evening walk.',
+    textKey: 'mapPage.mock.tourSuggestions.cultureFocus',
   },
   {
     id: 'eco-photo',
@@ -96,4 +93,3 @@ export const mapTourSuggestions = [
     text: 'Tam Coc riverside check-in and landscape viewpoints.',
   },
 ];
-

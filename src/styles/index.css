@@ -88,6 +88,16 @@
     font: inherit;
   }
 
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
   .animate-spin {
     animation: spin 1s linear infinite;
   }

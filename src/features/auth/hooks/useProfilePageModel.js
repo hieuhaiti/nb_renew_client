@@ -68,11 +68,11 @@ export function useProfilePageModel(t) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      toast.error(t('profile.toast.invalidImage', 'Invalid image file type.'));
+      toast.error(t('profile.toast.invalidImage'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error(t('profile.toast.imageTooLarge', 'Image size must be 5MB or less.'));
+      toast.error(t('profile.toast.imageTooLarge'));
       return;
     }
     if (avatarPreview && avatarPreview.startsWith('blob:')) {
@@ -88,27 +88,24 @@ export function useProfilePageModel(t) {
 
     const errors = {};
     if (form.username && !/^[a-zA-Z0-9]{3,50}$/.test(form.username)) {
-      errors.username = t(
-        'profile.validation.username',
-        'Username must contain only letters and numbers, 3-50 characters.'
-      );
+      errors.username = t('profile.validation.username');
     }
     if (form.email) {
       if (form.email.length > 100) {
-        errors.email = t('profile.validation.emailMax', 'Email must be at most 100 characters.');
+        errors.email = t('profile.validation.emailMax');
       } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-        errors.email = t('profile.validation.invalidEmail', 'Invalid email format.');
+        errors.email = t('profile.validation.invalidEmail');
       }
     }
     if (form.name) {
       if (form.name.length < 2) {
-        errors.name = t('profile.validation.nameMin', 'Full name must be at least 2 characters.');
+        errors.name = t('profile.validation.nameMin');
       } else if (!/^[\p{L}\s\-.'’]+$/u.test(form.name)) {
-        errors.name = t('profile.validation.invalidName', 'Invalid full name.');
+        errors.name = t('profile.validation.invalidName');
       }
     }
     if (form.phone && !/^[0-9+\-\s()]{10,20}$/.test(form.phone)) {
-      errors.phone = t('profile.validation.invalidPhone', 'Invalid phone number.');
+      errors.phone = t('profile.validation.invalidPhone');
     }
 
     if (Object.keys(errors).length) {
@@ -135,14 +132,14 @@ export function useProfilePageModel(t) {
         onSuccess: (res) => {
           setIsEditing(false);
           setAvatarFile(null);
-          toast.success(t('profile.toast.updateSuccess', 'Profile updated successfully!'));
+          toast.success(t('profile.toast.updateSuccess'));
           profileQuery.refetch();
           if (res?.data?.user) setStoreUser(res.data.user);
         },
         onError: (err) =>
           toast.error(
             err?.response?.data?.message ||
-              t('profile.toast.updateError', 'Failed to update profile.')
+              t('profile.toast.updateError')
           ),
       });
       return;
@@ -151,14 +148,14 @@ export function useProfilePageModel(t) {
     updateMutation.mutate(payload, {
       onSuccess: (res) => {
         setIsEditing(false);
-        toast.success(t('profile.toast.updateSuccess', 'Profile updated successfully!'));
+        toast.success(t('profile.toast.updateSuccess'));
         profileQuery.refetch();
         if (res?.data?.user) setStoreUser(res.data.user);
       },
       onError: (err) =>
         toast.error(
           err?.response?.data?.message ||
-            t('profile.toast.updateError', 'Failed to update profile.')
+            t('profile.toast.updateError')
         ),
     });
   }
@@ -171,30 +168,21 @@ export function useProfilePageModel(t) {
     const pwdPattern = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z])/;
 
     if (!pwd.current) {
-      pwErrors.current = t('profile.validation.currentRequired', 'Current password is required.');
+      pwErrors.current = t('profile.validation.currentRequired');
     }
 
     if (!pwd.newPassword) {
-      pwErrors.newPassword = t('profile.validation.newRequired', 'New password is required.');
+      pwErrors.newPassword = t('profile.validation.newRequired');
     } else {
       if (pwd.newPassword.length < 8) {
-        pwErrors.newPassword = t(
-          'profile.validation.newMin',
-          'New password must be at least 8 characters.'
-        );
+        pwErrors.newPassword = t('profile.validation.newMin');
       } else if (!pwdPattern.test(pwd.newPassword)) {
-        pwErrors.newPassword = t(
-          'profile.validation.newWeak',
-          'New password must include lowercase, uppercase, number, and special character.'
-        );
+        pwErrors.newPassword = t('profile.validation.newWeak');
       }
     }
 
     if (!pwd.confirm || pwd.confirm !== pwd.newPassword) {
-      pwErrors.confirm = t(
-        'profile.validation.confirmMismatch',
-        'Password confirmation does not match.'
-      );
+      pwErrors.confirm = t('profile.validation.confirmMismatch');
     }
 
     if (Object.keys(pwErrors).length) {
@@ -212,14 +200,14 @@ export function useProfilePageModel(t) {
         onError: (err) => {
           const msg =
             err?.response?.data?.message ||
-            t('profile.toast.changePasswordError', 'Failed to change password.');
+            t('profile.toast.changePasswordError');
           toast.error(msg);
         },
         onSuccess: () => {
           setPwd({ current: '', newPassword: '', confirm: '' });
           setShowChangePassword(false);
           setFieldErrors({});
-          toast.success(t('profile.toast.changePasswordSuccess', 'Password changed successfully.'));
+          toast.success(t('profile.toast.changePasswordSuccess'));
         },
       }
     );

@@ -113,8 +113,7 @@ export const useSatelliteStore = create(
                 if (mapRef.current.single) {
                   removeSatelliteLayerFromMap(mapRef.current.single, layer.id, layer.sourceId);
                 }
-              } catch (e) {
-                console.error(`[setIsCompareMode→compare] Error removing layer ${layer.id}:`, e);
+              } catch {
               }
             });
           }
@@ -137,8 +136,7 @@ export const useSatelliteStore = create(
                 if (targetMap) {
                   removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
                 }
-              } catch (e) {
-                console.error(`[setIsCompareMode→single] Error removing layer ${layer.id}:`, e);
+              } catch {
               }
             });
           }
@@ -356,11 +354,30 @@ export const useSatelliteStore = create(
 
       updateLayerVisibility: (layerId, visible) => {
         set((state) => {
-          const idx = state.satelliteLayers.findIndex((l) => l.id === layerId);
-          if (idx === -1) return {};
-          const updated = [...state.satelliteLayers];
-          updated[idx] = { ...updated[idx], visible };
-          return { satelliteLayers: updated };
+          const layerIdx = state.satelliteLayers.findIndex((l) => l.id === layerId);
+          const updatedLayers =
+            layerIdx !== -1
+              ? state.satelliteLayers.map((l, i) => (i === layerIdx ? { ...l, visible } : l))
+              : state.satelliteLayers;
+
+          const singleIdx = state.images.single.findIndex((img) => img.id === layerId);
+          const updatedSingle =
+            singleIdx !== -1
+              ? state.images.single.map((img, i) => (i === singleIdx ? { ...img, visible } : img))
+              : state.images.single;
+
+          const compIdx = state.images.comparison.findIndex((img) => img.id === layerId);
+          const updatedComparison =
+            compIdx !== -1
+              ? state.images.comparison.map((img, i) =>
+                  i === compIdx ? { ...img, visible } : img
+                )
+              : state.images.comparison;
+
+          return {
+            satelliteLayers: updatedLayers,
+            images: { ...state.images, single: updatedSingle, comparison: updatedComparison },
+          };
         });
       },
 
@@ -488,8 +505,7 @@ export const useSatelliteStore = create(
               const targetMap =
                 layer.splitSide === 'right' ? mapRef.current.split : mapRef.current.single;
               if (targetMap) removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
-            } catch (e) {
-              console.error(`[resetToSingleMode] Error removing layer ${layer.id}:`, e);
+            } catch {
             }
           });
         }
@@ -511,8 +527,7 @@ export const useSatelliteStore = create(
               const targetMap =
                 layer.splitSide === 'right' ? mapRef.current.split : mapRef.current.single;
               if (targetMap) removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
-            } catch (e) {
-              console.error(`[resetCompareSettings] Error removing layer ${layer.id}:`, e);
+            } catch {
             }
           });
         }
@@ -542,8 +557,7 @@ export const useSatelliteStore = create(
                   ? mapRef.current.split
                   : mapRef.current.single;
               if (targetMap) removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
-            } catch (e) {
-              console.error(`[clearData] Error removing layer ${layer.id}:`, e);
+            } catch {
             }
           });
         }
@@ -565,8 +579,7 @@ export const useSatelliteStore = create(
               const targetMap =
                 layer.splitSide === 'right' ? mapRef.current.split : mapRef.current.single;
               if (targetMap) removeSatelliteLayerFromMap(targetMap, layer.id, layer.sourceId);
-            } catch (e) {
-              console.error(`[reset] Error removing layer ${layer.id}:`, e);
+            } catch {
             }
           });
         }

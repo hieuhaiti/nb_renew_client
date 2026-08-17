@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Tam Chúc VR 360 + Audio Guide</title>
+
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      }
+
+      #vrWrap {
+        position: fixed;
+        inset: 0;
+      }
+
+      #hud {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        z-index: 9;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: linear-gradient(
+          135deg,
+          rgba(0, 255, 255, 0.15) 0%,
+          rgba(0, 128, 255, 0.15) 100%
+        );
+        border: 1px solid rgba(0, 255, 255, 0.3);
+        color: #fff;
+        padding: 12px 14px;
+        border-radius: 12px;
+        backdrop-filter: blur(16px) saturate(180%);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+          0 0 20px rgba(0, 255, 255, 0.2);
+        max-width: calc(100vw - 24px);
+        transition: opacity 0.3s;
+      }
+
+      #tourTitle {
+        font-size: 18px;
+        font-weight: 800;
+        color: #00ffff;
+        text-shadow: 0 2px 8px rgba(0, 255, 255, 0.5);
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #tourTitle::before {
+        content: "🏛️";
+        font-size: 22px;
+      }
+
+      #controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      #hud b {
+        font-weight: 700;
+      }
+
+      #hud .btn {
+        user-select: none;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: #fff;
+        color: #000;
+        font-weight: 700;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      #hud .btn:hover {
+        background: #00ffff;
+        transform: scale(1.05);
+      }
+
+      #hud .btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Style riêng cho nút âm thanh đang bật */
+      #btnSound.active {
+        background: #00ff00;
+        color: #000;
+      }
+
+      #hud .meta {
+        opacity: 0.9;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 40vw;
+      }
+
+      @media (max-width: 820px) {
+        #tourTitle {
+          font-size: 16px;
+        }
+
+        #tourTitle::before {
+          font-size: 20px;
+        }
+      }
+
+      #mapMini {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        z-index: 9;
+        width: 320px;
+        height: 220px;
+        border-radius: 12px;
+        border: 2px solid #fff;
+        overflow: hidden;
+        background: #000;
+        transition: bottom 0.3s, width 0.3s, height 0.3s, opacity 0.3s;
+      }
+
+      @media (max-width: 820px) {
+        #mapMini {
+          width: 200px;
+          height: 140px;
+          bottom: 90px;
+        }
+
+        #hud .meta {
+          max-width: 52vw;
+        }
+      }
+
+      #popup {
+        position: fixed;
+        left: 12px;
+        bottom: 12px;
+        z-index: 10;
+        background: linear-gradient(
+          135deg,
+          rgba(0, 255, 255, 0.2) 0%,
+          rgba(0, 128, 255, 0.2) 100%
+        );
+        border: 1px solid rgba(0, 255, 255, 0.4);
+        color: #fff;
+        padding: 10px 12px;
+        border-radius: 12px;
+        backdrop-filter: blur(16px) saturate(180%);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+          0 0 20px rgba(0, 255, 255, 0.25);
+        max-width: min(520px, calc(100vw - 24px));
+        display: none;
+      }
+
+      #popup .small {
+        opacity: 0.9;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .a-enter-vr {
+        display: block !important;
+        z-index: 9999 !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="hud">
+      <div id="tourTitle">Tam Chúc VR 360 Tour</div>
+      <div id="controls">
+        <div class="btn" id="btnPrev">◀</div>
+        <div class="btn" id="btnNext">▶</div>
+        <div class="btn active" id="btnSound">🔊 Bật</div>
+
+        <div>
+          <div><b id="pTitle">Tam Chúc</b></div>
+          <div class="meta" id="pMeta">—</div>
+        </div>
+        <div class="btn" id="btnToggleHotspots">Hotspots: ON</div>
+      </div>
+    </div>
+
+    <div id="popup">
+      <div id="popTitle" style="font-weight: 700"></div>
+      <div class="small" id="popMeta"></div>
+    </div>
+
+    <div id="mapMini"></div>
+
+    <div id="vrWrap">
+      <a-scene embedded vr-mode-ui="enabled:true">
+        <a-sky id="sky" rotation="0 0 0" projection="equirectangular"></a-sky>
+
+        <a-entity id="rig" position="0 0 0">
+          <a-entity
+            id="cam"
+            camera
+            look-controls="enabled: true; reverseMouseDrag: false"
+            position="0 1.6 0"
+          >
+            <a-sphere
+              id="fader"
+              radius="0.05"
+              material="color: #000; shader: flat; side: front; opacity: 0; transparent: true"
+              visible="false"
+              position="0 0 -0.08"
+            ></a-sphere>
+
+            <a-entity
+              cursor="fuse: true; fuseTimeout: 2000"
+              geometry="primitive: ring; radiusInner: 0.008; radiusOuter: 0.012"
+              material="color: #00ffff; shader: flat; opacity: 0.9"
+              position="0 0 -0.5"
+              raycaster="objects: .hs; far: 20"
+            >
+              <a-ring
+                id="cursorProgress"
+                radius-inner="0.014"
+                radius-outer="0.018"
+                material="color: #00ff00; shader: flat; opacity: 0; transparent: true"
+                theta-start="0"
+                theta-length="0"
+                position="0 0 0.001"
+              ></a-ring>
+            </a-entity>
+          </a-entity>
+        </a-entity>
+
+        <a-entity id="hotspots"></a-entity>
+      </a-scene>
+    </div>
+
+    <script defer>
+      /* ==============================
+         DATA: all points with AUDIO
+      ============================== */
+      const POINTS = [
+        {
+          id: 0,
+          img: "DJI_20250720085128_0001_V.JPG",
+          name: "Toàn cảnh Chùa Tam Chúc",
+          nameNoAccent: "Toan canh Chua tam chuc",
+          audio: "0.mp3", // Audio giới thiệu tổng quan
+          lon: 105.813644,
+          lat: 20.570221,
+          alt: 32.378,
+          rotation: 60,
+        },
+        {
+          id: 1,
+          img: "DJI_20250720101254_0004_V.JPG",
+          name: "Quang cảnh giữa hồ",
+          nameNoAccent: "Quang canh giua ho",
+          audio: "1.mp3", // Không có audio cụ thể trong list
+          lon: 105.802141,
+          lat: 20.559819,
+          alt: 195.583,
+          rotation: 150,
+        },
+        {
+          id: 2,
+          img: "DJI_20250720111103_0005_V.JPG",
+          name: "Đình Tam Chúc",
+          nameNoAccent: "Dinh Tam Chuc",
+          audio: "2.mp3", // Audio về Đình Tam Chúc
+          lon: 105.810591,
+          lat: 20.563899,
+          alt: 195.583,
+          rotation: 45,
+        },
+        {
+          id: 3,
+          img: "DJI_20250720103509_0001_V.JPG",
+          name: "Phía sau Tam Quan Nội",
+          nameNoAccent: "Phia sau Tam Quan Noi",
+          audio: "3.mp3", // Audio khu vực phía sau
+          lon: 105.792921,
+          lat: 20.550073,
+          alt: 195.583,
+          rotation: 45,
+        },
+        {
+          id: 4,
+          img: "DJI_20250720100511_0001_V.JPG",
+          name: "Trung tâm Tam Quan Nội",
+          nameNoAccent: "Trung tam Tam Quan Noi",
+          audio: "4.mp3", // Audio giới thiệu Tam Quan Nội
+          lon: 105.795188,
+          lat: 20.552453,
+          alt: 47.856,
+          rotation: 45,
+        },
+        {
+          id: 5,
+          img: "DJI_20250720095709_0001_V.JPG",
+          name: "Tổng quan Tam Quan Nội",
+          nameNoAccent: "Tong quan Tam Quan Noi",
+          audio: "5.mp3",
+          lon: 105.798021,
+          lat: 20.555202,
+          alt: 32.761,
+          rotation: 45,
+        },
+        {
+          id: 6,
+          img: "DJI_20250720094233_0001_V.JPG",
+          name: "Tổng quan Chùa Ba Sao",
+          nameNoAccent: "Tong quan Chua Ba Sao",
+          audio: "6.mp3", // Audio về chùa cổ Ba Sao
+          lon: 105.780935,
+          lat: 20.558702,
+          alt: 77.008,
+          rotation: 0,
+        },
+        {
+          id: 7,
+          img: "DJI_20250720091542_0001_V.JPG",
+          name: "Cảnh quan phía Tây 2",
+          nameNoAccent: "Canh quan phia Tay 2",
+          audio: "7.mp3", // Audio về phía Tây
+          lon: 105.799395,
+          lat: 20.568123,
+          alt: 32.792,
+          rotation: 200,
+        },
+        {
+          id: 8,
+          img: "DJI_20250720090043_0001_V.JPG",
+          name: "Cảnh quan phía Tây 1",
+          nameNoAccent: "Canh quan phia Tay 1",
+          audio: "8.mp3", // Audio về vẻ đẹp phía Tây
+          lon: 105.806941,
+          lat: 20.575695,
+          alt: 33.293,
+          rotation: 145,
+        },
+        {
+          id: 9,
+          img: "DJI_20250720082709_0001_V.JPG",
+          name: "Cổng vào chùa Tam Chúc",
+          nameNoAccent: "Cong vao chua Tam Chuc",
+          audio: "9.mp3", // Audio cổng đón tiếp
+          lon: 105.819089,
+          lat: 20.565783,
+          alt: 32.626,
+          rotation: 110,
+        },
+        {
+          id: 10,
+          img: "DJI_20250720081410_0001_V.JPG",
+          name: "Trục đường tiến vào 2",
+          nameNoAccent: "Truc duong tien vao 2",
+          audio: "10.mp3", // Audio đường dẫn vào
+          lon: 105.821317,
+          lat: 20.578552,
+          alt: 31.968,
+          rotation: 30,
+        },
+        {
+          id: 11,
+          img: "DJI_20250720074326_0001_V.JPG",
+          name: "Trục đường tiến vào 1",
+          nameNoAccent: "Truc duong tien vao 1",
+          audio: "11.mp3", // Audio đoạn đường đầu tiên
+          lon: 105.829817,
+          lat: 20.584428,
+          alt: 30.238,
+          rotation: 0,
+        },
+      ];
+
+      const MAPBOX_TOKEN =
+        "pk.eyJ1IjoibmdvY3R0ZCIsImEiOiJjbWJibmlod3MwMmluMnFyMG1xMWt0dTdrIn0.ok5SgmXGrHFLeMPf-OG5_w";
+
+      // --- CẤU HÌNH HIỂN THỊ HOTSPOT ---
+      const NEAREST_N = 10;
+      const MAX_RADIUS_M = 2000;
+      const HS_RADIUS = 5.8;
+
+      /* ==============================
+         MATH
+      ============================== */
+      const toRad = (d) => (d * Math.PI) / 180;
+      const toDeg = (r) => (r * 180) / Math.PI;
+
+      function haversineMeters(a, b) {
+        const R = 6371000;
+        const dLat = toRad(b.lat - a.lat);
+        const dLon = toRad(b.lon - a.lon);
+        const lat1 = toRad(a.lat),
+          lat2 = toRad(b.lat);
+        const h =
+          Math.sin(dLat / 2) ** 2 +
+          Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+        return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+      }
+
+      function bearingDeg(a, b) {
+        const lat1 = toRad(a.lat),
+          lat2 = toRad(b.lat);
+        const dLon = toRad(b.lon - a.lon);
+        const y = Math.sin(dLon) * Math.cos(lat2);
+        const x =
+          Math.cos(lat1) * Math.sin(lat2) -
+          Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+        return (toDeg(Math.atan2(y, x)) + 360) % 360;
+      }
+
+      function yawPitchFromGeo(a, b) {
+        const d = haversineMeters(a, b);
+        const brng = bearingDeg(a, b);
+        const dz = (b.alt ?? 0) - (a.alt ?? 0);
+        const pitch = toDeg(Math.atan2(dz, Math.max(1, d)));
+        const YAW_OFFSET = 0;
+        const yaw = (brng + YAW_OFFSET) % 360;
+        return { yaw, pitch, dist: d, dz };
+      }
+
+      function posFromYawPitch(yawDeg, pitchDeg, radius) {
+        const yaw = toRad(yawDeg);
+        const pitch = toRad(pitchDeg);
+        const x = radius * Math.sin(yaw) * Math.cos(pitch);
+        const y = radius * Math.sin(pitch);
+        const z = -radius * Math.cos(yaw) * Math.cos(pitch);
+        return { x, y, z };
+      }
+
+      /* ==============================
+         A-FRAME component
+      ============================== */
+      AFRAME.registerComponent("face-camera", {
+        tick: function () {
+          const cam = document.querySelector("#cam");
+          if (!cam) return;
+          this.el.object3D.lookAt(
+            cam.object3D.getWorldPosition(new THREE.Vector3())
+          );
+        },
+      });
+
+      /* ==============================
+         STATE & AUDIO LOGIC
+      ============================== */
+      let curIndex = 0;
+      let hotspotsOn = true;
+      let isVRMode = false;
+
+      // Audio State
+      let audioObj = null;
+      let isSoundOn = true; // Mặc định bật, nhưng cần tương tác user để chạy lần đầu
+
+      const skyEl = () => document.getElementById("sky");
+      const hsContainer = () => document.getElementById("hotspots");
+
+      function showPopup(title, meta) {
+        if (isVRMode) return;
+        const pop = document.getElementById("popup");
+        document.getElementById("popTitle").innerText = title;
+        document.getElementById("popMeta").innerText = meta || "";
+        pop.style.display = "block";
+        clearTimeout(showPopup._t);
+        showPopup._t = setTimeout(() => (pop.style.display = "none"), 2500);
+      }
+
+      function playAudioForPoint(p) {
+        // Dừng audio cũ nếu đang chạy
+        if (audioObj) {
+          audioObj.pause();
+          audioObj = null;
+        }
+
+        // Nếu Sound đang tắt hoặc điểm này không có audio -> thoát
+        if (!isSoundOn || !p.audio) {
+          return;
+        }
+
+        // Tạo và phát audio mới
+        audioObj = new Audio("audio/" + p.audio);
+        audioObj.volume = 0.8;
+
+        // Xử lý promise play() để tránh lỗi trình duyệt chặn autoplay
+        const playPromise = audioObj.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.log(
+              "Autoplay bị chặn bởi trình duyệt chờ tương tác người dùng."
+            );
+            // Tùy chọn: Có thể hiện thông báo nhỏ nhắc user click vào màn hình
+          });
+        }
+      }
+
+      function toggleSound() {
+        isSoundOn = !isSoundOn;
+        const btn = document.getElementById("btnSound");
+
+        if (isSoundOn) {
+          btn.innerHTML = "🔊 Bật";
+          btn.classList.add("active");
+          // Thử phát lại audio của điểm hiện tại nếu vừa bật
+          playAudioForPoint(POINTS[curIndex]);
+        } else {
+          btn.innerHTML = "🔇 Tắt";
+          btn.classList.remove("active");
+          if (audioObj) audioObj.pause();
+        }
+      }
+
+      function loadPoint(i) {
+        const fader = document.getElementById("fader");
+        const doLoad = () => {
+          curIndex = (i + POINTS.length) % POINTS.length;
+          const p = POINTS[curIndex];
+
+          const sky = skyEl();
+          sky.setAttribute("src", "images/" + p.img);
+
+          const rotY = p.rotation !== undefined ? p.rotation : 0;
+          sky.setAttribute("rotation", `0 ${rotY} 0`);
+
+          document.getElementById("pTitle").innerText = p.name;
+          document.getElementById("pMeta").innerText = `#${
+            p.id
+          } | ${p.lon.toFixed(6)}, ${p.lat.toFixed(6)} | alt ${
+            p.alt?.toFixed(1) ?? "—"
+          }m`;
+
+          highlightPoint(p.id);
+          renderHotspots();
+
+          // --- Trigger Audio ---
+          playAudioForPoint(p);
+        };
+
+        if (fader && curIndex !== -1 && !isVRMode) {
+          fader.setAttribute("visible", "true");
+          fader.setAttribute(
+            "animation",
+            "property: material.opacity; from: 0; to: 1; dur: 300; easing: linear"
+          );
+          setTimeout(() => {
+            doLoad();
+            fader.setAttribute(
+              "animation",
+              "property: material.opacity; from: 1; to: 0; dur: 300; easing: linear"
+            );
+            setTimeout(() => fader.setAttribute("visible", "false"), 300);
+          }, 300);
+        } else {
+          doLoad();
+        }
+      }
+
+      function renderHotspots() {
+        const c = hsContainer();
+        c.innerHTML = "";
+        if (!hotspotsOn) return;
+
+        const cur = POINTS[curIndex];
+
+        const others = POINTS.filter((p) => p.id !== cur.id)
+          .map((p) => ({ p, ...yawPitchFromGeo(cur, p) }))
+          .filter((x) => x.dist <= MAX_RADIUS_M)
+          .sort((a, b) => a.dist - b.dist)
+          .slice(0, NEAREST_N);
+
+        for (const x of others) {
+          const { p, yaw, pitch, dist, dz } = x;
+          const pos = posFromYawPitch(yaw, pitch, HS_RADIUS);
+
+          const hs = document.createElement("a-entity");
+          hs.classList.add("hs");
+          hs.setAttribute(
+            "position",
+            `${pos.x.toFixed(3)} ${(1.6 + pos.y).toFixed(3)} ${pos.z.toFixed(
+              3
+            )}`
+          );
+          hs.setAttribute("face-camera", "");
+
+          const icon = document.createElement("a-image");
+          icon.setAttribute("src", "images/camera-drone.png");
+          icon.setAttribute("width", "0.35");
+          icon.setAttribute("height", "0.35");
+          icon.setAttribute("class", "hs");
+          icon.setAttribute(
+            "animation",
+            "property: position; to: 0 0.05 0; dir: alternate; dur: 1500; loop: true; easing: easeInOutSine"
+          );
+
+          const label = document.createElement("a-text");
+          label.setAttribute("value", p.nameNoAccent || p.name);
+          label.setAttribute("align", "center");
+          label.setAttribute("color", "#ffffff");
+          label.setAttribute("width", "1.5");
+          label.setAttribute("position", "0 -0.35 0.001");
+
+          const bg = document.createElement("a-plane");
+          bg.setAttribute("width", "1.8");
+          bg.setAttribute("height", "0.3");
+          bg.setAttribute("color", "#2a2a3e");
+          bg.setAttribute("opacity", "0.85");
+          bg.setAttribute("position", "0 -0.35 -0.01");
+          bg.setAttribute("material", "shader: flat; side: double");
+
+          hs.appendChild(bg);
+          hs.appendChild(label);
+
+          hs.addEventListener("click", () => {
+            loadPoint(p.id);
+            showPopup(
+              `Chuyển tới: ${p.name}`,
+              `~${Math.round(dist)}m, Δh ${dz >= 0 ? "+" : ""}${dz.toFixed(1)}m`
+            );
+          });
+
+          let gazeTimer = null;
+          const progressRing = document.getElementById("cursorProgress");
+
+          hs.addEventListener("mouseenter", () => {
+            icon.setAttribute("scale", "1.2 1.2 1.2");
+            icon.setAttribute("material", "opacity", "1");
+
+            if (progressRing) {
+              progressRing.setAttribute("material", "opacity", "0.8");
+              progressRing.setAttribute(
+                "animation__progress",
+                "property: geometry.thetaLength; from: 0; to: 360; dur: 2000; easing: linear"
+              );
+            }
+
+            gazeTimer = setTimeout(() => {
+              loadPoint(p.id);
+              showPopup(`Chuyển tới: ${p.name}`, `~${Math.round(dist)}m`);
+            }, 2000);
+          });
+
+          hs.addEventListener("mouseleave", () => {
+            icon.setAttribute("scale", "1 1 1");
+
+            if (gazeTimer) {
+              clearTimeout(gazeTimer);
+              gazeTimer = null;
+            }
+
+            if (progressRing) {
+              progressRing.removeAttribute("animation__progress");
+              progressRing.setAttribute("geometry", "thetaLength", "0");
+              progressRing.setAttribute("material", "opacity", "0");
+            }
+          });
+
+          hs.appendChild(icon);
+          c.appendChild(hs);
+        }
+      }
+
+      /* ==============================
+         MAPBOX
+      ============================== */
+      let map;
+
+      function buildPointsGeoJSON(activeId = null) {
+        return {
+          type: "FeatureCollection",
+          features: POINTS.map((p) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [p.lon, p.lat],
+            },
+            properties: {
+              id: p.id,
+              name: p.name,
+              active: p.id === activeId,
+            },
+          })),
+        };
+      }
+
+      function initMap() {
+        mapboxgl.accessToken = MAPBOX_TOKEN;
+
+        map = new mapboxgl.Map({
+          container: "mapMini",
+          style: "mapbox://styles/mapbox/satellite-streets-v12",
+          center: [POINTS[0].lon, POINTS[0].lat],
+          zoom: 12,
+        });
+
+        map.on("load", () => {
+          map.addSource("points", {
+            type: "geojson",
+            data: buildPointsGeoJSON(),
+          });
+
+          map.addLayer({
+            id: "points-circle",
+            type: "circle",
+            source: "points",
+            paint: {
+              "circle-radius": ["case", ["get", "active"], 7, 5],
+              "circle-color": ["case", ["get", "active"], "#00ffd5", "#ff3b30"],
+              "circle-stroke-width": 1.5,
+              "circle-stroke-color": "#ffffff",
+            },
+          });
+
+          map.addLayer({
+            id: "points-label",
+            type: "symbol",
+            source: "points",
+            minzoom: 12,
+            layout: {
+              "text-field": ["get", "name"],
+              "text-size": 12,
+              "text-offset": [0, 1.2],
+              "text-anchor": "top",
+              "text-allow-overlap": false,
+            },
+            paint: {
+              "text-color": "#ffffff",
+              "text-halo-color": "#000000",
+              "text-halo-width": 1.2,
+            },
+          });
+
+          map.on("click", "points-circle", (e) => {
+            const id = Number(e.features[0].properties.id);
+            loadPoint(id);
+          });
+
+          map.on("mouseenter", "points-circle", () => {
+            map.getCanvas().style.cursor = "pointer";
+          });
+
+          map.on("mouseleave", "points-circle", () => {
+            map.getCanvas().style.cursor = "";
+          });
+        });
+      }
+
+      function highlightPoint(id) {
+        if (!map || !map.getSource("points")) return;
+        map.getSource("points").setData(buildPointsGeoJSON(id));
+        const p = POINTS[id];
+        if (map && p) map.easeTo({ center: [p.lon, p.lat], duration: 400 });
+      }
+
+      /* ==============================
+         UI
+      ============================== */
+      function bindUI() {
+        document.getElementById("btnPrev").onclick = () =>
+          loadPoint(curIndex - 1);
+        document.getElementById("btnNext").onclick = () =>
+          loadPoint(curIndex + 1);
+        document.getElementById("btnToggleHotspots").onclick = () => {
+          hotspotsOn = !hotspotsOn;
+          document.getElementById("btnToggleHotspots").innerText = `Hotspots: ${
+            hotspotsOn ? "ON" : "OFF"
+          }`;
+          renderHotspots();
+        };
+
+        // Bind nút Sound
+        document.getElementById("btnSound").onclick = toggleSound;
+
+        const sceneEl = document.querySelector("a-scene");
+
+        sceneEl.addEventListener("enter-vr", () => {
+          isVRMode = true;
+          document.getElementById("hud").style.display = "none";
+          document.getElementById("mapMini").style.display = "none";
+          document.getElementById("popup").style.display = "none";
+
+          const fader = document.getElementById("fader");
+          if (fader) {
+            fader.setAttribute("visible", "false");
+            fader.setAttribute("material", "opacity", "0");
+            fader.removeAttribute("animation");
+          }
+        });
+
+        sceneEl.addEventListener("exit-vr", () => {
+          isVRMode = false;
+          document.getElementById("hud").style.display = "flex";
+          document.getElementById("mapMini").style.display = "block";
+        });
+      }
+
+      /* ==============================
+         START
+      ============================== */
+      window.addEventListener("DOMContentLoaded", () => {
+        if (typeof mapboxgl === "undefined") {
+          console.error(
+            "❌ Mapbox GL chưa load. Kiểm tra Network: mapbox-gl.js bị block/failed."
+          );
+          alert(
+            "Mapbox GL chưa load. Kiểm tra Network: mapbox-gl.js bị block/failed."
+          );
+          return;
+        }
+
+        bindUI();
+        initMap();
+
+        // Thử load điểm đầu tiên. Lưu ý: Audio đầu tiên có thể không chạy được
+        // nếu người dùng chưa click vào trang (Do chính sách trình duyệt).
+        // Người dùng có thể click nút "Bật Sound" để nghe.
+        loadPoint(0);
+      });
+    </script>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-import { useApiQuery } from '@/services/useApi';
+import { useApiQuery, withLanguageQueryKey } from '@/services/useApi';
 import { fetcher } from '@/services/fetcher';
 import { queryClient } from '@/providers/AppProviders';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
@@ -50,5 +50,7 @@ export async function fetchSubCategoriesByCategoryId({ lang = 'vi', category_id 
 export function getAllSubCategoriesName() {
   const lang = useLanguageStore.getState().lang;
   const { categoriesStoreID } = useCategoriesStore.getState();
-  return queryClient.getQueryData(['subcategories', lang, categoriesStoreID]);
+  return queryClient.getQueryData(
+    withLanguageQueryKey(['subcategories', lang, categoriesStoreID], lang)
+  );
 }

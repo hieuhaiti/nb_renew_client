@@ -41,3 +41,13 @@ export function useGetOcopById(ocopId, options = {}) {
     ...options,
   });
 }
+
+export function useGetOcopGeoJson({ search, category, params = {}, options = {} } = {}) {
+  const qs = new URLSearchParams({ ...params });
+  if (search) qs.set('search', search);
+  if (category) qs.set('category', category);
+
+  const queryKey = ['ocop', 'geojson', search || '', category || ''];
+
+  return useApiQuery(queryKey, `ocop/geojson?${qs.toString()}`, options);
+}

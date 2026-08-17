@@ -1,91 +1,191 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import {
   Search,
-  Star,
-  MapPin,
   Clock,
+  Users,
+  Star,
   ChevronLeft,
   ChevronRight,
-  RefreshCw,
   Inbox,
-  LayoutGrid,
-  List,
-  Users,
-  Wallet,
-  ArrowRight,
-  Ticket,
+  SlidersHorizontal,
+  RefreshCw,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import RootLayout from '@/components/layout/RootLayout';
 import { useGetAllTours } from '@/services/api/tours/tourApi';
+import { useGetTourCurrentCapacity } from '@/services/api/capacity/capacityService';
 import { useDebounce } from 'use-debounce';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import { uiConfig } from '@/config/ui';
 import placeholderImg from '@/assets/images/placeholder.png';
+import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import TourPageSkeleton from '@/features/tours/components/TourPageSkeleton';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
-const HERO_BG = `linear-gradient(315deg,rgba(3,95,172,.92),rgba(14,165,233,.86),rgba(16,185,129,.72)), url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80") center/cover`;
+const PRIMARY_GRAD = 'linear-gradient(135deg,#12a9b7,#0e9f8f)';
+const HERO_LEFT_BG = `linear-gradient(135deg,rgba(6,36,68,.84),rgba(9,158,143,.78)),url('https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat`;
+const PAGE_SIZE = 12;
+const PRICE_MIN_VALUE = 0;
+const PRICE_MAX_VALUE = 5000000;
+const PRICE_STEP = 50000;
 
-const DURATION_OPTIONS = [
-  { value: '1', key: 'tourPage.duration_options.1day' },
-  { value: '2', key: 'tourPage.duration_options.2days' },
-  { value: '3', key: 'tourPage.duration_options.3_4days' },
-];
+const CAPACITY_STATUS_META = {
+  overloaded: {
+    labelVi: 'Quá tải',
+    labelEn: 'Overloaded',
+    toneClass: 'text-destructive',
+    badgeClass:
+      'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
+    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+  },
+  near_full: {
+    labelVi: 'Gần đầy',
+    labelEn: 'Near full',
+    toneClass: 'text-orange-600',
+    badgeClass:
+      'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
+  },
+  busy: {
+    labelVi: 'Đông',
+    labelEn: 'Busy',
+    toneClass: 'text-warning',
+    badgeClass:
+      'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
+    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
+  },
+  moderate: {
+    labelVi: 'Vừa phải',
+    labelEn: 'Moderate',
+    toneClass: 'text-sky-600',
+    badgeClass:
+      'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
+  },
+  normal: {
+    labelVi: 'Bình thường',
+    labelEn: 'Normal',
+    toneClass: 'text-emerald-600',
+    badgeClass:
+      'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
+  },
+  low: {
+    labelVi: 'Thưa thớt',
+    labelEn: 'Low',
+    toneClass: 'text-emerald-500',
+    badgeClass:
+      'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
+    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+  },
+  unknown: {
+    labelVi: 'Chưa rõ',
+    labelEn: 'Unknown',
+    toneClass: 'text-muted-foreground',
+    badgeClass: 'border-border/40 bg-muted/60 text-muted-foreground',
+    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+  },
+};
 
-const PRICE_OPTIONS = [
-  { value: '', key: 'tourPage.price_options.all' },
-  { value: '500000', key: 'tourPage.price_options.under500' },
-  { value: '1500000', key: 'tourPage.price_options.500_1000' },
-  { value: '4000000', key: 'tourPage.price_options.1000_2000' },
-];
+function getCapacityStatusMeta(status) {
+  const key = String(status || 'unknown').toLowerCase();
+  return CAPACITY_STATUS_META[key] || CAPACITY_STATUS_META.unknown;
+}
 
-const PAGE_SIZE_OPTIONS = [8, 12, 16, 24];
+function resolveSummaryCapacityPct(summary) {
+  const direct =
+    summary?.route_capacity_pct ?? summary?.avg_capacity_pct ?? summary?.bottleneck_capacity_pct;
+  if (direct != null && Number.isFinite(Number(direct))) {
+    return Math.min(Math.round(Number(direct)), 100);
+  }
+  const current = Number(summary?.total_current_visitors ?? 0);
+  const max = Number(summary?.total_max_capacity ?? 0);
+  if (max <= 0) return null;
+  return Math.min(Math.round((current / max) * 100), 100);
+}
 
-function getTourName(tour) {
+function resolveSummaryCapacityStatus(summary, pct) {
+  const raw = String(summary?.status ?? summary?.bottleneck_stop?.capacity_status ?? '')
+    .trim()
+    .toLowerCase();
+  if (CAPACITY_STATUS_META[raw]) return raw;
+  if (!Number.isFinite(pct)) return 'unknown';
+  if (pct >= 100) return 'overloaded';
+  if (pct >= 85) return 'near_full';
+  if (pct >= 70) return 'busy';
+  if (pct >= 40) return 'moderate';
+  if (pct > 0) return 'normal';
+  return 'low';
+}
+
+const clampPrice = (value) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return PRICE_MIN_VALUE;
+  return Math.max(PRICE_MIN_VALUE, Math.min(PRICE_MAX_VALUE, parsed));
+};
+
+function getTourName(tour, lang = 'vi') {
+  if (lang === 'en') return tour?.name || tour?.name_en || tour?.name_vi || '';
   return tour?.name || tour?.name_vi || tour?.name_en || '';
 }
-
+function getTourDescription(tour, lang = 'vi') {
+  if (lang === 'en') return tour?.description || tour?.description_en || tour?.description_vi || '';
+  return tour?.description || tour?.description_vi || tour?.description_en || '';
+}
+function getTourStartLocation(tour, lang = 'vi') {
+  if (lang === 'en')
+    return tour?.start_location || tour?.start_location_en || tour?.start_location_vi || '';
+  return tour?.start_location || tour?.start_location_vi || tour?.start_location_en || '';
+}
 function getTourImage(tour) {
-  const url = withBaseUrl(tour?.cover_image_url || '');
-  return url || placeholderImg;
+  return withBaseUrl(tour?.cover_image_url || '') || placeholderImg;
 }
 
-function formatPrice(tour) {
+function TourCard({ tour, onOpen, t, lang }) {
+  const name = getTourName(tour, lang);
   const price = Number(tour?.price_from_vnd ?? 0);
-  if (!Number.isFinite(price) || price <= 0) return null;
-  return formatVND(price);
-}
-
-function TourCardSkeleton({ isList }) {
-  return (
-    <div
-      className={`animate-pulse overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white ${isList ? 'flex h-40' : ''}`}
-    >
-      <div className={`bg-muted ${isList ? 'h-full w-52 shrink-0' : 'h-44 w-full'}`} />
-      <div className="flex-1 space-y-2 p-4">
-        <div className="bg-muted h-5 w-3/4 rounded" />
-        <div className="bg-muted h-4 w-full rounded" />
-        <div className="bg-muted h-4 w-2/3 rounded" />
-      </div>
-    </div>
+  const rating = Number(tour?.rating_avg ?? 0);
+  const description = getTourDescription(tour, lang);
+  const startLocation = getTourStartLocation(tour, lang);
+  const numberFormatter = useMemo(
+    () => new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'vi-VN'),
+    [lang]
   );
-}
-
-function TourListCard({ tour, t, onOpen }) {
-  const name = getTourName(tour);
-  const price = formatPrice(tour);
-  const rating = Number(tour.rating_avg ?? 0);
-  const from = tour.start_location_vi || '';
-  const to = tour.end_location_vi || '';
+  const { data: tourCapacityData } = useGetTourCurrentCapacity(tour?.id, {
+    enabled: Boolean(tour?.id),
+    retry: 0,
+  });
+  const capacitySummary = tourCapacityData?.summary ?? null;
+  const summaryPct = capacitySummary ? resolveSummaryCapacityPct(capacitySummary) : null;
+  const summaryStatus = capacitySummary
+    ? resolveSummaryCapacityStatus(capacitySummary, summaryPct)
+    : 'unknown';
+  const summaryMeta = getCapacityStatusMeta(summaryStatus);
+  const totalCurrent = Number(capacitySummary?.total_current_visitors ?? 0);
+  const totalMax = Number(capacitySummary?.total_max_capacity ?? 0);
+  const totalObserved = Number(capacitySummary?.total_observed_visitors ?? 0);
+  const hasTotalMax = totalMax > 0;
+  const capacityText = hasTotalMax
+    ? `${numberFormatter.format(totalCurrent)} / ${numberFormatter.format(totalMax)} người`
+    : totalObserved > 0
+      ? `${numberFormatter.format(totalObserved)} người`
+      : `${numberFormatter.format(totalCurrent)} người`;
 
   return (
     <article
       onClick={onOpen}
-      className="group flex h-44 cursor-pointer overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-shadow hover:shadow-[0_8px_28px_rgba(13,74,130,0.14)]"
+      className="border-border bg-card cursor-pointer overflow-hidden rounded-[28px] shadow-(--ambient-shadow) transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(8,43,74,.12)]"
     >
-      {/* Image */}
-      <div className="relative w-52 shrink-0 self-stretch overflow-hidden">
+      <div className="relative h-[190px] overflow-hidden">
         <img
           src={getTourImage(tour)}
           alt={name}
@@ -95,154 +195,100 @@ function TourListCard({ tour, t, onOpen }) {
             e.target.src = placeholderImg;
           }}
         />
-        {tour.duration_days && (
-          <span className="absolute top-3 left-3 rounded-full bg-black/45 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
-            {tour.duration_days} {t('tourPage.days', 'ngày')}
-          </span>
-        )}
-        {tour.is_featured && (
-          <span className="absolute bottom-3 left-3 rounded-full bg-[#f59e0b]/90 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
-            {t('tourPage.featured', 'Nổi bật')}
-          </span>
-        )}
+        <span className="text-secondary absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-[11px] py-[7px] text-[12px] font-black">
+          {tour?.province_name || t('tourPage.defaultProvince')}
+        </span>
+        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-[rgba(6,26,51,.78)] px-[11px] py-[8px] text-[12px] font-black text-white">
+          <Clock size={11} /> {tour?.duration_days || 1} {t('tourPage.days')}
+        </span>
       </div>
-
-      {/* Body */}
-      <div className="flex min-w-0 flex-1 flex-col justify-between px-5 py-4">
-        <div>
-          <h3
-            className="text-foreground line-clamp-1 text-[15px] leading-snug font-black transition-colors group-hover:text-[#0b66c3]"
-            title={name}
-          >
-            {name || t('tourPage.unknown', 'Tour')}
-          </h3>
-          <p className="text-muted-foreground mt-1.5 line-clamp-2 text-sm leading-relaxed">
-            {tour.description_vi || t('tourPage.noDescription', 'Chưa có mô tả')}
-          </p>
+      <div className="p-[17px]">
+        <h3 className="text-foreground mb-2 truncate text-[17px] leading-[1.45] font-black">
+          {name}
+        </h3>
+        <p className="text-muted-foreground mb-3 line-clamp-2 text-[13px] leading-[1.6]">
+          {description || t('tourPage.noDescription')}
+        </p>
+        <div className="mb-[14px] grid grid-cols-2 gap-2">
+          <div className="bg-muted text-muted-foreground rounded-[13px] p-2.25 text-[12px]">
+            <b className="text-foreground mb-0.5 block text-[13px]">
+              {tour?.duration_days || 1} {t('tourPage.days')}
+            </b>
+            {t('tourPage.duration')}
+          </div>
+          <div className="bg-muted text-muted-foreground rounded-[13px] p-2.25 text-[12px]">
+            <b className="text-foreground mb-0.5 block text-[13px]">
+              {tour?.max_guests ?? '-'} {t('tourPage.people')}
+            </b>
+            {t('tourPage.maxGuests')}
+          </div>
+          <div className="bg-muted text-muted-foreground rounded-[13px] p-2.25 text-[12px]">
+            <b className="text-foreground mb-0.5 block truncate text-[13px]">
+              {startLocation?.split(',')[0] || '-'}
+            </b>
+            {t('tourPage.startLocation')}
+          </div>
+          <div className="bg-muted text-muted-foreground rounded-[13px] p-2.25 text-[12px]">
+            {rating > 0 ? (
+              <>
+                <b className="text-foreground mb-0.5 flex items-center gap-1 text-[13px]">
+                  <Star size={10} className="fill-[#ff9f1c] text-[#ff9f1c]" /> {rating.toFixed(1)}/5
+                </b>
+                {t('tourPage.rating')}
+              </>
+            ) : (
+              <>
+                <b className="text-foreground mb-0.5 block text-[13px]">-</b>
+                {t('tourPage.rating')}
+              </>
+            )}
+          </div>
         </div>
-
-        <div className="mt-3 space-y-2">
-          {/* From → To itinerary */}
-          {(from || to) && (
-            <div className="flex min-h-6 flex-wrap items-center gap-1.5">
-              {from && (
-                <span className="rounded-full border border-[#cfe0f4] bg-[#eef7ff] px-2.5 py-0.5 text-xs font-semibold text-[#0b66c3]">
-                  {from.split(',')[0]}
-                </span>
-              )}
-              {from && to && <ArrowRight size={11} className="text-muted-foreground" />}
-              {to && (
-                <span className="rounded-full border border-[#cfe0f4] bg-[#eef7ff] px-2.5 py-0.5 text-xs font-semibold text-[#0b66c3]">
-                  {to.split(',')[0]}
-                </span>
-              )}
+        <div className="bg-muted/40 mb-3 rounded-[14px] border border-dashed p-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-foreground text-[12px] font-black">
+              {t('tourPage.routeCapacitySummary')}
+            </span>
+            <span
+              className={`rounded-full border px-2 py-0.5 text-[11px] font-black ${summaryMeta.badgeClass}`}
+            >
+              {lang === 'en' ? summaryMeta.labelEn : summaryMeta.labelVi}
+            </span>
+          </div>
+          <div className="mt-1 flex items-center justify-between gap-2">
+            <span className="text-muted-foreground text-[11px] font-bold">{capacityText}</span>
+            <span className={`text-[11px] font-bold ${summaryMeta.toneClass}`}>
+              {Number.isFinite(summaryPct) ? `${summaryPct}%` : '--'}
+            </span>
+          </div>
+          {Number.isFinite(summaryPct) && (
+            <div className="bg-muted mt-2 h-1.5 w-full overflow-hidden rounded-full">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${summaryPct}%`, ...summaryMeta.barStyle }}
+              />
             </div>
           )}
-
-          {/* Meta row */}
-          <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs">
-            {tour.duration_days && (
-              <span className="flex items-center gap-1">
-                <Clock size={11} />
-                {tour.duration_days} {t('tourPage.days', 'ngày')}
-              </span>
-            )}
-            {tour.max_guests && (
-              <span className="flex items-center gap-1">
-                <Users size={11} />
-                {tour.max_guests} {t('tourPage.people', 'khách')}
-              </span>
-            )}
-          </div>
         </div>
-      </div>
-
-      {/* Price column */}
-      <div className="flex w-40 shrink-0 flex-col items-center justify-center gap-1.5 border-l border-[#eef3f8] px-4 py-4">
-        {rating > 0 && (
-          <div className="flex items-center gap-1 text-xs font-bold text-[#d99200]">
-            <Star size={12} className="fill-[#d99200]" />
-            {rating.toFixed(1)}
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <strong className="text-[20px] font-black text-[#ef7b00]">
+              {price > 0 ? formatVND(price) : t('tourPage.contact')}
+            </strong>
+            {price > 0 && (
+              <span className="text-muted-foreground ml-1 text-[11px]">
+                / {t('tourPage.people')}
+              </span>
+            )}
           </div>
-        )}
-        {price ? (
-          <div className="text-center">
-            <div className="text-muted-foreground text-[10px]">{t('tourPage.priceFrom', 'Từ')}</div>
-            <div className="text-sm font-black text-[#0b66c3]">{price}</div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-1 text-xs font-semibold text-[#10b981]">
-            <Ticket size={11} />
-            {t('tourPage.contact', 'Liên hệ')}
-          </div>
-        )}
-        <button
-          type="button"
-          className="mt-1 h-8 w-full rounded-[8px] px-3 text-xs font-bold text-white"
-          style={BTN_GRADIENT}
-        >
-          {t('tourPage.viewDetail', 'Xem chi tiết')}
-        </button>
-      </div>
-    </article>
-  );
-}
-
-function TourGridCard({ tour, t, onOpen }) {
-  const name = getTourName(tour);
-  const price = formatPrice(tour);
-  const rating = Number(tour.rating_avg ?? 0);
-
-  return (
-    <article
-      onClick={onOpen}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[18px] border border-[#cfe0f4] bg-white shadow-[0_4px_16px_rgba(13,74,130,0.07)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(13,74,130,0.15)]"
-    >
-      <div className="relative h-44 overflow-hidden">
-        <img
-          src={getTourImage(tour)}
-          alt={name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = placeholderImg;
-          }}
-        />
-        {tour.duration_days && (
-          <span className="absolute top-3 left-3 rounded-full bg-black/45 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
-            {tour.duration_days} {t('tourPage.days', 'ngày')}
-          </span>
-        )}
-        {tour.is_featured && (
-          <span className="absolute top-3 right-3 rounded-full bg-[#f59e0b]/90 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
-            {t('tourPage.featured', 'Nổi bật')}
-          </span>
-        )}
-      </div>
-
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-foreground line-clamp-2 text-sm leading-snug font-black transition-colors group-hover:text-[#0b66c3]">
-          {name || t('tourPage.unknown', 'Tour')}
-        </h3>
-        {rating > 0 && (
-          <div className="mt-1 flex items-center gap-1 text-xs font-bold text-[#d99200]">
-            <Star size={11} className="fill-[#d99200]" />
-            {rating.toFixed(1)}
-          </div>
-        )}
-        <p className="text-muted-foreground mt-1.5 line-clamp-2 text-xs leading-relaxed">
-          {tour.description_vi || t('tourPage.noDescription', 'Chưa có mô tả')}
-        </p>
-        <div className="mt-3 flex items-center justify-between border-t border-[#eef3f8] pt-3">
-          {tour.start_location_vi && (
-            <span className="text-muted-foreground flex min-w-0 items-center gap-1 text-xs">
-              <MapPin size={10} className="shrink-0" />
-              <span className="truncate">{tour.start_location_vi.split(',')[0]}</span>
-            </span>
-          )}
-          <span className="ml-auto shrink-0 text-sm font-black text-[#0b66c3]">
-            {price || t('tourPage.contact', 'Liên hệ')}
-          </span>
+          <Button
+            variant="ghost"
+            type="button"
+            className="rounded-[14px] px-[13px] py-2.5 text-[13px] font-black text-white hover:text-white hover:opacity-90"
+            style={{ background: PRIMARY_GRAD }}
+          >
+            {t('tourPage.viewDetail')}
+          </Button>
         </div>
       </div>
     </article>
@@ -250,355 +296,440 @@ function TourGridCard({ tour, t, onOpen }) {
 }
 
 function FilterSidebar({
-  durationFilter,
-  onDurationChange,
-  priceMaxFilter,
-  onPriceMaxChange,
-  startLocationFilter,
-  onStartLocationChange,
-  onApply,
   t,
-  featuredTour,
+  search,
+  onSearch,
+  featuredFilter,
+  onFeatured,
+  durationFilter,
+  onDuration,
+  priceRange,
+  onPriceRangeChange,
+  onApply,
+  onReset,
+  isFetching,
 }) {
-  const navigate = useNavigate();
   return (
-    <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-      <div className="rounded-[18px] border border-[#cfe0f4] bg-white p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <span className="text-foreground text-sm font-bold">
-            {t('tourPage.filterTitle', 'Bộ lọc nhanh')}
-          </span>
-          <span className="rounded-full bg-[#eef7ff] px-2 py-0.5 text-xs font-semibold text-[#0b66c3]">
-            {t('tourPage.filterOpen', 'Đang mở')}
-          </span>
-        </div>
+    <aside className="border-border bg-card h-max rounded-[28px] p-4.5 shadow-(--ambient-shadow) xl:sticky xl:top-[86px]">
+      <h3 className="text-foreground mb-[14px] flex items-center gap-[9px] text-[16px] font-black">
+        <SlidersHorizontal size={16} className="text-secondary" />
+        {t('tourPage.filterTitle')}
+      </h3>
 
-        {/* Duration chips */}
-        <div className="mb-3">
-          <p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-            {t('tourPage.duration', 'Thời lượng')}
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {DURATION_OPTIONS.map((o) => (
-              <button
-                key={o.value}
-                type="button"
-                onClick={() => onDurationChange(o.value)}
-                className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-                  durationFilter === o.value
-                    ? 'bg-[#0b66c3] text-white'
-                    : 'text-muted-foreground border border-[#cfe0f4] bg-[#f8fbff] hover:bg-[#eef7ff]'
-                }`}
-              >
-                {t(o.key)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Budget */}
-        <div className="mb-3">
-          <p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-            {t('tourPage.budget', 'Ngân sách')}
-          </p>
-          <div className="relative">
-            <Wallet
-              size={13}
-              className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
-            />
-            <select
-              value={priceMaxFilter}
-              onChange={(e) => onPriceMaxChange(e.target.value)}
-              className="text-foreground h-9 w-full rounded-[8px] border border-[#cfe0f4] bg-[#f8fbff] pr-3 pl-8 text-xs focus:outline-none"
-            >
-              {PRICE_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {t(o.key)}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Start location */}
-        <div className="mb-4">
-          <p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-            {t('tourPage.startLocation', 'Điểm xuất phát')}
-          </p>
-          <div className="relative">
-            <MapPin
-              size={13}
-              className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
-            />
-            <input
-              type="text"
-              placeholder={t('tourPage.startLocationPlaceholder', 'Vd: Bến thuyền Tràng An')}
-              value={startLocationFilter}
-              onChange={(e) => onStartLocationChange(e.target.value)}
-              className="text-foreground h-9 w-full rounded-[8px] border border-[#cfe0f4] bg-[#f8fbff] pr-3 pl-8 text-xs focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={onApply}
-          className="h-9 w-full rounded-[10px] text-sm font-bold text-white"
-          style={BTN_GRADIENT}
-        >
-          {t('tourPage.applyFilters', 'Áp dụng bộ lọc')}
-        </button>
+      <div className="mb-[13px]">
+        <label className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
+          {t('tourPage.filters.keyword')}
+        </label>
+        <Input
+          placeholder={t('tourPage.searchPlaceholder')}
+          value={search}
+          onChange={(e) => onSearch(e.target.value)}
+          className="border-border bg-muted text-foreground w-full rounded-[15px] px-3 py-3 text-[14px] font-bold outline-none"
+        />
       </div>
 
-      {/* Featured summary card */}
-      {featuredTour && (
-        <button
-          type="button"
-          onClick={() => navigate(`/tour/${featuredTour.slug}`)}
-          className="w-full rounded-[18px] p-4 text-left transition-opacity hover:opacity-90"
-          style={{
-            background:
-              'linear-gradient(315deg,rgba(3,95,172,.92),rgba(14,165,233,.86),rgba(16,185,129,.72))',
-          }}
+      <div className="mb-[13px]">
+        <label className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
+          {t('tourPage.filters.featured')}
+        </label>
+        <Select value={featuredFilter} onValueChange={onFeatured}>
+          <SelectTrigger className="border-border bg-muted text-foreground w-full rounded-[15px] px-3 py-3 text-[14px] font-bold">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t('common.all')}</SelectItem>
+            <SelectItem value="featured">{t('tourPage.featured')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="mb-[13px]">
+        <label className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
+          {t('tourPage.duration')}
+        </label>
+        <Select
+          value={durationFilter || 'all'}
+          onValueChange={(value) => onDuration(value === 'all' ? '' : value)}
         >
-          <p className="text-xs font-medium text-white/80">
-            {t('tourPage.featuredToday', 'Tuyến nổi bật hôm nay')}
-          </p>
-          <p className="mt-1 text-sm font-black text-white">{getTourName(featuredTour)}</p>
-          <p className="mt-1 text-xs leading-relaxed text-white/75">
-            {t(
-              'tourPage.featuredSubtitle',
-              'Phù hợp gia đình, nhóm bạn, khách lần đầu đến Ninh Bình.'
-            )}
-          </p>
-          <div className="mt-2.5 flex items-center gap-1 text-xs font-semibold text-white">
-            {t('tourPage.viewTour', 'Xem tuyến')} <ArrowRight size={11} />
-          </div>
-        </button>
-      )}
+          <SelectTrigger className="border-border bg-muted text-foreground w-full rounded-[15px] px-3 py-3 text-[14px] font-bold">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t('common.all')}</SelectItem>
+            <SelectItem value="1">1 {t('tourPage.days')}</SelectItem>
+            <SelectItem value="2">2 {t('tourPage.days')}</SelectItem>
+            <SelectItem value="3">3 {t('tourPage.days')}</SelectItem>
+            <SelectItem value="4">4 {t('tourPage.days')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="mb-[8px]">
+        <label className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
+          {t('tourPage.filters.priceRange')}
+        </label>
+        <div className="text-muted-foreground mb-2 flex items-center justify-between text-[12px] font-bold">
+          <span>{formatVND(priceRange[0])}</span>
+          <span>{formatVND(priceRange[1])}</span>
+        </div>
+        <Slider
+          min={PRICE_MIN_VALUE}
+          max={PRICE_MAX_VALUE}
+          step={PRICE_STEP}
+          value={priceRange}
+          onValueChange={(values) => {
+            if (!Array.isArray(values) || values.length < 2) return;
+            const nextMin = clampPrice(Math.min(values[0], values[1]));
+            const nextMax = clampPrice(Math.max(values[0], values[1]));
+            onPriceRangeChange([nextMin, nextMax]);
+          }}
+          className="mb-3"
+        />
+        <div className="grid grid-cols-2 gap-2">
+          <Input
+            type="number"
+            min="0"
+            max={String(PRICE_MAX_VALUE)}
+            step={String(PRICE_STEP)}
+            value={priceRange[0]}
+            onChange={(e) => {
+              const nextMin = clampPrice(e.target.value);
+              const nextMax = Math.max(nextMin, priceRange[1]);
+              onPriceRangeChange([nextMin, nextMax]);
+            }}
+            placeholder={t('tourPage.filters.priceMin')}
+            className="border-border bg-muted text-foreground w-full rounded-[15px] px-3 py-3 text-[14px] font-bold outline-none"
+          />
+          <Input
+            type="number"
+            min="0"
+            max={String(PRICE_MAX_VALUE)}
+            step={String(PRICE_STEP)}
+            value={priceRange[1]}
+            onChange={(e) => {
+              const nextMax = clampPrice(e.target.value);
+              const nextMin = Math.min(nextMax, priceRange[0]);
+              onPriceRangeChange([nextMin, nextMax]);
+            }}
+            placeholder={t('tourPage.filters.priceMax')}
+            className="border-border bg-muted text-foreground w-full rounded-[15px] px-3 py-3 text-[14px] font-bold outline-none"
+          />
+        </div>
+      </div>
+
+      <Button
+        variant="ghost"
+        type="button"
+        onClick={onApply}
+        className="mb-2 flex w-full items-center justify-center gap-2 rounded-full py-[12px] text-[14px] font-black text-white hover:text-white hover:opacity-90"
+        style={{ background: PRIMARY_GRAD }}
+      >
+        <Search size={14} /> {t('tourPage.applyFilters')}
+      </Button>
+      <Button
+        variant="ghost"
+        type="button"
+        onClick={onReset}
+        className="border-border bg-muted text-muted-foreground flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-[13px] font-black"
+      >
+        <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} /> {t('tourPage.refresh')}
+      </Button>
     </aside>
   );
 }
 
 export default function TourPageContent() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.startsWith('en') ? 'en' : 'vi';
   const navigate = useNavigate();
-
-  const [viewMode, setViewMode] = useState('list');
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12);
-
   const [search, setSearch] = useState('');
-  const [debouncedSearch] = useDebounce(search.trim(), uiConfig.search.tourPageDebounceMs ?? 350);
-
+  const [debouncedSearch] = useDebounce(search.trim(), uiConfig?.search?.tourPageDebounceMs ?? 350);
+  const [featuredFilter, setFeaturedFilter] = useState('all');
   const [durationFilter, setDurationFilter] = useState('');
-  const [priceMaxFilter, setPriceMaxFilter] = useState('');
-  const [startLocationFilter, setStartLocationFilter] = useState('');
-  const [appliedDuration, setAppliedDuration] = useState('');
+  const [priceRange, setPriceRange] = useState([PRICE_MIN_VALUE, PRICE_MAX_VALUE]);
+  const [appliedFilters, setAppliedFilters] = useState({
+    featured: 'all',
+    duration_days: '',
+    price_min: PRICE_MIN_VALUE,
+    price_max: PRICE_MAX_VALUE,
+  });
+  const [sortBy, setSortBy] = useState('recommended');
+
+  const featuredAsBoolean = useMemo(() => {
+    if (appliedFilters.featured === 'featured') return true;
+    return undefined;
+  }, [appliedFilters.featured]);
+
+  const sortParams = useMemo(() => {
+    if (sortBy === 'price_asc') return { sortBy: 'price_from_vnd', sortOrder: 'ASC' };
+    if (sortBy === 'price_desc') return { sortBy: 'price_from_vnd', sortOrder: 'DESC' };
+    if (sortBy === 'rating_desc') return { sortBy: 'rating_avg', sortOrder: 'DESC' };
+    if (sortBy === 'duration_asc') return { sortBy: 'duration_days', sortOrder: 'ASC' };
+    if (sortBy === 'duration_desc') return { sortBy: 'duration_days', sortOrder: 'DESC' };
+    return { sortBy: 'created_at', sortOrder: 'DESC' };
+  }, [sortBy]);
 
   const { data, isLoading, isError, refetch, isFetching } = useGetAllTours({
     page,
-    limit,
+    limit: PAGE_SIZE,
     search: debouncedSearch || undefined,
-    duration_days: appliedDuration || undefined,
+    is_featured: featuredAsBoolean,
+    duration_days: appliedFilters.duration_days || undefined,
+    price_min: appliedFilters.price_min,
+    price_max: appliedFilters.price_max,
+    sortBy: sortParams.sortBy,
+    sortOrder: sortParams.sortOrder,
   });
 
   const tours = useMemo(() => data?.tours || [], [data]);
-  const paginationFromApi = data?.pagination || null;
-  const total = paginationFromApi?.total ?? tours.length;
-  const pages = paginationFromApi?.totalPages ?? Math.max(1, Math.ceil(total / limit));
+  const pagination = data?.pagination || null;
+  const total = pagination?.total ?? tours.length;
+  const pages = pagination?.totalPages ?? Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const visibleTours = useMemo(() => {
-    let list = paginationFromApi ? tours : tours.slice((page - 1) * limit, page * limit);
-    if (priceMaxFilter) {
-      const maxPrice = Number(priceMaxFilter);
-      list = list.filter((t) => Number(t.price_from_vnd ?? 0) <= maxPrice);
-    }
-    if (startLocationFilter.trim()) {
-      const q = startLocationFilter.trim().toLowerCase();
-      list = list.filter((t) => (t.start_location_vi || '').toLowerCase().includes(q));
+    const list = [...tours];
+    if (sortBy === 'recommended') {
+      list.sort((a, b) => {
+        const featuredDiff = Number(Boolean(b?.is_featured)) - Number(Boolean(a?.is_featured));
+        if (featuredDiff !== 0) return featuredDiff;
+        return Number(b?.rating_avg ?? 0) - Number(a?.rating_avg ?? 0);
+      });
+    } else if (sortBy === 'price_asc') {
+      list.sort((a, b) => Number(a.price_from_vnd ?? 0) - Number(b.price_from_vnd ?? 0));
+    } else if (sortBy === 'price_desc') {
+      list.sort((a, b) => Number(b.price_from_vnd ?? 0) - Number(a.price_from_vnd ?? 0));
+    } else if (sortBy === 'rating_desc') {
+      list.sort((a, b) => Number(b.rating_avg ?? 0) - Number(a.rating_avg ?? 0));
+    } else if (sortBy === 'duration_asc') {
+      list.sort((a, b) => Number(a.duration_days ?? 0) - Number(b.duration_days ?? 0));
+    } else if (sortBy === 'duration_desc') {
+      list.sort((a, b) => Number(b.duration_days ?? 0) - Number(a.duration_days ?? 0));
     }
     return list;
-  }, [tours, paginationFromApi, page, priceMaxFilter, startLocationFilter, limit]);
+  }, [tours, sortBy]);
 
-  const featuredTour = useMemo(() => tours.find((t) => t.is_featured), [tours]);
+  const avgRating = useMemo(() => {
+    if (!tours.length) return '4.7';
+    const sum = tours.reduce((acc, t) => acc + Number(t.rating_avg ?? 0), 0);
+    return (sum / tours.length).toFixed(1);
+  }, [tours]);
+  const durationRangeLabel = useMemo(() => {
+    const durations = tours
+      .map((tour) => Number(tour?.duration_days ?? 0))
+      .filter((value) => Number.isFinite(value) && value > 0);
+    if (!durations.length) return `1-4 ${t('tourPage.days')}`;
+    return `${Math.min(...durations)}-${Math.max(...durations)} ${t('tourPage.days')}`;
+  }, [tours, t]);
+  const guestRangeLabel = useMemo(() => {
+    const guestValues = tours
+      .map((tour) => Number(tour?.max_guests ?? 0))
+      .filter((value) => Number.isFinite(value) && value > 0);
+    if (!guestValues.length) return `2-20 ${t('tourPage.people')}`;
+    return `${Math.min(...guestValues)}-${Math.max(...guestValues)} ${t('tourPage.people')}`;
+  }, [tours, t]);
 
-  const handleApplyFilters = () => {
+  const handleApply = () => {
     setPage(1);
-    setAppliedDuration(durationFilter);
+    setAppliedFilters({
+      featured: featuredFilter,
+      duration_days: durationFilter,
+      price_min: priceRange[0],
+      price_max: priceRange[1],
+    });
   };
-
   const handleReset = () => {
     setSearch('');
+    setFeaturedFilter('all');
     setDurationFilter('');
-    setPriceMaxFilter('');
-    setStartLocationFilter('');
-    setAppliedDuration('');
+    setPriceRange([PRICE_MIN_VALUE, PRICE_MAX_VALUE]);
+    setAppliedFilters({
+      featured: 'all',
+      duration_days: '',
+      price_min: PRICE_MIN_VALUE,
+      price_max: PRICE_MAX_VALUE,
+    });
+    setSortBy('recommended');
     setPage(1);
     refetch?.();
   };
 
+  if (isLoading && page === 1) return <TourPageSkeleton />;
+
   return (
     <RootLayout>
-      <div className="min-h-screen">
+      <div
+        className="min-h-screen overflow-x-hidden"
+        style={{ background: 'linear-gradient(180deg,#eaf7ff 0,#fff 42%,#f5fbff 100%)' }}
+      >
         {/* Hero */}
-        <section className="px-6 py-9 text-white" style={{ background: HERO_BG }}>
-          <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-7 lg:grid-cols-[1fr_1.35fr]">
-            <div>
-              <h1 className="text-2xl md:text-3xl xl:text-4xl leading-tight font-black tracking-tight">
-                {t('tourPage.title', 'Tuyến du lịch')}
+        <section className="px-5 pt-6.5 pb-5 md:px-[5vw]">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_.95fr]">
+            {/* Hero left */}
+            <div
+              className="relative flex min-h-65 flex-col justify-end overflow-hidden rounded-[32px] p-5 text-white shadow-(--ambient-shadow) md:min-h-90 md:p-8.5"
+              style={{ background: HERO_LEFT_BG }}
+            >
+              <span className="mb-[18px] inline-flex w-max items-center gap-2 rounded-full border border-white/30 bg-white/20 px-[13px] py-[9px] text-[13px] font-black">
+                {t('tourPage.hero.badge')}
+              </span>
+              <h1
+                className="mb-[14px] leading-[1.12] font-black tracking-[-1.2px]"
+                style={{ fontSize: 'clamp(28px,3.5vw,50px)' }}
+              >
+                {t('tourPage.hero.title')}
               </h1>
-              <p className="mt-2 font-medium text-white/90">
-                {t(
-                  'tourPage.description',
-                  'Khám phá các hành trình nổi bật tại Ninh Bình theo thời gian, ngân sách và chủ đề trải nghiệm.'
-                )}
+              <p className="max-w-[700px] leading-[1.72]" style={{ color: '#eafaff' }}>
+                {t('tourPage.hero.description')}
               </p>
             </div>
 
-            <div
-              className="flex flex-col items-stretch gap-3 rounded-3xl p-4 sm:flex-row sm:items-center"
-              style={{
-                background: 'rgba(255,255,255,0.94)',
-                border: '1px solid rgba(255,255,255,0.75)',
-                boxShadow: '0 12px 28px rgba(0,0,0,.14)',
-              }}
-            >
-              <div className="relative min-w-0 flex-1">
-                <Search
-                  size={16}
-                  className="absolute top-1/2 left-3 -translate-y-1/2 text-[#52647a]"
-                />
-                <input
-                  type="text"
-                  placeholder={t(
-                    'tourPage.searchPlaceholder',
-                    'Tìm kiếm tuyến du lịch, điểm đến...'
-                  )}
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
-                  className="text-foreground focus:border-primary h-11 w-full rounded-xl border border-[#a8bed4] bg-white pr-3 pl-9 text-sm outline-none"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={handleApplyFilters}
-                className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white"
-                style={BTN_GRADIENT}
-              >
-                {t('tourPage.filter', 'Lọc tuyến')}
-              </button>
+            {/* Hero right – summary cards */}
+            <div className="grid grid-cols-2 gap-[14px]">
+              {[
+                {
+                  icon: <span className="text-xl font-black">✓</span>,
+                  value: total > 0 ? `${total}+` : '36+',
+                  label: t('tourPage.stats.total'),
+                  grad: PRIMARY_GRAD,
+                },
+                {
+                  icon: <Clock size={20} />,
+                  value: durationRangeLabel,
+                  label: t('tourPage.stats.durationRange'),
+                  grad: PRIMARY_GRAD,
+                },
+                {
+                  icon: <Users size={20} />,
+                  value: guestRangeLabel,
+                  label: t('tourPage.stats.groupFriendly'),
+                  grad: PRIMARY_GRAD,
+                },
+                {
+                  icon: <Star size={20} />,
+                  value: `${avgRating}/5`,
+                  label: t('tourPage.stats.avgRating'),
+                  grad: PRIMARY_GRAD,
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="border-border bg-card rounded-[24px] p-5 shadow-(--ambient-shadow)"
+                >
+                  <div
+                    className="mb-[14px] flex h-11 w-11 items-center justify-center rounded-[16px] text-white"
+                    style={{ background: item.grad }}
+                  >
+                    {item.icon}
+                  </div>
+                  <strong className="text-foreground block text-[22px] font-black md:text-[28px]">
+                    {item.value}
+                  </strong>
+                  <span className="text-muted-foreground text-[13px] font-bold">{item.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Content */}
-        <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
-          {/* Toolbar */}
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-muted-foreground text-sm">
-              {t('tourPage.showing', 'Hiển thị')}{' '}
-              <strong className="text-foreground">
-                {visibleTours.length} / {total}
-              </strong>{' '}
-              {t('tourPage.toursLabel', 'tuyến phù hợp')}
-            </p>
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setViewMode('grid')}
-                className={`flex h-8 items-center gap-1.5 rounded-[8px] px-3 text-xs font-semibold transition ${
-                  viewMode === 'grid'
-                    ? 'bg-[#0b66c3] text-white'
-                    : 'text-muted-foreground border border-[#cfe0f4] bg-white hover:bg-[#eef7ff]'
-                }`}
-              >
-                <LayoutGrid size={12} /> {t('tourPage.gridView', 'Lưới')}
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('list')}
-                className={`flex h-8 items-center gap-1.5 rounded-[8px] px-3 text-xs font-semibold transition ${
-                  viewMode === 'list'
-                    ? 'bg-[#0b66c3] text-white'
-                    : 'text-muted-foreground border border-[#cfe0f4] bg-white hover:bg-[#eef7ff]'
-                }`}
-              >
-                <List size={12} /> {t('tourPage.listView', 'Danh sách')}
-              </button>
-              <button
-                type="button"
-                onClick={handleReset}
-                className="text-muted-foreground flex h-8 items-center gap-1.5 rounded-[8px] border border-[#cfe0f4] bg-white px-3 text-xs font-semibold hover:bg-[#eef7ff]"
-              >
-                <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />{' '}
-                {t('tourPage.refresh', 'Refresh')}
-              </button>
-              <select
-                value={String(limit)}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="text-foreground h-8 rounded-[8px] border border-[#cfe0f4] bg-white px-2.5 text-xs font-semibold outline-none hover:bg-[#eef7ff]"
-              >
-                {PAGE_SIZE_OPTIONS.map((size) => (
-                  <option key={size} value={size}>
-                    {t('tourPage.per_page', { size })}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+        {/* Layout: filter sidebar + main */}
+        <section className="px-5 pt-3 pb-10.5 md:px-[5vw]">
+          <div className="grid grid-cols-1 gap-[22px] xl:grid-cols-[305px_1fr]">
+            <FilterSidebar
+              t={t}
+              search={search}
+              onSearch={(v) => {
+                setSearch(v);
+                setPage(1);
+              }}
+              featuredFilter={featuredFilter}
+              onFeatured={setFeaturedFilter}
+              durationFilter={durationFilter}
+              onDuration={setDurationFilter}
+              priceRange={priceRange}
+              onPriceRangeChange={setPriceRange}
+              onApply={handleApply}
+              onReset={handleReset}
+              isFetching={isFetching}
+            />
 
-          {/* Layout: list + sidebar */}
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_240px]">
-            {/* Tour list */}
-            <div>
+            <main className="flex flex-col gap-[18px]">
+              {/* Toolbar */}
+              <div className="border-border bg-card flex flex-wrap items-center justify-between gap-[14px] rounded-[24px] px-4 py-[14px] shadow-(--ambient-shadow)">
+                <div>
+                  <h2 className="text-foreground text-[23px] font-black">{t('tourPage.title')}</h2>
+                  <p className="text-muted-foreground mt-1 text-[13px]">
+                    {t('tourPage.toolbar.count', { total: visibleTours.length })}
+                  </p>
+                </div>
+                <div className="flex items-center gap-[10px]">
+                  <span className="text-muted-foreground text-[13px] font-black">
+                    {t('tourPage.filters.sort')}
+                  </span>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="border-border bg-card text-foreground rounded-full px-[14px] py-2.5 text-[14px] font-black">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="recommended">
+                        {t('tourPage.sort_options.recommended')}
+                      </SelectItem>
+                      <SelectItem value="price_asc">
+                        {t('tourPage.sort_options.price_asc')}
+                      </SelectItem>
+                      <SelectItem value="price_desc">
+                        {t('tourPage.sort_options.price_desc')}
+                      </SelectItem>
+                      <SelectItem value="rating_desc">
+                        {t('tourPage.sort_options.rating_best')}
+                      </SelectItem>
+                      <SelectItem value="duration_asc">
+                        {t('tourPage.sort_options.duration_asc')}
+                      </SelectItem>
+                      <SelectItem value="duration_desc">
+                        {t('tourPage.sort_options.duration_desc')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Tour grid */}
               {isLoading ? (
-                <div
-                  className={
-                    viewMode === 'grid'
-                      ? 'grid grid-cols-1 gap-4 sm:grid-cols-2'
-                      : 'flex flex-col gap-4'
-                  }
-                >
+                <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <TourCardSkeleton key={i} isList={viewMode === 'list'} />
+                    <div
+                      key={i}
+                      className="border-border bg-card animate-pulse overflow-hidden rounded-[28px]"
+                    >
+                      <div className="bg-muted h-[190px]" />
+                      <div className="space-y-2 p-4">
+                        <div className="bg-muted h-5 w-3/4 rounded" />
+                        <div className="bg-muted h-4 w-full rounded" />
+                        <div className="bg-muted h-4 w-2/3 rounded" />
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : isError ? (
-                <div className="text-muted-foreground rounded-[18px] border border-[#cfe0f4] bg-white py-16 text-center">
-                  {t('tourPage.errorLoading', 'Không thể tải danh sách tour')}
+                <div className="border-border bg-card text-muted-foreground rounded-[24px] py-16 text-center text-[13px]">
+                  {t('tourPage.states.error')}
                 </div>
-              ) : !visibleTours.length ? (
-                <div className="text-muted-foreground flex flex-col items-center justify-center rounded-[18px] border border-[#cfe0f4] bg-white py-20">
-                  <Inbox size={40} className="mb-3 opacity-30" />
-                  <p className="text-foreground text-sm 2xl:text-base font-semibold">
-                    {t('tourPage.noTours', 'Không tìm thấy tuyến nào')}
+              ) : visibleTours.length === 0 ? (
+                <div className="border-border bg-card flex flex-col items-center justify-center rounded-[24px] py-20">
+                  <Inbox size={40} className="text-muted-foreground mb-3 opacity-30" />
+                  <p className="text-foreground text-[15px] font-black">
+                    {t('tourPage.states.empty_title')}
                   </p>
                 </div>
-              ) : viewMode === 'list' ? (
-                <div className="flex flex-col gap-4">
-                  {visibleTours.map((tour) => (
-                    <TourListCard
-                      key={tour.id}
-                      tour={tour}
-                      t={t}
-                      onOpen={() => navigate(`/tour/${tour.slug}`)}
-                    />
-                  ))}
-                </div>
               ) : (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
                   {visibleTours.map((tour) => (
-                    <TourGridCard
+                    <TourCard
                       key={tour.id}
                       tour={tour}
                       t={t}
+                      lang={lang}
                       onOpen={() => navigate(`/tour/${tour.slug}`)}
                     />
                   ))}
@@ -607,44 +738,33 @@ export default function TourPageContent() {
 
               {/* Pagination */}
               {pages > 1 && (
-                <div className="mt-6 flex items-center justify-between">
-                  <button
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
                     type="button"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page <= 1}
-                    className="text-foreground flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+                    className="border-border bg-card text-foreground hover:bg-muted flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-[14px] font-black disabled:opacity-40"
                   >
-                    <ChevronLeft size={15} /> {t('common.prev', 'Trước')}
-                  </button>
-                  <span className="rounded-full border border-[#cfe0f4] bg-white px-4 py-1.5 text-sm font-semibold">
+                    <ChevronLeft size={15} /> {t('tourPage.previous')}
+                  </Button>
+                  <span className="border-border bg-card text-foreground rounded-full px-4 py-1.5 text-[14px] font-black">
                     {page} / {pages}
                   </span>
-                  <button
+                  <Button
+                    variant="ghost"
                     type="button"
                     onClick={() => setPage((p) => Math.min(pages, p + 1))}
                     disabled={page >= pages}
-                    className="text-foreground flex h-9 items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 text-sm font-semibold hover:bg-[#eef7ff] disabled:opacity-40"
+                    className="border-border bg-card text-foreground hover:bg-muted flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-[14px] font-black disabled:opacity-40"
                   >
-                    {t('common.next', 'Sau')} <ChevronRight size={15} />
-                  </button>
+                    {t('tourPage.next')} <ChevronRight size={15} />
+                  </Button>
                 </div>
               )}
-            </div>
-
-            {/* Filter sidebar */}
-            <FilterSidebar
-              durationFilter={durationFilter}
-              onDurationChange={setDurationFilter}
-              priceMaxFilter={priceMaxFilter}
-              onPriceMaxChange={setPriceMaxFilter}
-              startLocationFilter={startLocationFilter}
-              onStartLocationChange={setStartLocationFilter}
-              onApply={handleApplyFilters}
-              t={t}
-              featuredTour={featuredTour}
-            />
+            </main>
           </div>
-        </div>
+        </section>
       </div>
     </RootLayout>
   );

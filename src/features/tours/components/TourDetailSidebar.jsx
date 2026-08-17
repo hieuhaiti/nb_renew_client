@@ -25,7 +25,7 @@ export function TourDetailSidebar({ ticketDisplay, subtitle, onOpenMap, onContac
             className="h-8.5 w-full rounded-[7px] text-sm font-medium"
           >
             <Map className="h-3.5 w-3.5" />
-            {t('tourPage.tourList', 'Open map')}
+            {t('tourPage.tourList')}
           </Button>
           <Button
             onClick={onContact}
@@ -33,7 +33,7 @@ export function TourDetailSidebar({ ticketDisplay, subtitle, onOpenMap, onContac
             className="h-8.5 w-full rounded-[7px] text-sm font-medium"
           >
             <Phone className="h-3.5 w-3.5" />
-            {t('tourPage.contact', 'Contact tour')}
+            {t('tourPage.contact')}
           </Button>
         </div>
       </section>

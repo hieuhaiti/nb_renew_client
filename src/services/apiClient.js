@@ -1,6 +1,9 @@
 import axios from 'axios';
+import i18n from '@/i18n';
 import { tokenManager } from '@/lib/tokenManager';
 import { env } from '@/config/env';
+import useAuthStore from '@/stores/useAuthStore';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 
 const BASE_URL = env.apiBaseUrlBE;
 
@@ -32,27 +35,63 @@ const AUTH_ENDPOINTS = [
   'auth/reset-password',
 ];
 
+function getSessionExpiredMessage() {
+  return i18n.t('common.errors.session_expired');
+}
+
 function isAuthEndpoint(url = '') {
   return AUTH_ENDPOINTS.some((e) => url.includes(e));
 }
 
-// ─── REQUEST INTERCEPTOR: attach Bearer token ─────────────────────────────────
-apiClient.interceptors.request.use(
-  (config) => {
-    const url = config.url || '';
-    if (!isAuthEndpoint(url)) {
-      const token = tokenManager.getAccessToken();
-      if (token) {
-        const tokenType = tokenManager.getTokenType() || 'Bearer';
-        config.headers['Authorization'] = `${tokenType} ${token}`;
-      }
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+function hasLangInUrl(url = '') {
+  if (!url || typeof url !== 'string') return false;
 
-// ─── RESPONSE INTERCEPTOR: 401 refresh + retry ───────────────────────────────
+  try {
+    const parsed = new URL(url, BASE_URL || 'http://localhost');
+    return parsed.searchParams.has('lang');
+  } catch {
+    return url.includes('lang=');
+  }
+}
+
+function hasLangInParams(params) {
+  if (!params) return false;
+  if (params instanceof URLSearchParams) return params.has('lang');
+  if (typeof params === 'string') return new URLSearchParams(params).has('lang');
+  if (typeof params === 'object') return Object.prototype.hasOwnProperty.call(params, 'lang');
+  return false;
+}
+
+function withLangParam(params, lang) {
+  if (params instanceof URLSearchParams) {
+    const nextParams = new URLSearchParams(params);
+    nextParams.set('lang', lang);
+    return nextParams;
+  }
+
+  if (typeof params === 'string') {
+    const nextParams = new URLSearchParams(params);
+    nextParams.set('lang', lang);
+    return nextParams;
+  }
+
+  return { ...(params || {}), lang };
+}
+
+function attachLangToGetRequest(config) {
+  const method = String(config?.method || 'get').toLowerCase();
+  if (method !== 'get') return config;
+
+  const lang = useLanguageStore.getState().lang || 'vi';
+  if (hasLangInUrl(config.url) || hasLangInParams(config.params)) return config;
+
+  return {
+    ...config,
+    params: withLangParam(config.params, lang),
+  };
+}
+
+// ─── SHARED REFRESH LOGIC ────────────────────────────────────────────────────
 let isRefreshing = false;
 let refreshQueue = [];
 
@@ -64,6 +103,138 @@ function processQueue(error, token = null) {
   refreshQueue = [];
 }
 
+function clearSession() {
+  tokenManager.clearTokens();
+  useAuthStore.getState().clearAuth();
+}
+
+async function doRefresh() {
+  const refreshToken = tokenManager.getRefreshToken();
+  if (!refreshToken) throw new Error('NO_REFRESH_TOKEN');
+
+  const refreshRes = await axios.post(
+    `${BASE_URL?.replace(/\/$/, '')}/auth/refresh/`,
+    { refreshToken },
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+
+  const {
+    accessToken,
+    refreshToken: newRefresh,
+    tokenType,
+    expiresIn,
+    refreshExpiresIn,
+  } = refreshRes.data?.data || {};
+
+  if (!accessToken) throw new Error('REFRESH_FAILED');
+
+  tokenManager.setAccessToken(accessToken, expiresIn);
+  if (newRefresh) tokenManager.setRefreshToken(newRefresh, refreshExpiresIn);
+  if (tokenType) tokenManager.setTokenType(tokenType);
+  if (expiresIn) tokenManager.setTokenExpiresIn(expiresIn);
+  if (refreshExpiresIn) tokenManager.setRefreshExpiresIn(refreshExpiresIn);
+
+  return accessToken;
+}
+
+async function refreshAccessTokenForRequest(config) {
+  config.headers = config.headers || {};
+
+  if (tokenManager.isRefreshTokenExpired()) {
+    clearSession();
+    return Promise.reject({
+      status: 401,
+      message: getSessionExpiredMessage(),
+      isAuthRequest: false,
+    });
+  }
+
+  if (isRefreshing) {
+    const newToken = await new Promise((resolve, reject) => {
+      refreshQueue.push({ resolve, reject });
+    });
+    config.headers['Authorization'] = `Bearer ${newToken}`;
+    return config;
+  }
+
+  isRefreshing = true;
+  try {
+    const newToken = await doRefresh();
+    processQueue(null, newToken);
+    config.headers['Authorization'] = `Bearer ${newToken}`;
+    return config;
+  } catch (err) {
+    processQueue(err, null);
+    clearSession();
+    return Promise.reject({
+      status: 401,
+      message: getSessionExpiredMessage(),
+      isAuthRequest: false,
+    });
+  } finally {
+    isRefreshing = false;
+  }
+}
+
+// ─── REQUEST INTERCEPTOR: proactive refresh + attach Bearer token ─────────────
+apiClient.interceptors.request.use(
+  async (config) => {
+    config = attachLangToGetRequest(config);
+    const url = config.url || '';
+    if (isAuthEndpoint(url)) return config;
+
+    const token = tokenManager.getAccessToken();
+    if (!token) {
+      return tokenManager.getRefreshToken() ? refreshAccessTokenForRequest(config) : config;
+    }
+
+    // Proactive refresh: send a fresh token instead of waiting for a 401 round-trip
+    if (tokenManager.isAccessTokenExpired(30)) {
+      if (tokenManager.isRefreshTokenExpired()) {
+        clearSession();
+        return Promise.reject({
+          status: 401,
+          message: getSessionExpiredMessage(),
+          isAuthRequest: false,
+        });
+      }
+
+      if (isRefreshing) {
+        const newToken = await new Promise((resolve, reject) => {
+          refreshQueue.push({ resolve, reject });
+        });
+        config.headers['Authorization'] = `Bearer ${newToken}`;
+        return config;
+      }
+
+      isRefreshing = true;
+      try {
+        const newToken = await doRefresh();
+        processQueue(null, newToken);
+        config.headers['Authorization'] = `Bearer ${newToken}`;
+        return config;
+      } catch (err) {
+        processQueue(err, null);
+        clearSession();
+        return Promise.reject({
+          status: 401,
+          message: getSessionExpiredMessage(),
+          isAuthRequest: false,
+        });
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    const tokenType = tokenManager.getTokenType() || 'Bearer';
+    config.headers = config.headers || {};
+    config.headers['Authorization'] = `${tokenType} ${token}`;
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// ─── RESPONSE INTERCEPTOR: reactive 401 refresh + retry ──────────────────────
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -76,7 +247,6 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       if (isRefreshing) {
-        // Queue concurrent requests while refresh is in flight
         return new Promise((resolve, reject) => {
           refreshQueue.push({ resolve, reject });
         }).then((token) => {
@@ -88,40 +258,16 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = tokenManager.getRefreshToken();
-        if (!refreshToken) throw new Error('NO_REFRESH_TOKEN');
-
-        // TODO: replace with httpOnly cookie approach when backend ready
-        const refreshRes = await axios.post(
-          `${BASE_URL?.replace(/\/$/, '')}/auth/refresh/`,
-          { refreshToken },
-          { headers: { 'Content-Type': 'application/json' } }
-        );
-
-        const {
-          accessToken,
-          refreshToken: newRefresh,
-          expiresIn,
-          refreshExpiresIn,
-        } = refreshRes.data?.data || {};
-
-        if (!accessToken) throw new Error('REFRESH_FAILED');
-
-        tokenManager.setAccessToken(accessToken, expiresIn);
-        if (newRefresh) tokenManager.setRefreshToken(newRefresh, refreshExpiresIn);
-        if (expiresIn) tokenManager.setTokenExpiresIn(expiresIn);
-        if (refreshExpiresIn) tokenManager.setRefreshExpiresIn(refreshExpiresIn);
-
+        const accessToken = await doRefresh();
         processQueue(null, accessToken);
         originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        tokenManager.clearTokens();
-        // Let useApi hooks handle navigation and toast
+        clearSession();
         return Promise.reject({
           status: 401,
-          message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+          message: getSessionExpiredMessage(),
           isAuthRequest: false,
         });
       } finally {

@@ -57,20 +57,20 @@ function normalizeSuggestionFromPoint(item, index = 0, t) {
   return {
     id: item?.id ?? properties?.id ?? `point-suggestion-${index}`,
     placeName:
+      item?.name ||
+      properties?.name ||
       item?.name_vi ||
       item?.name_en ||
-      item?.name ||
       properties?.name_vi ||
       properties?.name_en ||
-      properties?.name ||
       unknownName,
     address:
+      item?.address ||
+      properties?.address ||
       item?.address_vi ||
       item?.address_en ||
-      item?.address ||
       properties?.address_vi ||
       properties?.address_en ||
-      properties?.address ||
       '',
     lat,
     lng,
@@ -538,9 +538,7 @@ export default function MapToolbarCard({
                       onSearch();
                     }
                   }}
-                  placeholder={t('mapPage.toolbar.searchPlaceholder', {
-                    defaultValue: 'Search destination, service, food, event...',
-                  })}
+                  placeholder={t('mapPage.toolbar.searchPlaceholder')}
                   className="pr-9 pl-9"
                 />
 

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+export const LANGUAGE_SWITCH_LOADING_KEY = 'language-switch';
+
 function hasAnyLoading(loadingKeys) {
   return Object.keys(loadingKeys).length > 0;
 }

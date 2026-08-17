@@ -44,3 +44,16 @@ export const useSpotDetailModalStore = create(set => ({
     openSpotModal: (spotId, spotSlug = null) => set({ isOpen: true, spotId, spotSlug }),
     closeSpotModal: () => set({ isOpen: false, spotId: null, spotSlug: null }),
 }));
+
+export const useOcopModalStore = create(set => ({
+    isOpen: false,
+    ocopData: null,
+    openOcopModal: (data) => set({ isOpen: true, ocopData: data }),
+    closeOcopModal: () => set({ isOpen: false, ocopData: null }),
+}));
+
+export const useTourSuggestModalStore = create(set => ({
+    isOpen: false,
+    openTourSuggestModal: () => set({ isOpen: true }),
+    closeTourSuggestModal: () => set({ isOpen: false }),
+}));

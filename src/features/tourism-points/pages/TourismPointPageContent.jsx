@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -14,7 +14,9 @@ import {
   List,
   Map as MapIcon,
   MapPin,
+  Navigation,
   Radius,
+  SlidersHorizontal,
   Star,
   X,
 } from 'lucide-react';
@@ -37,6 +39,7 @@ import {
 import RootLayout from '@/components/layout/RootLayout';
 import {
   useGetAllDataPoints,
+  useGetNearbyPoints,
   useGetSpotCountByCategory,
   useGetSubcategoryCountsQuery,
 } from '@/services/api/tourism-points/tourismPointsApi';
@@ -46,7 +49,6 @@ import { useDebounce } from 'use-debounce';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useTourismPointSettingStore } from '@/features/tourism-points/store/useTourismPointStore';
 import {
-  TourismPointFeaturedCard,
   TourismPointSkeletonCard,
   TourismPointStandardCard,
 } from '@/features/tourism-points/components/list/TourismPointCards';
@@ -55,7 +57,6 @@ const PAGE_SIZE_OPTIONS = [6, 12, 24, 48];
 const RADIUS_OPTIONS = [0, 3, 5, 10, 20, 50];
 
 const HERO_BG = `linear-gradient(90deg,rgba(4,55,76,.88),rgba(12,169,158,.62)), url("https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1800&q=80") center/cover no-repeat`;
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 
 export default function TourismPointPage() {
   const { t } = useTranslation();
@@ -67,6 +68,13 @@ export default function TourismPointPage() {
   const [radiusKm, setRadiusKm] = useState(0);
   const [debouncedQuery] = useDebounce(query, 1000);
   const [favorites, setFavorites] = useState(new Set());
+  const [nearMe, setNearMe] = useState(false);
+  const [userLat, setUserLat] = useState(null);
+  const [userLng, setUserLng] = useState(null);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const selectedCategoryId = Number(currentSettings.selectedCategory) || 0;
   const selectedSubcategoryId = Number(currentSettings.selectedSubcategory) || 0;
   const parentCategoryIdForAllSubtypes =
@@ -79,6 +87,15 @@ export default function TourismPointPage() {
     category_id: selectedSubcategoryId || undefined,
     parent_category_id: parentCategoryIdForAllSubtypes,
     is_featured: currentSettings.isFeatured || undefined,
+    has_vr_360: currentSettings.hasVr360 || undefined,
+  });
+
+  const { data: nearbyData, isLoading: isNearbyLoading } = useGetNearbyPoints({
+    lat: userLat,
+    lng: userLng,
+    radius_km: radiusKm || 5,
+    limit: currentSettings.limit,
+    options: { enabled: nearMe && typeof userLat === 'number' && typeof userLng === 'number' },
   });
 
   const { data: categoriesData } = categoriesService({ lang });
@@ -122,14 +139,19 @@ export default function TourismPointPage() {
     return getPaginationTotal(selectedCategoryCountData);
   }, [selectedCategoryId, subcategories, subcategoryCountById, selectedCategoryCountData]);
 
-  const points = useMemo(() => {
-    if (!data) return [];
-    if (data.data && Array.isArray(data.data.spots)) return data.data.spots;
-    if (Array.isArray(data.spots)) return data.spots;
-    return [];
-  }, [data]);
+  const activeData = nearMe ? nearbyData : data;
+  const activeIsLoading = nearMe ? isNearbyLoading : isLoading;
+  const activeIsError = nearMe ? false : isError;
 
-  const paginationFromApi = data?.data?.pagination || null;
+  const points = useMemo(() => {
+    if (!activeData) return [];
+    if (activeData.data && Array.isArray(activeData.data.spots)) return activeData.data.spots;
+    if (Array.isArray(activeData.data)) return activeData.data;
+    if (Array.isArray(activeData.spots)) return activeData.spots;
+    return [];
+  }, [activeData]);
+
+  const paginationFromApi = nearMe ? null : data?.data?.pagination || null;
   const total = paginationFromApi?.total ?? points.length;
   const pages =
     paginationFromApi?.totalPages ?? Math.max(1, Math.ceil(total / (currentSettings.limit || 12)));
@@ -139,7 +161,7 @@ export default function TourismPointPage() {
       new Map(
         categories.map((c) => [
           String(c.id),
-          lang === 'en' ? c.name_en || c.name_vi : c.name_vi || c.name_en,
+          lang === 'en' ? c.name || c.name_en || c.name_vi : c.name || c.name_vi || c.name_en,
         ])
       ),
     [categories, lang]
@@ -148,7 +170,7 @@ export default function TourismPointPage() {
   const getCategoryName = (point) =>
     point?.category_name ||
     categoryNameById.get(String(point?.category_id)) ||
-    t('tourismPointPage.unknown_category', 'Unknown category');
+    t('tourismPointPage.unknown_category');
 
   useEffect(() => {
     try {
@@ -169,8 +191,7 @@ export default function TourismPointPage() {
       else next.add(idStr);
       setFavorites(next);
       localStorage.setItem('favorites', JSON.stringify(Array.from(next)));
-    } catch (err) {
-      console.error('toggleFavorite', err);
+    } catch {
     }
   };
 
@@ -184,13 +205,13 @@ export default function TourismPointPage() {
 
   const getPointName = (point) =>
     lang === 'en'
-      ? point?.name_en || point?.name_vi || point?.name || ''
-      : point?.name_vi || point?.name_en || point?.name || '';
+      ? point?.name || point?.name_en || point?.name_vi || ''
+      : point?.name || point?.name_vi || point?.name_en || '';
 
   const getPointAddress = (point) =>
     lang === 'en'
-      ? point?.address_en || point?.address_vi || point?.address || ''
-      : point?.address_vi || point?.address_en || point?.address || '';
+      ? point?.address || point?.address_en || point?.address_vi || ''
+      : point?.address || point?.address_vi || point?.address_en || '';
 
   const searchResults = useMemo(() => points.slice(0, 7), [points]);
   const shouldShowOverlay = isInputFocused && query.trim().length > 0;
@@ -208,13 +229,8 @@ export default function TourismPointPage() {
       setCurrentSettings({ selectedCategory: 0, selectedSubcategory: 0, page: 1 });
       return;
     }
-
     const nextCategory = Number(value) || 0;
-    setCurrentSettings({
-      selectedCategory: nextCategory,
-      selectedSubcategory: 0,
-      page: 1,
-    });
+    setCurrentSettings({ selectedCategory: nextCategory, selectedSubcategory: 0, page: 1 });
   };
 
   const handleRadiusChange = (value) => {
@@ -222,453 +238,637 @@ export default function TourismPointPage() {
     setRadiusKm(Number.isFinite(next) ? next : 0);
   };
 
-  const tabCls = (active) =>
-    `h-9.5 px-4.5 rounded-full border text-sm font-bold transition-colors cursor-pointer ${
+  const handleToggleNearMe = () => {
+    if (nearMe) {
+      setNearMe(false);
+      return;
+    }
+    if (!navigator.geolocation) return;
+    setIsGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLat(pos.coords.latitude);
+        setUserLng(pos.coords.longitude);
+        setNearMe(true);
+        setIsGettingLocation(false);
+      },
+      () => {
+        setIsGettingLocation(false);
+      },
+      { timeout: 8000 }
+    );
+  };
+
+  const catName = (cat) =>
+    cat
+      ? lang === 'en'
+        ? cat.name || cat.name_en || cat.name_vi
+        : cat.name || cat.name_vi || cat.name_en
+      : '';
+
+  const quickBtnCls = (active) =>
+    `flex items-center gap-1.5 rounded-full border px-[14px] py-[9px] text-[13px] font-extrabold transition-colors cursor-pointer ${
       active
-        ? 'text-white border-transparent'
-        : 'bg-white border-[#cfe0f4] text-foreground hover:bg-primary-soft'
+        ? 'bg-secondary border-transparent text-white hover:bg-secondary/90 hover:text-white'
+        : 'bg-card border-border text-foreground hover:border-secondary hover:text-secondary'
     }`;
+
+  const filterRowCls = (active) =>
+    `flex w-full items-center justify-between rounded-[14px] px-3 py-[11px] text-[13px] font-extrabold transition-colors text-left ${
+      active
+        ? 'bg-secondary/10 text-secondary hover:bg-secondary/20 hover:text-secondary'
+        : 'bg-muted text-foreground hover:bg-muted/80'
+    }`;
+
+  const selectedCat = categories.find((c) => Number(c.id) === selectedCategoryId);
 
   return (
     <RootLayout>
-      <div className="min-h-screen">
+      <div
+        className="min-h-screen"
+        style={{ background: 'linear-gradient(180deg,#eef9ff 0%,#fff 42%,#f7fbff 100%)' }}
+      >
         {/* ── Hero ── */}
         <section className="px-4 pt-5 pb-0 sm:px-6">
           <div
-            className="mx-auto grid min-h-[240px] max-w-290 grid-cols-1 items-end gap-5 overflow-hidden rounded-[28px] p-6 text-white shadow-[0_14px_35px_rgba(7,29,54,.18)] sm:p-7 lg:min-h-[255px] lg:grid-cols-[1.1fr_0.9fr]"
+            className="grid w-full grid-cols-1 items-end gap-4 overflow-hidden rounded-[24px] p-5 text-white shadow-[0_14px_35px_rgba(7,29,54,.18)] sm:min-h-60 sm:rounded-[30px] sm:p-7 lg:min-h-63.75 lg:grid-cols-[1.1fr_0.9fr]"
             style={{ background: HERO_BG }}
           >
-            {/* Left – title block */}
             <div>
-              <div className="mb-4 flex items-center gap-2 text-[13px] font-bold opacity-90">
-                <Home size={13} />
+              <div className="mb-3 flex items-center gap-2 text-[12px] font-extrabold opacity-90 sm:mb-4.5 sm:text-[13px]">
+                <Home size={12} />
                 <span>{t('common.home')}</span>
-                <ChevronRight size={12} className="opacity-70" />
+                <ChevronRight size={11} className="opacity-70" />
                 <span>{t('tourismPointPage.title')}</span>
               </div>
-              <h1 className="mb-2.5 text-[26px] leading-tight font-black tracking-tight sm:text-[32px] lg:text-[40px]">
+              <h1 className="mb-2 text-[22px] leading-[1.15] font-black tracking-tight sm:mb-2.5 sm:text-[34px] lg:text-[42px]">
                 {t('tourismPointPage.hero_title')}
               </h1>
-              <p className="max-w-[680px] text-sm leading-relaxed text-white/88 sm:text-[15px]">
+              <p className="max-w-[760px] text-[13px] leading-[1.7] text-[#e9fffb] sm:text-[15px]">
                 {t('tourismPointPage.hero_desc')}
               </p>
             </div>
 
-            {/* Right – stat cards */}
-            <div className="grid grid-cols-3 gap-3 lg:grid-cols-3">
-              <div className="rounded-[18px] bg-white/92 p-3.5 backdrop-blur-sm sm:p-4">
-                <b className="block text-xl font-black text-[#079b91] sm:text-2xl">
-                  {isLoading ? '…' : total > 0 ? `${total}+` : '0'}
-                </b>
-                <span className="text-[11px] font-bold text-[#64748b] sm:text-xs">
-                  {t('tourismPointPage.stat_spots')}
-                </span>
-              </div>
-              <div className="rounded-[18px] bg-white/92 p-3.5 backdrop-blur-sm sm:p-4">
-                <b className="block text-xl font-black text-[#079b91] sm:text-2xl">
-                  {categories.length || '…'}
-                </b>
-                <span className="text-[11px] font-bold text-[#64748b] sm:text-xs">
-                  {t('tourismPointPage.stat_categories')}
-                </span>
-              </div>
-              <div className="rounded-[18px] bg-white/92 p-3.5 backdrop-blur-sm sm:p-4">
-                <b className="block text-xl font-black text-[#079b91] sm:text-2xl">
-                  {subcategories.length > 0 ? subcategories.length : '24+'}
-                </b>
-                <span className="text-[11px] font-bold text-[#64748b] sm:text-xs">
-                  {t('tourismPointPage.stat_subcategories')}
-                </span>
-              </div>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              {[
+                {
+                  val: activeIsLoading ? '…' : total > 0 ? `${total}+` : '0',
+                  labelKey: 'tourismPointPage.stat_spots',
+                },
+                { val: categories.length || '…', labelKey: 'tourismPointPage.stat_categories' },
+                {
+                  val: subcategories.length > 0 ? subcategories.length : '24+',
+                  labelKey: 'tourismPointPage.stat_subcategories',
+                },
+              ].map(({ val, labelKey }) => (
+                <div
+                  key={labelKey}
+                  className="rounded-[16px] bg-white/92 p-3 backdrop-blur-md sm:rounded-[20px] sm:p-4"
+                >
+                  <b className="text-secondary block text-[20px] font-black sm:text-[24px]">
+                    {val}
+                  </b>
+                  <span className="text-muted-foreground text-[11px] font-extrabold sm:text-[12px]">
+                    {t(labelKey)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ── Filter bar ── */}
+        {/* ── Sticky toolbar ── */}
         <section
-          className="sticky top-0 z-40 border-b border-[#c7d9eb] px-6 py-3.5"
-          style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)' }}
+          className="sticky top-0 z-40 border-b px-4 py-3 sm:px-6 sm:py-3.5"
+          style={{
+            background: 'linear-gradient(180deg,rgba(233,247,255,.96),rgba(223,242,255,.96))',
+            backdropFilter: 'blur(14px)',
+          }}
         >
-          <div className="mx-auto flex max-w-290 flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            {/* Category tabs */}
-            {/* <div className="flex flex-wrap gap-2.5">
-              <button
-                className={tabCls(!selectedCategoryId)}
-                style={!selectedCategoryId ? BTN_GRADIENT : undefined}
-                onClick={() =>
-                  setCurrentSettings({ selectedCategory: 0, selectedSubcategory: 0, page: 1 })
-                }
-              >
-                {t('tourismPointPage.all')}
-              </button>
-              {categories.map((cat) => {
-                const isActive = Number(currentSettings.selectedCategory) === Number(cat.id);
-                return (
-                  <button
-                    key={cat.id}
-                    className={tabCls(isActive)}
-                    style={isActive ? BTN_GRADIENT : undefined}
-                    onClick={() =>
-                      setCurrentSettings({
-                        selectedCategory: cat.id,
-                        selectedSubcategory: 0,
-                        page: 1,
-                      })
-                    }
-                  >
-                    {lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en}
-                  </button>
-                );
-              })}
-            </div> */}
+          <div className="w-full">
+            <div className="border-border bg-card rounded-[24px] border p-3 shadow-(--ambient-shadow) sm:p-3.5">
+              {/* Always-visible row */}
+              <div className="flex items-center gap-2">
+                {/* Search */}
+                <div className="relative min-w-0 flex-1">
+                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                  <Input
+                    size="toolbar"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setIsInputFocused(true)}
+                    onBlur={() => setTimeout(() => setIsInputFocused(false), 120)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSearch();
+                    }}
+                    placeholder={t('tourismPointPage.search_placeholder')}
+                    className="pr-9 pl-9"
+                  />
+                  {query && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
+                      onClick={() => setQuery('')}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                  {shouldShowOverlay && (
+                    <div className="border-border bg-card absolute top-full right-0 left-0 z-50 mt-2 max-h-72 overflow-auto rounded-xl border shadow-lg">
+                      {activeIsLoading ? (
+                        <div className="flex items-center justify-center px-3 py-6">
+                          <LoadingInline size="small" />
+                        </div>
+                      ) : searchResults.length === 0 ? (
+                        <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-sm">
+                          <MapPin className="h-5 w-5 opacity-70" />
+                          <p>{t('mapPage.toolbar.searchNoResult')}</p>
+                        </div>
+                      ) : (
+                        <div className="p-1.5">
+                          {searchResults.map((item) => (
+                            <Button
+                              key={item.id}
+                              type="button"
+                              variant="ghost"
+                              className="h-auto w-full justify-start gap-3 rounded-lg px-2.5 py-2"
+                              onClick={() => handleSelectResult(item)}
+                            >
+                              <MapPin className="text-secondary h-4 w-4 shrink-0" />
+                              <div className="min-w-0 flex-1 text-left">
+                                <p className="text-foreground truncate text-sm font-semibold">
+                                  {getPointName(item)}
+                                </p>
+                                <p className="text-muted-foreground truncate text-sm">
+                                  {getPointAddress(item) || t('mapPage.destination.noAddress')}
+                                </p>
+                              </div>
+                              <ArrowUpRight className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
+                            </Button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
-            {/* number of pages */}
-            <div className="bg-background flex w-full flex-wrap items-center justify-end gap-2 rounded-2xl p-2 shadow-[0_2px_12px_rgba(23,58,93,0.08)] md:flex-nowrap xl:w-full xl:max-w-280">
-              <div className="relative w-full min-w-0 flex-[1.8] sm:col-span-2 xl:col-span-1 xl:min-w-80">
-                <Search className="text-quaternary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                <Input
-                  size="toolbar"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  onFocus={() => setIsInputFocused(true)}
-                  onBlur={() => {
-                    setTimeout(() => {
-                      setIsInputFocused(false);
-                    }, 120);
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      handleSearch();
-                    }
-                  }}
-                  placeholder={t('tourismPointPage.search_placeholder', {
-                    defaultValue: 'Search attractions...',
-                  })}
-                  className="pr-9 pl-9"
-                />
-
-                {query ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className="absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
-                    onClick={() => setQuery('')}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                ) : null}
-
-                {shouldShowOverlay ? (
-                  <div className="bg-card border-border absolute top-full right-0 left-0 z-50 mt-2 max-h-72 overflow-auto rounded-xl border shadow-lg">
-                    {isLoading ? (
-                      <div className="flex items-center justify-center px-3 py-6">
-                        <LoadingInline size="small" />
-                      </div>
-                    ) : searchResults.length === 0 ? (
-                      <div className="text-muted-foreground flex flex-col items-center gap-2 px-3 py-6 text-sm">
-                        <MapPin className="h-5 w-5 opacity-70" />
-                        <p>{t('mapPage.toolbar.searchNoResult')}</p>
-                      </div>
-                    ) : (
-                      <div className="p-1.5">
-                        {searchResults.map((item) => (
-                          <Button
-                            key={item.id}
-                            type="button"
-                            variant="ghost"
-                            className="h-auto w-full justify-start gap-3 rounded-lg px-2.5 py-2"
-                            onClick={() => handleSelectResult(item)}
-                          >
-                            <MapPin className="text-primary h-4 w-4 shrink-0" />
-                            <div className="min-w-0 flex-1 text-left">
-                              <p
-                                className="text-foreground truncate text-sm font-medium"
-                                title={getPointName(item)}
-                              >
-                                {getPointName(item)}
-                              </p>
-                              <p
-                                className="text-muted-foreground truncate text-sm"
-                                title={getPointAddress(item)}
-                              >
-                                {getPointAddress(item) || t('mapPage.destination.noAddress')}
-                              </p>
-                            </div>
-                            <ArrowUpRight className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
-                          </Button>
+                {/* Selects — hidden on mobile, inline on md+ */}
+                <div className="hidden md:flex md:items-center md:gap-2">
+                  <div className="w-32.5">
+                    <Select
+                      value={selectedCategoryId ? String(selectedCategoryId) : 'all'}
+                      onValueChange={handleCategoryChange}
+                      startIcon={<Layers className="text-quaternary" />}
+                    >
+                      <SelectTrigger size="toolbar" className="w-full">
+                        <SelectValue placeholder={t('tourismPointPage.category')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('common.map_all')}</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={String(cat.id)}>
+                            {catName(cat)}
+                          </SelectItem>
                         ))}
-                      </div>
-                    )}
+                      </SelectContent>
+                    </Select>
                   </div>
-                ) : null}
-              </div>
+                  <div className="w-32.5">
+                    <Select
+                      value={currentSettings.isFeatured || 'all'}
+                      onValueChange={(v) =>
+                        setCurrentSettings({ isFeatured: v === 'all' ? '' : v, page: 1 })
+                      }
+                      startIcon={<Star className="text-amber-400" />}
+                    >
+                      <SelectTrigger size="toolbar" className="w-full">
+                        <SelectValue placeholder={t('tourismPointPage.is_featured_label')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('tourismPointPage.is_featured_all')}</SelectItem>
+                        <SelectItem value="true">
+                          {t('tourismPointPage.is_featured_yes')}
+                        </SelectItem>
+                        <SelectItem value="false">
+                          {t('tourismPointPage.is_featured_no')}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-27.5">
+                    <Select
+                      value={String(radiusKm)}
+                      onValueChange={handleRadiusChange}
+                      startIcon={<Radius className="text-tertiary" />}
+                    >
+                      <SelectTrigger size="toolbar" className="w-full">
+                        <SelectValue placeholder={t('tourismPointPage.radius')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {RADIUS_OPTIONS.map((km) => (
+                          <SelectItem key={km} value={String(km)}>
+                            {km === 0 ? t('tourismPointPage.radiusAll') : `${km} km`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-              <div className="relative w-full min-w-0 flex-[1.1] xl:min-w-55">
-                <Select
-                  value={selectedCategoryId ? String(selectedCategoryId) : 'all'}
-                  onValueChange={handleCategoryChange}
-                  startIcon={<Layers className="text-quaternary" />}
-                >
-                  <SelectTrigger size="toolbar" className="w-full">
-                    <SelectValue placeholder={t('tourismPointPage.category')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('common.map_all')}</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={String(cat.id)}>
-                        {lang === 'en' ? cat.name_en || cat.name_vi : cat.name_vi || cat.name_en}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="relative w-full min-w-0 flex-[1.1] xl:min-w-46">
-                <Select
-                  value={currentSettings.isFeatured || 'all'}
-                  onValueChange={(v) =>
-                    setCurrentSettings({ isFeatured: v === 'all' ? '' : v, page: 1 })
-                  }
-                  startIcon={<Star className="text-amber-400" />}
-                >
-                  <SelectTrigger size="toolbar" className="w-full">
-                    <SelectValue placeholder={t('tourismPointPage.is_featured_label')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('tourismPointPage.is_featured_all')}</SelectItem>
-                    <SelectItem value="true">{t('tourismPointPage.is_featured_yes')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="relative w-full min-w-0 flex-[1.1] xl:min-w-55">
-                <Select
-                  value={String(radiusKm)}
-                  onValueChange={handleRadiusChange}
-                  startIcon={<Radius className="text-tertiary" />}
-                >
-                  <SelectTrigger size="toolbar" className="w-full">
-                    <SelectValue placeholder={t('tourismPointPage.radius')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {RADIUS_OPTIONS.map((km) => (
-                      <SelectItem key={km} value={String(km)}>
-                        {km === 0 ? t('tourismPointPage.radiusAll') : `${km} km`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="bg-primary-soft flex items-center gap-1 rounded-lg p-1">
+                {/* Mobile filter toggle */}
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon-sm"
-                  className={`flex h-8.5 w-8.5 items-center justify-center rounded-md transition-colors ${
-                    currentSettings.viewMode === 'grid'
-                      ? 'bg-primary text-white shadow-sm'
-                      : 'bg-transparent text-[#52647a] hover:bg-white'
+                  onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
+                  className={`h-9 shrink-0 rounded-[13px] border px-3 text-sm font-bold transition-colors md:hidden ${
+                    mobileFilterOpen
+                      ? 'border-secondary text-secondary bg-secondary/5 hover:text-secondary hover:bg-secondary/10'
+                      : 'border-border text-muted-foreground hover:border-secondary hover:text-secondary'
                   }`}
-                  onClick={() => setCurrentSettings({ viewMode: 'grid' })}
                 >
-                  <LayoutGrid size={15} />
+                  <SlidersHorizontal size={14} />
                 </Button>
+
+                {/* View switch */}
+                <div className="bg-muted flex shrink-0 items-center gap-1 rounded-[13px] p-1">
+                  {[
+                    { mode: 'grid', Icon: LayoutGrid },
+                    { mode: 'list', Icon: List },
+                  ].map(({ mode, Icon }) => (
+                    <Button
+                      variant="ghost"
+                      key={mode}
+                      onClick={() => setCurrentSettings({ viewMode: mode })}
+                      className={`flex h-8 w-8 items-center justify-center rounded-[10px] transition-colors ${
+                        currentSettings.viewMode === mode
+                          ? 'bg-secondary hover:bg-secondary/90 text-white shadow-sm hover:text-white'
+                          : 'text-muted-foreground hover:bg-card'
+                      }`}
+                    >
+                      <Icon size={15} />
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Map */}
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className={`flex h-8.5 w-8.5 items-center justify-center rounded-md transition-colors ${
-                    currentSettings.viewMode === 'list'
-                      ? 'bg-primary text-white shadow-sm'
-                      : 'bg-transparent text-[#52647a] hover:bg-white'
-                  }`}
-                  onClick={() => setCurrentSettings({ viewMode: 'list' })}
+                  variant="outline"
+                  size="sm"
+                  className="text-muted-foreground hover:border-secondary hover:text-secondary h-8 shrink-0 rounded-[13px] border px-3"
+                  onClick={() => navigate('/map')}
                 >
-                  <List size={15} />
+                  <MapIcon size={14} />
+                  <span className="hidden sm:inline">{t('common.map')}</span>
                 </Button>
               </div>
 
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="hover:text-primary h-8.5 rounded-md border-[#b9cfe4] px-2.5 text-[#52647a]"
-                onClick={() => navigate('/map')}
-              >
-                <MapIcon size={14} />
-                {t('common.map')}
-              </Button>
+              {/* Mobile filter panel — revealed by toggle */}
+              {mobileFilterOpen && (
+                <div className="border-border mt-2.5 flex flex-col gap-2 border-t pt-2.5 md:hidden">
+                  <Select
+                    value={selectedCategoryId ? String(selectedCategoryId) : 'all'}
+                    onValueChange={handleCategoryChange}
+                    startIcon={<Layers className="text-quaternary" />}
+                  >
+                    <SelectTrigger size="toolbar" className="w-full">
+                      <SelectValue placeholder={t('tourismPointPage.category')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('common.map_all')}</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={String(cat.id)}>
+                          {catName(cat)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={currentSettings.isFeatured || 'all'}
+                    onValueChange={(v) =>
+                      setCurrentSettings({ isFeatured: v === 'all' ? '' : v, page: 1 })
+                    }
+                    startIcon={<Star className="text-amber-400" />}
+                  >
+                    <SelectTrigger size="toolbar" className="w-full">
+                      <SelectValue placeholder={t('tourismPointPage.is_featured_label')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('tourismPointPage.is_featured_all')}</SelectItem>
+                      <SelectItem value="true">{t('tourismPointPage.is_featured_yes')}</SelectItem>
+                      <SelectItem value="false">{t('tourismPointPage.is_featured_no')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={String(radiusKm)}
+                    onValueChange={handleRadiusChange}
+                    startIcon={<Radius className="text-tertiary" />}
+                  >
+                    <SelectTrigger size="toolbar" className="w-full">
+                      <SelectValue placeholder={t('tourismPointPage.radius')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {RADIUS_OPTIONS.map((km) => (
+                        <SelectItem key={km} value={String(km)}>
+                          {km === 0 ? t('tourismPointPage.radiusAll') : `${km} km`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Subcategory chips */}
-          {selectedCategoryId > 0 && (
-            <div className="mx-auto mt-2 flex max-w-290 flex-wrap items-center gap-2 border-t border-[#c7d9eb] pt-2">
-              {(() => {
-                const active = !selectedSubcategoryId;
-                return (
-                  <button
-                    className={tabCls(active)}
-                    style={active ? BTN_GRADIENT : undefined}
-                    onClick={() => setCurrentSettings({ selectedSubcategory: 0, page: 1 })}
-                  >
-                    {t('tourismPointPage.all_subcategories', {
-                      defaultValue: 'All subcategories',
-                    })}{' '}
-                    ({selectedCategoryTotal})
-                  </button>
-                );
-              })()}
-              {subcategories.map((sub) => {
-                const isActive = Number(selectedSubcategoryId) === Number(sub.id);
-                return (
-                  <button
-                    key={sub.id}
-                    className={tabCls(isActive)}
-                    style={isActive ? BTN_GRADIENT : undefined}
-                    onClick={() => setCurrentSettings({ selectedSubcategory: sub.id, page: 1 })}
-                  >
-                    {lang === 'en' ? sub.name_en || sub.name_vi : sub.name_vi || sub.name_en} (
-                    {subcategoryCountById.get(String(sub.id)) ?? 0})
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </section>
 
-        {/* ── Content ── */}
-        <main className="mx-auto max-w-290 px-6 pt-6 pb-11">
-          {/* Result / sort line */}
-          <div className="mb-4.5 flex items-center justify-between text-sm font-semibold text-[#607086]">
+        {/* ── Main layout ── */}
+        <main className="w-full px-4 pt-5 pb-12 sm:px-6">
+          <div className="grid grid-cols-1 items-start gap-[18px] lg:grid-cols-[280px_1fr]">
+            {/* ── Sidebar ── */}
             <div>
-              {t('tourismPointPage.showing')}{' '}
-              <strong className="text-foreground">
-                {points.length} / {total}
-              </strong>{' '}
-              {t('tourismPointPage.results')}
-            </div>
-            <div className="flex cursor-pointer items-center gap-1">
-              <span className="hidden shrink-0 text-sm whitespace-nowrap text-[#52647a] md:inline">
-                {t('tourismPointPage.showing')}
-              </span>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="text-foreground hover:border-primary/45 flex h-10 shrink-0 items-center gap-1.5 rounded-lg border border-[#b9cfe4] bg-white px-3.5 text-sm font-medium transition-colors">
-                    {currentSettings.limit}
-                    <ChevronDown size={13} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-20">
-                  {PAGE_SIZE_OPTIONS.map((n) => (
-                    <DropdownMenuItem
-                      key={n}
-                      className={`justify-center ${currentSettings.limit === n ? 'text-primary font-semibold' : ''}`}
-                      onClick={() => setCurrentSettings({ limit: n, page: 1 })}
-                    >
-                      {n}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <span className="hidden shrink-0 text-sm whitespace-nowrap text-[#52647a] md:inline">
-                / {t('tourismPointPage.per_page', { defaultValue: 'per page' })}
-              </span>
-            </div>
-          </div>
-
-          {/* Cards */}
-          {isLoading ? (
-            <div className="flex flex-col gap-5">
-              {currentSettings.viewMode === 'grid' && <TourismPointSkeletonCard isFeatured />}
-              <div
-                className={
-                  currentSettings.viewMode === 'grid'
-                    ? 'grid grid-cols-1 gap-4.5 sm:grid-cols-2 lg:grid-cols-4'
-                    : 'flex flex-col gap-3'
-                }
+              {/* Mobile toggle — hidden on lg+ */}
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className={`mb-3 flex w-full items-center justify-between rounded-[18px] border px-4 py-3 text-sm font-extrabold transition-colors lg:hidden ${
+                  sidebarOpen
+                    ? 'border-secondary bg-secondary/5 text-secondary hover:bg-secondary/10'
+                    : 'border-border bg-card text-foreground hover:border-secondary hover:bg-muted hover:text-secondary'
+                }`}
               >
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <TourismPointSkeletonCard key={i} />
-                ))}
-              </div>
-            </div>
-          ) : isError ? (
-            <div className="text-destructive py-20 text-center">
-              {t('tourismPointPage.errorLoading')}
-            </div>
-          ) : points.length === 0 ? (
-            <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
-              <Inbox size={48} className="mb-4 opacity-30" />
-              <h3 className="text-foreground text-lg font-semibold">
-                {t('tourismPointPage.no_results')}
-              </h3>
-              <p>{t('tourismPointPage.tryDifferentKeyword')}</p>
-            </div>
-          ) : (
-            <>
-              {currentSettings.viewMode === 'grid' && points.length > 0 && (
-                <TourismPointFeaturedCard
-                  point={points[0]}
-                  onClick={() => handleOpenDetail(points[0])}
-                  t={t}
-                  categoryName={getCategoryName(points[0])}
-                  isLiked={favorites.has(String(points[0].id))}
-                  onToggleLike={(e) => toggleFavorite(points[0].id, e)}
+                <span className="flex items-center gap-2">
+                  <SlidersHorizontal size={14} className="text-secondary" />
+                  {t('tourismPointPage.quick_filters')}
+                  {selectedCat && (
+                    <span className="text-muted-foreground font-normal">
+                      — {catName(selectedCat)}
+                    </span>
+                  )}
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${sidebarOpen ? 'rotate-180' : ''}`}
                 />
-              )}
-              <div
-                className={
-                  currentSettings.viewMode === 'grid'
-                    ? 'grid grid-cols-1 gap-4.5 sm:grid-cols-2 lg:grid-cols-4'
-                    : 'flex flex-col gap-3'
-                }
-              >
-                {(currentSettings.viewMode === 'grid' ? points.slice(1) : points).map((p) => (
-                  <TourismPointStandardCard
-                    key={p.id}
-                    point={p}
-                    onClick={() => handleOpenDetail(p)}
-                    viewMode={currentSettings.viewMode}
-                    t={t}
-                    categoryName={getCategoryName(p)}
-                    isLiked={favorites.has(String(p.id))}
-                    onToggleLike={(e) => toggleFavorite(p.id, e)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+              </button>
 
-          {/* Pagination */}
-          {pages > 1 && (
-            <div className="mt-9 flex items-center justify-between border-t border-[#9db8d2] pt-5.5">
-              <button
-                disabled={currentSettings.page <= 1}
-                onClick={() => setCurrentSettings({ page: Math.max(1, currentSettings.page - 1) })}
-                className="text-primary hover:bg-primary flex h-9.5 min-w-20 cursor-pointer items-center justify-center gap-1 rounded-full border border-[#9db8d2] bg-white px-3.75 text-sm font-bold transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <ChevronLeft size={15} />
-                {t('common.prev')}
-              </button>
-              <div className="text-primary flex h-9.5 min-w-20 items-center justify-center rounded-full border border-[#9db8d2] bg-white px-3.75 text-sm font-bold">
-                {currentSettings.page} / {pages}
-              </div>
-              <button
-                disabled={currentSettings.page >= pages}
-                onClick={() =>
-                  setCurrentSettings({ page: Math.min(pages, currentSettings.page + 1) })
-                }
-                className="text-primary hover:bg-primary flex h-9.5 min-w-20 cursor-pointer items-center justify-center gap-1 rounded-full border border-[#9db8d2] bg-white px-3.75 text-sm font-bold transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                {t('common.next')}
-                <ChevronRight size={15} />
-              </button>
+              <aside className={`${sidebarOpen ? 'block' : 'hidden'} lg:block`}>
+                {/* Quick filter card */}
+                <div className="border-border bg-card rounded-[24px] p-4.5 shadow-(--ambient-shadow)">
+                  <h3 className="text-foreground mb-3.5 flex items-center gap-2 text-[17px] font-black">
+                    <SlidersHorizontal size={16} className="text-secondary" />
+                    {t('tourismPointPage.quick_filters')}
+                  </h3>
+                  <div className="flex flex-col gap-2.5">
+                    <Button
+                      variant="ghost"
+                      className={filterRowCls(!selectedCategoryId)}
+                      onClick={() =>
+                        setCurrentSettings({
+                          selectedCategory: 0,
+                          selectedSubcategory: 0,
+                          page: 1,
+                        })
+                      }
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="bg-secondary inline-block h-2 w-2 rounded-full" />
+                        {t('tourismPointPage.all')}
+                      </span>
+                      {!isLoading && !selectedCategoryId && total > 0 && (
+                        <b className="text-secondary">{total}</b>
+                      )}
+                    </Button>
+
+                    {categories.map((cat) => {
+                      const isActive = Number(currentSettings.selectedCategory) === Number(cat.id);
+                      return (
+                        <React.Fragment key={cat.id}>
+                          <Button
+                            variant="ghost"
+                            className={filterRowCls(isActive)}
+                            onClick={() => handleCategoryChange(String(cat.id))}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span
+                                className="inline-block h-2 w-2 shrink-0 rounded-full"
+                                style={{
+                                  background: cat.color_hex || 'var(--muted-foreground)',
+                                }}
+                              />
+                              {catName(cat)}
+                            </span>
+                            {isActive && selectedCategoryTotal > 0 && (
+                              <b className="text-secondary">{selectedCategoryTotal}</b>
+                            )}
+                          </Button>
+
+                          {isActive && subcategories.length > 0 && (
+                            <div className="flex flex-col gap-1 pl-3">
+                              {subcategories.map((sub) => {
+                                const isSubActive =
+                                  Number(selectedSubcategoryId) === Number(sub.id);
+                                const count = subcategoryCountById.get(String(sub.id)) ?? 0;
+                                return (
+                                  <Button
+                                    variant="ghost"
+                                    key={sub.id}
+                                    className={`flex w-full items-center justify-between rounded-[12px] px-3 py-2 text-[12px] font-bold transition-colors ${
+                                      isSubActive
+                                        ? 'bg-secondary/10 text-secondary'
+                                        : 'text-foreground hover:bg-muted'
+                                    }`}
+                                    onClick={() =>
+                                      setCurrentSettings({
+                                        selectedSubcategory: sub.id,
+                                        page: 1,
+                                      })
+                                    }
+                                  >
+                                    <span className="flex items-center gap-2">
+                                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-current opacity-50" />
+                                      {catName(sub)}
+                                    </span>
+                                    {count > 0 && <b className="opacity-60">{count}</b>}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                </div>
+              </aside>
             </div>
-          )}
+
+            {/* ── Content ── */}
+            <section>
+              {/* Content head */}
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-foreground text-[20px] font-black sm:text-[25px]">
+                  {selectedCat ? catName(selectedCat) : t('tourismPointPage.featured_list')}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground hidden text-sm sm:inline">
+                    <strong className="text-foreground">{points.length}</strong>
+                    {' / '}
+                    {total} {t('tourismPointPage.results')}
+                  </span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="text-foreground hover:border-secondary hover:text-secondary border-border bg-card flex h-[38px] items-center gap-1.5 rounded-[14px] px-3 text-[13px] font-extrabold transition-colors"
+                      >
+                        {currentSettings.limit} {t('tourismPointPage.per_page')}
+                        <ChevronDown size={12} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-20">
+                      {PAGE_SIZE_OPTIONS.map((n) => (
+                        <DropdownMenuItem
+                          key={n}
+                          className={`justify-center ${currentSettings.limit === n ? 'text-secondary font-extrabold' : ''}`}
+                          onClick={() => setCurrentSettings({ limit: n, page: 1 })}
+                        >
+                          {n}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+
+              {/* Quick-access buttons */}
+              <div className="mb-4 flex flex-wrap gap-2.5">
+                <Button
+                  variant="ghost"
+                  className={quickBtnCls(!nearMe && !currentSettings.hasVr360)}
+                  onClick={() => {
+                    setNearMe(false);
+                    setCurrentSettings({ hasVr360: false, page: 1 });
+                  }}
+                >
+                  {t('tourismPointPage.all')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className={quickBtnCls(nearMe)}
+                  onClick={handleToggleNearMe}
+                  disabled={isGettingLocation}
+                >
+                  <Navigation size={13} className={nearMe ? '' : 'opacity-70'} />
+                  {isGettingLocation
+                    ? t('tourismPointPage.near_me_getting')
+                    : t('tourismPointPage.near_me')}
+                </Button>
+              </div>
+
+              {/* Cards */}
+              {activeIsLoading ? (
+                <div
+                  className={
+                    currentSettings.viewMode === 'grid'
+                      ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'
+                      : 'flex flex-col gap-3'
+                  }
+                >
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <TourismPointSkeletonCard key={i} />
+                  ))}
+                </div>
+              ) : activeIsError ? (
+                <div className="py-20 text-center text-red-500">
+                  {t('tourismPointPage.errorLoading')}
+                </div>
+              ) : points.length === 0 ? (
+                <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
+                  <Inbox size={48} className="mb-4 opacity-30" />
+                  <h3 className="text-foreground mb-1 text-[18px] font-black">
+                    {t('tourismPointPage.no_results')}
+                  </h3>
+                  <p className="text-[13px]">{t('tourismPointPage.tryDifferentKeyword')}</p>
+                </div>
+              ) : (
+                <div
+                  className={
+                    currentSettings.viewMode === 'grid'
+                      ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'
+                      : 'flex flex-col gap-3'
+                  }
+                >
+                  {points.map((p) => (
+                    <TourismPointStandardCard
+                      key={p.id}
+                      point={p}
+                      onClick={() => handleOpenDetail(p)}
+                      viewMode={currentSettings.viewMode}
+                      t={t}
+                      categoryName={getCategoryName(p)}
+                      isLiked={favorites.has(String(p.id))}
+                      onToggleLike={(e) => toggleFavorite(p.id, e)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination (hidden in near-me mode) */}
+              {!nearMe && pages > 1 && (
+                <div className="mt-[22px] flex flex-wrap items-center justify-center gap-2">
+                  <Button
+                    variant="ghost"
+                    disabled={currentSettings.page <= 1}
+                    onClick={() =>
+                      setCurrentSettings({ page: Math.max(1, currentSettings.page - 1) })
+                    }
+                    className="text-secondary hover:bg-secondary border-border bg-card flex h-[38px] cursor-pointer items-center justify-center gap-1 rounded-full px-3 text-[13px] font-black transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-22.5 sm:px-4"
+                  >
+                    <ChevronLeft size={14} />
+                    <span className="hidden sm:inline">{t('common.prev')}</span>
+                  </Button>
+
+                  {Array.from({ length: Math.min(pages, 5) }, (_, i) => {
+                    const p =
+                      currentSettings.page <= 3
+                        ? i + 1
+                        : currentSettings.page >= pages - 2
+                          ? pages - 4 + i
+                          : currentSettings.page - 2 + i;
+                    if (p < 1 || p > pages) return null;
+                    return (
+                      <Button
+                        variant="ghost"
+                        key={p}
+                        onClick={() => setCurrentSettings({ page: p })}
+                        className={`flex h-[38px] w-[38px] items-center justify-center rounded-[12px] border text-[13px] font-black transition-colors ${
+                          p === currentSettings.page
+                            ? 'bg-secondary hover:bg-secondary/90 border-transparent text-white hover:text-white'
+                            : 'text-foreground hover:border-secondary hover:text-secondary bg-card'
+                        }`}
+                      >
+                        {p}
+                      </Button>
+                    );
+                  })}
+
+                  <Button
+                    variant="ghost"
+                    disabled={currentSettings.page >= pages}
+                    onClick={() =>
+                      setCurrentSettings({ page: Math.min(pages, currentSettings.page + 1) })
+                    }
+                    className="text-secondary hover:bg-secondary border-border bg-card flex h-[38px] cursor-pointer items-center justify-center gap-1 rounded-full px-3 text-[13px] font-black transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-22.5 sm:px-4"
+                  >
+                    <span className="hidden sm:inline">{t('common.next')}</span>
+                    <ChevronRight size={14} />
+                  </Button>
+                </div>
+              )}
+            </section>
+          </div>
         </main>
       </div>
     </RootLayout>

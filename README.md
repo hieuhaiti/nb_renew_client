@@ -276,6 +276,19 @@ Quy tắc tổ chức:
 
 Client dùng `i18next-browser-languagedetector` để detect và persist locale.
 
+### Translation audit
+
+Client có script audit:
+
+- `npm run audit:translations`
+- Kết quả ghi ra `translation-audit.md`
+
+Quy tắc audit hiện tại:
+
+- Key đi qua `t('...')` hoặc `i18nKey="..."` được tính là usage.
+- Key khai báo trong data/config source qua các field như `titleKey`, `labelKey`, `activityKey`, `itemKeys`... cũng được tính là usage để không bị đánh nhầm là `Unused`.
+- Sau khi refactor hoặc xóa UI, cần xóa các key còn nằm trong `Unused Keys by Static Scan` khỏi `src/locales/en/translation.json` và `src/locales/vi/translation.json`, rồi chạy lại audit để tự đánh giá report mới.
+
 ### Formatting
 
 Không format thủ công trong JSX.

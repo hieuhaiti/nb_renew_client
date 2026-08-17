@@ -13,6 +13,7 @@ export const defaultTourPanelFilters = {
 export const useTourPanelStore = create((set) => ({
   filters: defaultTourPanelFilters,
   selectedTour: null,
+  sidebarOpenSeq: 0,
 
   setTourPanelFilters: (newFilters) =>
     set((state) => ({
@@ -24,9 +25,15 @@ export const useTourPanelStore = create((set) => ({
       selectedTour: tour || null,
     }),
 
+  requestOpenTourSidebar: () =>
+    set((state) => ({
+      sidebarOpenSeq: state.sidebarOpenSeq + 1,
+    })),
+
   resetTourPanelFilters: () =>
     set({
       filters: defaultTourPanelFilters,
       selectedTour: null,
+      sidebarOpenSeq: 0,
     }),
 }));

@@ -1,0 +1,1741 @@
+api/v1/spot-categories/tree
+
+
+{
+    "message": "Cây danh mục điểm du lịch",
+    "status": 200,
+    "data": [
+        {
+            "id": 1,
+            "parent_id": null,
+            "code": "du-lich-tu-nhien",
+            "name_vi": "Du lịch tự nhiên",
+            "name_en": "Nature Tourism",
+            "icon_url": "uploads/images/nature_reserve.svg",
+            "color_hex": "#16A34A",
+            "sort_order": 1,
+            "is_active": true,
+            "spot_count": 0,
+            "children": [
+                {
+                    "id": 5,
+                    "parent_id": 1,
+                    "code": "hang-dong",
+                    "name_vi": "Hang động",
+                    "name_en": "Cave",
+                    "icon_url": "uploads/images/cave.svg",
+                    "color_hex": "#7C3AED",
+                    "sort_order": 2,
+                    "is_active": true,
+                    "spot_count": 32,
+                    "children": []
+                },
+                {
+                    "id": 6,
+                    "parent_id": 1,
+                    "code": "rung",
+                    "name_vi": "Rừng",
+                    "name_en": "Forest",
+                    "icon_url": "uploads/images/forest.svg",
+                    "color_hex": "#15803D",
+                    "sort_order": 3,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 7,
+                    "parent_id": 1,
+                    "code": "ho",
+                    "name_vi": "Hồ",
+                    "name_en": "Lake",
+                    "icon_url": "uploads/images/lake.svg",
+                    "color_hex": "#0284C7",
+                    "sort_order": 4,
+                    "is_active": true,
+                    "spot_count": 2,
+                    "children": []
+                },
+                {
+                    "id": 9,
+                    "parent_id": 1,
+                    "code": "nui",
+                    "name_vi": "Núi",
+                    "name_en": "Mountain",
+                    "icon_url": "uploads/images/mountain.svg",
+                    "color_hex": "#65A30D",
+                    "sort_order": 6,
+                    "is_active": true,
+                    "spot_count": 3,
+                    "children": []
+                },
+                {
+                    "id": 10,
+                    "parent_id": 1,
+                    "code": "vuon-quoc-gia",
+                    "name_vi": "Vườn quốc gia",
+                    "name_en": "National Park",
+                    "icon_url": "uploads/images/national_park.svg",
+                    "color_hex": "#166534",
+                    "sort_order": 7,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 11,
+                    "parent_id": 1,
+                    "code": "khu-bao-ton-thien-nhien",
+                    "name_vi": "Khu bảo tồn thiên nhiên",
+                    "name_en": "Nature Reserve",
+                    "icon_url": "uploads/images/nature_reserve.svg",
+                    "color_hex": "#047857",
+                    "sort_order": 8,
+                    "is_active": true,
+                    "spot_count": 3,
+                    "children": []
+                },
+                {
+                    "id": 12,
+                    "parent_id": 1,
+                    "code": "cong-vien",
+                    "name_vi": "Công viên",
+                    "name_en": "Park",
+                    "icon_url": "uploads/images/park.svg",
+                    "color_hex": "#22C55E",
+                    "sort_order": 9,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 14,
+                    "parent_id": 1,
+                    "code": "song-suoi",
+                    "name_vi": "Sông, suối",
+                    "name_en": "River & Stream",
+                    "icon_url": "uploads/images/river_stream.svg",
+                    "color_hex": "#0891B2",
+                    "sort_order": 11,
+                    "is_active": true,
+                    "spot_count": 2,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "parent_id": null,
+            "code": "du-lich-van-hoa",
+            "name_vi": "Du lịch văn hóa",
+            "name_en": "Cultural Tourism",
+            "icon_url": "uploads/images/historical_site.svg",
+            "color_hex": "#D97706",
+            "sort_order": 2,
+            "is_active": true,
+            "spot_count": 0,
+            "children": [
+                {
+                    "id": 19,
+                    "parent_id": 2,
+                    "code": "nha-tho",
+                    "name_vi": "Nhà thờ",
+                    "name_en": "Church",
+                    "icon_url": "uploads/images/church.svg",
+                    "color_hex": "#CA8A04",
+                    "sort_order": 4,
+                    "is_active": true,
+                    "spot_count": 2,
+                    "children": []
+                },
+                {
+                    "id": 21,
+                    "parent_id": 2,
+                    "code": "di-tich-lich-su",
+                    "name_vi": "Di tích lịch sử",
+                    "name_en": "Historical Site",
+                    "icon_url": "uploads/images/historical_site.svg",
+                    "color_hex": "#DC2626",
+                    "sort_order": 6,
+                    "is_active": true,
+                    "spot_count": 6,
+                    "children": []
+                },
+                {
+                    "id": 23,
+                    "parent_id": 2,
+                    "code": "bao-tang",
+                    "name_vi": "Bảo tàng",
+                    "name_en": "Museum",
+                    "icon_url": "uploads/images/museum.svg",
+                    "color_hex": "#9333EA",
+                    "sort_order": 8,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 24,
+                    "parent_id": 2,
+                    "code": "den-chua",
+                    "name_vi": "Đền, chùa",
+                    "name_en": "Temple & Pagoda",
+                    "icon_url": "uploads/images/temple_pagoda.svg",
+                    "color_hex": "#F59E0B",
+                    "sort_order": 9,
+                    "is_active": true,
+                    "spot_count": 16,
+                    "children": []
+                },
+                {
+                    "id": 26,
+                    "parent_id": 2,
+                    "code": "lang-nghe-truyen-thong",
+                    "name_vi": "Làng nghề truyền thống",
+                    "name_en": "Traditional Craft Village",
+                    "icon_url": "uploads/images/traditional_village.svg",
+                    "color_hex": "#795548",
+                    "sort_order": 11,
+                    "is_active": true,
+                    "spot_count": 2,
+                    "children": []
+                },
+                {
+                    "id": 27,
+                    "parent_id": 2,
+                    "code": "lang-que",
+                    "name_vi": "Làng quê",
+                    "name_en": "Village",
+                    "icon_url": "uploads/images/village.svg",
+                    "color_hex": "#78716C",
+                    "sort_order": 12,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "parent_id": null,
+            "code": "co-so-vat-chat-ky-thuat",
+            "name_vi": "Cơ sở vật chất kỹ thuật",
+            "name_en": "Tourism Infrastructure & Facilities",
+            "icon_url": "uploads/images/tourist_area.svg",
+            "color_hex": "#2563EB",
+            "sort_order": 3,
+            "is_active": true,
+            "spot_count": 0,
+            "children": [
+                {
+                    "id": 31,
+                    "parent_id": 3,
+                    "code": "nha-thuyen",
+                    "name_vi": "Nhà thuyền",
+                    "name_en": "Boathouse",
+                    "icon_url": "uploads/images/boathouse.svg",
+                    "color_hex": "#0284C7",
+                    "sort_order": 3,
+                    "is_active": true,
+                    "spot_count": 4,
+                    "children": []
+                },
+                {
+                    "id": 32,
+                    "parent_id": 3,
+                    "code": "cau",
+                    "name_vi": "Cầu",
+                    "name_en": "Bridge",
+                    "icon_url": "uploads/images/bridge.svg",
+                    "color_hex": "#64748B",
+                    "sort_order": 4,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 33,
+                    "parent_id": 3,
+                    "code": "ben-xe",
+                    "name_vi": "Bến xe",
+                    "name_en": "Bus Station",
+                    "icon_url": "uploads/images/bus_station.svg",
+                    "color_hex": "#475569",
+                    "sort_order": 5,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 40,
+                    "parent_id": 3,
+                    "code": "khach-san",
+                    "name_vi": "Khách sạn",
+                    "name_en": "Hotel",
+                    "icon_url": "uploads/images/hotel.svg",
+                    "color_hex": "#9333EA",
+                    "sort_order": 12,
+                    "is_active": true,
+                    "spot_count": 27,
+                    "children": []
+                },
+                {
+                    "id": 41,
+                    "parent_id": 3,
+                    "code": "cho",
+                    "name_vi": "Chợ",
+                    "name_en": "Market",
+                    "icon_url": "uploads/images/market.svg",
+                    "color_hex": "#F97316",
+                    "sort_order": 13,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 43,
+                    "parent_id": 3,
+                    "code": "khu-nghi-duong",
+                    "name_vi": "Khu nghỉ dưỡng",
+                    "name_en": "Resort",
+                    "icon_url": "uploads/images/resort.svg",
+                    "color_hex": "#14B8A6",
+                    "sort_order": 15,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 44,
+                    "parent_id": 3,
+                    "code": "nha-hang",
+                    "name_vi": "Nhà hàng",
+                    "name_en": "Restaurant",
+                    "icon_url": "uploads/images/restaurant.svg",
+                    "color_hex": "#EF4444",
+                    "sort_order": 16,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 50,
+                    "parent_id": 3,
+                    "code": "khu-du-lich",
+                    "name_vi": "Khu du lịch",
+                    "name_en": "Tourist Area",
+                    "icon_url": "uploads/images/tourist_area.svg",
+                    "color_hex": "#2563EB",
+                    "sort_order": 22,
+                    "is_active": true,
+                    "spot_count": 8,
+                    "children": []
+                },
+                {
+                    "id": 51,
+                    "parent_id": 3,
+                    "code": "ga-tau",
+                    "name_vi": "Ga tàu",
+                    "name_en": "Train Station",
+                    "icon_url": "uploads/images/train_station.svg",
+                    "color_hex": "#334155",
+                    "sort_order": 23,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                },
+                {
+                    "id": 53,
+                    "parent_id": 3,
+                    "code": "vuon-thu",
+                    "name_vi": "Vườn thú",
+                    "name_en": "Zoo",
+                    "icon_url": "uploads/images/zoo.svg",
+                    "color_hex": "#65A30D",
+                    "sort_order": 25,
+                    "is_active": true,
+                    "spot_count": 1,
+                    "children": []
+                }
+            ]
+        }
+    ]
+}
+
+
+api/v1/spots?limit=20&page=1
+{
+    "message": "Lấy danh sách điểm du lịch thành công",
+    "status": 200,
+    "data": {
+        "spots": [
+            {
+                "id": "46a7398d-386f-4449-af1f-b24dd5667649",
+                "slug": "ga-ninh-binh",
+                "name": "Ga Ninh Bình",
+                "description": "Ga đường sắt chính phục vụ du khách đến Ninh Bình bằng tàu hỏa.",
+                "address": "Thành phố Ninh Bình, Ninh Bình",
+                "rating_avg": "4.33",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.9746207,
+                        20.2421142
+                    ]
+                },
+                "category_id": 51,
+                "category_name": "Ga tàu",
+                "category_parent_id": 3,
+                "category_parent_name": "Cơ sở vật chất kỹ thuật",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-ga-ninh-binh.jpg"
+            },
+            {
+                "id": "f72921e4-5faa-426d-9f69-d9587e35a9d8",
+                "slug": "cho-rong-ninh-binh",
+                "name": "Chợ Rồng Ninh Bình",
+                "description": "Khu chợ trung tâm của thành phố Ninh Bình, phù hợp tham quan đời sống địa phương và mua đặc sản.",
+                "address": "Thành phố Ninh Bình, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.9776166,
+                        20.2561711
+                    ]
+                },
+                "category_id": 41,
+                "category_name": "Chợ",
+                "category_parent_id": 3,
+                "category_parent_name": "Cơ sở vật chất kỹ thuật",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-cho-rong-ninh-binh.jpg"
+            },
+            {
+                "id": "274da49d-4a22-4a62-9dca-fda552133bfb",
+                "slug": "bao-tang-ninh-binh",
+                "name": "Bảo tàng Ninh Bình",
+                "description": "Không gian trưng bày lịch sử, văn hóa và hiện vật tiêu biểu của vùng đất Ninh Bình.",
+                "address": "Thành phố Ninh Bình, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.9807146,
+                        20.258795
+                    ]
+                },
+                "category_id": 23,
+                "category_name": "Bảo tàng",
+                "category_parent_id": 2,
+                "category_parent_name": "Du lịch văn hóa",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-bao-tang-ninh-binh.jpg"
+            },
+            {
+                "id": "c42f8a59-1d20-4eb7-a859-eaf04ef051fa",
+                "slug": "nha-tho-da-phat-diem-ninh-binh",
+                "name": "Nhà thờ đá Phát Diệm",
+                "description": "Quần thể nhà thờ đá nổi tiếng với kiến trúc giao thoa Đông - Tây, là điểm văn hóa đặc sắc của Kim Sơn.",
+                "address": "Phát Diệm, Kim Sơn, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        106.0794722,
+                        20.0930035
+                    ]
+                },
+                "category_id": 19,
+                "category_name": "Nhà thờ",
+                "category_parent_id": 2,
+                "category_parent_name": "Du lịch văn hóa",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-nha-tho-da-phat-diem-ninh-binh.jpg"
+            },
+            {
+                "id": "2f08a8a9-9c84-46d3-ae83-4983cdc9f098",
+                "slug": "khu-du-lich-tam-coc-bich-dong-ninh-binh",
+                "name": "Khu du lịch Tam Cốc - Bích Động",
+                "description": "Cụm du lịch nổi tiếng với tuyến thuyền Tam Cốc, chùa Bích Động và cảnh quan ruộng lúa ven núi.",
+                "address": "Ninh Hải, Hoa Lư, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.937457,
+                        20.2163426
+                    ]
+                },
+                "category_id": 50,
+                "category_name": "Khu du lịch",
+                "category_parent_id": 3,
+                "category_parent_name": "Cơ sở vật chất kỹ thuật",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-khu-du-lich-tam-coc-bich-dong-ninh-binh.jpg"
+            },
+            {
+                "id": "aeee9098-9540-4068-ab06-bc5faf0ecf8a",
+                "slug": "khu-du-lich-sinh-thai-trang-an-ninh-binh",
+                "name": "Khu du lịch sinh thái Tràng An",
+                "description": "Quần thể du lịch sinh thái nổi bật với tuyến thuyền xuyên hang, núi đá vôi và di sản văn hóa.",
+                "address": "Trường Yên, Hoa Lư, Ninh Bình",
+                "rating_avg": "4.33",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.9005014,
+                        20.2537827
+                    ]
+                },
+                "category_id": 50,
+                "category_name": "Khu du lịch",
+                "category_parent_id": 3,
+                "category_parent_name": "Cơ sở vật chất kỹ thuật",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-khu-du-lich-sinh-thai-trang-an-ninh-binh.jpg"
+            },
+            {
+                "id": "c94a0f44-175b-4a5c-a805-e3e6ac81054d",
+                "slug": "khu-du-lich-thung-nham-ninh-binh",
+                "name": "Khu du lịch sinh thái Thung Nham",
+                "description": "Khu du lịch sinh thái với vườn chim, hang động, thung lũng và các tuyến tham quan tự nhiên.",
+                "address": "Ninh Hải, Hoa Lư, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.888788,
+                        20.2211319
+                    ]
+                },
+                "category_id": 50,
+                "category_name": "Khu du lịch",
+                "category_parent_id": 3,
+                "category_parent_name": "Cơ sở vật chất kỹ thuật",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-khu-du-lich-thung-nham-ninh-binh.jpg"
+            },
+            {
+                "id": "4e16fe1e-ab20-4ba8-968a-1b0e91f278ce",
+                "slug": "dong-am-tien-ninh-binh",
+                "name": "Động Am Tiên",
+                "description": "Điểm tham quan trong khu vực Tuyệt Tình Cốc, có hồ nước, vách núi đá và không gian cổ kính.",
+                "address": "Trường Yên, Hoa Lư, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.9114446,
+                        20.2815397
+                    ]
+                },
+                "category_id": 5,
+                "category_name": "Hang động",
+                "category_parent_id": 1,
+                "category_parent_name": "Du lịch tự nhiên",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-dong-am-tien-ninh-binh.jpg"
+            },
+            {
+                "id": "b7455c23-c374-4aa6-9474-bb162c9d61de",
+                "slug": "ho-yen-thang-ninh-binh",
+                "name": "Hồ Yên Thắng",
+                "description": "Không gian hồ rộng tại Tam Điệp, phù hợp dã ngoại, nghỉ dưỡng và các hoạt động thể thao ngoài trời.",
+                "address": "Tam Điệp, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.9633083,
+                        20.1344759
+                    ]
+                },
+                "category_id": 7,
+                "category_name": "Hồ",
+                "category_parent_id": 1,
+                "category_parent_name": "Du lịch tự nhiên",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-ho-yen-thang-ninh-binh.jpg"
+            },
+            {
+                "id": "bb0ae9ba-9613-4a2d-8975-63a775e503dc",
+                "slug": "vuon-quoc-gia-cuc-phuong-ninh-binh",
+                "name": "Vườn quốc gia Cúc Phương",
+                "description": "Vườn quốc gia lâu đời, nổi bật với rừng nguyên sinh, tuyến trekking, hang động và trung tâm cứu hộ linh trưởng.",
+                "address": "Nho Quan, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.6176593,
+                        20.3162835
+                    ]
+                },
+                "category_id": 10,
+                "category_name": "Vườn quốc gia",
+                "category_parent_id": 1,
+                "category_parent_name": "Du lịch tự nhiên",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-vuon-quoc-gia-cuc-phuong-ninh-binh.jpg"
+            },
+            {
+                "id": "33514304-3e28-433a-91e6-36b1385919fc",
+                "slug": "khu-bao-ton-van-long-ninh-binh",
+                "name": "Khu bảo tồn đất ngập nước Vân Long",
+                "description": "Khu bảo tồn đất ngập nước với cảnh quan núi đá vôi, đầm nước và hệ sinh thái chim nước đặc trưng.",
+                "address": "Gia Viễn, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.8605764,
+                        20.3858631
+                    ]
+                },
+                "category_id": 11,
+                "category_name": "Khu bảo tồn thiên nhiên",
+                "category_parent_id": 1,
+                "category_parent_name": "Du lịch tự nhiên",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-khu-bao-ton-van-long-ninh-binh.jpg"
+            },
+            {
+                "id": "027faa95-528b-49fb-a249-b298b8d6fbca",
+                "slug": "cong-vien-khung-long-ninh-binh",
+                "name": "Công viên khủng long Ninh Bình",
+                "description": "Công viên giải trí tại trung tâm thành phố, phù hợp gia đình và trẻ em.",
+                "address": "Thành phố Ninh Bình, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.969,
+                        20.251
+                    ]
+                },
+                "category_id": 12,
+                "category_name": "Công viên",
+                "category_parent_id": 1,
+                "category_parent_name": "Du lịch tự nhiên",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-cong-vien-khung-long-ninh-binh.jpg"
+            },
+            {
+                "id": "55bd5089-e88e-415c-86b8-c99cb10fb7fa",
+                "slug": "ben-thuyen-thung-nham-ninh-binh",
+                "name": "Bến thuyền Thung Nham",
+                "description": "Bến thuyền trong khu du lịch sinh thái Thung Nham, phục vụ tuyến vườn chim và hang động.",
+                "address": "Ninh Hải, Hoa Lư, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.895,
+                        20.214
+                    ]
+                },
+                "category_id": 31,
+                "category_name": "Nhà thuyền",
+                "category_parent_id": 3,
+                "category_parent_name": "Cơ sở vật chất kỹ thuật",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-ben-thuyen-thung-nham-ninh-binh.jpg"
+            },
+            {
+                "id": "661fce25-9fa9-45ac-b83b-6491c3abf546",
+                "slug": "lang-viet-co-co-vien-lau-ninh-binh",
+                "name": "Làng Việt cổ Cố Viên Lầu",
+                "description": "Không gian tái hiện kiến trúc làng Việt cổ, nằm trong vùng Tam Cốc - Bích Động.",
+                "address": "Ninh Hải, Hoa Lư, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.918,
+                        20.215
+                    ]
+                },
+                "category_id": 27,
+                "category_name": "Làng quê",
+                "category_parent_id": 2,
+                "category_parent_name": "Du lịch văn hóa",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-lang-viet-co-co-vien-lau-ninh-binh.jpg"
+            },
+            {
+                "id": "a0655366-141b-4e5f-8540-070b7b810c46",
+                "slug": "lang-da-my-nghe-ninh-van-ninh-binh",
+                "name": "Làng đá mỹ nghệ Ninh Vân",
+                "description": "Làng nghề chế tác đá mỹ nghệ lâu đời, phù hợp tham quan văn hóa làng nghề.",
+                "address": "Ninh Vân, Hoa Lư, Ninh Bình",
+                "rating_avg": "4.33",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.946,
+                        20.189
+                    ]
+                },
+                "category_id": 26,
+                "category_name": "Làng nghề truyền thống",
+                "category_parent_id": 2,
+                "category_parent_name": "Du lịch văn hóa",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-lang-da-my-nghe-ninh-van-ninh-binh.jpg"
+            },
+            {
+                "id": "00f39716-754c-48e3-a254-2f5f5d8593be",
+                "slug": "lang-nghe-theu-ren-van-lam-ninh-binh",
+                "name": "Làng nghề thêu ren Văn Lâm",
+                "description": "Làng nghề truyền thống nổi tiếng với nghề thêu ren, nằm gần tuyến du lịch Tam Cốc.",
+                "address": "Ninh Hải, Hoa Lư, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.919,
+                        20.214
+                    ]
+                },
+                "category_id": 26,
+                "category_name": "Làng nghề truyền thống",
+                "category_parent_id": 2,
+                "category_parent_name": "Du lịch văn hóa",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-lang-nghe-theu-ren-van-lam-ninh-binh.jpg"
+            },
+            {
+                "id": "3041b884-99d1-41cb-83f3-2a59aebf1056",
+                "slug": "den-tho-truong-han-sieu-ninh-binh",
+                "name": "Đền thờ Trương Hán Siêu",
+                "description": "Di tích tưởng niệm danh nhân Trương Hán Siêu, nằm gần núi Non Nước và sông Đáy.",
+                "address": "Thành phố Ninh Bình, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.974,
+                        20.252
+                    ]
+                },
+                "category_id": 21,
+                "category_name": "Di tích lịch sử",
+                "category_parent_id": 2,
+                "category_parent_name": "Du lịch văn hóa",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-den-tho-truong-han-sieu-ninh-binh.jpg"
+            },
+            {
+                "id": "c2c4b9a9-ee83-402b-9ba9-7ba88592b2c5",
+                "slug": "phong-tuyen-tam-diep-ninh-binh",
+                "name": "Phòng tuyến Tam Điệp",
+                "description": "Di tích lịch sử gắn với tuyến phòng thủ Tam Điệp - Biện Sơn trong lịch sử chống ngoại xâm.",
+                "address": "Tam Điệp, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 1500,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.9,
+                        20.15
+                    ]
+                },
+                "category_id": 21,
+                "category_name": "Di tích lịch sử",
+                "category_parent_id": 2,
+                "category_parent_name": "Du lịch văn hóa",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-phong-tuyen-tam-diep-ninh-binh.jpg"
+            },
+            {
+                "id": "7e79199d-da3a-4ece-8f54-e0babe003642",
+                "slug": "nha-tho-dong-dac-ninh-binh",
+                "name": "Nhà thờ giáo xứ Đồng Đắc",
+                "description": "Nhà thờ giáo xứ trong vùng Kim Sơn, phù hợp bổ sung tuyến tham quan kiến trúc tôn giáo.",
+                "address": "Kim Sơn, Ninh Bình",
+                "rating_avg": "4.33",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        106.095,
+                        20.105
+                    ]
+                },
+                "category_id": 19,
+                "category_name": "Nhà thờ",
+                "category_parent_id": 2,
+                "category_parent_name": "Du lịch văn hóa",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-nha-tho-dong-dac-ninh-binh.jpg"
+            },
+            {
+                "id": "4cf0fd43-705d-4705-b5e5-0c2bd4472283",
+                "slug": "ben-xe-ninh-binh",
+                "name": "Bến xe Ninh Bình",
+                "description": "Bến xe liên tỉnh phục vụ kết nối giao thông đường bộ đến các điểm du lịch trong tỉnh.",
+                "address": "Thành phố Ninh Bình, Ninh Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_price_child": null,
+                "ticket_currency": "VND",
+                "opening_hours": {
+                    "daily": "07:00-17:00"
+                },
+                "phone": null,
+                "website": null,
+                "has_vr_360": false,
+                "has_ar_support": false,
+                "has_audio_guide": false,
+                "max_capacity": 600,
+                "geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        105.9762659,
+                        20.2505209
+                    ]
+                },
+                "category_id": 33,
+                "category_name": "Bến xe",
+                "category_parent_id": 3,
+                "category_parent_name": "Cơ sở vật chất kỹ thuật",
+                "province_name": "Ninh Bình",
+                "commune_name": null,
+                "primary_image": "/uploads/images/wiki-ben-xe-ninh-binh.jpg"
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 119,
+            "totalPages": 6
+        }
+    }
+}
+
+
+========================== detail ==========================
+api/v1/spots/slug
+{
+    "message": "Lấy thông tin điểm du lịch thành công",
+    "status": 200,
+    "data": {
+        "spot": {
+            "id": "46a7398d-386f-4449-af1f-b24dd5667649",
+            "category_id": 51,
+            "province_code": "37",
+            "ward_code": null,
+            "slug": "ga-ninh-binh",
+            "altitude_m": null,
+            "opening_hours": {
+                "daily": "07:00-17:00"
+            },
+            "ticket_price_adult": null,
+            "ticket_price_child": null,
+            "ticket_currency": "VND",
+            "phone": null,
+            "email": null,
+            "website": null,
+            "max_capacity": 600,
+            "alert_threshold_pct": 80,
+            "rating_avg": "4.33",
+            "rating_count": 3,
+            "has_vr_360": false,
+            "has_ar_support": false,
+            "has_audio_guide": false,
+            "qr_code_url": null,
+            "status": "active",
+            "is_featured": false,
+            "created_by": null,
+            "created_at": "2026-05-08T18:43:49.000Z",
+            "updated_at": "2026-05-09T05:23:44.371Z",
+            "name": "Ga Ninh Bình",
+            "description": "Ga đường sắt chính phục vụ du khách đến Ninh Bình bằng tàu hỏa.",
+            "address": "Thành phố Ninh Bình, Ninh Bình",
+            "longitude": 105.9746207,
+            "latitude": 20.2421142,
+            "geojson": {
+                "type": "Point",
+                "coordinates": [
+                    105.9746207,
+                    20.2421142
+                ]
+            },
+            "category_name": "Ga tàu",
+            "category_code": "ga-tau",
+            "category_color": "#334155",
+            "category_icon": "uploads/images/train_station.svg",
+            "province_name": "Ninh Bình",
+            "commune_name": null,
+            "current_visitor_count": null,
+            "current_capacity_pct": null,
+            "capacity_recorded_at": null,
+            "primary_image": "/uploads/images/wiki-ga-ninh-binh.jpg",
+            "related_services": null
+        }
+    }
+}
+
+
+api/v1/spots/point_id/aframe-scenes
+{
+    "message": "Lấy danh sách A-Frame scene thành công",
+    "status": 200,
+    "data": {
+        "scenes": [
+            {
+                "id": "81111111-1111-4111-8111-111111111120",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Toàn cảnh Chùa Tam Chúc",
+                "description": "Nhìn toàn cảnh quần thể Chùa Tam Chúc từ trên cao, bao quát hồ nước và núi đá vôi hùng vĩ.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720085128_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720085128_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 60,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/0.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": true,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111121",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Quang cảnh giữa hồ",
+                "description": "Khung cảnh mặt hồ Tam Chúc rộng lớn nhìn từ trên cao, phản chiếu núi non và công trình kiến trúc.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720101254_0004_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720101254_0004_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 150,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/1.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111122",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Đình Tam Chúc",
+                "description": "Toàn cảnh Đình Tam Chúc cổ kính nằm giữa vùng núi non và mặt hồ.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720111103_0005_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720111103_0005_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 45,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/2.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111123",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Phía sau Tam Quan Nội",
+                "description": "Góc nhìn phía sau cổng Tam Quan Nội, thấy rõ kiến trúc đồ sộ và không gian rộng lớn xung quanh.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720103509_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720103509_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 45,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/3.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111124",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Trung tâm Tam Quan Nội",
+                "description": "Nhìn thẳng vào trung tâm cổng Tam Quan Nội – điểm biểu tượng của quần thể Tam Chúc.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720100511_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720100511_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 45,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/4.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111125",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Tổng quan Tam Quan Nội",
+                "description": "Toàn cảnh Tam Quan Nội từ độ cao, bao quát cả hai phía hồ và núi.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720095709_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720095709_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 45,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/5.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111126",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Tổng quan Chùa Ba Sao",
+                "description": "Nhìn bao quát khu vực Chùa Ba Sao và các công trình lân cận trong quần thể Tam Chúc.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720094233_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720094233_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/6.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111127",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Cảnh quan phía Tây 2",
+                "description": "Khung cảnh phía Tây quần thể Tam Chúc với núi đá vôi và hồ nước xanh trong.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720091542_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720091542_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 200,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/7.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111128",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Cảnh quan phía Tây 1",
+                "description": "Toàn cảnh phía Tây Tam Chúc nhìn từ trên cao, thấy rõ các tầng kiến trúc và mặt hồ.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720090043_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720090043_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 145,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/8.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111129",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Cổng vào chùa Tam Chúc",
+                "description": "Toàn cảnh cổng chính dẫn vào quần thể Chùa Tam Chúc với trục đường rộng lớn.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720082709_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720082709_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 110,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/9.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111130",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Trục đường tiến vào 2",
+                "description": "Đoạn trục đường chính thứ hai dẫn vào quần thể Chùa Tam Chúc, hai bên là hồ nước.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720081410_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720081410_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 30,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/10.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            },
+            {
+                "id": "81111111-1111-4111-8111-111111111131",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "name": "Trục đường tiến vào 1",
+                "description": "Điểm đầu tiên của hành trình tham quan – trục đường chính tiến vào Chùa Tam Chúc từ phía ngoài.",
+                "equirectangular_image_url": "/uploads/images/DJI_20250720074326_0001_V.JPG",
+                "thumbnail_url": "/uploads/images/DJI_20250720074326_0001_V.JPG",
+                "camera_position": {
+                    "x": 0,
+                    "y": 1.6,
+                    "z": 0
+                },
+                "camera_rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "camera_fov": 80,
+                "fog_settings": null,
+                "ambient_sound_url": "/uploads/audios/11.mp3",
+                "ambient_sound_loop": true,
+                "ambient_sound_volume": 0.4,
+                "narration_audio_url": null,
+                "auto_play_narration": false,
+                "is_main": false,
+                "is_active": true,
+                "created_at": "2026-05-01T02:24:01.643Z",
+                "updated_at": "2026-05-01T02:24:01.643Z"
+            }
+        ]
+    }
+}
+
+
+api/v1/spots/nearby?lat=20.5471&lng=105.9232&radius_km=8&limit=5
+{
+    "message": "Tìm điểm du lịch lân cận thành công",
+    "status": 200,
+    "data": {
+        "spots": [
+            {
+                "id": "b1111111-1111-4111-8111-111111111120",
+                "slug": "chua-tam-chuc-ha-nam",
+                "name": "Chùa Tam Chúc",
+                "rating_avg": "4.75",
+                "rating_count": 1250,
+                "is_featured": true,
+                "status": "active",
+                "ticket_price_adult": "0",
+                "ticket_currency": "VND",
+                "longitude": 105.9232,
+                "latitude": 20.5471,
+                "distance_m": 0,
+                "category_name": "Đền, chùa",
+                "category_color": "#F59E0B",
+                "category_icon": "uploads/images/temple_pagoda.svg",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/wiki-chua-tam-chuc-ha-nam.jpg"
+            },
+            {
+                "id": "8f041f97-a1bf-4b14-b6f1-f5cd3cf3cf98",
+                "slug": "vinpearl-melia-phu-ly-ninh-binh",
+                "name": "Vinpearl Melia Phủ Lý",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.917184450328,
+                "latitude": 20.5435816516218,
+                "distance_m": 738.40936853,
+                "category_name": "Khách sạn",
+                "category_color": "#9333EA",
+                "category_icon": "uploads/images/hotel.svg",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/780_crop_chua-bai-đinh-4.jpg"
+            },
+            {
+                "id": "eb125044-5e44-4271-82fd-c742966742fc",
+                "slug": "khach-san-hoa-binh-ninh-binh",
+                "name": "Khách sạn Hòa Bình",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.912021027044,
+                "latitude": 20.5445837036163,
+                "distance_m": 1198.58599959,
+                "category_name": "Khách sạn",
+                "category_color": "#9333EA",
+                "category_icon": "uploads/images/hotel.svg",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/du-lich-ninh-binh-5.jpg"
+            },
+            {
+                "id": "9f3f274b-52f4-4be9-a8b3-eb5b1650b2e1",
+                "slug": "muong-thanh-luxury-ha-nam-ninh-binh",
+                "name": "Mường Thanh Luxury Hà Nam",
+                "rating_avg": "4.67",
+                "rating_count": 3,
+                "is_featured": false,
+                "status": "active",
+                "ticket_price_adult": null,
+                "ticket_currency": "VND",
+                "longitude": 105.912284838686,
+                "latitude": 20.5420999340046,
+                "distance_m": 1265.72841062,
+                "category_name": "Khách sạn",
+                "category_color": "#9333EA",
+                "category_icon": "uploads/images/hotel.svg",
+                "province_name": "Ninh Bình",
+                "primary_image": "/uploads/images/ninhbinh_2.webp"
+            }
+        ]
+    }
+}
+
+api/v1/spots/b1111111-1111-4111-8111-111111111120/media
+
+{
+    "message": "Lấy media điểm du lịch thành công",
+    "status": 200,
+    "data": {
+        "media": [
+            {
+                "id": "af305ba9-e6e8-46b6-9f36-4fa9ae3fc4a1",
+                "spot_id": "b1111111-1111-4111-8111-111111111120",
+                "media_type": "image",
+                "url": "/uploads/images/wiki-chua-tam-chuc-ha-nam.jpg",
+                "thumbnail_url": null,
+                "title_vi": "Chùa Tam Chúc",
+                "title_en": "Hồ Tam Chúc.jpg",
+                "duration_sec": null,
+                "file_size_kb": 191,
+                "resolution": "1920x650",
+                "is_primary": true,
+                "sort_order": 0,
+                "language": null,
+                "created_at": "2026-05-09T03:06:50.610Z"
+            }
+        ]
+    }
+}
+
+api/v1/ratings?page=1&limit=10&spot_id=46a7398d-386f-4449-af1f-b24dd5667649
+{
+    "message": "Lấy danh sách đánh giá thành công",
+    "status": 200,
+    "data": {
+        "ratings": [
+            {
+                "id": "4ed882e5-96ef-43d5-90e7-a6ca656bc664",
+                "user_id": null,
+                "spot_id": "46a7398d-386f-4449-af1f-b24dd5667649",
+                "business_id": null,
+                "stars": 5,
+                "title": "Trải nghiệm đáng ghé ở Ninh Bình",
+                "content": "Điểm này có cảnh quan và không khí rất đặc trưng của Ninh Bình. Thời gian tham quan vừa phải, phù hợp cho cả khách đi tự túc lẫn theo tour.",
+                "pros": "Cảnh quan đẹp, có bản sắc địa phương",
+                "cons": "Một số thời điểm khá đông khách",
+                "visit_date": "2026-03-14T05:00:00.000Z",
+                "photo_urls": null,
+                "status": "published",
+                "is_verified_visit": true,
+                "helpful_count": 10,
+                "reply_text": null,
+                "reply_at": null,
+                "created_at": "2026-03-14T05:23:44.371Z",
+                "updated_at": "2026-03-14T05:23:44.371Z",
+                "user_name": null,
+                "user_avatar": null,
+                "reply_by_name": null
+            },
+            {
+                "id": "02da7d7a-a3a6-416f-b3ca-715dc61e4aa7",
+                "user_id": null,
+                "spot_id": "46a7398d-386f-4449-af1f-b24dd5667649",
+                "business_id": null,
+                "stars": 4,
+                "title": "Không gian đẹp và dễ tham quan",
+                "content": "Vị trí thuận tiện, dễ kết hợp với các điểm lân cận. Nếu đi vào buổi sáng hoặc chiều muộn thì trải nghiệm sẽ dễ chịu hơn.",
+                "pros": "Dễ kết hợp trong hành trình, phù hợp chụp ảnh",
+                "cons": "Cần thêm biển chỉ dẫn hoặc thông tin thuyết minh",
+                "visit_date": "2026-02-21T06:00:00.000Z",
+                "photo_urls": null,
+                "status": "published",
+                "is_verified_visit": true,
+                "helpful_count": 12,
+                "reply_text": null,
+                "reply_at": null,
+                "created_at": "2026-02-21T06:23:44.371Z",
+                "updated_at": "2026-02-21T06:23:44.371Z",
+                "user_name": null,
+                "user_avatar": null,
+                "reply_by_name": null
+            },
+            {
+                "id": "da723c81-e0c3-48d0-96f1-5624cde02c10",
+                "user_id": null,
+                "spot_id": "46a7398d-386f-4449-af1f-b24dd5667649",
+                "business_id": null,
+                "stars": 4,
+                "title": "Phù hợp để thêm vào lịch trình",
+                "content": "Tổng thể ổn, đáng để ghé nếu lịch trình còn thời gian. Nên chuẩn bị trước thông tin đường đi và khung giờ cao điểm.",
+                "pros": "Không mất quá nhiều thời gian, trải nghiệm ổn",
+                "cons": "Nên tránh đi giữa trưa vào ngày nắng",
+                "visit_date": "2026-01-31T06:00:00.000Z",
+                "photo_urls": null,
+                "status": "published",
+                "is_verified_visit": true,
+                "helpful_count": 14,
+                "reply_text": null,
+                "reply_at": null,
+                "created_at": "2026-01-31T06:23:44.371Z",
+                "updated_at": "2026-01-31T06:23:44.371Z",
+                "user_name": null,
+                "user_avatar": null,
+                "reply_by_name": null
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 10,
+            "total": 3,
+            "totalPages": 1
+        }
+    }
+}

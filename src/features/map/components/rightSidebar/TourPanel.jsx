@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
 import { useDebounce } from 'use-debounce';
-import { Clock3, Eye, Map, MapPin, Search, Star, Trash2 } from 'lucide-react';
+import { Clock3, Eye, Map, MapPin, Search, Star, Trash2, Users } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +20,7 @@ import {
   fetchTourStopsByTourId,
   useTourPanelListQuery,
 } from '@/services/api/map/tourPanelService';
+import { useGetTourCurrentCapacity } from '@/services/api/capacity/capacityService';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
 import {
@@ -29,23 +29,22 @@ import {
   normalizeTourListPayload,
 } from '@/features/map/utils/tourPanelUtils';
 import {
-  buildHighlightRoutePointsFeatureCollection,
   createRouteFromPoints,
   normalizeTourRoutePoint,
 } from '@/features/map/utils/highlightRouteUtils';
-import {
-  addOrUpdateHighlightedRouteLayers,
-  clearHighlightedRouteLayers,
-} from '@/features/map/utils/MapHelper';
+import { clearHighlightedRouteLayers } from '@/features/map/utils/MapHelper';
+import { defaultLatLong, defaultZoom, pitchDefault } from '@/features/map/constant/mapConstant';
 import { useMapStore } from '@/features/map/store/useMapStore';
+import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
 import { useMapPanelStore } from '@/features/map/store/useMapPanelStore';
 import { cn, getLocaleFromLanguage, withBaseUrl } from '@/lib/utils';
 import { useLanguageStore } from '@/stores/useLanguageStore';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function TourRowSkeleton() {
   return (
-    <div className="space-y-2 rounded-lg border p-3">
+    <div className="space-y-2 rounded-lg border border-[var(--event-panel-border)] bg-[var(--event-panel-card-bg)] p-3">
       <Skeleton className="h-4 w-2/3" />
       <Skeleton className="h-3 w-1/2" />
       <Skeleton className="h-3 w-5/6" />
@@ -148,6 +147,105 @@ function buildStopRouteCandidate(stop, pointDetail) {
   };
 }
 
+const TOUR_CAPACITY_STATUS_META = {
+  overloaded: {
+    labelKey: 'mapPage.capacityPanel.status.overloaded',
+    toneClass: 'text-destructive',
+    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+  },
+  near_full: {
+    labelKey: 'mapPage.capacityPanel.status.near_full',
+    toneClass: 'text-orange-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
+  },
+  busy: {
+    labelKey: 'mapPage.capacityPanel.status.busy',
+    toneClass: 'text-warning',
+    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
+  },
+  moderate: {
+    labelKey: 'mapPage.capacityPanel.status.moderate',
+    toneClass: 'text-sky-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
+  },
+  normal: {
+    labelKey: 'mapPage.capacityPanel.status.normal',
+    toneClass: 'text-emerald-600',
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
+  },
+  low: {
+    labelKey: 'mapPage.capacityPanel.status.low',
+    toneClass: 'text-emerald-500',
+    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+  },
+  unknown: {
+    labelKey: 'mapPage.capacityPanel.status.unknown',
+    toneClass: 'text-muted-foreground',
+    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+  },
+};
+
+function getTourCapacityStatusMeta(status) {
+  const key = String(status || 'unknown').toLowerCase();
+  return TOUR_CAPACITY_STATUS_META[key] ?? TOUR_CAPACITY_STATUS_META.unknown;
+}
+
+function TourCapacitySummary({ tourId, t }) {
+  const { data, isLoading, isError } = useGetTourCurrentCapacity(tourId, {
+    enabled: Boolean(tourId),
+    retry: 0,
+  });
+
+  const summary = data?.summary ?? null;
+  const rawPct = summary?.route_capacity_pct;
+  const hasPct = rawPct !== null && rawPct !== undefined && Number.isFinite(Number(rawPct));
+  const pct = hasPct ? Math.max(0, Math.min(100, Math.round(Number(rawPct)))) : null;
+  const statusMeta = getTourCapacityStatusMeta(summary?.status);
+  const currentVisitors = Number(summary?.total_current_visitors ?? 0);
+  const maxCapacity = Number(summary?.total_max_capacity ?? 0);
+  const hasTotal = maxCapacity > 0;
+
+  if (isLoading) {
+    return <Skeleton className="h-12 w-full rounded-md" />;
+  }
+
+  if (isError || !summary) {
+    return (
+      <div className="rounded-md border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-2">
+        <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.capacityNoData')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5 rounded-md border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-2">
+      <div className="flex items-center justify-between gap-2">
+        <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.routeCapacity')}</p>
+        <span className={cn('typo-meta font-semibold', statusMeta.toneClass)}>
+          {t(statusMeta.labelKey)}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between gap-2">
+        <span className="typo-meta text-muted-foreground inline-flex items-center gap-1">
+          <Users className="h-3 w-3 shrink-0" />
+          {hasTotal ? `${currentVisitors} / ${maxCapacity}` : `${currentVisitors}`}
+        </span>
+        <span className={cn('typo-meta font-semibold tabular-nums', statusMeta.toneClass)}>
+          {pct != null ? `${pct}%` : '--'}
+        </span>
+      </div>
+
+      <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${pct ?? 0}%`, ...statusMeta.barStyle }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function TourPanel() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -202,11 +300,7 @@ export default function TourPanel() {
       const sortedStops = sortStops(stops);
 
       if (sortedStops.length < 2) {
-        throw new Error(
-          t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
       }
 
       const routePoints = (
@@ -237,11 +331,7 @@ export default function TourPanel() {
       ).filter(Boolean);
 
       if (routePoints.length < 2) {
-        throw new Error(
-          t('mapPage.tourPanel.routeInsufficientStops', {
-            defaultValue: 'Tour cần ít nhất 2 điểm dừng để hiển thị chỉ đường.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
       }
 
       const routeResult = await createRouteFromPoints(
@@ -250,11 +340,7 @@ export default function TourPanel() {
         lang === 'en' ? 'en' : 'vi'
       );
       if (!routeResult?.geometry?.coordinates?.length) {
-        throw new Error(
-          t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
-          })
-        );
+        throw new Error(t('mapPage.tourPanel.routeFailed'));
       }
 
       openTourPanel({ tourId: tour.id, tourName: tour.name, stops: sortedStops });
@@ -276,85 +362,22 @@ export default function TourPanel() {
       });
       setShowOnlyHighlightedRoute(true);
 
-      const resolvedMap = mapRef || mapRefObj?.current?.single || null;
-      const drawRouteOnMap = (targetMap) => {
-        if (!targetMap) return;
-
-        const routeFeature = {
-          type: 'Feature',
-          geometry: routeResult.geometry,
-          properties: {
-            ...(routeResult.properties || {}),
-            tour_name: tour.name,
-            total_stops: routePoints.length,
-          },
-        };
-        const routePointsFeatureCollection = buildHighlightRoutePointsFeatureCollection(
-          routeResult.points?.length ? routeResult.points : routePoints
-        );
-
-        clearHighlightedRouteLayers(targetMap);
-        addOrUpdateHighlightedRouteLayers(targetMap, {
-          routeFeature,
-          routePointsFeatureCollection,
-        });
-
-        const coordinates = routeResult.geometry.coordinates;
-        if (Array.isArray(coordinates) && coordinates.length > 1) {
-          const bounds = coordinates.reduce(
-            (acc, coord) => acc.extend(coord),
-            new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
-          );
-
-          targetMap.fitBounds(bounds, {
-            padding: 88,
-            duration: 850,
-          });
-        }
-      };
-
-      if (resolvedMap?.isStyleLoaded?.()) {
-        try {
-          drawRouteOnMap(resolvedMap);
-        } catch (_drawError) {}
-      } else if (resolvedMap) {
-        resolvedMap.once('style.load', () => {
-          try {
-            drawRouteOnMap(resolvedMap);
-          } catch (_drawError) {}
-        });
-      }
-
-      toast.success(
-        t('mapPage.tourPanel.routeReady', {
-          defaultValue: 'Đã hiển thị tuyến tour trên bản đồ.',
-        })
-      );
+      toast.success(t('mapPage.tourPanel.routeReady'));
     } catch (error) {
-      toast.error(
-        error?.message ||
-          t('mapPage.tourPanel.routeFailed', {
-            defaultValue: 'Không thể hiển thị tuyến tour lúc này.',
-          })
-      );
+      toast.error(error?.message || t('mapPage.tourPanel.routeFailed'));
     } finally {
       setRouteLoadingTourId(null);
     }
   };
   return (
-    <div className="space-y-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
-      <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+    <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+      <div className="flex shrink-0 items-center justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div>
-          <p className="typo-section-title text-foreground">
-            {t('mapPage.tourPanel.title', { defaultValue: 'Tour du lịch' })}
-          </p>
+          <p className="typo-section-title text-foreground">{t('mapPage.tourPanel.title')}</p>
           <p className="typo-meta text-muted-foreground">
             {isFetching
-              ? t('mapPage.tourPanel.syncing', { defaultValue: 'Đang đồng bộ...' })
-              : t('mapPage.tourPanel.count', {
-                  defaultValue: '{{count}} tour',
-                  count: tours.length,
-                })}
+              ? t('mapPage.tourPanel.syncing')
+              : t('mapPage.tourPanel.count', { count: tours.length })}
           </p>
         </div>
         <Button
@@ -364,27 +387,25 @@ export default function TourPanel() {
           className="typo-meta h-7"
           onClick={resetTourPanelFilters}
         >
-          {t('mapPage.tourPanel.reset', { defaultValue: 'Đặt lại' })}
+          {t('mapPage.tourPanel.reset')}
         </Button>
       </div>
 
       {activeRouteTourId ? (
-        <div className="grid grid-cols-2 gap-1.5 rounded-lg border p-1.5">
+        <div className="grid shrink-0 grid-cols-2 gap-1.5 rounded-lg border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-1.5">
           <Button
             type="button"
             size="sm"
             variant="outline"
-            className="typo-meta h-8"
+            className="typo-meta h-8 min-w-0 shrink overflow-hidden"
             onClick={() => setShowOnlyHighlightedRoute(!showOnlyHighlightedRoute)}
           >
             <Eye className="h-3.5 w-3.5" />
-            {showOnlyHighlightedRoute
-              ? t('mapPage.tourPanel.showOtherPoints', {
-                  defaultValue: 'Hiện điểm khác',
-                })
-              : t('mapPage.tourPanel.hideOtherPoints', {
-                  defaultValue: 'Ẩn điểm khác',
-                })}
+            <span className="truncate">
+              {showOnlyHighlightedRoute
+                ? t('mapPage.tourPanel.showOtherPoints')
+                : t('mapPage.tourPanel.hideOtherPoints')}
+            </span>
           </Button>
           <Button
             type="button"
@@ -398,29 +419,38 @@ export default function TourPanel() {
               }
               clearHighlightedRoute();
               useMapPanelStore.getState().clearPanel();
-              toast.info(
-                t('mapPage.tourPanel.routeCleared', {
-                  defaultValue: 'Đã xóa tuyến tour khỏi bản đồ.',
-                })
+
+              const mapRefObjCurrent = mapRefObj?.current;
+              const maps = [resolvedMap, mapRefObjCurrent?.single, mapRefObjCurrent?.split].filter(
+                (instance, index, all) => instance && all.indexOf(instance) === index
               );
+              const terrainState = useMapStyleStore.getState().terrainState;
+              maps.forEach((mapInstance) => {
+                mapInstance.flyTo({
+                  center: defaultLatLong,
+                  zoom: defaultZoom,
+                  pitch: pitchDefault(terrainState),
+                  bearing: 0,
+                });
+              });
+
+              toast.info(t('mapPage.tourPanel.routeCleared'));
             }}
           >
             <Trash2 className="h-3.5 w-3.5" />
-            {t('mapPage.tourPanel.clearRoute', { defaultValue: 'Xóa tuyến' })}
+            {t('mapPage.tourPanel.clearRoute')}
           </Button>
         </div>
       ) : null}
 
-      <div className="space-y-2">
+      <div className="shrink-0 space-y-2">
         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
             value={filters.search}
             onChange={(event) => setTourPanelFilters({ search: event.target.value, page: 1 })}
-            placeholder={t('mapPage.tourPanel.searchPlaceholder', {
-              defaultValue: 'Tìm tour...',
-            })}
-            className="h-9 pr-2 pl-8 text-sm"
+            placeholder={t('mapPage.tourPanel.searchPlaceholder')}
+            className="h-9 border-[var(--event-panel-border)] bg-[var(--event-panel-control-bg)] pr-2 pl-8 text-sm"
           />
         </div>
 
@@ -432,142 +462,134 @@ export default function TourPanel() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('common.all', { defaultValue: 'All' })}</SelectItem>
-            <SelectItem value="featured">
-              {t('mapPage.tourPanel.featuredOnly', { defaultValue: 'Nổi bật' })}
-            </SelectItem>
-            <SelectItem value="regular">
-              {t('mapPage.tourPanel.nonFeatured', { defaultValue: 'Không nổi bật' })}
-            </SelectItem>
+            <SelectItem value="all">{t('common.all')}</SelectItem>
+            <SelectItem value="featured">{t('mapPage.tourPanel.featuredOnly')}</SelectItem>
+            <SelectItem value="regular">{t('mapPage.tourPanel.nonFeatured')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-2">
-          {[...Array(3)].map((_, index) => (
-            <TourRowSkeleton key={index} />
-          ))}
-        </div>
-      ) : isError ? (
-        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
-          {t('mapPage.tourPanel.error', { defaultValue: 'Không thể tải danh sách tour.' })}
-        </div>
-      ) : tours.length === 0 ? (
-        <div className="typo-meta text-muted-foreground rounded-xl border border-dashed p-4 text-center">
-          {t('mapPage.tourPanel.empty', { defaultValue: 'Không có tour phù hợp với bộ lọc.' })}
-        </div>
-      ) : (
-        <div className="space-y-2 pr-0.5">
-          {tours.map((tour) => {
-            const isSelected = selectedTour != null && String(selectedTour.id) === String(tour.id);
-            const isRouteActive =
-              activeRouteTourId != null && String(activeRouteTourId) === String(tour.id);
-            const isRouteLoading =
-              routeLoadingTourId != null && String(routeLoadingTourId) === String(tour.id);
-            const imageUrl = withBaseUrl(tour.main_image_url);
+      <ScrollArea className="min-h-0 flex-1">
+        {isLoading ? (
+          <div className="space-y-2">
+            {[...Array(3)].map((_, index) => (
+              <TourRowSkeleton key={index} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
+            {t('mapPage.tourPanel.error')}
+          </div>
+        ) : tours.length === 0 ? (
+          <div className="typo-meta text-muted-foreground rounded-xl border border-dashed border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] p-4 text-center">
+            {t('mapPage.tourPanel.empty')}
+          </div>
+        ) : (
+          <div className="space-y-2 pr-0.5">
+            {tours.map((tour) => {
+              const isSelected =
+                selectedTour != null && String(selectedTour.id) === String(tour.id);
+              const isRouteActive =
+                activeRouteTourId != null && String(activeRouteTourId) === String(tour.id);
+              const isRouteLoading =
+                routeLoadingTourId != null && String(routeLoadingTourId) === String(tour.id);
+              const imageUrl = withBaseUrl(tour.main_image_url);
 
-            return (
-              <article
-                key={tour.id}
-                className={cn(
-                  'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
-                  isRouteActive
-                    ? 'border-primary/60 bg-primary/5'
-                    : isSelected
-                      ? 'border-border bg-muted/20'
-                      : 'from-card to-muted/10 hover:bg-muted/40 bg-linear-to-b'
-                )}
-              >
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={tour.name}
-                    className="h-28 w-full rounded-lg object-cover"
-                    onError={(event) => {
-                      event.target.onerror = null;
-                      event.target.src = placeholderImg;
-                    }}
-                  />
-                ) : null}
-
-                <div className="space-y-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <h4
-                      className="typo-body text-foreground truncate font-semibold"
-                      title={tour.name}
-                    >
-                      {tour.name}
-                    </h4>
-                    {tour.is_featured && (
-                      <Badge variant="secondary" className="shrink-0 gap-1">
-                        <Star className="fill-gold text-gold h-3 w-3" />
-                        {t('tourPage.featured', { defaultValue: 'Featured' })}
-                      </Badge>
-                    )}
-                  </div>
-
-                  <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
-                    <Clock3 className="h-3.5 w-3.5 shrink-0" />
-                    {formatTourDurationLabel(tour, t)}
-                  </p>
-
-                  {(tour.start_location || tour.end_location) && (
-                    <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 shrink-0" />
-                      {tour.start_location && tour.end_location
-                        ? t('mapPage.tourPanel.routeSummary', {
-                            defaultValue: '{{from}} → {{to}}',
-                            from: tour.start_location,
-                            to: tour.end_location,
-                          })
-                        : tour.start_location || tour.end_location}
-                    </p>
+              return (
+                <article
+                  key={tour.id}
+                  className={cn(
+                    'space-y-2 rounded-xl border p-3 shadow-sm transition-colors',
+                    isRouteActive || isSelected
+                      ? 'border-[var(--event-panel-active-border)] bg-[var(--event-panel-active-bg)]'
+                      : 'border-[var(--event-panel-border)] bg-[var(--event-panel-card-bg)] hover:bg-[var(--event-panel-card-hover-bg)]'
                   )}
+                >
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={tour.name}
+                      className="h-28 w-full rounded-lg object-cover"
+                      onError={(event) => {
+                        event.target.onerror = null;
+                        event.target.src = placeholderImg;
+                      }}
+                    />
+                  ) : null}
 
-                  <p
-                    className="typo-body text-muted-foreground line-clamp-3"
-                    title={tour.description || ''}
-                  >
-                    {tour.description ||
-                      t('tourPage.noDescription', { defaultValue: 'No description' })}
-                  </p>
+                  <div className="space-y-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="typo-body text-foreground line-clamp-2 min-w-0 font-semibold">
+                        {tour.name}
+                      </h4>
+                      {tour.is_featured && (
+                        <Badge variant="secondary" className="shrink-0 gap-1">
+                          <Star className="fill-gold text-gold h-3 w-3" />
+                          {t('tourPage.featured')}
+                        </Badge>
+                      )}
+                    </div>
 
-                  <div className="typo-body text-foreground font-semibold">
-                    {formatTourPriceLabel(tour, locale)}
+                    <p className="typo-meta text-muted-foreground flex items-center gap-1.5">
+                      <Clock3 className="h-3.5 w-3.5 shrink-0" />
+                      {formatTourDurationLabel(tour, t)}
+                    </p>
+
+                    {(tour.start_location || tour.end_location) && (
+                      <p className="typo-meta text-muted-foreground line-clamp-1 flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        {tour.start_location && tour.end_location
+                          ? t('mapPage.tourPanel.routeSummary', {
+                              from: tour.start_location,
+                              to: tour.end_location,
+                            })
+                          : tour.start_location || tour.end_location}
+                      </p>
+                    )}
+
+                    <p
+                      className="typo-body text-muted-foreground line-clamp-3"
+                      title={tour.description || ''}
+                    >
+                      {tour.description || t('tourPage.noDescription')}
+                    </p>
+
+                    <div className="typo-body text-foreground font-semibold">
+                      {formatTourPriceLabel(tour, locale)}
+                    </div>
+
+                    <TourCapacitySummary tourId={tour.id} t={t} />
                   </div>
-                </div>
 
-                <div className="flex flex-wrap gap-1.5">
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="typo-meta h-8"
-                    disabled={isRouteLoading}
-                    onClick={() => handleOpenTourRoute(tour)}
-                  >
-                    <Map className="h-3.5 w-3.5" />
-                    {isRouteLoading
-                      ? t('mapPage.tourPanel.loadingRoute', { defaultValue: 'Đang mở...' })
-                      : t('mapPage.tourPanel.openTourOnMap', {
-                          defaultValue: 'Mở tour trên bản đồ',
-                        })}
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="typo-meta h-8"
-                    onClick={() => navigate(`/tour/${tour.slug}`)}
-                  >
-                    {t('tourismPointPage.view_detail', { defaultValue: 'Xem chi tiết' })}
-                  </Button>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      )}
+                  <div className="flex flex-wrap gap-1.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="typo-meta h-8"
+                      disabled={isRouteLoading}
+                      onClick={() => handleOpenTourRoute(tour)}
+                    >
+                      <Map className="h-3.5 w-3.5" />
+                      {isRouteLoading
+                        ? t('mapPage.tourPanel.loadingRoute')
+                        : t('mapPage.tourPanel.openTourOnMap')}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="typo-meta h-8"
+                      onClick={() => navigate(`/tour/${tour.slug}`)}
+                    >
+                      {t('tourismPointPage.view_detail')}
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </ScrollArea>
     </div>
   );
 }

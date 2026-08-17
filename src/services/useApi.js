@@ -1,10 +1,13 @@
 import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import i18n from '@/i18n';
 import { useEffect, useRef } from 'react';
 import { fetcher } from '@/services/fetcher';
 import { mutater } from '@/services/mutater';
 import { tokenManager } from '@/lib/tokenManager';
+import useAuthStore from '@/stores/useAuthStore';
 import { useLoadingStore } from '@/stores/useLoadingStore.js';
+import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { toast } from 'react-toastify';
 import { renderValidationErrors } from '@/services/errorUtils';
 
@@ -14,6 +17,33 @@ const toastError = (content, duration = 5000) =>
   toast.error(content, { autoClose: duration, closeOnClick: true, pauseOnHover: true });
 
 const toastSuccess = (content) => toast.success(content, { autoClose: 3000, closeOnClick: true });
+
+export const LANG_QUERY_KEY_SCOPE = '__lang';
+const SUPPORTED_QUERY_LANGS = new Set(['vi', 'en']);
+
+function hasExplicitLanguageKeyPart(queryKey) {
+  return queryKey.some((keyPart) => {
+    if (SUPPORTED_QUERY_LANGS.has(keyPart)) return true;
+
+    return (
+      keyPart &&
+      typeof keyPart === 'object' &&
+      !Array.isArray(keyPart) &&
+      (Object.prototype.hasOwnProperty.call(keyPart, LANG_QUERY_KEY_SCOPE) ||
+        Object.prototype.hasOwnProperty.call(keyPart, 'lang'))
+    );
+  });
+}
+
+export function withLanguageQueryKey(key, lang) {
+  const queryKey = Array.isArray(key) ? key : [key];
+
+  if (hasExplicitLanguageKeyPart(queryKey)) {
+    return queryKey;
+  }
+
+  return [...queryKey, { [LANG_QUERY_KEY_SCOPE]: lang || 'vi' }];
+}
 
 // ─── useApiQuery ──────────────────────────────────────────────────────────────
 
@@ -32,7 +62,9 @@ const toastSuccess = (content) => toast.success(content, { autoClose: 3000, clos
  */
 export function useApiQuery(key, endPoint, options = {}, loading = true, notification = false) {
   const navigate = useNavigate();
+  const lang = useLanguageStore((state) => state.lang);
   const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
+  const { queryKey: _optionsQueryKey, queryFn: optionsQueryFn, ...queryOptions } = options || {};
   const loadingKeyRef = useRef(
     `query:${Array.isArray(key) ? key.join('.') : key}:${endPoint}:${Math.random()
       .toString(36)
@@ -40,9 +72,9 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
   );
 
   const query = useQuery({
-    queryKey: Array.isArray(key) ? key : [key],
-    queryFn: () => fetcher(endPoint),
-    ...options,
+    ...queryOptions,
+    queryKey: withLanguageQueryKey(key, lang),
+    queryFn: optionsQueryFn || (() => fetcher(endPoint)),
   });
 
   // Sync global loading overlay
@@ -72,9 +104,9 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
     const { status, isAuthRequest, errors, message } = query.error;
 
     if (status === 401 && !isAuthRequest) {
-      // TODO: if backend uses httpOnly cookies, no tokenManager.clearTokens() needed
       tokenManager.clearTokens();
-      toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+      useAuthStore.getState().clearAuth();
+      toastError(message || i18n.t('common.errors.session_expired'), 3000);
       navigate('/login');
       return;
     }
@@ -108,6 +140,7 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
  */
 export function useApiQueries(config = {}, loading = true) {
   const navigate = useNavigate();
+  const lang = useLanguageStore((state) => state.lang);
   const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
   const rawQueries = Array.isArray(config?.queries) ? config.queries : [];
   const loadingKeyRef = useRef(`queries:${Math.random().toString(36).slice(2)}`);
@@ -117,7 +150,7 @@ export function useApiQueries(config = {}, loading = true) {
       const { queryKey, endPoint, queryFn, ...rest } = queryConfig || {};
 
       return {
-        queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
+        queryKey: withLanguageQueryKey(queryKey, lang),
         queryFn: queryFn || (() => fetcher(endPoint)),
         ...rest,
       };
@@ -149,7 +182,7 @@ export function useApiQueries(config = {}, loading = true) {
 
     if (status === 401 && !isAuthRequest) {
       tokenManager.clearTokens();
-      toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+      toastError(message || i18n.t('common.errors.session_expired'), 3000);
       navigate('/login');
       return;
     }
@@ -211,7 +244,7 @@ export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
       if (status === 401 && !isAuthRequest) {
         // TODO: if backend uses httpOnly cookies, no tokenManager.clearTokens() needed
         tokenManager.clearTokens();
-        toastError(message || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 3000);
+        toastError(message || i18n.t('common.errors.session_expired'), 3000);
         navigate('/login');
       } else if (status === 400 && Array.isArray(errors) && errors.length) {
         toastError(renderValidationErrors(errors), 8000);
@@ -243,11 +276,14 @@ export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
  */
 export function useQueryCache() {
   const queryClient = useQueryClient();
+  const lang = useLanguageStore((state) => state.lang);
+
+  const currentLanguageKey = (key) => withLanguageQueryKey(key, lang);
 
   return {
-    getCachedData: (key) => queryClient.getQueryData(Array.isArray(key) ? key : [key]),
+    getCachedData: (key) => queryClient.getQueryData(currentLanguageKey(key)),
 
-    setCachedData: (key, data) => queryClient.setQueryData(Array.isArray(key) ? key : [key], data),
+    setCachedData: (key, data) => queryClient.setQueryData(currentLanguageKey(key), data),
 
     removeQuery: (key) => queryClient.removeQueries({ queryKey: Array.isArray(key) ? key : [key] }),
 

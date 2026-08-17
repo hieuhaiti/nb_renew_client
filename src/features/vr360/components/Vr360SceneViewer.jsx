@@ -1,4 +1,5 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import cameraDroneIcon from '@/assets/hotspot/camera-drone.png';
 import { useTranslation } from 'react-i18next';
 import { cn, withBaseUrl } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,14 +18,20 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
-
 const AFRAME_CDN = 'https://aframe.io/releases/1.5.0/aframe.min.js';
 const AFRAME_TEXT_FONT = 'https://cdn.aframe.io/fonts/Roboto-msdf.json';
 const AFRAME_TEXT_FONT_IMAGE = 'https://cdn.aframe.io/fonts/Roboto-msdf.png';
-const DEFAULT_CAMERA_POSITION = { x: 0, y: 1.6, z: 0 };
-const DEFAULT_CAMERA_ROTATION = { x: 0, y: 0, z: 0 };
+const DEFAULT_CAMERA_POSITION = {
+  x: 0,
+  y: 1.6,
+  z: 0,
+};
+const DEFAULT_CAMERA_ROTATION = {
+  x: 0,
+  y: 0,
+  z: 0,
+};
 const DEFAULT_FOV = 80;
-
 const LABEL_MAX_WIDTH = 720;
 const LABEL_FONT_SIZE = 50;
 const LABEL_MAX_LINES = 3;
@@ -36,7 +43,6 @@ const LABEL_TEXT_COLOR = '#ffffff';
 const LABEL_BG_COLOR = 'rgba(15, 23, 42, 0.72)';
 const LABEL_PLANE_BASE_WIDTH = 2.4;
 const LABEL_Y_OFFSET = 0.38;
-
 function normalizeLabel(value) {
   const safe = String(value || '')
     .replace(/\s+/g, ' ')
@@ -44,7 +50,6 @@ function normalizeLabel(value) {
     .trim();
   return safe || '-';
 }
-
 function roundRectPath(ctx, x, y, width, height, radius) {
   const safeRadius = Math.min(radius, width / 2, height / 2);
   ctx.beginPath();
@@ -55,36 +60,28 @@ function roundRectPath(ctx, x, y, width, height, radius) {
   ctx.arcTo(x, y, x + width, y, safeRadius);
   ctx.closePath();
 }
-
 function splitLabelLines(ctx, label, maxWidth, maxLines) {
   const words = normalizeLabel(label).split(' ');
   const lines = [];
   let currentLine = '';
-
   for (let i = 0; i < words.length; i += 1) {
     const word = words[i];
     const candidate = currentLine ? `${currentLine} ${word}` : word;
     const candidateWidth = ctx.measureText(candidate).width;
-
     if (candidateWidth <= maxWidth || !currentLine) {
       currentLine = candidate;
       continue;
     }
-
     lines.push(currentLine);
     currentLine = word;
-
     if (lines.length >= maxLines - 1) break;
   }
-
   if (lines.length < maxLines && currentLine) {
     lines.push(currentLine);
   }
-
   if (lines.length > maxLines) {
     return lines.slice(0, maxLines);
   }
-
   if (lines.length === maxLines && words.join(' ') !== lines.join(' ')) {
     let last = lines[maxLines - 1];
     while (last.length > 1 && ctx.measureText(`${last}...`).width > maxWidth) {
@@ -92,69 +89,53 @@ function splitLabelLines(ctx, label, maxWidth, maxLines) {
     }
     lines[maxLines - 1] = `${last}...`;
   }
-
   return lines;
 }
-
 function createVietnameseLabelTexture(label) {
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   if (!context) return null;
-
   const pixelRatio = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   const logicalWidth = LABEL_MAX_WIDTH;
-
   context.font = `600 ${LABEL_FONT_SIZE}px "Be Vietnam Pro", "Noto Sans", Arial, sans-serif`;
   const maxTextWidth = logicalWidth - LABEL_PADDING_X * 2;
   const lines = splitLabelLines(context, label, maxTextWidth, LABEL_MAX_LINES);
   const logicalHeight = LABEL_PADDING_Y * 2 + lines.length * LABEL_LINE_HEIGHT;
-
   canvas.width = Math.ceil(logicalWidth * pixelRatio);
   canvas.height = Math.ceil(logicalHeight * pixelRatio);
-
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, logicalWidth, logicalHeight);
-
   roundRectPath(context, 0, 0, logicalWidth, logicalHeight, LABEL_BORDER_RADIUS);
   context.fillStyle = LABEL_BG_COLOR;
   context.fill();
-
   context.font = `600 ${LABEL_FONT_SIZE}px "Be Vietnam Pro", "Noto Sans", Arial, sans-serif`;
   context.fillStyle = LABEL_TEXT_COLOR;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-
   const centerX = logicalWidth / 2;
   const contentHeight = lines.length * LABEL_LINE_HEIGHT;
   const startY = (logicalHeight - contentHeight) / 2 + LABEL_LINE_HEIGHT / 2;
-
   lines.forEach((line, lineIndex) => {
     context.fillText(line, centerX, startY + lineIndex * LABEL_LINE_HEIGHT);
   });
-
   return {
     canvas,
     width: logicalWidth,
     height: logicalHeight,
   };
 }
-
 function createHotspotLabel(label) {
   const THREE = window.AFRAME?.THREE || window.THREE;
   if (!THREE) return null;
-
   const texturePayload = createVietnameseLabelTexture(label);
   if (!texturePayload) return null;
-
   const texture = new THREE.CanvasTexture(texturePayload.canvas);
   texture.minFilter = THREE.LinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = false;
   texture.needsUpdate = true;
-
   const planeWidth = LABEL_PLANE_BASE_WIDTH;
   const planeHeight = (texturePayload.height / texturePayload.width) * planeWidth;
-
   const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
   const material = new THREE.MeshBasicMaterial({
     map: texture,
@@ -163,7 +144,6 @@ function createHotspotLabel(label) {
     depthWrite: false,
     side: THREE.DoubleSide,
   });
-
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(0, LABEL_Y_OFFSET, 0);
   mesh.renderOrder = 1000;
@@ -172,10 +152,8 @@ function createHotspotLabel(label) {
     material.map?.dispose();
     material.dispose();
   };
-
   return mesh;
 }
-
 function disposeLabelObject(entity) {
   const labelObject = entity?.getObject3D?.('hotspot-label');
   if (labelObject?.userData?.disposeLabel) {
@@ -185,7 +163,6 @@ function disposeLabelObject(entity) {
     entity.removeObject3D('hotspot-label');
   }
 }
-
 function disposeHotspotEntity(entity) {
   if (!entity) return;
   const labelEntity = entity.firstElementChild;
@@ -193,61 +170,293 @@ function disposeHotspotEntity(entity) {
     disposeLabelObject(labelEntity);
   }
 }
-
 function loadAFrame() {
   return new Promise((resolve) => {
     if (window.AFRAME) {
       resolve();
       return;
     }
-
     const existing = document.querySelector(`script[src="${AFRAME_CDN}"]`);
     if (existing) {
-      existing.addEventListener('load', resolve, { once: true });
+      existing.addEventListener(
+        'load',
+        () => {
+          resolve();
+        },
+        {
+          once: true,
+        }
+      );
       return;
     }
-
     const script = document.createElement('script');
     script.src = AFRAME_CDN;
-    script.onload = resolve;
+    script.onload = () => {
+      resolve();
+    };
     document.head.appendChild(script);
   });
 }
-
+function registerFaceCameraComponent() {
+  if (!window.AFRAME) return;
+  if (window.AFRAME.components['face-camera']) return;
+  window.AFRAME.registerComponent('face-camera', {
+    init() {
+      this._cameraPos = new window.AFRAME.THREE.Vector3();
+    },
+    tick() {
+      const camera = this.el.sceneEl?.camera;
+      if (!camera) return;
+      camera.getWorldPosition(this._cameraPos);
+      this.el.object3D.lookAt(this._cameraPos);
+    },
+  });
+}
 function clampVolume(value) {
   const next = Number(value);
   if (!Number.isFinite(next)) return 50;
   return Math.min(100, Math.max(0, next));
 }
-
 function toRadians(degree) {
   return (Number(degree) * Math.PI) / 180;
 }
-
-function toDegrees(radian) {
-  return (Number(radian) * 180) / Math.PI;
-}
-
 function normalizeBearing(degree) {
   const safe = Number.isFinite(Number(degree)) ? Number(degree) : 0;
   return ((safe % 360) + 360) % 360;
 }
-
 const RESET_NORTH_EVENT = 'vr360-reset-north';
-
+function latLonToXYZ(targetLat, targetLon, centerLat, centerLon, radius = 9.5) {
+  const R = 6371;
+  const lat1 = (centerLat * Math.PI) / 180;
+  const lat2 = (targetLat * Math.PI) / 180;
+  const dLat = lat2 - lat1;
+  const dLon = ((targetLon - centerLon) * Math.PI) / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  const distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  const bearing = ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+  const brRad = (bearing * Math.PI) / 180;
+  return {
+    x: radius * Math.sin(brRad),
+    y: 4.6,
+    z: -radius * Math.cos(brRad),
+    bearing,
+    distance,
+  };
+}
+function getNearbySpotCoords(spot) {
+  let geom = spot?.geometry;
+  if (!geom && spot?.geometry_data) {
+    try {
+      geom =
+        typeof spot.geometry_data === 'string'
+          ? JSON.parse(spot.geometry_data)
+          : spot.geometry_data;
+    } catch {
+      geom = null;
+    }
+  }
+  if (geom?.type === 'Point' && Array.isArray(geom.coordinates) && geom.coordinates.length >= 2) {
+    const [lon, lat] = geom.coordinates;
+    if (Number.isFinite(lon) && Number.isFinite(lat)) return [lon, lat];
+  }
+  const lon = Number(spot?.longitude ?? spot?.lng);
+  const lat = Number(spot?.latitude ?? spot?.lat);
+  if (Number.isFinite(lon) && Number.isFinite(lat)) return [lon, lat];
+  return null;
+}
+function renderNearbySpots(root, nearbySpots, spotCoordinates, onClickRef, cursorProgressRef) {
+  while (root.firstChild) root.removeChild(root.firstChild);
+  if (!nearbySpots?.length || !spotCoordinates) return;
+  const [centerLng, centerLat] = spotCoordinates;
+  nearbySpots.forEach((spot) => {
+    const coords = getNearbySpotCoords(spot);
+    if (!coords) return;
+    const [lon, lat] = coords;
+    const coord3 = latLonToXYZ(lat, lon, centerLat, centerLng);
+    const s = Math.max(0.25, Math.min(0.5, 0.4 / (1 + coord3.distance * 0.3)));
+    const sF = (s * 1.3).toFixed(3);
+    const facingAngle = ((360 - coord3.bearing) % 360).toFixed(1);
+    const group = document.createElement('a-entity');
+    group.setAttribute('position', `${coord3.x.toFixed(3)} ${coord3.y} ${coord3.z.toFixed(3)}`);
+    const body = document.createElement('a-entity');
+    body.setAttribute('rotation', `0 ${facingAngle} 0`);
+    body.setAttribute('scale', `${s} ${s} ${s}`);
+    body.setAttribute(
+      'animation__focus',
+      `property: scale; to: ${sF} ${sF} ${sF}; startEvents: mouseenter; dur: 300; easing: easeOutElastic`
+    );
+    body.setAttribute(
+      'animation__unfocus',
+      `property: scale; to: ${s} ${s} ${s}; startEvents: mouseleave; dur: 400; easing: easeOutCubic`
+    );
+    const pulseRing = document.createElement('a-ring');
+    pulseRing.setAttribute('radius-inner', '0.2');
+    pulseRing.setAttribute('radius-outer', '0.5');
+    pulseRing.setAttribute('color', '#FFD700');
+    pulseRing.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.7');
+    pulseRing.setAttribute(
+      'animation__scale',
+      'property: scale; from: 1 1 1; to: 4 4 4; dur: 1800; loop: true; easing: easeInOutSine'
+    );
+    pulseRing.setAttribute(
+      'animation__opacity',
+      'property: material.opacity; from: 0.7; to: 0; dur: 1800; loop: true; easing: easeInOutSine'
+    );
+    body.appendChild(pulseRing);
+    const outerRing = document.createElement('a-ring');
+    outerRing.setAttribute('position', '0 0 0.001');
+    outerRing.setAttribute('radius-inner', '0.7');
+    outerRing.setAttribute('radius-outer', '0.9');
+    outerRing.setAttribute('color', '#FFEB3B');
+    outerRing.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.85');
+    body.appendChild(outerRing);
+    const icon = document.createElement('a-image');
+    icon.setAttribute('src', cameraDroneIcon);
+    icon.setAttribute('width', '0.35');
+    icon.setAttribute('height', '0.35');
+    icon.setAttribute(
+      'animation__bob',
+      'property: position; to: 0 0.05 0; dir: alternate; dur: 1500; loop: true; easing: easeInOutSine'
+    );
+    body.appendChild(icon);
+    const clickTarget = document.createElement('a-circle');
+    clickTarget.setAttribute('radius', '1.0');
+    clickTarget.setAttribute('position', '0 0 0.002');
+    clickTarget.setAttribute(
+      'material',
+      'transparent: true; opacity: 0; depthTest: false; depthWrite: false'
+    );
+    clickTarget.classList.add('hs-click-target');
+    clickTarget.addEventListener('click', () => {
+      onClickRef.current?.(spot);
+    });
+    clickTarget.addEventListener('mouseenter', () => {
+      const ring = cursorProgressRef?.current;
+      if (!ring) return;
+      ring.setAttribute(
+        'material',
+        'color: #00ff00; shader: flat; opacity: 0.8; transparent: true'
+      );
+      ring.setAttribute(
+        'animation__progress',
+        'property: geometry.thetaLength; from: 0; to: 360; dur: 1500; easing: linear'
+      );
+    });
+    clickTarget.addEventListener('mouseleave', () => {
+      const ring = cursorProgressRef?.current;
+      if (!ring) return;
+      ring.removeAttribute('animation__progress');
+      ring.setAttribute('geometry', 'thetaLength: 0');
+      ring.setAttribute('material', 'color: #00ff00; shader: flat; opacity: 0; transparent: true');
+    });
+    body.appendChild(clickTarget);
+    group.appendChild(body);
+    root.appendChild(group);
+  });
+}
+function renderHotspots(root, hotspots, onClickRef, cursorProgressRef) {
+  while (root.firstChild) {
+    disposeHotspotEntity(root.firstChild);
+    root.removeChild(root.firstChild);
+  }
+  hotspots
+    .filter((hotspot) => hotspot.is_active !== false && hotspot.visible !== false)
+    .forEach((hotspot) => {
+      const pos = hotspot.position || {
+        x: 0,
+        y: 1.6,
+        z: -3,
+      };
+      const entity = document.createElement('a-entity');
+      entity.setAttribute('position', `${pos.x ?? 0} ${pos.y ?? 1.6} ${pos.z ?? -3}`);
+      const labelEntity = document.createElement('a-entity');
+      const label = normalizeLabel(hotspot.name);
+      const labelMesh = createHotspotLabel(label);
+      if (labelMesh) {
+        labelEntity.setObject3D('hotspot-label', labelMesh);
+      } else {
+        labelEntity.setAttribute('text', {
+          value: label,
+          font: AFRAME_TEXT_FONT,
+          fontImage: AFRAME_TEXT_FONT_IMAGE,
+          color: '#ffffff',
+          align: 'center',
+          width: 4,
+          wrapCount: 24,
+          shader: 'msdf',
+          negate: false,
+        });
+      }
+      labelEntity.setAttribute('face-camera', '');
+      const targetSceneId = hotspot.target_scene_id || hotspot.linked_scene_id;
+      const targetSpotId = hotspot.linked_spot_id ?? hotspot.target_spot_id;
+      const targetSpotSlug = hotspot.target_spot_slug;
+      const hasNavigation = Boolean(targetSceneId || targetSpotId || targetSpotSlug);
+      const hasSceneNav = Boolean(targetSceneId);
+      const dot = document.createElement('a-entity');
+      dot.setAttribute('geometry', 'primitive: sphere; radius: 0.1');
+      dot.setAttribute(
+        'material',
+        `color: ${hasSceneNav ? '#f59e0b' : '#94a3b8'}; opacity: 0.9; transparent: true; depthTest: false`
+      );
+      entity.appendChild(dot);
+      if (hasNavigation) {
+        const clickSphere = document.createElement('a-entity');
+        clickSphere.setAttribute('geometry', 'primitive: sphere; radius: 0.22');
+        clickSphere.setAttribute(
+          'material',
+          'transparent: true; opacity: 0; depthTest: false; depthWrite: false'
+        );
+        clickSphere.classList.add('hs-click-target');
+        clickSphere.addEventListener('click', () => {
+          onClickRef.current?.(hotspot);
+        });
+        clickSphere.addEventListener('mouseenter', () => {
+          const ring = cursorProgressRef?.current;
+          if (!ring) return;
+          ring.setAttribute(
+            'material',
+            'color: #00ff00; shader: flat; opacity: 0.8; transparent: true'
+          );
+          ring.setAttribute(
+            'animation__progress',
+            'property: geometry.thetaLength; from: 0; to: 360; dur: 1500; easing: linear'
+          );
+        });
+        clickSphere.addEventListener('mouseleave', () => {
+          const ring = cursorProgressRef?.current;
+          if (!ring) return;
+          ring.removeAttribute('animation__progress');
+          ring.setAttribute('geometry', 'thetaLength: 0');
+          ring.setAttribute(
+            'material',
+            'color: #00ff00; shader: flat; opacity: 0; transparent: true'
+          );
+        });
+        entity.appendChild(clickSphere);
+      }
+      entity.appendChild(labelEntity);
+      root.appendChild(entity);
+    });
+}
 function getNarrationRawUrl(scene) {
   if (!scene) return '';
   return scene.narration_audio_url || scene.ambient_sound_url || '';
 }
-
 export default function Vr360SceneViewer({
   scene,
   hotspots = [],
+  nearbySpots = [],
+  spotCoordinates = null,
   onPrevScene,
   onNextScene,
   canGoPrevScene = false,
   canGoNextScene = false,
   onHotspotClick,
+  onNearbySpotClick,
+  narrationToggleRef = null,
   className,
 }) {
   const { t } = useTranslation();
@@ -260,8 +469,12 @@ export default function Vr360SceneViewer({
   const volumeControlRef = useRef(null);
   const headingRafRef = useRef(null);
   const lastHeadingRef = useRef(null);
-
+  const initialCameraYawRef = useRef(0);
+  const latestImageUrlRef = useRef(null);
+  const isNarrationAutoPlayRef = useRef(true);
   const [aframeReady, setAframeReady] = useState(!!window.AFRAME);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraReadyVersion, setCameraReadyVersion] = useState(0);
   const [isSceneImageLoading, setIsSceneImageLoading] = useState(false);
   const [narrationVolume, setNarrationVolume] = useState(50);
   const [isNarrationMuted, setIsNarrationMuted] = useState(false);
@@ -270,89 +483,180 @@ export default function Vr360SceneViewer({
   const [isVolumeControlOpen, setIsVolumeControlOpen] = useState(false);
   const fovAngle = useFovStore((state) => state.fovAngle);
   const setFovAngle = useFovStore((state) => state.setFovAngle);
-
+  const fovAngleRef = useRef(fovAngle);
+  useEffect(() => {
+    fovAngleRef.current = fovAngle;
+  }, [fovAngle]);
   const onHotspotClickRef = useRef(onHotspotClick);
   useEffect(() => {
     onHotspotClickRef.current = onHotspotClick;
   }, [onHotspotClick]);
-
+  const nearbyHotspotsRootRef = useRef(null);
+  const cursorProgressRef = useRef(null);
+  const isVrModeRef = useRef(false);
+  const onNearbySpotClickRef = useRef(onNearbySpotClick);
+  const nearbySpotsPropRef = useRef(nearbySpots);
+  const spotCoordinatesPropRef = useRef(spotCoordinates);
+  const hotspotsPropRef = useRef(hotspots);
+  useEffect(() => {
+    onNearbySpotClickRef.current = onNearbySpotClick;
+  }, [onNearbySpotClick]);
+  useEffect(() => {
+    nearbySpotsPropRef.current = nearbySpots;
+  });
+  useEffect(() => {
+    spotCoordinatesPropRef.current = spotCoordinates;
+  });
+  useEffect(() => {
+    hotspotsPropRef.current = hotspots;
+  });
   const narrationRawUrl = getNarrationRawUrl(scene);
   const narrationUrl = useMemo(
     () => (narrationRawUrl ? withBaseUrl(narrationRawUrl) || narrationRawUrl : ''),
     [narrationRawUrl]
   );
-
   const hasNarration = Boolean(narrationUrl);
-
   const applySceneCamera = useCallback(() => {
-    if (!scene || !aCameraRef.current) return;
-
+    if (!scene || !aCameraRef.current) {
+      return;
+    }
     const camera = aCameraRef.current;
     const camPos = scene.camera_position || DEFAULT_CAMERA_POSITION;
     const camRot = scene.camera_rotation || DEFAULT_CAMERA_ROTATION;
-    const cameraFov = Number(fovAngle) || Number(scene.camera_fov) || DEFAULT_FOV;
-
+    const rotX = Number(camRot.x ?? 0);
+    const rotY = Number(camRot.y ?? 0);
+    const rotZ = Number(camRot.z ?? 0);
+    initialCameraYawRef.current = rotY;
     camera.setAttribute('position', `${camPos.x ?? 0} ${camPos.y ?? 1.6} ${camPos.z ?? 0}`);
-    camera.setAttribute('rotation', `${camRot.x ?? 0} ${camRot.y ?? 0} ${camRot.z ?? 0}`);
-    camera.setAttribute('fov', String(cameraFov));
-
+    camera.setAttribute('rotation', `${rotX} ${rotY} ${rotZ}`);
     const lookControls = camera.components?.['look-controls'];
     if (lookControls?.yawObject && lookControls?.pitchObject) {
-      lookControls.yawObject.rotation.y = toRadians(camRot.y ?? 0);
-      lookControls.pitchObject.rotation.x = toRadians(camRot.x ?? 0);
+      lookControls.yawObject.rotation.y = toRadians(rotY);
+      lookControls.pitchObject.rotation.x = toRadians(rotX);
       if (lookControls.pitchObject.rotation.z !== undefined) {
-        lookControls.pitchObject.rotation.z = toRadians(camRot.z ?? 0);
+        lookControls.pitchObject.rotation.z = toRadians(rotZ);
       }
     }
-
-    const cameraObj = camera.getObject3D('camera');
-    if (cameraObj) {
-      cameraObj.fov = cameraFov;
-      cameraObj.updateProjectionMatrix();
-    }
-  }, [scene, fovAngle]);
-
+    const initialBearing = 0;
+    lastHeadingRef.current = null;
+    window.dispatchEvent(
+      new CustomEvent('smooth-fov-update', {
+        detail: {
+          bearing: initialBearing,
+        },
+      })
+    );
+  }, [scene]);
   useEffect(() => {
-    loadAFrame().then(() => setAframeReady(true));
+    loadAFrame().then(() => {
+      registerFaceCameraComponent();
+      setAframeReady(true);
+    });
   }, []);
-
   useEffect(() => {
-    if (!aframeReady || !containerRef.current || !scene) return;
+    if (!aframeReady || !containerRef.current) return;
     if (aSceneRef.current) return;
-
     const container = containerRef.current;
     const aScene = document.createElement('a-scene');
     aScene.setAttribute('embedded', '');
-    aScene.setAttribute('vr-mode-ui', 'enabled: false');
+    aScene.setAttribute('vr-mode-ui', 'enabled: true');
+    if (!document.getElementById('vr-btn-fix')) {
+      const s = document.createElement('style');
+      s.id = 'vr-btn-fix';
+      s.textContent = '.a-enter-vr { display: block !important; z-index: 9999 !important; }';
+      document.head.appendChild(s);
+    }
     aScene.setAttribute('loading-screen', 'enabled: false');
     aScene.setAttribute(
       'renderer',
-      'antialias: false; precision: mediump; colorManagement: true; sortObjects: true; physicallyCorrectLights: false;'
+      'antialias: false; precision: mediump; colorManagement: true; sortTransparentObjects: true; physicallyCorrectLights: false;'
     );
     aScene.style.height = '100%';
     aScene.style.width = '100%';
-
     const aSky = document.createElement('a-sky');
     aSky.setAttribute('crossorigin', 'anonymous');
     aSky.setAttribute('segments-width', '32');
     aSky.setAttribute('segments-height', '16');
     aScene.appendChild(aSky);
-
     const hotspotsRoot = document.createElement('a-entity');
     aScene.appendChild(hotspotsRoot);
-
+    const nearbyHotspotsRoot = document.createElement('a-entity');
+    aScene.appendChild(nearbyHotspotsRoot);
     const aCamera = document.createElement('a-camera');
     aCamera.setAttribute('look-controls', 'enabled: true');
     aCamera.setAttribute('cursor', 'rayOrigin: mouse');
-    aCamera.setAttribute('raycaster', 'objects: .hs-click-target; recursive: false');
+    aCamera.setAttribute('raycaster', 'objects: .hs-click-target');
+    const aCursor = document.createElement('a-entity');
+    aCursor.setAttribute('cursor', 'fuse: true; fuseTimeout: 1500');
+    aCursor.setAttribute('position', '0 0 -0.5');
+    aCursor.setAttribute('geometry', 'primitive: ring; radiusInner: 0.008; radiusOuter: 0.012');
+    aCursor.setAttribute('material', 'color: #00ffff; shader: flat; opacity: 0.9');
+    aCursor.setAttribute('raycaster', 'objects: .hs-click-target; far: 20');
+    const aCursorProgress = document.createElement('a-ring');
+    aCursorProgress.setAttribute('radius-inner', '0.014');
+    aCursorProgress.setAttribute('radius-outer', '0.018');
+    aCursorProgress.setAttribute(
+      'material',
+      'color: #00ff00; shader: flat; opacity: 0; transparent: true'
+    );
+    aCursorProgress.setAttribute('theta-start', '0');
+    aCursorProgress.setAttribute('theta-length', '0');
+    aCursorProgress.setAttribute('position', '0 0 0.001');
+    aCursor.appendChild(aCursorProgress);
+    cursorProgressRef.current = aCursorProgress;
+    aCamera.appendChild(aCursor);
     aScene.appendChild(aCamera);
-
     aSkyRef.current = aSky;
     hotspotsRootRef.current = hotspotsRoot;
+    nearbyHotspotsRootRef.current = nearbyHotspotsRoot;
     aCameraRef.current = aCamera;
     aSceneRef.current = aScene;
+    setCameraReady(true);
+    setCameraReadyVersion((version) => version + 1);
     container.appendChild(aScene);
-
+    aScene.addEventListener('enter-vr', () => {
+      isVrModeRef.current = true;
+      aCamera.setAttribute('look-controls', 'enabled: true; touchEnabled: false');
+    });
+    aScene.addEventListener('exit-vr', () => {
+      isVrModeRef.current = false;
+      aCamera.setAttribute('look-controls', 'enabled: true; touchEnabled: true');
+    });
+    const applyPendingImage = () => {
+      const url = latestImageUrlRef.current;
+      if (url && aSkyRef.current) {
+        aSkyRef.current.setAttribute('src', url);
+        aSkyRef.current.setAttribute('color', '#ffffff');
+      }
+    };
+    if (aScene.hasLoaded) {
+      applyPendingImage();
+    } else {
+      aScene.addEventListener(
+        'loaded',
+        () => {
+          applyPendingImage();
+          setCameraReady(true);
+          setCameraReadyVersion((version) => version + 1);
+        },
+        {
+          once: true,
+        }
+      );
+    }
+    aCamera.addEventListener('componentinitialized', (event) => {
+      if (event?.detail?.name !== 'look-controls') return;
+      setCameraReady(true);
+      setCameraReadyVersion((version) => version + 1);
+    });
+    renderHotspots(hotspotsRoot, hotspotsPropRef.current, onHotspotClickRef, cursorProgressRef);
+    renderNearbySpots(
+      nearbyHotspotsRoot,
+      nearbySpotsPropRef.current,
+      spotCoordinatesPropRef.current,
+      onNearbySpotClickRef,
+      cursorProgressRef
+    );
     return () => {
       try {
         container.removeChild(aScene);
@@ -362,211 +666,122 @@ export default function Vr360SceneViewer({
       aSceneRef.current = null;
       aSkyRef.current = null;
       hotspotsRootRef.current = null;
+      nearbyHotspotsRootRef.current = null;
       aCameraRef.current = null;
     };
-  }, [aframeReady, scene]);
-
+  }, [aframeReady]);
   useEffect(() => {
-    if (!scene || !aSkyRef.current) return;
-
+    if (!scene) return;
     const rawUrl = scene.equirectangular_image_url;
     const imageUrl = rawUrl ? withBaseUrl(rawUrl) || rawUrl : '';
-
+    latestImageUrlRef.current = imageUrl;
     if (imageUrl) {
       setIsSceneImageLoading(true);
       const image = new Image();
       image.crossOrigin = 'anonymous';
       image.decoding = 'async';
-
       image.onload = () => {
-        if (!aSkyRef.current) return;
-        aSkyRef.current.setAttribute('src', imageUrl);
-        aSkyRef.current.setAttribute('color', '#ffffff');
+        if (aSkyRef.current) {
+          aSkyRef.current.setAttribute('src', imageUrl);
+          aSkyRef.current.setAttribute('color', '#ffffff');
+        }
         setIsSceneImageLoading(false);
       };
-
       image.onerror = () => {
         setIsSceneImageLoading(false);
       };
-
       image.src = imageUrl;
-
       return () => {
         image.onload = null;
         image.onerror = null;
       };
     }
-
     setIsSceneImageLoading(false);
-    aSkyRef.current.removeAttribute('src');
-    aSkyRef.current.setAttribute('color', '#1a1a2e');
+    if (aSkyRef.current) {
+      aSkyRef.current.removeAttribute('src');
+      aSkyRef.current.setAttribute('color', '#1a1a2e');
+    }
   }, [scene?.id, scene?.equirectangular_image_url]);
-
   useEffect(() => {
     applySceneCamera();
-  }, [applySceneCamera]);
-
+  }, [applySceneCamera, cameraReady, cameraReadyVersion]);
   useEffect(() => {
     const sceneFov = Number(scene?.camera_fov);
-    if (!Number.isFinite(sceneFov)) return;
-    setFovAngle(sceneFov);
+    const nextFov = Number.isFinite(sceneFov) ? sceneFov : DEFAULT_FOV;
+    setFovAngle(nextFov);
   }, [scene?.id, scene?.camera_fov, setFovAngle]);
-
   useEffect(() => {
     const cameraEl = aCameraRef.current;
     if (!cameraEl) return;
-
     const currentFov = Number(fovAngle) || Number(scene?.camera_fov) || DEFAULT_FOV;
-    cameraEl.setAttribute('animation__fov', {
-      property: 'fov',
-      to: currentFov,
-      dur: 300,
-      easing: 'easeInOutQuad',
-    });
+    const cameraObj = cameraEl.getObject3D('camera');
+    // Chỉ dùng setAttribute — KHÔNG dùng animation__fov cùng lúc.
+    // animation__fov chạy 300ms từ old→new, nhưng setAttribute đã jump ngay lập tức
+    // → 2 mechanism xung đột, camera giật qua lại giữa 2 giá trị.
     cameraEl.setAttribute('fov', currentFov);
 
-    const cameraObj = cameraEl.getObject3D('camera');
+    // Direct THREE update để render ngay lập tức, không chờ A-Frame component tick
     if (cameraObj) {
       cameraObj.fov = currentFov;
       cameraObj.updateProjectionMatrix();
     }
   }, [fovAngle, scene?.id, scene?.camera_fov]);
-
   useEffect(() => {
     const root = hotspotsRootRef.current;
     if (!root) return;
-
-    while (root.firstChild) {
-      disposeHotspotEntity(root.firstChild);
-      root.removeChild(root.firstChild);
-    }
-
-    hotspots
-      .filter((hotspot) => hotspot.is_active !== false && hotspot.visible !== false)
-      .forEach((hotspot) => {
-        const pos = hotspot.position || { x: 0, y: 1.6, z: -3 };
-        const entity = document.createElement('a-entity');
-        entity.setAttribute('position', `${pos.x ?? 0} ${pos.y ?? 1.6} ${pos.z ?? -3}`);
-
-        const labelEntity = document.createElement('a-entity');
-        const label = normalizeLabel(hotspot.name);
-        const labelMesh = createHotspotLabel(label);
-
-        if (labelMesh) {
-          labelEntity.setObject3D('hotspot-label', labelMesh);
-        } else {
-          labelEntity.setAttribute('text', {
-            value: label,
-            font: AFRAME_TEXT_FONT,
-            fontImage: AFRAME_TEXT_FONT_IMAGE,
-            color: '#ffffff',
-            align: 'center',
-            width: 4,
-            wrapCount: 24,
-            shader: 'msdf',
-            negate: false,
-          });
-        }
-
-        labelEntity.setAttribute('look-at', '[camera]');
-
-        const isNavigate = hotspot.hotspot_type === 'navigate';
-        const targetSceneId = hotspot.target_scene_id || hotspot.linked_scene_id;
-        const targetSpotId = hotspot.target_spot_id;
-        const targetSpotSlug = hotspot.target_spot_slug;
-        const hasNavigation = isNavigate && Boolean(targetSceneId || targetSpotId || targetSpotSlug);
-
-        // eslint-disable-next-line no-console
-        console.debug('[VR360 hotspot]', {
-          id: hotspot.id,
-          name: hotspot.name,
-          hotspot_type: hotspot.hotspot_type,
-          target_scene_id: hotspot.target_scene_id,
-          target_spot_id: hotspot.target_spot_id,
-          hasNavigation,
-        });
-
-        if (hasNavigation) {
-          const dot = document.createElement('a-entity');
-          dot.setAttribute('geometry', 'primitive: sphere; radius: 0.1');
-          dot.setAttribute(
-            'material',
-            'color: #f59e0b; opacity: 0.9; transparent: true; depthTest: false'
-          );
-
-          const clickSphere = document.createElement('a-entity');
-          clickSphere.setAttribute('geometry', 'primitive: sphere; radius: 0.22');
-          clickSphere.setAttribute(
-            'material',
-            'transparent: true; opacity: 0; depthTest: false; depthWrite: false'
-          );
-          clickSphere.classList.add('hs-click-target');
-          clickSphere.addEventListener('click', () => {
-            // eslint-disable-next-line no-console
-            console.debug('[VR360 hotspot] click fired', { hotspot, targetSceneId, targetSpotId });
-            onHotspotClickRef.current?.(hotspot);
-          });
-
-          entity.appendChild(dot);
-          entity.appendChild(clickSphere);
-        }
-
-        entity.appendChild(labelEntity);
-        root.appendChild(entity);
-      });
-
+    renderHotspots(root, hotspots, onHotspotClickRef, cursorProgressRef);
     return () => {
       while (root.firstChild) {
         disposeHotspotEntity(root.firstChild);
         root.removeChild(root.firstChild);
       }
     };
-  }, [hotspots]);
-
+  }, [hotspots, scene?.id]);
+  useEffect(() => {
+    const root = nearbyHotspotsRootRef.current;
+    if (!root) return;
+    renderNearbySpots(root, nearbySpots, spotCoordinates, onNearbySpotClickRef, cursorProgressRef);
+  }, [nearbySpots, spotCoordinates, scene?.id]);
   useEffect(() => {
     const sceneVolume = Number(scene?.ambient_sound_volume);
     if (Number.isFinite(sceneVolume)) {
       setNarrationVolume(clampVolume(sceneVolume * 100));
     }
-    setIsNarrationAutoPlay(scene?.auto_play_narration ?? true);
+    const nextAutoPlay = scene?.auto_play_narration ?? true;
+    isNarrationAutoPlayRef.current = nextAutoPlay;
+    setIsNarrationAutoPlay(nextAutoPlay);
     setIsNarrationMuted(false);
   }, [scene?.id]);
-
   useEffect(() => {
     if (narrationAudioRef.current) {
       narrationAudioRef.current.pause();
       narrationAudioRef.current.src = '';
       narrationAudioRef.current = null;
     }
-
-    if (!narrationUrl) {
-      setIsNarrationPlaying(false);
-      return;
-    }
-
+    setIsNarrationPlaying(false);
+    if (!narrationUrl) return;
     const audio = new Audio(narrationUrl);
     audio.preload = 'auto';
     audio.loop = !scene?.narration_audio_url && Boolean(scene?.ambient_sound_loop);
     audio.volume = clampVolume(narrationVolume) / 100;
     audio.muted = isNarrationMuted;
-
     const handlePlay = () => setIsNarrationPlaying(true);
     const handlePause = () => setIsNarrationPlaying(false);
     const handleEnd = () => setIsNarrationPlaying(false);
-
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
     audio.addEventListener('ended', handleEnd);
-
     narrationAudioRef.current = audio;
 
-    if (isNarrationAutoPlay) {
+    // Đọc từ ref thay vì state để tránh audio effect bị re-run khi autoplay thay đổi
+    if (isNarrationAutoPlayRef.current) {
       audio.play().catch(() => {
         setIsNarrationPlaying(false);
       });
     }
-
     return () => {
+      // Reset ngay khi cleanup, không chờ 'pause' event vì listener sẽ bị xóa ngay sau
+      setIsNarrationPlaying(false);
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('ended', handleEnd);
@@ -576,47 +791,39 @@ export default function Vr360SceneViewer({
         narrationAudioRef.current = null;
       }
     };
-  }, [
-    narrationUrl,
-    scene?.id,
-    scene?.ambient_sound_loop,
-    scene?.narration_audio_url,
-    isNarrationAutoPlay,
-  ]);
-
+  }, [narrationUrl, scene?.id, scene?.ambient_sound_loop, scene?.narration_audio_url]);
   useEffect(() => {
     const audio = narrationAudioRef.current;
     if (!audio) return;
     audio.volume = clampVolume(narrationVolume) / 100;
     audio.muted = isNarrationMuted;
   }, [narrationVolume, isNarrationMuted]);
-
   const handleTogglePlay = useCallback(() => {
     const audio = narrationAudioRef.current;
     if (!audio) return;
-
     if (audio.paused) {
       audio.play().catch(() => {
         setIsNarrationPlaying(false);
       });
       return;
     }
-
     audio.pause();
   }, []);
-
+  useEffect(() => {
+    if (!narrationToggleRef) return;
+    narrationToggleRef.current = handleTogglePlay;
+  }, [narrationToggleRef, handleTogglePlay]);
   const handleToggleMute = useCallback(() => {
     setIsNarrationMuted((prev) => !prev);
   }, []);
-
   const handleResetView = useCallback(() => {
     const cameraEl = aCameraRef.current;
     if (!cameraEl) return;
-
-    cameraEl.setAttribute('rotation', '0 0 0');
+    const baseYaw = initialCameraYawRef.current;
+    cameraEl.setAttribute('rotation', `0 ${baseYaw} 0`);
     const lookControls = cameraEl.components?.['look-controls'];
     if (lookControls?.yawObject?.rotation) {
-      lookControls.yawObject.rotation.y = 0;
+      lookControls.yawObject.rotation.y = toRadians(baseYaw);
     }
     if (lookControls?.pitchObject?.rotation) {
       lookControls.pitchObject.rotation.x = 0;
@@ -624,48 +831,58 @@ export default function Vr360SceneViewer({
         lookControls.pitchObject.rotation.z = 0;
       }
     }
-
     lastHeadingRef.current = 0;
-    window.dispatchEvent(new CustomEvent('smooth-fov-update', { detail: { bearing: 0 } }));
+    window.dispatchEvent(
+      new CustomEvent('smooth-fov-update', {
+        detail: {
+          bearing: 0,
+        },
+      })
+    );
   }, []);
-
   useEffect(() => {
-    if (!scene || !aCameraRef.current) return undefined;
-
+    if (!scene || !aCameraRef.current || !cameraReady) {
+      return undefined;
+    }
     let isAlive = true;
-
     const emitHeading = () => {
       if (!isAlive) return;
+      if (isVrModeRef.current) {
+        headingRafRef.current = window.requestAnimationFrame(emitHeading);
+        return;
+      }
       const cameraEl = aCameraRef.current;
       if (!cameraEl) return;
-
       const lookControls = cameraEl.components?.['look-controls'];
       let nextHeading = null;
-
       if (lookControls?.yawObject?.rotation) {
-        nextHeading = normalizeBearing(toDegrees(lookControls.yawObject.rotation.y));
+        const yawRad = lookControls.yawObject.rotation.y;
+        const yawDeg = (yawRad * 180) / Math.PI;
+        const yawDelta = yawDeg - initialCameraYawRef.current;
+        nextHeading = normalizeBearing(-yawDelta);
       } else {
         const rotY = Number(cameraEl.getAttribute('rotation')?.y);
-        if (Number.isFinite(rotY)) nextHeading = normalizeBearing(rotY);
+        if (Number.isFinite(rotY)) {
+          const yawDelta = rotY - initialCameraYawRef.current;
+          nextHeading = normalizeBearing(-yawDelta);
+        }
       }
-
       if (nextHeading != null) {
         const prevHeading = lastHeadingRef.current;
         if (prevHeading == null || Math.abs(prevHeading - nextHeading) > 0.2) {
           lastHeadingRef.current = nextHeading;
           window.dispatchEvent(
             new CustomEvent('smooth-fov-update', {
-              detail: { bearing: nextHeading },
+              detail: {
+                bearing: nextHeading,
+              },
             })
           );
         }
       }
-
       headingRafRef.current = window.requestAnimationFrame(emitHeading);
     };
-
     headingRafRef.current = window.requestAnimationFrame(emitHeading);
-
     return () => {
       isAlive = false;
       if (headingRafRef.current) {
@@ -674,23 +891,19 @@ export default function Vr360SceneViewer({
       }
       lastHeadingRef.current = null;
     };
-  }, [scene?.id]);
-
+  }, [scene?.id, aframeReady, cameraReady, cameraReadyVersion]);
   useEffect(() => {
     const handleResetNorthRequest = () => {
       handleResetView();
     };
-
     window.addEventListener(RESET_NORTH_EVENT, handleResetNorthRequest);
     return () => {
       window.removeEventListener(RESET_NORTH_EVENT, handleResetNorthRequest);
     };
   }, [handleResetView]);
-
   if (!aframeReady) {
     return <Skeleton className={cn('h-full w-full', className)} />;
   }
-
   if (!scene) {
     return (
       <div
@@ -704,7 +917,6 @@ export default function Vr360SceneViewer({
       </div>
     );
   }
-
   return (
     <div className={cn('relative h-full w-full', className)}>
       <div ref={containerRef} className="h-full w-full" />

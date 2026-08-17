@@ -6,6 +6,8 @@ import placeholderImg from '@/assets/images/placeholder.png';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import { useGetTourBySlug, useGetTourStops } from '@/services/api/tours/tourApi';
 import { useGetTourReviewByTourId, useCreateTourReview } from '@/services/api/tours/tourReviewApi';
+import { useGetSpotMedia } from '@/services/api/tourism-points/tourismPointsApi';
+import { fetchPointById, fetchTourStopsByTourId } from '@/services/api/map/tourPanelService';
 import { stripHtmlTags, getDurationLabel } from '@/features/tours/utils/tourDetail.utils';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
 import { useTourPanelStore } from '@/features/tours/store/useTourPanelStore';
@@ -35,53 +37,94 @@ function parseGeometryValue(value) {
   }
 }
 
-function resolveStopCandidate(stop, index = 0) {
-  const spot =
-    (stop?.spot && typeof stop.spot === 'object' ? stop.spot : null) ||
-    (stop?.point && typeof stop.point === 'object' ? stop.point : null);
-  const geometry =
-    parseGeometryValue(stop?.geom_json) ||
-    parseGeometryValue(stop?.geom) ||
-    parseGeometryValue(spot?.geom_json) ||
-    spot?.geojson ||
-    null;
+function normalizeStopInput(stop, index) {
+  if (stop && typeof stop === 'object') return stop;
 
+  const pointId = stop == null ? null : String(stop);
   return {
-    ...stop,
-    ...spot,
-    point_id: stop?.point_id || stop?.spot_id || spot?.id || stop?.id || null,
-    spot_id: stop?.spot_id || spot?.id || stop?.point_id || stop?.id || null,
-    name_vi:
-      stop?.title_vi || stop?.spot_name_vi || stop?.spot_name || spot?.name_vi || spot?.name || '',
-    name_en:
-      stop?.title_en || stop?.spot_name_en || stop?.spot_name || spot?.name_en || spot?.name || '',
-    address_vi: stop?.description_vi || spot?.address_vi || spot?.address || '',
-    address_en: stop?.description_en || spot?.address_en || spot?.address || '',
-    geometry_data: geometry || undefined,
-    longitude: spot?.longitude ?? stop?.longitude ?? null,
-    latitude: spot?.latitude ?? stop?.latitude ?? null,
-    stop_order: stop?.stop_order ?? stop?.order_index ?? index + 1,
-    day_number: stop?.day_number ?? 1,
+    id: pointId || `tour-stop-${index + 1}`,
+    point_id: pointId,
+    stop_order: index + 1,
   };
 }
 
-function buildFallbackGeometryFromPoints(points) {
-  const coordinates = (Array.isArray(points) ? points : [])
-    .map((point) => point?.data?.geometry?.coordinates)
-    .filter((coords) => Array.isArray(coords) && coords.length >= 2);
+function extractPointIdFromStop(stop) {
+  if (stop == null) return null;
+  if (typeof stop === 'string' || typeof stop === 'number') return String(stop);
 
-  if (coordinates.length < 2) return null;
+  return (
+    stop?.point_id ||
+    stop?.spot_id ||
+    stop?.spotId ||
+    stop?.tourism_point_id ||
+    stop?.destination_id ||
+    stop?.location_id ||
+    stop?.poi_id ||
+    stop?.id ||
+    stop?.spot?.id ||
+    null
+  );
+}
+
+function buildStopRouteCandidate(stop, pointDetail) {
+  const fallbackNameVi = stop?.title_vi || stop?.spot_name_vi || stop?.spot_name || '';
+  const fallbackNameEn = stop?.title_en || stop?.spot_name_en || stop?.spot_name || '';
+  const geometryFromStop =
+    parseGeometryValue(stop?.geom_json) || parseGeometryValue(stop?.geom) || stop?.geometry || null;
+  const resolvedPointId = extractPointIdFromStop(stop);
 
   return {
-    type: 'LineString',
-    coordinates,
+    ...(pointDetail || {}),
+    ...(stop || {}),
+    point_id:
+      stop?.point_id ||
+      stop?.spot_id ||
+      stop?.spot?.id ||
+      stop?.destination_id ||
+      stop?.location_id ||
+      resolvedPointId ||
+      pointDetail?.id ||
+      null,
+    name_vi: pointDetail?.name_vi || fallbackNameVi,
+    name_en: pointDetail?.name_en || fallbackNameEn,
+    name: pointDetail?.name || fallbackNameVi || fallbackNameEn,
+    address_vi: pointDetail?.address_vi || stop?.description_vi || '',
+    address_en: pointDetail?.address_en || stop?.description_en || '',
+    address: pointDetail?.address || stop?.description_vi || stop?.description_en || '',
+    geometry_data:
+      pointDetail?.geometry_data || pointDetail?.geometry || geometryFromStop || undefined,
   };
+}
+
+function normalizeSpotMediaUrls(response) {
+  const source =
+    response?.data?.media ||
+    response?.data?.items ||
+    response?.media ||
+    (Array.isArray(response?.data) ? response.data : null) ||
+    [];
+
+  if (!Array.isArray(source)) return [];
+
+  return source
+    .filter((item) => {
+      const mediaType = String(
+        item?.media_type || item?.type || item?.file_type || ''
+      ).toLowerCase();
+      const mimeType = String(item?.mime_type || '').toLowerCase();
+      return !(mediaType.includes('video') || mimeType.startsWith('video/'));
+    })
+    .map(
+      (item) =>
+        item?.url || item?.file_url || item?.file_path || item?.path || item?.image_url || ''
+    )
+    .filter(Boolean);
 }
 
 function getTicketDisplay(tour, t) {
   const price = Number(tour?.price_from_vnd ?? 0);
   if (Number.isFinite(price) && price > 0) return formatVND(price);
-  return t('tourPage.contact', 'Liên hệ');
+  return t('tourPage.contact');
 }
 
 export function useTourDetailPageModel(t) {
@@ -94,6 +137,34 @@ export function useTourDetailPageModel(t) {
   const { data: tour, isLoading, isError } = useGetTourBySlug(slug);
   const { data: tourStopsResp } = useGetTourStops(tour?.id);
 
+  const tourStops = useMemo(() => {
+    const source =
+      tourStopsResp?.data?.stops ||
+      tourStopsResp?.data?.tour_stops ||
+      tourStopsResp?.stops ||
+      tourStopsResp?.tour_stops ||
+      tour?.stops ||
+      [];
+    return Array.isArray(source) ? source : [];
+  }, [tourStopsResp, tour]);
+
+  const primaryStopSpotId = useMemo(() => {
+    const firstStopWithSpot = tourStops.find((stop) =>
+      Boolean(stop?.spot_id || stop?.point_id || stop?.spot?.id)
+    );
+    return (
+      firstStopWithSpot?.spot_id ||
+      firstStopWithSpot?.point_id ||
+      firstStopWithSpot?.spot?.id ||
+      null
+    );
+  }, [tourStops]);
+
+  const { data: primarySpotMediaResp } = useGetSpotMedia({
+    spot_id: primaryStopSpotId,
+    options: { enabled: Boolean(primaryStopSpotId) },
+  });
+
   const tourName = useMemo(
     () =>
       tour?.name ||
@@ -101,10 +172,16 @@ export function useTourDetailPageModel(t) {
     [tour, lang]
   );
 
+  const primarySpotImages = useMemo(
+    () => normalizeSpotMediaUrls(primarySpotMediaResp),
+    [primarySpotMediaResp]
+  );
+
   const images = useMemo(() => {
+    if (primarySpotImages.length > 0) return primarySpotImages;
     if (!tour?.cover_image_url) return [];
     return [tour.cover_image_url];
-  }, [tour]);
+  }, [primarySpotImages, tour]);
 
   const safeImages = useMemo(() => (images.length > 0 ? images : [placeholderImg]), [images]);
   const safeImagesMapped = useMemo(() => safeImages.map((s) => withBaseUrl(s)), [safeImages]);
@@ -134,9 +211,7 @@ export function useTourDetailPageModel(t) {
       const newFavs = exists ? favs.filter((x) => x !== slugStr) : [...favs, slugStr];
       localStorage.setItem('tour_favorites', JSON.stringify(newFavs));
       setIsLiked(!exists);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch {}
   };
 
   const [shareStatus, setShareStatus] = useState('idle');
@@ -144,7 +219,7 @@ export function useTourDetailPageModel(t) {
     const url = window.location.href;
     try {
       if (navigator.share) {
-        await navigator.share({ title: tourName || t('tourPage.shareTitle', 'Tour details'), url });
+        await navigator.share({ title: tourName || t('tourPage.shareTitle'), url });
         setShareStatus('shared');
       } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
@@ -203,12 +278,7 @@ export function useTourDetailPageModel(t) {
   const handleCreateReview = async () => {
     if (!tour?.business_id) return;
     if (!cleanlinessRating || !serviceRating || !valueRating || !accessibilityRating) {
-      toast.error(
-        t(
-          'tourPage.reviewErrorRatings',
-          'Vui lòng đánh giá đầy đủ các tiêu chí: sạch sẽ, dịch vụ, giá trị và tiếp cận.'
-        )
-      );
+      toast.error(t('tourPage.reviewErrorRatings'));
       return;
     }
     const avg =
@@ -236,95 +306,97 @@ export function useTourDetailPageModel(t) {
       return;
     }
 
-    const sortedStops = sortStops(tourStops);
-
-    const panelPayload = {
-      tourId: tour.id,
-      tourName,
-      stops: sortedStops,
-      selectedTour: {
-        ...tour,
-        cover_image_url: tour?.cover_image_url || null,
-      },
-    };
-
-    const candidates = sortedStops.map((stop, index) => {
-      const candidate = resolveStopCandidate(stop, index);
-      return candidate;
-    });
-
-    const routePoints = candidates
-      .map((candidate, index) => {
-        const point = normalizeTourRoutePoint(candidate, index, lang);
-        return point;
-      })
-      .filter(Boolean);
-
-    setSelectedTour(panelPayload.selectedTour);
-
-    if (routePoints.length < 2) {
-      console.warn(
-        '[handleOpenMap] routePoints.length < 2 → navigating WITHOUT route. Stops without valid coords:',
-        sortedStops.length
-      );
-      navigate('/map', {
-        state: {
-          prefillTourPanel: panelPayload,
-        },
-      });
-      return;
-    }
-
-    let routeResult = null;
     try {
-      routeResult = await createRouteFromPoints(
+      const stops = await fetchTourStopsByTourId(tour.id);
+      const sortedStops = sortStops(stops);
+
+      if (sortedStops.length < 2) {
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
+      }
+
+      const panelPayload = {
+        tourId: tour.id,
+        tourName,
+        stops: sortedStops,
+        selectedTour: {
+          ...tour,
+          cover_image_url: tour?.cover_image_url || null,
+        },
+      };
+      setSelectedTour(panelPayload.selectedTour);
+
+      const routePoints = (
+        await Promise.all(
+          sortedStops.map(async (rawStop, index) => {
+            const stop = normalizeStopInput(rawStop, index);
+            const pointId = extractPointIdFromStop(stop);
+            const embeddedPoint =
+              stop?.spot && typeof stop.spot === 'object'
+                ? stop.spot
+                : stop?.point && typeof stop.point === 'object'
+                  ? stop.point
+                  : null;
+
+            let pointDetail = embeddedPoint;
+            if (!pointDetail && pointId) {
+              try {
+                pointDetail = await fetchPointById(pointId);
+              } catch (_error) {
+                pointDetail = null;
+              }
+            }
+
+            const candidate = buildStopRouteCandidate(stop, pointDetail);
+            return normalizeTourRoutePoint(candidate, index, lang);
+          })
+        )
+      ).filter(Boolean);
+
+      if (routePoints.length < 2) {
+        throw new Error(t('mapPage.tourPanel.routeInsufficientStops'));
+      }
+
+      const routeResult = await createRouteFromPoints(
         routePoints,
         'driving',
         lang === 'en' ? 'en' : 'vi'
       );
-      // success
-    } catch (err) {
-      console.error('[handleOpenMap] createRouteFromPoints failed:', err);
-      routeResult = null;
+      if (!routeResult?.geometry?.coordinates?.length) {
+        throw new Error(t('mapPage.tourPanel.routeFailed'));
+      }
+
+      navigate('/map', {
+        state: {
+          highlightedRoute: {
+            type: 'tour',
+            tourId: tour.id,
+            tourSlug: tour.slug,
+            tourName,
+            vehicle: 'driving',
+            points: routePoints,
+            geometry: routeResult.geometry,
+            routeProperties: routeResult.properties,
+            fullRoute: routeResult.fullRoute,
+            meta: {
+              tour_name: tourName,
+              total_stops: routePoints.length,
+            },
+          },
+          prefillTourPanel: {
+            ...panelPayload,
+          },
+        },
+      });
+
+      toast.success(t('mapPage.tourPanel.routeReady'));
+    } catch (error) {
+      toast.error(error?.message || t('mapPage.tourPanel.routeFailed'));
     }
-
-    const fallbackGeometry = buildFallbackGeometryFromPoints(routePoints);
-    const routeGeometry = routeResult?.geometry || fallbackGeometry;
-
-    navigate('/map', {
-      state: {
-        highlightedRoute: {
-          type: 'tour',
-          tourId: tour.id,
-          tourSlug: tour.slug,
-          tourName,
-          vehicle: 'driving',
-          points: routeResult?.points?.length ? routeResult.points : routePoints,
-          geometry: routeGeometry,
-          routeProperties: routeResult?.properties || {
-            tour_name: tourName,
-            total_stops: routePoints.length,
-          },
-          fullRoute: routeResult?.fullRoute || null,
-          meta: {
-            tour_name: tourName,
-            total_stops: routePoints.length,
-          },
-        },
-        prefillTourPanel: {
-          ...panelPayload,
-        },
-      },
-    });
   };
 
   const handleContact = () => {
     const name = tour?.business_name;
-    toast.info(
-      name
-        ? t('tourPage.contactBusiness', 'Liên hệ nhà cung cấp: {{name}}', { name })
-        : t('tourPage.contactNotAvailable', 'Chưa có thông tin liên hệ.')
-    );
+    toast.info(name ? t('tourPage.contactBusiness', { name }) : t('tourPage.contactNotAvailable'));
   };
 
   const qs = useMemo(() => new URLSearchParams(location.search), [location.search]);
@@ -369,8 +441,8 @@ export function useTourDetailPageModel(t) {
 
   const heroTags = useMemo(() => {
     const tags = [];
-    if (tour?.is_featured) tags.push(t('tourPage.featured', 'Nổi bật'));
-    if (tour?.duration_days) tags.push(`${tour.duration_days} ${t('tourPage.days', 'ngày')}`);
+    if (tour?.is_featured) tags.push(t('tourPage.featured'));
+    if (tour?.duration_days) tags.push(`${tour.duration_days} ${t('tourPage.days')}`);
     return tags;
   }, [tour, t]);
 
@@ -379,11 +451,11 @@ export function useTourDetailPageModel(t) {
   const quickStats = [
     {
       key: 'price',
-      label: t('tourPage.price', 'Giá từ'),
+      label: t('tourPage.price'),
       value: (
         <span
           className={`inline-flex items-center gap-1 text-sm font-medium ${
-            ticketDisplay === t('tourPage.contact', 'Liên hệ') ? 'text-foreground' : 'text-primary'
+            ticketDisplay === t('tourPage.contact') ? 'text-foreground' : 'text-primary'
           }`}
         >
           <Ticket className="h-3.5 w-3.5" />
@@ -393,7 +465,7 @@ export function useTourDetailPageModel(t) {
     },
     {
       key: 'duration',
-      label: t('tourPage.duration', 'Thời lượng'),
+      label: t('tourPage.duration'),
       value: (
         <span className="text-foreground inline-flex items-center gap-1 text-sm font-medium">
           <Clock3 className="text-primary h-3.5 w-3.5" />
@@ -403,17 +475,17 @@ export function useTourDetailPageModel(t) {
     },
     {
       key: 'guests',
-      label: t('tourPage.maxGuests', 'Sức chứa'),
+      label: t('tourPage.maxGuests'),
       value: (
         <span className="text-foreground inline-flex items-center gap-1 text-sm font-medium">
           <Users className="text-primary h-3.5 w-3.5" />
-          {tour?.max_guests ? `${tour.max_guests} ${t('tourPage.people', 'người')}` : '-'}
+          {tour?.max_guests ? `${tour.max_guests} ${t('tourPage.people')}` : '-'}
         </span>
       ),
     },
     {
       key: 'rating',
-      label: t('tourPage.rating', 'Đánh giá'),
+      label: t('tourPage.rating'),
       value:
         averageDisplayRating > 0 ? (
           <div className="text-primary flex items-center gap-1 text-sm font-medium">
@@ -428,44 +500,33 @@ export function useTourDetailPageModel(t) {
   const sidebarRows = [
     {
       key: 'start_location',
-      label: t('tourPage.startLocation', 'Địa điểm đi'),
-      value: tour?.start_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
+      label: t('tourPage.startLocation'),
+      value: tour?.start_location_vi || t('tourPage.unknown'),
       dotClass: 'bg-primary',
       icon: <MapPin className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'end_location',
-      label: t('tourPage.endLocation', 'Địa điểm đến'),
-      value: tour?.end_location_vi || t('tourPage.unknown', 'Chưa cập nhật'),
+      label: t('tourPage.endLocation'),
+      value: tour?.end_location_vi || t('tourPage.unknown'),
       dotClass: 'bg-primary',
       icon: <Flag className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'duration',
-      label: t('tourPage.duration', 'Thời lượng'),
+      label: t('tourPage.duration'),
       value: durationLabel,
       dotClass: 'bg-primary',
       icon: <Clock3 className="text-primary h-3.5 w-3.5" />,
     },
     {
       key: 'provider',
-      label: t('tourPage.provider', 'Nhà cung cấp'),
-      value: tour?.business_name || t('tourPage.unknown', 'Chưa cập nhật'),
+      label: t('tourPage.provider'),
+      value: tour?.business_name || t('tourPage.unknown'),
       dotClass: 'bg-primary',
       icon: <Building2 className="text-primary h-3.5 w-3.5" />,
     },
   ];
-
-  const tourStops = useMemo(() => {
-    const source =
-      tourStopsResp?.data?.stops ||
-      tourStopsResp?.data?.tour_stops ||
-      tourStopsResp?.stops ||
-      tourStopsResp?.tour_stops ||
-      tour?.stops ||
-      [];
-    return Array.isArray(source) ? source : [];
-  }, [tourStopsResp, tour]);
 
   return {
     navigate,

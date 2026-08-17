@@ -32,12 +32,6 @@ const MARKER_RADIUS = 20;
 const MARKER_STROKE_WIDTH = 4;
 const MARKER_ICON_SIZE = 24;
 const DEFAULT_MARKER_DOT_RADIUS = 6;
-const HIGHLIGHT_POINT_RADIUS_BASE = MARKER_RADIUS + MARKER_STROKE_WIDTH / 2;
-const HIGHLIGHT_GLOW_SCALE = 1.12;
-const HIGHLIGHT_PULSE_MIN_SCALE = 1.08;
-const HIGHLIGHT_PULSE_MAX_SCALE = 1.46;
-const HIGHLIGHT_PULSE_SPEED = 4.2;
-const HIGHLIGHT_POINT_Y_OFFSET_PX = -4;
 const HIGHLIGHT_MARKER_CLASS = 'map-highlight-point-marker';
 const HIGHLIGHT_MARKER_RING_CLASS = 'map-highlight-point-ring';
 const HIGHLIGHT_MARKER_STYLE_ID = 'map-highlight-point-style';
@@ -48,6 +42,7 @@ const CAPACITY_ARROW_HEIGHT = 10;
 const CAPACITY_ARROW_GAP = 3;
 const CAPACITY_ARROW_TOP_PAD = CAPACITY_ARROW_HEIGHT + CAPACITY_ARROW_GAP;
 const CAPACITY_TOTAL_HEIGHT = CAPACITY_ARROW_TOP_PAD + MARKER_SIZE;
+const HIGHLIGHT_POINT_Y_OFFSET_PX = -26;
 
 const CAPACITY_STATUS_ARROW_COLOR = {
   overloaded: '#ef4444',
@@ -74,7 +69,7 @@ const CLUSTER_COUNT_TEXT_HALO_WIDTH = 1.5;
 const POINT_ICON_OPACITY = 0.95;
 const POINT_ICON_SIZE_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 0.9, 12, 1, 16, 1.12];
 const POINT_TEXT_SIZE = 13;
-const POINT_TEXT_OFFSET = [0, 1.9];
+const POINT_TEXT_OFFSET = [0, 0.5];
 const POINT_TEXT_PADDING = 2;
 const POINT_TEXT_COLOR = 'black';
 const POINT_TEXT_HALO_COLOR = 'white';
@@ -102,21 +97,12 @@ export const HIGHLIGHT_ROUTE_LAYER_IDS = [
   'route-labels',
   'route-arrow',
 ];
-const HIGHLIGHT_POINT_SOURCE_ID = 'highlight-point';
-const HIGHLIGHT_POINT_GLOW_LAYER_ID = 'highlight-point-glow';
-const HIGHLIGHT_POINT_PULSE_LAYER_ID = 'highlight-point-pulse';
-
 const routePinMarkersByMap = new WeakMap();
-const highlightPulseRafByMap = new WeakMap();
 const highlightPointMarkerByMap = new WeakMap();
 const highlightInteractionCleanupByMap = new WeakMap();
 
 function isObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function getScaledRadiusByZoomExpression(scale = 1) {
-  return ['interpolate', ['linear'], ['zoom'], 8, 0.9 * scale, 12, 1 * scale, 16, 1.12 * scale];
 }
 
 function toFiniteNumber(value) {
@@ -171,23 +157,20 @@ function toFeature(input, fallbackId) {
   delete topLevelProps.geometry_data;
   delete topLevelProps.geojson;
   delete topLevelProps.properties;
-
-  const mergedProperties = {
+  const rawProperties = {
     ...topLevelProps,
     ...(isObject(input.properties) ? input.properties : {}),
-    id: input.id,
-    slug: input.slug,
-    name: toDisplayText(input.name) || toDisplayText(input.name_vi) || toDisplayText(input.name_en),
-    name_vi: input.name_vi,
-    name_en: input.name_en,
-    description: input.description || input.description_vi || input.description_en,
-    description_vi: input.description_vi,
-    description_en: input.description_en,
-    address: input.address || input.address_vi || input.address_en,
-    address_vi: input.address_vi,
-    address_en: input.address_en,
-    category_id: input.category_id,
-    subcategory_id: input.subcategory_id,
+  };
+
+  const mergedProperties = {
+    ...rawProperties,
+    id: input.id ?? rawProperties.id,
+    slug: input.slug ?? rawProperties.slug,
+    name: toDisplayText(rawProperties.name),
+    description: toDisplayText(rawProperties.description),
+    address: toDisplayText(rawProperties.address),
+    category_id: rawProperties.category_id,
+    subcategory_id: rawProperties.subcategory_id,
   };
   const normalizedProperties = withCapacityProgressProperties(mergedProperties);
 
@@ -406,6 +389,31 @@ function loadStatusMarkerImages(map, markerImageBaseId, markerSvgByStatus, callb
   });
 }
 
+const svgFetchCache = new Map();
+
+function fetchSvgContent(iconUrl) {
+  if (svgFetchCache.has(iconUrl)) {
+    return svgFetchCache.get(iconUrl);
+  }
+
+  const promise = fetch(iconUrl, { mode: 'cors', credentials: 'omit' })
+    .then((response) => {
+      if (!response.ok) throw new Error(`Cannot fetch icon SVG: ${response.status}`);
+      return response.text();
+    })
+    .then((iconSvg) => {
+      if (!/<svg[\s>]/i.test(iconSvg)) throw new Error('Icon content is not SVG');
+      return iconSvg;
+    })
+    .catch((error) => {
+      svgFetchCache.delete(iconUrl);
+      throw error;
+    });
+
+  svgFetchCache.set(iconUrl, promise);
+  return promise;
+}
+
 function loadMapIconStatusImages(map, iconUrl, color, markerImageBaseId, callback) {
   if (!iconUrl) {
     callback(new Error('Icon URL is empty'));
@@ -417,19 +425,8 @@ function loadMapIconStatusImages(map, iconUrl, color, markerImageBaseId, callbac
     return;
   }
 
-  fetch(iconUrl, { mode: 'cors', credentials: 'omit' })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Cannot fetch icon SVG: ${response.status}`);
-      }
-
-      return response.text();
-    })
+  fetchSvgContent(iconUrl)
     .then((iconSvg) => {
-      if (!/<svg[\s>]/i.test(iconSvg)) {
-        throw new Error('Icon content is not SVG');
-      }
-
       loadStatusMarkerImages(
         map,
         markerImageBaseId,
@@ -484,29 +481,18 @@ export function mapFeatureToDestination(feature) {
   const lat = toNumber(coordinates?.[1]);
 
   const normalizedCoordinates = lng != null && lat != null ? [lng, lat] : null;
-  const resolvedId = properties.spot_id ?? properties.point_id ?? properties.id ?? feature.id ?? null;
+  const resolvedId =
+    properties.spot_id ?? properties.point_id ?? properties.id ?? feature.id ?? null;
   const resolvedSlug = properties.slug || properties.spot_slug || null;
 
   return {
     id: resolvedId,
     slug: resolvedSlug,
-    name:
-      toDisplayText(properties.name_vi) ||
-      toDisplayText(properties.name_en) ||
-      toDisplayText(properties.name) ||
-      'Unknown destination',
-    description:
-      toDisplayText(properties.description_vi) ||
-      toDisplayText(properties.description_en) ||
-      toDisplayText(properties.description) ||
-      '',
+    name: toDisplayText(properties.name) || 'Unknown destination',
+    description: toDisplayText(properties.description) || '',
     category_id: properties.category_id ?? null,
     subcategory_id: properties.subcategory_id ?? null,
-    address:
-      toDisplayText(properties.address_vi) ||
-      toDisplayText(properties.address_en) ||
-      toDisplayText(properties.address) ||
-      '',
+    address: toDisplayText(properties.address) || '',
     opening_hours: properties.opening_hours ?? null,
     main_image_url:
       properties.primary_image ||
@@ -616,6 +602,7 @@ export function addOrUpdateSubcategoryLayer(
 
   const ensurePointLayer = (markerImageBaseId) => {
     const iconImageExpression = buildStatusIconExpression(markerImageBaseId);
+    const textFieldExpression = ['coalesce', ['get', 'name'], ''];
 
     ensureLayer(map, {
       id: pointLayerId,
@@ -628,7 +615,7 @@ export function addOrUpdateSubcategoryLayer(
         'icon-allow-overlap': true,
         'icon-ignore-placement': true,
         'icon-anchor': 'bottom',
-        'text-field': ['coalesce', ['get', 'name'], ''],
+        'text-field': textFieldExpression,
         'text-font': MAP_LABEL_FONT,
         'text-size': POINT_TEXT_SIZE,
         'text-offset': POINT_TEXT_OFFSET,
@@ -646,6 +633,7 @@ export function addOrUpdateSubcategoryLayer(
 
     if (map.getLayer(pointLayerId)) {
       map.setLayoutProperty(pointLayerId, 'icon-image', iconImageExpression);
+      map.setLayoutProperty(pointLayerId, 'text-field', textFieldExpression);
       map.setPaintProperty(pointLayerId, 'icon-opacity', POINT_ICON_OPACITY);
       map.setPaintProperty(pointLayerId, 'text-opacity', POINT_TEXT_OPACITY);
       map.moveLayer(pointLayerId);
@@ -662,11 +650,6 @@ export function addOrUpdateSubcategoryLayer(
       if (!map.getSource(sourceId)) return;
 
       if (loadError) {
-        console.warn('[MapHelper] Failed to render fallback marker image', {
-          sourceId,
-          markerImageBaseId: fallbackMarkerImageBaseId,
-          error: loadError,
-        });
         return;
       }
 
@@ -682,12 +665,6 @@ export function addOrUpdateSubcategoryLayer(
         if (!map.getSource(sourceId)) return;
 
         if (loadError) {
-          console.warn('[MapHelper] Failed to load subcategory icon image', {
-            sourceId,
-            iconUrl,
-            iconImageId,
-            error: loadError,
-          });
           ensureFallbackPointLayer();
           return;
         }
@@ -720,12 +697,19 @@ export function clearHighlightedRouteLayers(map) {
   }
 }
 
-function createPin({ color, num = null, glyph = null }) {
+function createPin({ color, num = null, glyph = null, onClick = null }) {
   const wrap = document.createElement('div');
   wrap.className = 'pin-wrap';
   wrap.dataset.routeMarker = 'true';
-  // Let map click events pass through to route point layers beneath the marker.
-  wrap.style.pointerEvents = 'none';
+  if (onClick) {
+    wrap.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onClick();
+    });
+  } else {
+    // Let map click events pass through to route point layers beneath the marker.
+    wrap.style.pointerEvents = 'none';
+  }
   const pin = document.createElement('div');
   pin.className = 'pin';
   pin.style.setProperty('--pin-color', color);
@@ -772,7 +756,7 @@ function clearRoutePinMarkers(map) {
   });
 }
 
-function addRoutePinMarkers(map, routePointsFeatureCollection) {
+function addRoutePinMarkers(map, routePointsFeatureCollection, onPointClick = null) {
   if (!map) return;
   clearRoutePinMarkers(map);
 
@@ -791,14 +775,23 @@ function addRoutePinMarkers(map, routePointsFeatureCollection) {
         color: getRoutePointColor(properties),
         num: properties.step_number ?? null,
         glyph: properties.glyph ?? null,
+        onClick: onPointClick ? () => onPointClick(feature) : null,
       });
 
-      return new mapboxgl.Marker({
+      const marker = new mapboxgl.Marker({
         element,
         anchor: 'bottom',
       })
         .setLngLat([Number(coordinates[0]), Number(coordinates[1])])
         .addTo(map);
+
+      // The Mapbox wrapper div (.mapboxgl-marker) defaults to pointer-events:auto
+      // and would swallow clicks before they reach the canvas.  Setting it to
+      // none lets events fall through to the canvas so the route-point layers
+      // remain clickable (same intent as the pin-wrap style in createPin).
+      element.style.pointerEvents = onPointClick ? 'auto' : 'none';
+
+      return marker;
     })
     .filter(Boolean);
 
@@ -812,13 +805,14 @@ export function addOrUpdateHighlightedRouteLayers(
     routePointsFeatureCollection,
     routeSourceId = HIGHLIGHT_ROUTE_SOURCE_ID,
     routePointsSourceId = HIGHLIGHT_ROUTE_POINTS_SOURCE_ID,
+    onPointClick = null,
   }
 ) {
   if (!map || !routeFeature || !routePointsFeatureCollection) return;
 
   ensureGeojsonSource(map, routeSourceId, routeFeature);
   ensureGeojsonSource(map, routePointsSourceId, routePointsFeatureCollection);
-  addRoutePinMarkers(map, routePointsFeatureCollection);
+  addRoutePinMarkers(map, routePointsFeatureCollection, onPointClick);
 
   ensureLayer(map, {
     id: 'highlight-route-shadow',
@@ -1044,7 +1038,6 @@ function ensureHighlightMarkerStyles() {
       justify-content: center;
       pointer-events: none;
       z-index: 20;
-      transform: translateY(${HIGHLIGHT_POINT_Y_OFFSET_PX}px);
     }
     .${HIGHLIGHT_MARKER_RING_CLASS} {
       width: ${MARKER_SIZE}px;
@@ -1170,177 +1163,386 @@ export function clearHighlightFromMap(map) {
     }
     highlightInteractionCleanupByMap.delete(map);
 
-    const pulseRafId = highlightPulseRafByMap.get(map);
-    if (pulseRafId && typeof window !== 'undefined') {
-      window.cancelAnimationFrame(pulseRafId);
-    }
-    highlightPulseRafByMap.delete(map);
     const pointMarker = highlightPointMarkerByMap.get(map);
     if (pointMarker) {
       pointMarker.remove();
       highlightPointMarkerByMap.delete(map);
     }
-
-    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      map.removeLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID);
-    }
-    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
-      map.removeLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID);
-    }
-
-    if (map.getSource(HIGHLIGHT_POINT_SOURCE_ID)) {
-      map.removeSource(HIGHLIGHT_POINT_SOURCE_ID);
-    }
-  } catch (error) {
-    console.error('Error clearing highlight from map:', error);
+  } catch {
   }
-}
-
-function startHighlightPulseAnimation(map) {
-  if (!map || typeof window === 'undefined') return;
-
-  const existingRafId = highlightPulseRafByMap.get(map);
-  if (existingRafId) {
-    window.cancelAnimationFrame(existingRafId);
-    highlightPulseRafByMap.delete(map);
-  }
-
-  const startedAt = performance.now();
-
-  const tick = (now) => {
-    if (!map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      highlightPulseRafByMap.delete(map);
-      return;
-    }
-
-    const elapsedSeconds = (now - startedAt) / 1000;
-    const phase = (Math.sin(elapsedSeconds * HIGHLIGHT_PULSE_SPEED) + 1) / 2;
-    const pulseScale =
-      HIGHLIGHT_PULSE_MIN_SCALE + (HIGHLIGHT_PULSE_MAX_SCALE - HIGHLIGHT_PULSE_MIN_SCALE) * phase;
-    const pulseOpacity = 0.12 + (1 - phase) * 0.28;
-
-    map.setPaintProperty(
-      HIGHLIGHT_POINT_PULSE_LAYER_ID,
-      'circle-radius',
-      getScaledRadiusByZoomExpression(HIGHLIGHT_POINT_RADIUS_BASE * pulseScale)
-    );
-    map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-opacity', pulseOpacity);
-
-    const nextRafId = window.requestAnimationFrame(tick);
-    highlightPulseRafByMap.set(map, nextRafId);
-  };
-
-  const rafId = window.requestAnimationFrame(tick);
-  highlightPulseRafByMap.set(map, rafId);
 }
 
 export function highlightPointOnMap(map, point) {
   if (!map || !point) return;
-  if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) {
-    map.once('style.load', () => highlightPointOnMap(map, point));
-    return;
-  }
 
   const coordinates = getHighlightCoordinates(point);
   if (!coordinates) {
-    console.warn('Invalid coordinates provided for highlight');
     return;
   }
 
-  try {
-    const sourceData = {
-      type: 'Feature',
-      properties: point?.properties || {},
-      geometry: {
-        type: 'Point',
-        coordinates,
+  upsertHighlightPointMarker(map, coordinates);
+  bindAutoClearHighlightOnUserInteraction(map);
+
+  map.flyTo({
+    center: coordinates,
+    zoom: Math.max(map.getZoom(), 15),
+    pitch: 45,
+    bearing: 0,
+    essential: true,
+    duration: 2000,
+  });
+}
+
+const RADIUS_BUFFER_SOURCE = 'radius-buffer-source';
+const RADIUS_BUFFER_FILL = 'radius-buffer-fill';
+const RADIUS_BUFFER_STROKE = 'radius-buffer-stroke';
+
+export function showRadiusBuffer(map, lng, lat, radiusKm) {
+  if (!map) return;
+
+  const bufferFeature = turfCircle([lng, lat], radiusKm, { units: 'kilometers', steps: 64 });
+
+  if (map.getSource(RADIUS_BUFFER_SOURCE)) {
+    map.getSource(RADIUS_BUFFER_SOURCE).setData(bufferFeature);
+  } else {
+    map.addSource(RADIUS_BUFFER_SOURCE, { type: 'geojson', data: bufferFeature });
+
+    map.addLayer({
+      id: RADIUS_BUFFER_FILL,
+      type: 'fill',
+      source: RADIUS_BUFFER_SOURCE,
+      paint: {
+        'fill-color': '#ef4444',
+        'fill-opacity': 0.1,
       },
-    };
-
-    const source = map.getSource(HIGHLIGHT_POINT_SOURCE_ID);
-    if (source && typeof source.setData === 'function') {
-      source.setData(sourceData);
-    } else {
-      clearHighlightFromMap(map);
-      map.addSource(HIGHLIGHT_POINT_SOURCE_ID, {
-        type: 'geojson',
-        data: sourceData,
-      });
-    }
-
-    if (!map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
-      map.addLayer({
-        id: HIGHLIGHT_POINT_GLOW_LAYER_ID,
-        type: 'circle',
-        source: HIGHLIGHT_POINT_SOURCE_ID,
-        paint: {
-          'circle-radius': getScaledRadiusByZoomExpression(
-            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_GLOW_SCALE
-          ),
-          'circle-color': '#FF6B6B',
-          'circle-opacity': 0.25,
-          'circle-blur': 0.35,
-          'circle-stroke-width': 3,
-          'circle-stroke-color': '#FF6B6B',
-          'circle-stroke-opacity': 0.8,
-          'circle-translate': [0, HIGHLIGHT_POINT_Y_OFFSET_PX],
-          'circle-translate-anchor': 'viewport',
-        },
-      });
-    }
-
-    if (!map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      map.addLayer({
-        id: HIGHLIGHT_POINT_PULSE_LAYER_ID,
-        type: 'circle',
-        source: HIGHLIGHT_POINT_SOURCE_ID,
-        paint: {
-          'circle-radius': getScaledRadiusByZoomExpression(
-            HIGHLIGHT_POINT_RADIUS_BASE * HIGHLIGHT_PULSE_MIN_SCALE
-          ),
-          'circle-color': '#FF6B6B',
-          'circle-opacity': 0.26,
-          'circle-translate': [0, HIGHLIGHT_POINT_Y_OFFSET_PX],
-          'circle-translate-anchor': 'viewport',
-        },
-      });
-    }
-
-    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
-      map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate', [
-        0,
-        HIGHLIGHT_POINT_Y_OFFSET_PX,
-      ]);
-      map.setPaintProperty(HIGHLIGHT_POINT_GLOW_LAYER_ID, 'circle-translate-anchor', 'viewport');
-    }
-    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate', [
-        0,
-        HIGHLIGHT_POINT_Y_OFFSET_PX,
-      ]);
-      map.setPaintProperty(HIGHLIGHT_POINT_PULSE_LAYER_ID, 'circle-translate-anchor', 'viewport');
-    }
-
-    // Keep highlight on top so it is not hidden by point symbol layers.
-    if (map.getLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID)) {
-      map.moveLayer(HIGHLIGHT_POINT_GLOW_LAYER_ID);
-    }
-    if (map.getLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID)) {
-      map.moveLayer(HIGHLIGHT_POINT_PULSE_LAYER_ID);
-    }
-    startHighlightPulseAnimation(map);
-    upsertHighlightPointMarker(map, coordinates);
-    bindAutoClearHighlightOnUserInteraction(map);
-
-    map.flyTo({
-      center: coordinates,
-      zoom: Math.max(map.getZoom(), 15),
-      pitch: 45,
-      bearing: 0,
-      essential: true,
-      duration: 2000,
     });
-  } catch (error) {
-    console.error('Error highlighting point on map:', error);
+
+    map.addLayer({
+      id: RADIUS_BUFFER_STROKE,
+      type: 'line',
+      source: RADIUS_BUFFER_SOURCE,
+      paint: {
+        'line-color': '#ef4444',
+        'line-width': 2,
+        'line-opacity': 0.9,
+        'line-dasharray': [4, 3],
+      },
+    });
+  }
+}
+
+export function clearRadiusBuffer(map) {
+  if (!map) return;
+  if (map.getLayer(RADIUS_BUFFER_STROKE)) map.removeLayer(RADIUS_BUFFER_STROKE);
+  if (map.getLayer(RADIUS_BUFFER_FILL)) map.removeLayer(RADIUS_BUFFER_FILL);
+  if (map.getSource(RADIUS_BUFFER_SOURCE)) map.removeSource(RADIUS_BUFFER_SOURCE);
+}
+
+// --- OCOP Products Layer ---
+
+const OCOP_SOURCE_ID = 'ocop-products';
+export const OCOP_LAYER_ID = 'ocop-products-point';
+const OCOP_POINT_LAYER_ID = OCOP_LAYER_ID;
+const OCOP_CLUSTER_LAYER_ID = 'ocop-products-cluster';
+const OCOP_CLUSTER_COUNT_LAYER_ID = 'ocop-products-cluster-count';
+const OCOP_MARKER_IMAGE_ID = 'ocop-marker';
+const OCOP_COLOR = '#16a34a';
+
+// Hexagonal badge pin with leaf — matches OCOP program visual identity
+function createOcopMarkerSvg() {
+  return `<svg width="52" height="66" viewBox="0 0 52 66" xmlns="http://www.w3.org/2000/svg">
+  <!-- drop shadow -->
+  <ellipse cx="26" cy="64" rx="8" ry="2" fill="rgba(0,0,0,0.18)"/>
+  <!-- pin tail -->
+  <path d="M20 46 L26 62 L32 46Z" fill="#14532d"/>
+  <!-- outer gold hexagon ring -->
+  <polygon points="26,4 45.1,15 45.1,37 26,48 6.9,37 6.9,15" fill="#fbbf24"/>
+  <!-- inner green hexagon -->
+  <polygon points="26,8 41.4,17 41.4,35 26,44 10.6,35 10.6,17" fill="#16a34a"/>
+  <!-- white inner hexagon -->
+  <polygon points="26,12 37.8,18.5 37.8,31.5 26,38 14.2,31.5 14.2,18.5" fill="white"/>
+  <!-- leaf stem -->
+  <line x1="26" y1="37" x2="26" y2="18" stroke="#15803d" stroke-width="2" stroke-linecap="round"/>
+  <!-- left leaf -->
+  <path d="M26 28 C20 27 17 21 19 14 C21.5 15.5 25 21 26 28Z" fill="#16a34a"/>
+  <!-- right leaf -->
+  <path d="M26 24 C32 23 35 17 33 10 C30.5 11.5 27 17 26 24Z" fill="#22c55e"/>
+  <!-- gold star accent bottom -->
+  <text x="26" y="37" font-family="Arial, sans-serif" font-size="6" fill="#fbbf24" text-anchor="middle">★</text>
+</svg>`;
+}
+
+export function addOrUpdateOcopLayer(map, featureCollection) {
+  if (!map || !featureCollection) return;
+
+  const source = map.getSource(OCOP_SOURCE_ID);
+  if (source) {
+    source.setData(featureCollection);
+  } else {
+    map.addSource(OCOP_SOURCE_ID, {
+      type: 'geojson',
+      data: featureCollection,
+      cluster: true,
+      clusterMaxZoom: SOURCE_CLUSTER_MAX_ZOOM,
+      clusterRadius: SOURCE_CLUSTER_RADIUS,
+    });
+  }
+
+  ensureLayer(map, {
+    id: OCOP_CLUSTER_LAYER_ID,
+    type: 'circle',
+    source: OCOP_SOURCE_ID,
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': OCOP_COLOR,
+      'circle-radius': CLUSTER_RADIUS_STEPS,
+      'circle-stroke-color': '#fbbf24',
+      'circle-stroke-width': 2.5,
+      'circle-opacity': CLUSTER_OPACITY,
+    },
+  });
+
+  ensureLayer(map, {
+    id: OCOP_CLUSTER_COUNT_LAYER_ID,
+    type: 'symbol',
+    source: OCOP_SOURCE_ID,
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': ['get', 'point_count_abbreviated'],
+      'text-size': CLUSTER_COUNT_TEXT_SIZE,
+      'text-font': MAP_LABEL_FONT,
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#14532d',
+      'text-halo-width': 1,
+    },
+  });
+
+  const addPointLayer = () => {
+    ensureLayer(map, {
+      id: OCOP_POINT_LAYER_ID,
+      type: 'symbol',
+      source: OCOP_SOURCE_ID,
+      filter: ['!', ['has', 'point_count']],
+      layout: {
+        'icon-image': OCOP_MARKER_IMAGE_ID,
+        'icon-size': POINT_ICON_SIZE_BY_ZOOM,
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-anchor': 'bottom',
+        'text-field': ['coalesce', ['get', 'name'], ['get', 'name_vi'], ['get', 'name_en'], ''],
+        'text-font': MAP_LABEL_FONT,
+        'text-size': POINT_TEXT_SIZE,
+        'text-offset': POINT_TEXT_OFFSET,
+        'text-anchor': 'top',
+        'text-padding': POINT_TEXT_PADDING,
+      },
+      paint: {
+        'icon-opacity': POINT_ICON_OPACITY,
+        'text-color': POINT_TEXT_COLOR,
+        'text-halo-color': POINT_TEXT_HALO_COLOR,
+        'text-halo-width': POINT_TEXT_HALO_WIDTH,
+        'text-opacity': POINT_TEXT_OPACITY,
+      },
+    });
+    if (map.getLayer(OCOP_POINT_LAYER_ID)) {
+      map.moveLayer(OCOP_POINT_LAYER_ID);
+    }
+  };
+
+  if (map.hasImage(OCOP_MARKER_IMAGE_ID)) {
+    addPointLayer();
+    return;
+  }
+
+  loadSvgStringAsImage(createOcopMarkerSvg(), (image, error) => {
+    if (!map.getSource(OCOP_SOURCE_ID)) return;
+    if (error || !image) {
+      return;
+    }
+    if (!map.hasImage(OCOP_MARKER_IMAGE_ID)) {
+      map.addImage(OCOP_MARKER_IMAGE_ID, image);
+    }
+    addPointLayer();
+  });
+}
+
+export function removeOcopLayer(map) {
+  if (!map) return;
+  [OCOP_POINT_LAYER_ID, OCOP_CLUSTER_COUNT_LAYER_ID, OCOP_CLUSTER_LAYER_ID].forEach((layerId) => {
+    if (map.getLayer(layerId)) map.removeLayer(layerId);
+  });
+  if (map.getSource(OCOP_SOURCE_ID)) map.removeSource(OCOP_SOURCE_ID);
+}
+
+// --- Chatbot AI Map Action Utilities ---
+
+const aiMarkersRegistry = new WeakMap();
+const aiPopupsRegistry = new WeakMap();
+const aiRouteRegistry = new WeakMap();
+let aiRouteIdCounter = 0;
+
+const OCOP_ALL_LAYER_IDS = [
+  OCOP_POINT_LAYER_ID,
+  OCOP_CLUSTER_LAYER_ID,
+  OCOP_CLUSTER_COUNT_LAYER_ID,
+];
+
+function getAiMarkerList(map) {
+  if (!aiMarkersRegistry.has(map)) aiMarkersRegistry.set(map, []);
+  return aiMarkersRegistry.get(map);
+}
+
+function getAiPopupList(map) {
+  if (!aiPopupsRegistry.has(map)) aiPopupsRegistry.set(map, []);
+  return aiPopupsRegistry.get(map);
+}
+
+function getAiRouteList(map) {
+  if (!aiRouteRegistry.has(map)) aiRouteRegistry.set(map, []);
+  return aiRouteRegistry.get(map);
+}
+
+export function clearAiMapOverlays(map) {
+  if (!map) return;
+  getAiMarkerList(map).forEach((m) => m.remove());
+  aiMarkersRegistry.set(map, []);
+  getAiPopupList(map).forEach((p) => p.remove());
+  aiPopupsRegistry.set(map, []);
+  getAiRouteList(map).forEach(({ sourceId, layerId }) => {
+    if (map.getLayer(layerId)) map.removeLayer(layerId);
+    if (map.getSource(sourceId)) map.removeSource(sourceId);
+  });
+  aiRouteRegistry.set(map, []);
+}
+
+export function executeChatbotMapAction(map, action) {
+  if (!map || !action?.action) return;
+
+  switch (action.action) {
+    case 'fly_to': {
+      const [lng, lat] = action.center ?? [];
+      if (lng == null || lat == null) break;
+      map.flyTo({
+        center: [Number(lng), Number(lat)],
+        zoom: action.zoom != null ? Number(action.zoom) : Math.max(map.getZoom(), 13),
+        essential: true,
+        duration: 2000,
+        pitch: 30,
+      });
+      break;
+    }
+    case 'pan': {
+      const [lng, lat] = action.center ?? [];
+      if (lng == null || lat == null) break;
+      map.panTo([Number(lng), Number(lat)], { duration: 800 });
+      break;
+    }
+    case 'zoom': {
+      if (action.zoom == null) break;
+      map.zoomTo(Number(action.zoom), { duration: 800 });
+      break;
+    }
+    case 'fit_bounds': {
+      const bounds = action.bounds;
+      if (!Array.isArray(bounds) || bounds.length < 2) break;
+      const [[minLng, minLat], [maxLng, maxLat]] = bounds;
+      if ([minLng, minLat, maxLng, maxLat].some((v) => v == null)) break;
+      map.fitBounds(
+        [
+          [Number(minLng), Number(minLat)],
+          [Number(maxLng), Number(maxLat)],
+        ],
+        { padding: action.padding ?? 60, duration: 1200 }
+      );
+      break;
+    }
+    case 'draw_route': {
+      const coordinates = action.coordinates;
+      if (!Array.isArray(coordinates) || coordinates.length < 2) break;
+      const id = ++aiRouteIdCounter;
+      const sourceId = `chatbot-ai-route-${id}`;
+      const layerId = `${sourceId}-line`;
+      const color = action.color ?? '#2563eb';
+      const normalizedCoords = coordinates.map(([lng, lat]) => [Number(lng), Number(lat)]);
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'LineString', coordinates: normalizedCoords },
+        },
+      });
+      map.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': color, 'line-width': 5, 'line-opacity': 0.9 },
+      });
+      getAiRouteList(map).push({ sourceId, layerId });
+      const routeBounds = normalizedCoords.reduce(
+        (acc, coord) => acc.extend(coord),
+        new mapboxgl.LngLatBounds(normalizedCoords[0], normalizedCoords[0])
+      );
+      map.fitBounds(routeBounds, { padding: 72, duration: 1200 });
+      break;
+    }
+    case 'add_marker': {
+      const [lng, lat] = action.center ?? [];
+      if (lng == null || lat == null) break;
+      const color = action.color ?? '#ef4444';
+      const marker = new mapboxgl.Marker({ color, scale: 0.85 }).setLngLat([
+        Number(lng),
+        Number(lat),
+      ]);
+      if (action.label) {
+        marker.setPopup(
+          new mapboxgl.Popup({ offset: 28, closeButton: true }).setHTML(
+            `<div style="font-size:13px;font-weight:600;padding:2px 0">${action.label}</div>`
+          )
+        );
+      }
+      marker.addTo(map);
+      if (action.label) marker.togglePopup();
+      getAiMarkerList(map).push(marker);
+      break;
+    }
+    case 'clear_markers': {
+      clearAiMapOverlays(map);
+      // scope === 'all' also hides highlight markers — leave highlight state to caller
+      break;
+    }
+    case 'show_popup': {
+      const [lng, lat] = action.center ?? [];
+      if (lng == null || lat == null) break;
+      const popup = new mapboxgl.Popup({
+        closeButton: true,
+        offset: 14,
+        maxWidth: '300px',
+      }).setLngLat([Number(lng), Number(lat)]);
+      if (action.html) popup.setHTML(action.html);
+      else if (action.text) popup.setText(action.text);
+      popup.addTo(map);
+      getAiPopupList(map).push(popup);
+      break;
+    }
+    case 'filter_layer': {
+      const { layers = [], visible = true } = action;
+      layers.forEach((layerName) => {
+        const lower = String(layerName).toLowerCase();
+        if (lower === 'ocop') {
+          OCOP_ALL_LAYER_IDS.forEach((id) => {
+            if (map.getLayer(id)) {
+              map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+            }
+          });
+        }
+      });
+      break;
+    }
+    default:
+      break;
   }
 }

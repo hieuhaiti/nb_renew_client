@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Eye, EyeOff, Cloud, Download, TriangleAlert, Image, FileJson } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
@@ -112,7 +112,7 @@ export function SatelliteLayerControl({
           <div className="flex items-center gap-1">
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
-                <button
+                <Button variant="ghost"
                   onClick={() => onVisibilityChange(!visible)}
                   className="p-0.5 hover:bg-surface rounded transition-colors"
                 >
@@ -121,7 +121,7 @@ export function SatelliteLayerControl({
                   ) : (
                     <EyeOff size={iconSize} className="text-foreground/40" />
                   )}
-                </button>
+                </Button>
               </TooltipTrigger>
               <TooltipContent className="typo-meta">
                 {visible ? t('satellite.actions.hide') : t('satellite.actions.show')}
@@ -131,7 +131,7 @@ export function SatelliteLayerControl({
             {hasRasterDownload && (
               <Tooltip delayDuration={200}>
                 <TooltipTrigger asChild>
-                  <Button
+                  <Button variant="ghost"
                     variant="ghost"
                     size="icon-xs"
                     onClick={() => { setDownloadType('raster'); setDownloadDialogOpen(true); }}
@@ -156,10 +156,10 @@ export function SatelliteLayerControl({
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="sm:justify-end gap-2">
-                  <Button variant="outline" onClick={() => setDownloadDialogOpen(false)}>
+                  <Button variant="ghost" variant="outline" onClick={() => setDownloadDialogOpen(false)}>
                     {t('satellite.actions.cancel')}
                   </Button>
-                  <Button disabled={isDownloading} onClick={handleDownload}>
+                  <Button variant="ghost" disabled={isDownloading} onClick={handleDownload}>
                     {isDownloading ? t('satellite.loading.downloading') : (
                       <><Download size={iconSize} /> {t('satellite.actions.download')}</>
                     )}
@@ -204,3 +204,5 @@ export function SatelliteLayerControl({
 }
 
 export default SatelliteLayerControl;
+
+

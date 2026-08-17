@@ -4,6 +4,7 @@ import viFlag from '@/assets/icons/frags/vietnam-flag-round-circle-icon.svg';
 import enFlag from '@/assets/icons/frags/uk-flag-round-circle-icon.svg';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { useLanguageStore } from '@/stores/useLanguageStore.js';
+import { LANGUAGE_SWITCH_LOADING_KEY, useLoadingStore } from '@/stores/useLoadingStore.js';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -13,11 +14,25 @@ import { Button } from '@/components/ui/button';
 export default function LanguageSwitch() {
   const lang = useLanguageStore((state) => state.lang);
   const setLang = useLanguageStore((state) => state.setLang);
+  const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
+  const isChangingLanguage = useLoadingStore((state) =>
+    Boolean(state.loadingKeys[LANGUAGE_SWITCH_LOADING_KEY])
+  );
 
-  const handleToggle = () => {
+  const handleToggle = async () => {
+    if (isChangingLanguage) return;
+
     const next = lang === 'vi' ? 'en' : 'vi';
-    setLang(next);
-    i18n.changeLanguage(next);
+    setLoadingByKey(LANGUAGE_SWITCH_LOADING_KEY, true);
+
+    try {
+      await i18n.changeLanguage(next);
+      setLang(next);
+    } catch {
+      setLang(lang);
+    } finally {
+      setLoadingByKey(LANGUAGE_SWITCH_LOADING_KEY, false);
+    }
   };
 
   return (
@@ -32,6 +47,7 @@ export default function LanguageSwitch() {
             className="bg-card hover:bg-muted flex h-8 items-center gap-1.5 rounded-full px-3 shadow-md transition-colors duration-200"
             onClick={handleToggle}
             type="button"
+            disabled={isChangingLanguage}
           >
             {lang === 'vi' ? (
               <img src={viFlag} alt="VN" className="h-5 w-5 rounded-full object-cover" />

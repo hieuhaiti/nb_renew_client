@@ -2,8 +2,8 @@ import { useApiQuery } from '@/services/useApi';
 import { fetcher } from '@/services/fetcher';
 
 function buildToursEndpoint({
-  page = 1,
-  limit = 8,
+  page,
+  limit,
   search,
   status,
   province_code,
@@ -12,13 +12,13 @@ function buildToursEndpoint({
   duration_days,
   price_min,
   price_max,
-  sortBy = 'created_at',
-  sortOrder = 'DESC',
+  sortBy,
+  sortOrder,
 } = {}) {
   const query = new URLSearchParams();
 
-  if (page) query.set('page', String(page));
-  if (limit) query.set('limit', String(limit));
+  if (page != null) query.set('page', String(page));
+  if (limit != null) query.set('limit', String(limit));
   if (search) query.set('search', String(search));
   if (status && status !== 'all') query.set('status', String(status));
   if (province_code) query.set('province_code', String(province_code));

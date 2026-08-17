@@ -1,74 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Clock, LocateFixed, RefreshCw, Search, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  useGetCurrentCapacity,
-  useCapacityWebSocket,
-} from '@/services/api/capacity/capacityService';
+import { useGetCurrentCapacity, useCapacityStream } from '@/services/api/capacity/capacityService';
+import { withLanguageQueryKey } from '@/services/useApi';
 import { useMapStore } from '@/features/map/store/useMapStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
 import { resolveCapacityPct, resolveCapacityStatus } from '@/features/map/utils/capacityUtils';
 import { cn } from '@/lib/utils';
-
-const STATUS_META = {
-  overloaded: {
-    badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
-    // red-400 → red-700
-    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
-    labelVi: 'Quá tải',
-    labelEn: 'Overloaded',
-  },
-  near_full: {
-    badgeClass: 'border-orange-500/30 bg-orange-500/10 text-orange-600',
-    // tertiary-1 (amber) → quaternary (coral-red)
-    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
-    labelVi: 'Gần đầy',
-    labelEn: 'Near full',
-  },
-  busy: {
-    badgeClass: 'border-warning/40 bg-warning/10 text-warning',
-    // gold → tertiary-2 (warm amber-orange)
-    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
-    labelVi: 'Đông',
-    labelEn: 'Busy',
-  },
-  moderate: {
-    badgeClass: 'border-sky-500/30 bg-sky-500/10 text-sky-600',
-    // primary-1 (sky) → primary-2 (deep blue)
-    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
-    labelVi: 'Vừa phải',
-    labelEn: 'Moderate',
-  },
-  normal: {
-    badgeClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600',
-    // secondary-1 (teal) → secondary-2 (forest green)
-    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
-    labelVi: 'Bình thường',
-    labelEn: 'Normal',
-  },
-  low: {
-    badgeClass: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-500',
-    // lighter teal → secondary-1
-    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
-    labelVi: 'Thưa thớt',
-    labelEn: 'Low',
-  },
-};
-
-const FALLBACK_META = STATUS_META.normal;
-
-function getStatusMeta(status) {
-  return STATUS_META[status] ?? FALLBACK_META;
-}
-
-function getStatusLabel(status, isVi) {
-  const meta = getStatusMeta(status);
-  return isVi ? meta.labelVi : meta.labelEn;
-}
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  CAPACITY_STATUS_META,
+  getCapacityStatusLabel,
+  getCapacityStatusMeta,
+  resolveCapacityStatus,
+} from '@/features/map/utils/capacityStatus';
 
 function getViewOnMapVariant(status) {
   switch (status) {
@@ -95,7 +46,7 @@ function normalizeItem(raw, defaultName) {
   const coords = raw.geojson?.coordinates;
   return {
     id: raw.spot_id ?? raw.id,
-    name: raw.name_vi ?? raw.name_en ?? raw.name ?? raw.spot_name ?? defaultName,
+    name: raw.name ?? raw.name_vi ?? raw.name_en ?? raw.spot_name ?? defaultName,
     current: Number(raw.visitor_count ?? raw.current_visitors ?? 0),
     max: raw.max_capacity != null ? Number(raw.max_capacity) : 0,
     pct,
@@ -106,19 +57,46 @@ function normalizeItem(raw, defaultName) {
   };
 }
 
-function formatRelativeTime(isoStr) {
+function formatRelativeTime(isoStr, t, locale) {
   if (!isoStr) return null;
   try {
     const diffMs = Date.now() - new Date(isoStr).getTime();
     const minutes = Math.floor(diffMs / 60_000);
-    if (minutes < 1) return 'Vừa cập nhật';
-    if (minutes < 60) return `${minutes} phút trước`;
+    if (minutes < 1) return t('common.just_updated');
+    if (minutes < 60) return t('common.minutes_ago', { count: minutes });
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} giờ trước`;
-    return new Date(isoStr).toLocaleDateString('vi-VN');
+    if (hours < 24) return t('common.hours_ago', { count: hours });
+    return new Date(isoStr).toLocaleDateString(locale);
   } catch {
     return null;
   }
+}
+
+function patchCapacityCache(old, sseData) {
+  if (!old || !sseData?.spot_id) return old;
+  const spotId = String(sseData.spot_id);
+  const patch = {
+    visitor_count: sseData.visitor_count,
+    capacity_pct: sseData.capacity_pct,
+    status: sseData.status,
+    recorded_at: sseData.recorded_at,
+  };
+
+  function patchArr(arr) {
+    if (!Array.isArray(arr)) return arr;
+    return arr.map((item) => {
+      const id = String(item.spot_id ?? item.id ?? '');
+      return id === spotId ? { ...item, ...patch } : item;
+    });
+  }
+
+  const d = old?.data;
+  if (!d) return old;
+  if (Array.isArray(d.capacity)) return { ...old, data: { ...d, capacity: patchArr(d.capacity) } };
+  if (Array.isArray(d.spots)) return { ...old, data: { ...d, spots: patchArr(d.spots) } };
+  if (Array.isArray(d.items)) return { ...old, data: { ...d, items: patchArr(d.items) } };
+  if (Array.isArray(d)) return { ...old, data: patchArr(d) };
+  return old;
 }
 
 function CapacityRowSkeleton() {
@@ -137,44 +115,31 @@ function CapacityRowSkeleton() {
 export default function CapacityPanel() {
   const { t, i18n } = useTranslation();
   const isVi = i18n.language?.startsWith('vi');
+  const locale = isVi ? 'vi-VN' : 'en-US';
+  const lang = useLanguageStore((state) => state.lang);
   const mapRef = useMapStore((state) => state.mapRef);
 
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('overloaded');
   const [search, setSearch] = useState('');
-  const [capacityOverrides, setCapacityOverrides] = useState(() => new Map());
 
-  const numberFormatter = useMemo(() => new Intl.NumberFormat(isVi ? 'vi-VN' : 'en-US'), [isVi]);
+  const queryClient = useQueryClient();
+  const numberFormatter = useMemo(() => new Intl.NumberFormat(locale), [locale]);
 
   const { data, isLoading, isError, isFetching, refetch } = useGetCurrentCapacity();
-  const { data: wsData, status: wsStatus } = useCapacityWebSocket();
+  const { data: sseData, status: sseStatus } = useCapacityStream();
 
   useEffect(() => {
-    if (!wsData?.spot_id) return;
-    setCapacityOverrides((prev) => {
-      const next = new Map(prev);
-      next.set(String(wsData.spot_id), {
-        visitor_count: wsData.visitor_count,
-        capacity_pct: wsData.capacity_pct,
-        status: wsData.status,
-        recorded_at: wsData.recorded_at,
-      });
-      return next;
-    });
-  }, [wsData]);
+    if (!sseData?.spot_id) return;
+    queryClient.setQueryData(withLanguageQueryKey(['capacity', 'current'], lang), (old) =>
+      patchCapacityCache(old, sseData)
+    );
+  }, [lang, sseData, queryClient]);
 
   const items = useMemo(() => {
     const raw = data?.data?.capacity ?? data?.data?.spots ?? data?.data?.items ?? data?.data ?? [];
     if (!Array.isArray(raw)) return [];
-    return raw.map((item) => {
-      const id = String(item.spot_id ?? item.id ?? '');
-      const override = id ? capacityOverrides.get(id) : undefined;
-      const merged = override ? { ...item, ...override } : item;
-      return normalizeItem(
-        merged,
-        t('mapPage.capacityPanel.defaultName', { defaultValue: 'Địa điểm' })
-      );
-    });
-  }, [data, capacityOverrides, t]);
+    return raw.map((item) => normalizeItem(item, t('mapPage.capacityPanel.defaultName')));
+  }, [data, t]);
 
   const filtered = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -193,9 +158,9 @@ export default function CapacityPanel() {
     return counts;
   }, [items]);
 
-  const presentStatuses = useMemo(
-    () => Object.keys(statusCounts).filter((s) => statusCounts[s] > 0),
-    [statusCounts]
+  const filterStatuses = useMemo(
+    () => Object.keys(CAPACITY_STATUS_META).filter((s) => s !== 'unknown'),
+    []
   );
 
   const handleFlyTo = (item) => {
@@ -209,43 +174,38 @@ export default function CapacityPanel() {
 
   const latestRecordedAt = useMemo(() => {
     if (!items.length) return null;
-    const times = items.map((i) => i.recordedAt).filter(Boolean);
+    const times = items.map((item) => item.recordedAt).filter(Boolean);
     if (!times.length) return null;
     return times.reduce((a, b) => (a > b ? a : b));
   }, [items]);
 
   return (
-    <div className="space-y-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
+    <div className="flex h-full min-h-0 flex-col gap-3 rounded-2xl border border-[var(--event-panel-border)] bg-[var(--event-panel-surface)] p-3">
+      <div className="flex shrink-0 items-start justify-between gap-2 rounded-xl border border-[var(--event-panel-border)] bg-[var(--event-panel-header-bg)] px-3 py-2">
         <div className="min-w-0">
-          <p className="typo-section-title text-foreground">
-            {t('mapPage.capacityPanel.title', { defaultValue: 'Sức chứa điểm đến' })}
-          </p>
+          <p className="typo-section-title text-foreground">{t('mapPage.capacityPanel.title')}</p>
           <p className="typo-meta text-muted-foreground truncate">
-            {wsStatus === 'open' ? (
+            {sseStatus === 'open' ? (
               <span className="flex items-center gap-1 text-emerald-600">
                 <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" />
-                {t('mapPage.capacityPanel.live', { defaultValue: 'Trực tiếp' })}
+                {t('mapPage.capacityPanel.live')}
               </span>
-            ) : wsStatus === 'connecting' ? (
-              t('mapPage.capacityPanel.connecting', { defaultValue: 'Đang kết nối...' })
+            ) : sseStatus === 'connecting' ? (
+              t('mapPage.capacityPanel.connecting')
             ) : isFetching ? (
-              t('mapPage.capacityPanel.syncing', { defaultValue: 'Đang cập nhật...' })
+              t('mapPage.capacityPanel.syncing')
             ) : latestRecordedAt ? (
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3 shrink-0" />
-                {formatRelativeTime(latestRecordedAt)}
+                {formatRelativeTime(latestRecordedAt, t, locale)}
               </span>
             ) : (
-              t('mapPage.capacityPanel.count', {
-                defaultValue: '{{count}} điểm',
-                count: items.length,
-              })
+              t('mapPage.capacityPanel.count', { count: items.length })
             )}
           </p>
         </div>
-        {wsStatus !== 'open' && (
+
+        {sseStatus !== 'open' && (
           <Button
             type="button"
             size="sm"
@@ -255,155 +215,148 @@ export default function CapacityPanel() {
             onClick={() => refetch()}
           >
             <RefreshCw className={cn('h-3.5 w-3.5', isFetching && 'animate-spin')} />
-            {t('mapPage.capacityPanel.refresh', { defaultValue: 'Làm mới' })}
+            {t('mapPage.capacityPanel.refresh')}
           </Button>
         )}
       </div>
 
-      {/* Search */}
       {!isLoading && items.length > 0 && (
-        <div className="relative">
+        <div className="relative shrink-0">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('mapPage.capacityPanel.searchPlaceholder', {
-              defaultValue: 'Tìm điểm đến...',
-            })}
+            placeholder={t('mapPage.capacityPanel.searchPlaceholder')}
             className="typo-search h-9 pl-8"
           />
         </div>
       )}
 
-      {/* Status filter chips */}
-      {!isLoading && items.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            onClick={() => setStatusFilter('all')}
-            className={cn(
-              'typo-badge inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
-              statusFilter === 'all'
-                ? 'border-primary/40 bg-primary/10 text-primary'
-                : 'border-border text-muted-foreground hover:bg-muted/50'
-            )}
-          >
-            {t('mapPage.capacityPanel.all', { defaultValue: 'Tất cả' })}
-            <span className="opacity-70">{items.length}</span>
-          </button>
-
-          {presentStatuses.map((status) => {
-            const meta = getStatusMeta(status);
+      {!isLoading && !isError && (
+        <div className="flex shrink-0 flex-wrap gap-1.5">
+          {filterStatuses.map((status) => {
+            const meta = getCapacityStatusMeta(status);
             const isActive = statusFilter === status;
             return (
-              <button
+              <Button
+                variant="ghost"
                 key={status}
                 type="button"
                 onClick={() => setStatusFilter(status)}
                 className={cn(
-                  'typo-badge inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
-                  isActive
-                    ? meta.badgeClass
-                    : 'border-border text-muted-foreground hover:bg-muted/50'
+                  'typo-badge inline-flex h-auto items-center gap-1 rounded-full border px-2.5 py-0.5 transition-colors',
+                  isActive ? meta.activeBadgeClass : meta.badgeClass,
+                  isActive && getCapacityActiveBorderClass(status)
                 )}
               >
-                {getStatusLabel(status, isVi)}
-                <span className="opacity-70">{statusCounts[status]}</span>
-              </button>
+                {getCapacityStatusLabel(status, t)}
+                <span className="opacity-90">{statusCounts[status] ?? 0}</span>
+              </Button>
             );
           })}
         </div>
       )}
 
-      {/* Content */}
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <CapacityRowSkeleton key={i} />
-          ))}
-        </div>
-      ) : isError ? (
-        <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
-          {t('mapPage.capacityPanel.error', { defaultValue: 'Không thể tải dữ liệu sức chứa.' })}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
-          {t('mapPage.capacityPanel.empty', { defaultValue: 'Không có điểm phù hợp.' })}
-        </div>
-      ) : (
-        <div className="space-y-2 pr-0.5">
-          {/* Result count */}
-          <p className="typo-meta text-muted-foreground px-0.5">
-            {filtered.length !== items.length
-              ? `${filtered.length} / ${items.length} điểm`
-              : `${items.length} điểm đang theo dõi`}
-          </p>
+      <ScrollArea className="min-h-0 flex-1">
+        {isLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <CapacityRowSkeleton key={index} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
+            {t('mapPage.capacityPanel.error')}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="typo-meta text-muted-foreground rounded-lg border border-dashed p-4 text-center">
+            {t('mapPage.capacityPanel.empty')}
+          </div>
+        ) : (
+          <div className="space-y-2 pr-0.5">
+            <p className="typo-meta text-muted-foreground px-0.5">
+              {filtered.length !== items.length
+                ? t('mapPage.capacityPanel.filteredCount', {
+                    filtered: filtered.length,
+                    total: items.length,
+                  })
+                : t('mapPage.capacityPanel.trackedCount', { count: items.length })}
+            </p>
 
-          {filtered.map((item) => {
-            const meta = getStatusMeta(item.status);
-            const hasCoords = typeof item.lat === 'number' && typeof item.lng === 'number';
-            const capacityText =
-              item.max > 0
-                ? `${numberFormatter.format(item.current)} / ${numberFormatter.format(item.max)} người`
-                : `${numberFormatter.format(item.current)} người`;
+            {filtered.map((item) => {
+              const meta = getCapacityStatusMeta(item.status);
+              const hasCoords = typeof item.lat === 'number' && typeof item.lng === 'number';
+              const capacityText =
+                item.max > 0
+                  ? t('mapPage.capacityPanel.capacityWithMax', {
+                      current: numberFormatter.format(item.current),
+                      max: numberFormatter.format(item.max),
+                    })
+                  : t('mapPage.capacityPanel.capacityCurrent', {
+                      current: numberFormatter.format(item.current),
+                    });
 
-            return (
-              <article
-                key={item.id}
-                className="hover:bg-muted/40 space-y-2 rounded-lg border p-3 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <h4
-                    className="typo-body text-foreground line-clamp-2 font-semibold"
-                    title={item.name}
-                  >
-                    {item.name}
-                  </h4>
-                  <Badge variant="outline" className={cn('typo-badge shrink-0', meta.badgeClass)}>
-                    {getStatusLabel(item.status, isVi)}
-                  </Badge>
-                </div>
-
-                <div>
-                  <div className="mb-1.5 flex items-center justify-between gap-1">
-                    <span className="typo-meta text-muted-foreground flex items-center gap-1">
-                      <Users className="h-3 w-3 shrink-0" />
-                      {capacityText}
-                    </span>
-                    <span
-                      className={cn(
-                        'typo-meta font-semibold tabular-nums',
-                        meta.badgeClass.split(' ').find((c) => c.startsWith('text-'))
-                      )}
+              return (
+                <article
+                  key={item.id}
+                  className={cn(
+                    'w-full min-w-0 space-y-2 overflow-hidden rounded-xl border p-3 shadow-sm transition-colors',
+                    getCapacityCardClass(item.status)
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h4
+                      className="typo-body text-foreground line-clamp-2 font-semibold"
+                      title={item.name}
                     >
-                      {item.pct}%
-                    </span>
+                      {item.name}
+                    </h4>
+                    <Badge variant="outline" className={cn('typo-badge shrink-0', meta.badgeClass)}>
+                      {getCapacityStatusLabel(item.status, t)}
+                    </Badge>
                   </div>
-                  <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${item.pct}%`, ...meta.barStyle }}
-                    />
-                  </div>
-                </div>
 
-                {hasCoords && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={getViewOnMapVariant(item.status)}
-                    className="typo-meta h-7 w-full"
-                    onClick={() => handleFlyTo(item)}
-                  >
-                    <LocateFixed className="h-3 w-3" />
-                    {t('mapPage.capacityPanel.viewOnMap', { defaultValue: 'Xem trên bản đồ' })}
-                  </Button>
-                )}
-              </article>
-            );
-          })}
-        </div>
-      )}
+                  <div>
+                    <div className="mb-1.5 flex items-center justify-between gap-1">
+                      <span className="typo-meta text-muted-foreground flex items-center gap-1">
+                        <Users className="h-3 w-3 shrink-0" />
+                        {capacityText}
+                      </span>
+                      <span
+                        className={cn(
+                          'typo-meta font-semibold tabular-nums',
+                          meta.badgeClass.split(' ').find((token) => token.startsWith('text-'))
+                        )}
+                      >
+                        {item.pct}%
+                      </span>
+                    </div>
+                    <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${item.pct}%`, ...meta.barStyle }}
+                      />
+                    </div>
+                  </div>
+
+                  {hasCoords && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={getViewOnMapVariant(item.status)}
+                      className="typo-meta h-7 w-full"
+                      onClick={() => handleFlyTo(item)}
+                    >
+                      <LocateFixed className="h-3 w-3" />
+                      {t('mapPage.capacityPanel.viewOnMap')}
+                    </Button>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </ScrollArea>
     </div>
   );
 }

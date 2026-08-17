@@ -4,10 +4,10 @@ export function TourDetailIntroSection({ description, includes, excludes, t }) {
   return (
     <section className="bg-card border-border mb-3 rounded-[10px] border-[0.5px] px-4 py-3.5">
       <h2 className="text-foreground mb-2 text-sm font-medium">
-        {t('tourPage.detailDescriptionTitle', 'Giới thiệu')}
+        {t('tourPage.detailDescriptionTitle')}
       </h2>
       <p className="text-muted-foreground text-sm leading-relaxed">
-        {description || t('tourPage.noDescription', 'Chưa có mô tả.')}
+        {description || t('tourPage.noDescription')}
       </p>
 
       {(includes?.length > 0 || excludes?.length > 0) && (
@@ -15,7 +15,7 @@ export function TourDetailIntroSection({ description, includes, excludes, t }) {
           {includes?.length > 0 && (
             <div>
               <h3 className="text-primary mb-1.5 text-sm font-semibold">
-                {t('tourPage.includes', 'Bao gồm')}
+                {t('tourPage.includes')}
               </h3>
               <ul className="space-y-1">
                 {includes.map((item, i) => (
@@ -30,7 +30,7 @@ export function TourDetailIntroSection({ description, includes, excludes, t }) {
           {excludes?.length > 0 && (
             <div>
               <h3 className="mb-1.5 text-sm font-semibold text-red-400">
-                {t('tourPage.excludes', 'Không bao gồm')}
+                {t('tourPage.excludes')}
               </h3>
               <ul className="space-y-1">
                 {excludes.map((item, i) => (

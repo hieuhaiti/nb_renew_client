@@ -5,10 +5,25 @@ import { tokenManager } from '@/lib/tokenManager';
 
 // GET /capacity/current
 export function useGetCurrentCapacity(options = {}) {
-  return useApiQuery(['capacity', 'current'], 'capacity/current', {
+  return useApiQuery(['capacity', 'current'], 'capacity/current?sortOrder=desc', {
     staleTime: 60 * 1000,
     ...options,
   });
+}
+
+// GET /capacity/tours/:tourId/current
+export function useGetTourCurrentCapacity(tourId, options = {}) {
+  return useApiQuery(
+    ['capacity', 'tour-current', tourId ?? null],
+    `capacity/tours/${tourId}/current`,
+    {
+      staleTime: 60 * 1000,
+      enabled: Boolean(tourId) && (options.enabled ?? true),
+      select: (res) => res?.metadata ?? res?.data?.metadata ?? res?.data ?? res ?? null,
+      ...options,
+    },
+    false
+  );
 }
 
 // GET /capacity/current/geojson

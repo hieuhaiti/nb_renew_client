@@ -8,7 +8,7 @@ export function TourDetailGallerySection({ images, title, onPickImage, t }) {
     <section className="bg-card border-border mb-3 rounded-[10px] border-[0.5px] px-4 py-3.5">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-foreground text-sm font-medium">
-          {t('tourPage.gallery', 'Thư viện ảnh')}
+          {t('tourPage.gallery')}
         </h2>
         <Button
           variant="link"
@@ -16,7 +16,7 @@ export function TourDetailGallerySection({ images, title, onPickImage, t }) {
           className="text-primary h-auto p-0 text-sm font-medium"
           onClick={() => onPickImage(0)}
         >
-          {t('tourPage.viewAllPhotos', 'Xem tất cả')} ({images.length})
+          {t('tourPage.viewAllPhotos')} ({images.length})
         </Button>
       </div>
 

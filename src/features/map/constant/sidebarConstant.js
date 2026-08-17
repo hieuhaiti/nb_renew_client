@@ -16,6 +16,13 @@ import { CompareSatellitePlaceholder, SatelliteImagePlaceholder } from '@/featur
 
 export const headerSidebar = [
   {
+    icon: Bot,
+    label: 'headerAside.chatbot',
+    value: 'chatbot',
+    component: ChatbotPanel,
+    authen: false,
+  },
+  {
     icon: Calendar,
     label: 'headerAside.event',
     value: 'event',
@@ -57,13 +64,25 @@ export const headerSidebar = [
     component: CompareSatellitePlaceholder,
     authen: true,
   },
-  {
-    icon: Bot,
-    label: 'headerAside.chatbot',
-    value: 'chatbot',
-    component: ChatbotPanel,
-    authen: true,
-  },
 ];
 
-export const currentHeaderSidebar = 'event';
+export const currentHeaderSidebar = 'chatbot';
+export const fallbackHeaderSidebar = 'event';
+
+export const resolveDefaultHeaderSidebar = (isAuthenticated) => {
+  const currentSidebarConfig = headerSidebar.find((item) => item.value === currentHeaderSidebar);
+
+  if (currentSidebarConfig?.authen && !isAuthenticated) {
+    const fallbackSidebarConfig = headerSidebar.find(
+      (item) => item.value === fallbackHeaderSidebar
+    );
+    if (fallbackSidebarConfig && (!fallbackSidebarConfig.authen || isAuthenticated)) {
+      return fallbackHeaderSidebar;
+    }
+
+    const firstVisibleSidebar = headerSidebar.find((item) => !item.authen || isAuthenticated);
+    return firstVisibleSidebar?.value ?? currentHeaderSidebar;
+  }
+
+  return currentHeaderSidebar;
+};

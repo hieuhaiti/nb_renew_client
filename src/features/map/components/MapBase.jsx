@@ -16,15 +16,18 @@ import { useDataLayerStore } from '@/features/map/store/useDataLayerStore';
 import {
   addOrUpdateSubcategoryLayer,
   addOrUpdateHighlightedRouteLayers,
+  addOrUpdateOcopLayer,
   applyCapacityUpdateToCollection,
   addTrafficFlowLayer,
   buildIncidentPopupHTML,
   clearHighlightedRouteLayers,
+  OCOP_LAYER_ID,
   TRAFFIC_INCIDENTS_LAYER,
   mapFeatureToDestination,
   normalizePointsToFeatureCollection,
   removeTrafficFlowLayer,
   removeTrafficIncidentLayer,
+  removeOcopLayer,
   removeSubcategoryLayer,
   updateTrafficIncidentData,
 } from '@/features/map/utils/MapHelper';
@@ -35,9 +38,10 @@ import {
 import { env } from '@/config/env';
 import { withBaseUrl } from '@/lib/utils';
 import { useDirectionsStore } from '@/features/map/store/useDirectionsStore';
-import { useSpotDetailModalStore } from '@/features/map/store/useModalStore';
+import { useOcopModalStore, useSpotDetailModalStore } from '@/features/map/store/useModalStore';
 import { useTrafficStore } from '@/features/map/store/useTrafficStore';
-import { useCapacityWebSocket } from '@/services/api/capacity/capacityService';
+import { useCapacityStream } from '@/services/api/capacity/capacityService';
+import { useGetOcopGeoJson } from '@/services/api/ocop/ocopService';
 import { SatelliteMapOverlayControls } from '@/features/satellite';
 
 mapboxgl.accessToken = env.mapboxToken;
@@ -81,6 +85,7 @@ export default function MapBaseArea() {
   const subcategories = useDataLayerStore((state) => state.subcategories);
   const setHighlightedPoint = useMapStore((state) => state.setHighlightedPoint);
   const openSpotModal = useSpotDetailModalStore((state) => state.openSpotModal);
+  const openOcopModal = useOcopModalStore((state) => state.openOcopModal);
   const highlightedRoute = useMapStore((state) => state.highlightedRoute);
   const highlightedRouteAt = useMapStore((state) => state.highlightedRouteAt);
   const showOnlyHighlightedRoute = useMapStore((state) => state.showOnlyHighlightedRoute);
@@ -136,12 +141,20 @@ export default function MapBaseArea() {
   const prevRenderedSourceIdsRef = useRef(new Set());
   const featureCollectionBySourceId = useRef(new Map());
 
-  const { data: wsCapacityData } = useCapacityWebSocket();
+  const { data: sseCapacityData } = useCapacityStream();
+  const { data: ocopGeoJsonData } = useGetOcopGeoJson();
+
+  const ocopFeatureCollection = useMemo(() => {
+    const fc =
+      ocopGeoJsonData?.type === 'FeatureCollection' ? ocopGeoJsonData : ocopGeoJsonData?.data;
+    if (fc?.type !== 'FeatureCollection' || !Array.isArray(fc.features)) return null;
+    return fc;
+  }, [ocopGeoJsonData]);
   const getMaps = () => [mapRef.current.single, mapRef.current.split].filter(Boolean);
   const getStyleReadyMaps = () => getMaps().filter((map) => map.isStyleLoaded());
 
   const setSubcategoryLayersVisibility = (map, isVisible) => {
-    if (!map) return;
+    if (!map || !map.isStyleLoaded()) return;
 
     const visibility = isVisible ? 'visible' : 'none';
     prevRenderedSourceIdsRef.current.forEach((sourceId) => {
@@ -199,7 +212,9 @@ export default function MapBaseArea() {
       map.addControl(new ToolViewModeControl(), 'right');
       map.addControl(new ToolBaseMap(), 'right');
       map.addControl(new ResetControl(), 'right');
-      map.addControl(new ToolLocateControl(), 'right');
+      const locateControl = new ToolLocateControl();
+      map.addControl(locateControl, 'right');
+      useMapStore.getState().setLocateControl(locateControl);
       map.addControl(new mapboxgl.FullscreenControl(), 'right');
       map.addControl(
         new mapboxgl.NavigationControl({
@@ -273,6 +288,7 @@ export default function MapBaseArea() {
         mapRef.current.split = null;
       }
       mapRef.current.compare = null;
+      setMapRef(null);
       setMapsReady({ single: false, split: false });
     };
   }, []);
@@ -282,8 +298,6 @@ export default function MapBaseArea() {
 
     const { single, split } = mapRef.current;
     if (!single || !split) return;
-
-    // debug log removed
 
     if (isSplitMode) {
       if (compareTeardownTimerRef.current) {
@@ -302,9 +316,6 @@ export default function MapBaseArea() {
       compareInitTimerRef.current = window.setTimeout(() => {
         const singleContainer = single.getContainer();
         const splitContainer = split.getContainer();
-        const compareNodeBeforeInit = mapContainer.current?.querySelector('.mapboxgl-compare');
-        // debug log removed
-
         split.resize();
 
         // Sync camera with single map
@@ -330,9 +341,7 @@ export default function MapBaseArea() {
               orientation: 'vertical',
             });
             compareRef.current = mapRef.current.compare;
-            // debug log removed
-          } catch (error) {
-            console.error('[MapBase] Failed to initialize map compare:', error);
+          } catch {
           }
         }
       }, 100);
@@ -355,8 +364,7 @@ export default function MapBaseArea() {
         if (mapRef.current.compare) {
           try {
             mapRef.current.compare.remove();
-          } catch (error) {
-            console.error('[MapBase] Failed to remove map compare:', error);
+          } catch {
           }
           mapRef.current.compare = null;
           compareRef.current = null;
@@ -374,28 +382,6 @@ export default function MapBaseArea() {
         compareTeardownTimerRef.current = null;
       }
     };
-  }, [isSplitMode, mapsReady.single, mapsReady.split]);
-
-  useEffect(() => {
-    if (!isSplitMode || !mapContainer.current) return;
-
-    const debugTimer = window.setTimeout(() => {
-      const compareDom = mapContainer.current?.querySelector('.mapboxgl-compare');
-      const swiperDom =
-        mapContainer.current?.querySelector('.compare-swiper-vertical') ||
-        mapContainer.current?.querySelector('.compare-swiper-horizontal');
-      const splitDisplay = mapRef.current.split?.getContainer()?.style?.display;
-      const swiperRect = swiperDom?.getBoundingClientRect?.();
-      const sampleX = swiperRect ? Math.round(swiperRect.left + swiperRect.width / 2) : null;
-      const sampleY = swiperRect ? Math.round(swiperRect.top + swiperRect.height / 2) : null;
-      const topElementAtSwiper =
-        sampleX != null && sampleY != null ? document.elementFromPoint(sampleX, sampleY) : null;
-      const swiperStyle = swiperDom ? window.getComputedStyle(swiperDom) : null;
-
-      // debug log removed
-    }, 260);
-
-    return () => window.clearTimeout(debugTimer);
   }, [isSplitMode, mapsReady.single, mapsReady.split]);
 
   useEffect(() => {
@@ -452,6 +438,7 @@ export default function MapBaseArea() {
     colorBySubcategoryId,
     highlightedRoute,
     iconBySubcategoryId,
+    lang,
     mapsReady.single,
     mapsReady.split,
     selectedSubcategoryIdsSafe,
@@ -469,7 +456,6 @@ export default function MapBaseArea() {
       const points = Array.isArray(highlightedRoute?.points) ? highlightedRoute.points : [];
 
       if (points.length < 2) {
-        console.warn('[MapBase drawHighlightedRoute] points.length < 2 → clearing layers');
         clearHighlightedRouteLayers(map);
         return;
       }
@@ -493,7 +479,6 @@ export default function MapBaseArea() {
         if (didCancel) return;
 
         if (!routeResult?.geometry?.coordinates?.length) {
-          console.warn('[MapBase drawHighlightedRoute] no geometry → clearing layers');
           clearHighlightedRouteLayers(map);
           return;
         }
@@ -515,6 +500,14 @@ export default function MapBaseArea() {
         addOrUpdateHighlightedRouteLayers(map, {
           routeFeature,
           routePointsFeatureCollection: routePoints,
+          onPointClick: (feature) => {
+            const destination = mapFeatureToDestination(feature);
+            if (!destination) return;
+            setHighlightedPoint(destination);
+            if (destination.id) {
+              openSpotModal(destination.id, destination.slug ?? null);
+            }
+          },
         });
 
         const coordinates = routeResult.geometry.coordinates;
@@ -523,22 +516,16 @@ export default function MapBaseArea() {
           new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
         );
 
-        // debug log removed
         map.fitBounds(bounds, {
           padding: 88,
           duration: 850,
         });
-        // debug log removed
-      } catch (error) {
+      } catch {
         if (!didCancel) {
-          console.error('[MapBase drawHighlightedRoute] error:', error);
           clearHighlightedRouteLayers(map);
         }
       }
     };
-
-    const isStyleReady = map.isStyleLoaded();
-    // debug log removed
 
     // Khi mapsReady.single = true, 'load' event đã fire → 'style.load' đã fire trước đó.
     // isStyleLoaded() có thể false vì tiles vẫn đang load, nhưng addSource/addLayer vẫn hoạt động.
@@ -567,7 +554,8 @@ export default function MapBaseArea() {
       'highlight-route-points-name',
     ];
 
-    const getInteractiveLayerIds = (map) => {
+    const getTourismLayerIds = (map) => {
+      if (!map.isStyleLoaded()) return [];
       const sourceIds = Array.from(prevRenderedSourceIdsRef.current);
 
       const subcategoryPointLayerIds = sourceIds
@@ -581,6 +569,11 @@ export default function MapBaseArea() {
       return [...subcategoryPointLayerIds, ...routePointLayerIds];
     };
 
+    const getOcopLayerIds = (map) => {
+      if (!map.isStyleLoaded()) return [];
+      return map.getLayer(OCOP_LAYER_ID) ? [OCOP_LAYER_ID] : [];
+    };
+
     const clearCursor = (map) => {
       const canvas = map?.getCanvas?.();
       if (!canvas?.style) return;
@@ -589,47 +582,56 @@ export default function MapBaseArea() {
 
     const handlers = maps.map((map) => {
       const handleMapClick = (event) => {
-        const layerIds = getInteractiveLayerIds(map);
-        if (layerIds.length === 0) return;
+        // Tourism points take priority over OCOP points
+        const tourismLayerIds = getTourismLayerIds(map);
+        if (tourismLayerIds.length > 0) {
+          const tourismFeatures = map.queryRenderedFeatures(event.point, {
+            layers: tourismLayerIds,
+          });
+          if (tourismFeatures.length > 0) {
+            const clickedFeature = tourismFeatures[0];
+            const destination = mapFeatureToDestination(clickedFeature);
+            if (!destination) return;
 
-        const features = map.queryRenderedFeatures(event.point, { layers: layerIds });
-        if (!features.length) return;
+            const clickedLayerId = clickedFeature?.layer?.id || '';
+            const clickedLayerMatch = clickedLayerId.match(/^subcategory-(.+)-(point)$/);
+            const subcategoryFromLayer = clickedLayerMatch?.[1] ?? null;
 
-        const clickedFeature = features[0];
-        const destination = mapFeatureToDestination(clickedFeature);
-        if (!destination) return;
+            let normalizedSubcategoryId = destination.subcategory_id;
+            if (normalizedSubcategoryId == null && subcategoryFromLayer != null) {
+              const parsed = Number(subcategoryFromLayer);
+              normalizedSubcategoryId = Number.isNaN(parsed) ? subcategoryFromLayer : parsed;
+            }
 
-        const clickedLayerId = clickedFeature?.layer?.id || '';
-        const clickedLayerMatch = clickedLayerId.match(/^subcategory-(.+)-(point)$/);
-        const subcategoryFromLayer = clickedLayerMatch?.[1] ?? null;
-
-        let normalizedSubcategoryId = destination.subcategory_id;
-        if (normalizedSubcategoryId == null && subcategoryFromLayer != null) {
-          const parsed = Number(subcategoryFromLayer);
-          normalizedSubcategoryId = Number.isNaN(parsed) ? subcategoryFromLayer : parsed;
+            setHighlightedPoint({ ...destination, subcategory_id: normalizedSubcategoryId });
+            if (destination.id) openSpotModal(destination.id, destination.slug ?? null);
+            return;
+          }
         }
 
-        setHighlightedPoint({
-          ...destination,
-          subcategory_id: normalizedSubcategoryId,
-        });
-
-        if (destination.id) {
-          openSpotModal(destination.id, destination.slug ?? null);
-        }
+        // Fallback: check OCOP layer
+        const ocopLayerIds = getOcopLayerIds(map);
+        if (ocopLayerIds.length === 0) return;
+        const ocopFeatures = map.queryRenderedFeatures(event.point, { layers: ocopLayerIds });
+        if (!ocopFeatures.length) return;
+        const props = ocopFeatures[0]?.properties;
+        if (props) openOcopModal(props);
       };
 
       const handleMouseMove = (event) => {
-        const layerIds = getInteractiveLayerIds(map);
         const canvas = map?.getCanvas?.();
         if (!canvas?.style) return;
 
-        if (layerIds.length === 0) {
+        const tourismLayerIds = getTourismLayerIds(map);
+        const ocopLayerIds = getOcopLayerIds(map);
+        const allLayerIds = [...tourismLayerIds, ...ocopLayerIds];
+
+        if (allLayerIds.length === 0) {
           canvas.style.cursor = '';
           return;
         }
 
-        const features = map.queryRenderedFeatures(event.point, { layers: layerIds });
+        const features = map.queryRenderedFeatures(event.point, { layers: allLayerIds });
         canvas.style.cursor = features.length > 0 ? 'pointer' : '';
       };
 
@@ -720,6 +722,7 @@ export default function MapBaseArea() {
     colorBySubcategoryId,
     highlightedRoute,
     iconBySubcategoryId,
+    lang,
     mapsReady.single,
     mapsReady.split,
     selectedSubcategoryIdsSafe,
@@ -728,12 +731,12 @@ export default function MapBaseArea() {
   ]);
 
   useEffect(() => {
-    if (!wsCapacityData?.spot_id) return;
+    if (!sseCapacityData?.spot_id) return;
     if (!mapsReady.single) return;
     const maps = getStyleReadyMaps();
     if (maps.length === 0) return;
 
-    const spotId = String(wsCapacityData.spot_id);
+    const spotId = String(sseCapacityData.spot_id);
 
     featureCollectionBySourceId.current.forEach((fc, sourceId) => {
       const hasSpot = fc.features.some(
@@ -741,7 +744,7 @@ export default function MapBaseArea() {
       );
       if (!hasSpot) return;
 
-      const updated = applyCapacityUpdateToCollection(fc, wsCapacityData);
+      const updated = applyCapacityUpdateToCollection(fc, sseCapacityData);
       featureCollectionBySourceId.current.set(sourceId, updated);
 
       maps.forEach((map) => {
@@ -750,7 +753,33 @@ export default function MapBaseArea() {
         source.setData(updated);
       });
     });
-  }, [wsCapacityData, mapsReady.single, mapsReady.split]);
+  }, [sseCapacityData, mapsReady.single, mapsReady.split]);
+
+  useEffect(() => {
+    if (!mapsReady.single || !ocopFeatureCollection) return;
+    const maps = getMaps();
+    maps.forEach((map) => addOrUpdateOcopLayer(map, ocopFeatureCollection));
+  }, [ocopFeatureCollection, mapsReady.single, mapsReady.split]);
+
+  useEffect(() => {
+    const maps = getMaps();
+    if (maps.length === 0) return;
+
+    const subscriptions = maps.map((map) => {
+      const handleStyleLoad = () => {
+        if (!ocopFeatureCollection) return;
+        addOrUpdateOcopLayer(map, ocopFeatureCollection);
+      };
+      map.on('style.load', handleStyleLoad);
+      return { map, handleStyleLoad };
+    });
+
+    return () => {
+      subscriptions.forEach(({ map, handleStyleLoad }) => {
+        map.off('style.load', handleStyleLoad);
+      });
+    };
+  }, [ocopFeatureCollection, mapsReady.single, mapsReady.split]);
 
   useEffect(() => {
     return () => {
@@ -766,6 +795,7 @@ export default function MapBaseArea() {
         clearHighlightedRouteLayers(map);
         removeTrafficFlowLayer(map);
         removeTrafficIncidentLayer(map);
+        removeOcopLayer(map);
       });
 
       if (routeMarkersRef.current.start) routeMarkersRef.current.start.remove();
@@ -868,6 +898,7 @@ export default function MapBaseArea() {
           pitch: map.getPitch(),
           bearing: map.getBearing(),
           essential: true,
+          duration: 2500,
         });
       }
 

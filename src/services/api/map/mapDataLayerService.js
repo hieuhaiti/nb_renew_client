@@ -67,6 +67,13 @@ export function searchDataPointByName({ search, lang = 'vi', page = 1, limit = 5
 
 export function useSubcategoryLayerQuery({ subcategoryIds = [], lang = 'vi' } = {}) {
   const ids = Array.isArray(subcategoryIds) ? subcategoryIds.filter(Boolean) : [];
+  const queryParams = new URLSearchParams({
+    category_ids: JSON.stringify(ids),
+    status: 'active',
+    limit: '100',
+    capacity: 'true',
+    lang,
+  });
 
   return useApiQueries(
     {
@@ -75,8 +82,11 @@ export function useSubcategoryLayerQuery({ subcategoryIds = [], lang = 'vi' } = 
           ? [
               {
                 queryKey: ['map', 'points', 'subcategory', lang, ids],
-                endPoint: `spots?category_ids=${JSON.stringify(ids)}&status=active&limit=100&capacity=true`,
-                staleTime: 5 * 60 * 1000,
+                endPoint: `spots?${queryParams.toString()}`,
+                staleTime: Infinity,
+                refetchOnMount: false,
+                refetchOnWindowFocus: false,
+                refetchOnReconnect: false,
                 enabled: Boolean(ids.length),
               },
             ]

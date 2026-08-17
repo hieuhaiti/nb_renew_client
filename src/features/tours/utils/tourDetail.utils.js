@@ -8,9 +8,9 @@ export function stripHtmlTags(value) {
 
 export function getDurationLabel(tour, t) {
   if (tour?.duration_days) {
-    return `${tour.duration_days} ${t('tourPage.days', 'ngày')}`;
+    return `${tour.duration_days} ${t('tourPage.days')}`;
   }
-  return t('tourPage.unknown', 'Unknown');
+  return t('tourPage.unknown');
 }
 
 export function getGalleryPreviewImages(images) {

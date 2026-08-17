@@ -8,6 +8,14 @@ import {
   extractBotReply,
   extractMapActions,
 } from '@/services/api/chatbot/chatbotService';
+import useAuthStore from '@/stores/useAuthStore';
+import { getAnonymousId } from '@/lib/anonymousId';
+import { tokenManager } from '@/lib/tokenManager';
+
+function resolveAnonymousId() {
+  const hasAccessToken = !!tokenManager.getAccessToken();
+  return hasAccessToken ? null : getAnonymousId();
+}
 
 const useChatbotStore = create((set, get) => ({
   sessionId: null,
@@ -22,7 +30,8 @@ const useChatbotStore = create((set, get) => ({
     if (sessionId) return;
     set({ isLoading: true, error: null });
     try {
-      const sessions = await listChatSessions();
+      const anonymousId = resolveAnonymousId();
+      const sessions = await listChatSessions(anonymousId);
       set({ sessions });
       if (sessions.length === 0) {
         set({ isLoading: false });
@@ -38,7 +47,8 @@ const useChatbotStore = create((set, get) => ({
 
   async loadAllSessions() {
     try {
-      const sessions = await listChatSessions();
+      const anonymousId = resolveAnonymousId();
+      const sessions = await listChatSessions(anonymousId);
       set({ sessions });
     } catch (_err) {}
   },
@@ -56,7 +66,8 @@ const useChatbotStore = create((set, get) => ({
 
   async deleteSession(id) {
     try {
-      await deleteChatSession(id);
+      const anonymousId = resolveAnonymousId();
+      await deleteChatSession(id, anonymousId);
     } catch (_err) {}
     const { sessionId, sessions } = get();
     const remaining = sessions.filter((s) => s.id !== id);
@@ -76,6 +87,9 @@ const useChatbotStore = create((set, get) => ({
     const trimmed = text?.trim();
     if (!trimmed || get().isSending) return;
 
+    const isAuthenticated = useAuthStore.getState().isAuthenticated;
+    const anonymousId = isAuthenticated ? resolveAnonymousId() : getAnonymousId();
+
     const userMsg = {
       id: `user-${Date.now()}`,
       role: 'user',
@@ -87,17 +101,15 @@ const useChatbotStore = create((set, get) => ({
     try {
       let sid = get().sessionId;
       if (!sid) {
-        const session = await createChatSession(language);
+        const session = await createChatSession(language, anonymousId);
         sid = session.id;
         set((s) => ({
           sessionId: sid,
-          sessions: s.sessions.some((x) => x.id === sid)
-            ? s.sessions
-            : [session, ...s.sessions],
+          sessions: s.sessions.some((x) => x.id === sid) ? s.sessions : [session, ...s.sessions],
         }));
       }
 
-      const data = await apiSendMessage(sid, trimmed, language);
+      const data = await apiSendMessage(sid, trimmed, language, anonymousId);
       const msgData = data?.message && typeof data.message === 'object' ? data.message : null;
       const botMsg = {
         id: msgData?.id ? String(msgData.id) : `bot-${Date.now()}`,
@@ -117,7 +129,14 @@ const useChatbotStore = create((set, get) => ({
   },
 
   clearSession() {
-    set({ sessionId: null, sessions: [], messages: [], isSending: false, isLoading: false, error: null });
+    set({
+      sessionId: null,
+      sessions: [],
+      messages: [],
+      isSending: false,
+      isLoading: false,
+      error: null,
+    });
   },
 }));
 

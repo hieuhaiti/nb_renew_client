@@ -34,7 +34,7 @@ function normalizeFestivalTypeOption(item, index = 0) {
     item.type ||
     item.id ||
     `type-${index}`;
-  const label = item.label || item.name_vi || item.name_en || item.name || String(value);
+  const label = item.label || item.name || item.name_vi || item.name_en || String(value);
 
   return {
     value: String(value),
@@ -83,9 +83,9 @@ function getLocalizedValue(item, lang = 'vi', baseField) {
   const viField = `${baseField}_vi`;
   const enField = `${baseField}_en`;
 
-  const localizedValue = preferVi
-    ? item?.[viField] || item?.[enField] || item?.[baseField]
-    : item?.[enField] || item?.[viField] || item?.[baseField];
+  const localizedValue =
+    item?.[baseField] ||
+    (preferVi ? item?.[viField] || item?.[enField] : item?.[enField] || item?.[viField]);
 
   return normalizeTextValue(localizedValue, lang);
 }

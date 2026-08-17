@@ -34,18 +34,16 @@ export default function FestivalDetailPageContent() {
   const detail = useMemo(() => {
     if (!data) return null;
     return (
-      data?.data?.festival ||
-      data?.data?.item ||
-      data?.festival ||
-      data?.item ||
-      data?.data ||
-      null
+      data?.data?.festival || data?.data?.item || data?.festival || data?.item || data?.data || null
     );
   }, [data]);
 
-  const name = detail?.name_vi || detail?.name_en || detail?.name || '—';
+  const name = detail?.name || detail?.name_vi || detail?.name_en || '—';
   const description =
-    detail?.description_vi || detail?.description_en || detail?.description || t('festivalDetail.no_description');
+    detail?.description ||
+    detail?.description_vi ||
+    detail?.description_en ||
+    t('festivalDetail.no_description');
   const imageSrc = withBaseUrl(detail?.cover_image_url || '');
   const typeLabel = detail?.festival_type
     ? t(`festivalDetail.types.${detail.festival_type}`, { defaultValue: detail.festival_type })
@@ -61,8 +59,8 @@ export default function FestivalDetailPageContent() {
   if (isLoading) {
     return (
       <RootLayout>
-        <div className="min-h-screen bg-background px-4 py-8">
-          <div className="mx-auto max-w-6xl animate-pulse rounded-3xl border border-border/70 bg-card p-8" />
+        <div className="bg-background min-h-screen px-4 py-8">
+          <div className="border-border/70 bg-card mx-auto max-w-6xl animate-pulse rounded-3xl border p-8" />
         </div>
       </RootLayout>
     );
@@ -71,8 +69,8 @@ export default function FestivalDetailPageContent() {
   if (isError || !detail) {
     return (
       <RootLayout>
-        <div className="flex min-h-screen items-center justify-center bg-background px-4">
-          <Card className="w-full max-w-xl rounded-3xl border-border/70">
+        <div className="bg-background flex min-h-screen items-center justify-center px-4">
+          <Card className="border-border/70 w-full max-w-xl rounded-3xl">
             <CardContent className="space-y-4 px-6 py-6 text-center">
               <h1 className="typo-card-title text-foreground">{t('festivalDetail.not_found')}</h1>
               <Button className="rounded-xl" onClick={() => navigate('/festival')}>
@@ -87,7 +85,7 @@ export default function FestivalDetailPageContent() {
 
   return (
     <RootLayout>
-      <div className="min-h-screen bg-background px-4 py-4 lg:py-6">
+      <div className="bg-background min-h-screen px-4 py-4 lg:py-6">
         <div className="mx-auto w-full lg:w-[88%]">
           <Button
             variant="outline"
@@ -99,8 +97,8 @@ export default function FestivalDetailPageContent() {
 
           <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
             {/* Cover image */}
-            <Card className="gap-0 overflow-hidden rounded-3xl border-border/70 py-0 shadow-sm">
-              <div className="h-72 bg-muted sm:h-96">
+            <Card className="border-border/70 gap-0 overflow-hidden rounded-3xl py-0 shadow-sm">
+              <div className="bg-muted h-72 sm:h-96">
                 <img
                   src={imageSrc || placeholderImg}
                   alt={name}
@@ -114,8 +112,8 @@ export default function FestivalDetailPageContent() {
 
               {detail?.lat && detail?.lng ? (
                 <CardContent className="px-5 py-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                    <MapPin className="text-primary h-4 w-4 shrink-0" />
                     <span>
                       {locationName}
                       {provinceCode ? ` · ${provinceCode}` : ''}
@@ -134,16 +132,16 @@ export default function FestivalDetailPageContent() {
             </Card>
 
             {/* Info */}
-            <Card className="rounded-3xl border-border/70 shadow-sm">
+            <Card className="border-border/70 rounded-3xl shadow-sm">
               <CardContent className="space-y-4 px-6 py-6">
                 <h1 className="typo-hero text-foreground">{name}</h1>
 
                 <div className="flex flex-wrap gap-2">
-                  <span className="typo-badge rounded-full bg-primary/10 px-3 py-1 text-primary">
+                  <span className="typo-badge bg-primary/10 text-primary rounded-full px-3 py-1">
                     {typeLabel}
                   </span>
                   {isRecurring && (
-                    <span className="typo-badge flex items-center gap-1 rounded-full bg-secondary/15 px-3 py-1 text-secondary">
+                    <span className="typo-badge bg-secondary/15 text-secondary flex items-center gap-1 rounded-full px-3 py-1">
                       <Repeat2 className="h-3 w-3" />
                       {recurrenceRule === 'yearly'
                         ? t('festivalDetail.recurring_yes')
@@ -152,11 +150,11 @@ export default function FestivalDetailPageContent() {
                   )}
                 </div>
 
-                <p className="typo-body leading-relaxed text-muted-foreground">{description}</p>
+                <p className="typo-body text-muted-foreground leading-relaxed">{description}</p>
 
-                <div className="space-y-2.5 rounded-2xl border border-border/70 bg-card p-4">
-                  <p className="typo-body flex items-start gap-2 text-foreground">
-                    <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <div className="border-border/70 bg-card space-y-2.5 rounded-2xl border p-4">
+                  <p className="typo-body text-foreground flex items-start gap-2">
+                    <CalendarDays className="text-primary mt-0.5 h-4 w-4 shrink-0" />
                     <span>
                       <span className="font-medium">{t('festivalDetail.dates_label')}: </span>
                       {startDate}
@@ -164,19 +162,19 @@ export default function FestivalDetailPageContent() {
                   </p>
 
                   {endDate && endDate !== startDate ? (
-                    <p className="typo-body flex items-start gap-2 text-foreground">
-                      <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                    <p className="typo-body text-foreground flex items-start gap-2">
+                      <CalendarDays className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
                       <span>{endDate}</span>
                     </p>
                   ) : null}
 
-                  <p className="typo-body flex items-center gap-2 text-foreground">
-                    <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                  <p className="typo-body text-foreground flex items-center gap-2">
+                    <MapPin className="text-primary h-4 w-4 shrink-0" />
                     <span>{locationName}</span>
                   </p>
 
-                  <p className="typo-body flex items-center gap-2 text-foreground">
-                    <Tag className="h-4 w-4 shrink-0 text-primary" />
+                  <p className="typo-body text-foreground flex items-center gap-2">
+                    <Tag className="text-primary h-4 w-4 shrink-0" />
                     <span>
                       {t('festivalDetail.type_label')}: {typeLabel}
                     </span>
@@ -184,7 +182,8 @@ export default function FestivalDetailPageContent() {
 
                   {provinceCode ? (
                     <p className="typo-body text-foreground">
-                      {t('festivalDetail.location_label')}: {provinceCode === 'NB' ? 'Ninh Bình' : provinceCode}
+                      {t('festivalDetail.location_label')}:{' '}
+                      {provinceCode === 'NB' ? 'Ninh Bình' : provinceCode}
                     </p>
                   ) : null}
                 </div>

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { ChevronDown, ChevronUp, Layers } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSatelliteStore } from '../store/useSatelliteStore';
 import { LAYER_CONFIG } from '../constants/satelliteConstants';
 import { SatelliteLayerControl } from './SatelliteLayerControl';
+import { Button } from '@/components/ui/button';
 
 export function SatelliteLayerManager() {
   const { t } = useTranslation();
@@ -18,7 +19,7 @@ export function SatelliteLayerManager() {
 
   return (
     <div className="bg-card overflow-hidden">
-      <button
+      <Button variant="ghost"
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-3 py-2 hover:bg-muted/50 transition-colors"
       >
@@ -36,7 +37,7 @@ export function SatelliteLayerManager() {
         ) : (
           <ChevronDown size={16} className="text-foreground/60" />
         )}
-      </button>
+      </Button>
 
       {open && (
         <div className="border-t border-border px-3 py-3 space-y-2 max-h-80 overflow-y-auto">
@@ -65,3 +66,5 @@ export function SatelliteLayerManager() {
 }
 
 export default SatelliteLayerManager;
+
+
