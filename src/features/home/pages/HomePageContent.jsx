@@ -95,7 +95,7 @@ const HERO_MAP_STATIC_TOKEN =
 
 const HERO_MAP_STATIC_BG =
   'linear-gradient(135deg,rgba(10,68,88,.18),rgba(16,185,129,.15)),' +
-  `url('https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/105.936,20.253,8.2,0/700x900?access_token=${HERO_MAP_STATIC_TOKEN}')`;
+  `url('https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/105.93,20.253,11,0/700x900?access_token=${HERO_MAP_STATIC_TOKEN}')`;
 
 const QUICK_ICON_MAP = {
   map: <MapPinned size={18} />,
