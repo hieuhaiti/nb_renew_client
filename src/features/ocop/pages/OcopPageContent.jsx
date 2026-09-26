@@ -64,7 +64,8 @@ function getProductStars(p) {
 function OcopCard({ item, navigate, t }) {
   const name = getProductName(item);
   const stars = getProductStars(item);
-  const imageSrc = withBaseUrl(item?.cover_image_url || '') || placeholderImg;
+  const rawImage = item?.cover_image_url || (Array.isArray(item?.media_urls) ? item.media_urls[0] : item?.media_urls);
+  const imageSrc = withBaseUrl(rawImage || '') || placeholderImg;
   const price = Number(item?.price_vnd);
   const priceLabel = Number.isFinite(price) && price > 0 ? formatVND(price) : null;
   const catConf = getCategoryColor(item?.category);
