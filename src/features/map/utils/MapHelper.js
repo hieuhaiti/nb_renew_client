@@ -1,5 +1,5 @@
 import mapboxgl from 'mapbox-gl';
-import { resolveCapacityPct, resolveCapacityStatus } from '@/features/map/utils/capacityUtils';
+import { circle as turfCircle } from '@turf/turf';
 
 export {
   addTrafficFlowLayer,
@@ -110,13 +110,8 @@ function toFiniteNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-// The point layer's icon-image expression matches on CAPACITY_STATUS_PROPERTY. A `match`
-// input that is null (the API sends capacity_status: null for untracked spots) fails to
-// evaluate and the feature renders no icon at all, so always resolve to a valid status
-// string — derived from the percentage when the API omits it.
 function withCapacityProgressProperties(properties) {
-  const status = resolveCapacityStatus(properties) ?? 'normal';
-  return { ...properties, [CAPACITY_STATUS_PROPERTY]: status };
+  return { ...properties };
 }
 
 function buildPointGeometryFromCoordinates(input) {
@@ -162,6 +157,11 @@ function toFeature(input, fallbackId) {
     ...(isObject(input.properties) ? input.properties : {}),
   };
 
+  const rawCapacityStatus = rawProperties.capacity_status ?? rawProperties.status ?? null;
+  const normalizedCapacityStatus = rawCapacityStatus
+    ? String(rawCapacityStatus).trim().toLowerCase().replace(/[\s-]+/g, '_')
+    : undefined;
+
   const mergedProperties = {
     ...rawProperties,
     id: input.id ?? rawProperties.id,
@@ -171,6 +171,7 @@ function toFeature(input, fallbackId) {
     address: toDisplayText(rawProperties.address),
     category_id: rawProperties.category_id,
     subcategory_id: rawProperties.subcategory_id,
+    ...(normalizedCapacityStatus != null ? { capacity_status: normalizedCapacityStatus } : {}),
   };
   const normalizedProperties = withCapacityProgressProperties(mergedProperties);
 
@@ -979,24 +980,21 @@ export function applyCapacityUpdateToCollection(featureCollection, capacityUpdat
     const visitorCount =
       capacityUpdate.visitor_count != null ? capacityUpdate.visitor_count : props.visitor_count;
 
-    const hasNewPct = capacityUpdate.capacity_pct != null;
-    const nextPct = hasNewPct ? capacityUpdate.capacity_pct : props.capacity_pct;
-    // A fresh percentage invalidates the previous status: keeping it would pin the marker
-    // to a stale icon when the update omits an explicit status.
-    const nextStatus = capacityUpdate.status ?? (hasNewPct ? null : props.capacity_status);
+    const rawStatus = capacityUpdate.status ?? props.capacity_status;
+    const normalizedStatus = rawStatus
+      ? String(rawStatus).trim().toLowerCase().replace(/[\s-]+/g, '_')
+      : rawStatus;
 
     const patchedProps = {
       ...props,
       visitor_count: visitorCount,
       current_visitor_count: visitorCount,
-      capacity_pct: nextPct,
-      current_capacity_pct: nextPct,
-      capacity_status: nextStatus,
-      current_capacity_status: nextStatus,
+      capacity_pct: capacityUpdate.capacity_pct ?? props.capacity_pct,
+      capacity_status: normalizedStatus,
       recorded_at: capacityUpdate.recorded_at ?? props.recorded_at,
     };
 
-    return { ...feature, properties: withCapacityProgressProperties(patchedProps) };
+    return { ...feature, properties: patchedProps };
   });
 
   if (!matched) return featureCollection;

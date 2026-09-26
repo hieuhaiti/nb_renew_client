@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff, Cloud, Download, TriangleAlert, Image, FileJson } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
@@ -86,7 +86,7 @@ export function SatelliteLayerControl({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <div className={`${dotClass} rounded-full shrink-0 ${config?.color || 'bg-gray-400'}`} />
+            <div className={`${dotClass} rounded-full shrink-0 ${config?.color || 'bg-muted-foreground'}`} />
             {compact ? (
               <p className="typo-meta font-medium text-foreground truncate">
                 {config ? t(config.labelKey) : layer.layerType}
@@ -98,7 +98,7 @@ export function SatelliteLayerControl({
                     {config ? t(config.labelKey) : `Layer ${index + 1}`}
                   </p>
                   {layer.cloudCover != null && (
-                    <span className="inline-flex items-center gap-0.5 typo-badge px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-500 shrink-0">
+                    <span className="inline-flex items-center gap-0.5 typo-badge px-1.5 py-0.5 rounded-full bg-info/10 text-info shrink-0">
                       <Cloud size={10} />
                       {layer.cloudCover}%
                     </span>
@@ -176,7 +176,7 @@ export function SatelliteLayerControl({
               {formatDateRange(layer.date)}
             </p>
             {layer.cloudCover != null && (
-              <span className="inline-flex items-center gap-0.5 typo-badge px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-500 shrink-0">
+              <span className="inline-flex items-center gap-0.5 typo-badge px-1.5 py-0.5 rounded-full bg-info/10 text-info shrink-0">
                 <Cloud size={10} />
                 {layer.cloudCover}%
               </span>

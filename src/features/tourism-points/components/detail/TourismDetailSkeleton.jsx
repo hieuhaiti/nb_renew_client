@@ -164,7 +164,7 @@ function CtaSkeleton() {
   return (
     <div
       className="rounded-[24px] p-5 shadow-[0_14px_35px_rgba(7,29,54,0.12)]"
-      style={{ background: 'linear-gradient(135deg,#1cb6d8,#0fb49f)' }}
+      style={{ background: 'var(--gradient-primary)' }}
     >
       <Skeleton className="mb-3 h-7 w-40 rounded-md bg-white/25" />
       <Skeleton className="mb-1.5 h-[13px] w-full rounded bg-white/20" />

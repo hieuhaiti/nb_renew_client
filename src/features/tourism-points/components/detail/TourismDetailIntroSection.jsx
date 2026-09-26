@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Info, MapPin, Clock, Tag, Globe } from 'lucide-react';
 
 export function TourismDetailIntroSection({
@@ -12,38 +12,38 @@ export function TourismDetailIntroSection({
 }) {
   const infoBoxes = [
     {
-      icon: <MapPin className="mb-2 h-5 w-5 text-[#08aeb9]" />,
+      icon: <MapPin className="mb-2 h-5 w-5 text-primary" />,
       label: t('tourism.location'),
       value: address || t('tourism.unknown'),
     },
     {
-      icon: <Globe className="mb-2 h-5 w-5 text-[#08aeb9]" />,
+      icon: <Globe className="mb-2 h-5 w-5 text-primary" />,
       label: t('tourism.province'),
       value: provinceName || t('tourism.unknown'),
     },
     {
-      icon: <Clock className="mb-2 h-5 w-5 text-[#08aeb9]" />,
+      icon: <Clock className="mb-2 h-5 w-5 text-primary" />,
       label: t('tourism.opening_hours'),
       value: openingHours || t('tourism.unknown'),
     },
     {
-      icon: <Tag className="mb-2 h-5 w-5 text-[#08aeb9]" />,
+      icon: <Tag className="mb-2 h-5 w-5 text-primary" />,
       label: t('tourism.type'),
       value: categoryName || t('tourism.unknown'),
     },
   ];
 
   return (
-    <section className="rounded-[24px] border border-[#dcecf7] bg-white px-5 py-5 shadow-[0_10px_28px_rgba(7,29,54,0.08)]">
-      <h2 className="mb-4 flex items-center gap-2.5 text-xl font-bold text-[#071d36] md:text-2xl">
-        <Info className="h-6 w-6 text-[#08aeb9]" />
+    <section className="rounded-[24px] border border-border bg-card px-5 py-5 shadow-[0_10px_28px_rgba(7,29,54,0.08)]">
+      <h2 className="mb-4 flex items-center gap-2.5 text-xl font-bold text-foreground md:text-2xl">
+        <Info className="h-6 w-6 text-primary" />
         {t('tourism.introduction')}
       </h2>
 
       {description ? (
-        <p className="mb-3 text-[15px] leading-[1.8] text-[#435a6e]">{description}</p>
+        <p className="mb-3 text-[15px] leading-[1.8] text-muted-foreground">{description}</p>
       ) : (
-        <p className="mb-3 text-sm text-[#64748b] italic">
+        <p className="mb-3 text-sm text-muted-foreground italic">
           {t('tourism.no_description')}
         </p>
       )}
@@ -53,7 +53,7 @@ export function TourismDetailIntroSection({
           href={website}
           target="_blank"
           rel="noreferrer"
-          className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#dcecf7] bg-[#f6fbff] px-3 py-2 text-xs font-bold text-[#0b5f80] hover:underline"
+          className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-2 text-xs font-bold text-primary hover:underline"
         >
           <Globe className="h-4 w-4" />
           {website}
@@ -64,11 +64,11 @@ export function TourismDetailIntroSection({
         {infoBoxes.map((box) => (
           <div
             key={box.label}
-            className="rounded-[18px] border border-[#e3eef7] bg-[#f6fbff] p-[14px]"
+            className="rounded-[18px] border border-border bg-muted/20 p-[14px]"
           >
             {box.icon}
-            <b className="mb-1 block text-[14px] text-[#071d36]">{box.label}</b>
-            <span className="text-[12px] font-bold text-[#64748b]">{box.value}</span>
+            <b className="mb-1 block text-[14px] text-foreground">{box.label}</b>
+            <span className="text-[12px] font-bold text-muted-foreground">{box.value}</span>
           </div>
         ))}
       </div>

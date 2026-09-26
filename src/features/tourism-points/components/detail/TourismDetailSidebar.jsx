@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   Map,
   Phone,
@@ -188,11 +188,11 @@ export function TourismDetailSidebar({
   return (
     <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
       <div
-        className="rounded-[24px] p-5 text-white"
-        style={{ background: 'linear-gradient(135deg,#1cb6d8,#0fb49f)' }}
+        className="rounded-[24px] p-5 text-secondary-foreground"
+        style={{ background: 'var(--gradient-secondary)' }}
       >
         <h3 className="mb-2 text-[22px] font-bold">{t('tourism.cta_title')}</h3>
-        <p className="mb-4 text-sm leading-[1.65] text-[#eafffb]">
+        <p className="mb-4 text-sm leading-[1.65] text-secondary-foreground/90">
           {t('tourism.cta_desc')}
         </p>
         <div className="flex flex-col gap-3">
@@ -283,7 +283,7 @@ export function TourismDetailSidebar({
                 style={{ gridTemplateColumns: '72px 1fr' }}
               >
                 <img
-                  src={withBaseUrl(point.image)}
+                  src={point.image ? withBaseUrl(point.image) : placeholderImg}
                   alt={point.name}
                   className="h-[58px] w-[72px] rounded-[14px] object-cover"
                   onError={(e) => {

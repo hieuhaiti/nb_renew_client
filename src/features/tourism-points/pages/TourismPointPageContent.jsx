@@ -284,10 +284,7 @@ export default function TourismPointPage() {
 
   return (
     <RootLayout>
-      <div
-        className="min-h-screen"
-        style={{ background: 'linear-gradient(180deg,#eef9ff 0%,#fff 42%,#f7fbff 100%)' }}
-      >
+      <div className="min-h-screen bg-background">
         {/* ── Hero ── */}
         <section className="px-4 pt-5 pb-0 sm:px-6">
           <div
@@ -304,7 +301,7 @@ export default function TourismPointPage() {
               <h1 className="mb-2 text-[22px] leading-[1.15] font-black tracking-tight sm:mb-2.5 sm:text-[34px] lg:text-[42px]">
                 {t('tourismPointPage.hero_title')}
               </h1>
-              <p className="max-w-[760px] text-[13px] leading-[1.7] text-[#e9fffb] sm:text-[15px]">
+              <p className="max-w-[760px] text-[13px] leading-[1.7] text-white/90 sm:text-[15px]">
                 {t('tourismPointPage.hero_desc')}
               </p>
             </div>
@@ -323,7 +320,7 @@ export default function TourismPointPage() {
               ].map(({ val, labelKey }) => (
                 <div
                   key={labelKey}
-                  className="rounded-[16px] bg-white/92 p-3 backdrop-blur-md sm:rounded-[20px] sm:p-4"
+                  className="rounded-[16px] border border-border/60 bg-background/90 p-3 backdrop-blur-md sm:rounded-[20px] sm:p-4"
                 >
                   <b className="text-secondary block text-[20px] font-black sm:text-[24px]">
                     {val}
@@ -339,11 +336,7 @@ export default function TourismPointPage() {
 
         {/* ── Sticky toolbar ── */}
         <section
-          className="sticky top-0 z-40 border-b px-4 py-3 sm:px-6 sm:py-3.5"
-          style={{
-            background: 'linear-gradient(180deg,rgba(233,247,255,.96),rgba(223,242,255,.96))',
-            backdropFilter: 'blur(14px)',
-          }}
+          className="sticky top-0 z-40 border-b border-border/60 bg-background/90 px-4 py-3 sm:px-6 sm:py-3.5 backdrop-blur-md"
         >
           <div className="w-full">
             <div className="border-border bg-card rounded-[24px] border p-3 shadow-(--ambient-shadow) sm:p-3.5">
@@ -353,6 +346,9 @@ export default function TourismPointPage() {
                 <div className="relative min-w-0 flex-1">
                   <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                   <Input
+                    id="tourism-point-search-input"
+                    name="tourismPointSearch"
+                    aria-label={t('tourismPointPage.search_placeholder')}
                     size="toolbar"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -503,7 +499,7 @@ export default function TourismPointPage() {
                       onClick={() => setCurrentSettings({ viewMode: mode })}
                       className={`flex h-8 w-8 items-center justify-center rounded-[10px] transition-colors ${
                         currentSettings.viewMode === mode
-                          ? 'bg-secondary hover:bg-secondary/90 text-white shadow-sm hover:text-white'
+                          ? 'bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-sm'
                           : 'text-muted-foreground hover:bg-card'
                       }`}
                     >
@@ -781,7 +777,7 @@ export default function TourismPointPage() {
                   ))}
                 </div>
               ) : activeIsError ? (
-                <div className="py-20 text-center text-red-500">
+                <div className="py-20 text-center text-destructive">
                   {t('tourismPointPage.errorLoading')}
                 </div>
               ) : points.length === 0 ? (
@@ -845,7 +841,7 @@ export default function TourismPointPage() {
                         onClick={() => setCurrentSettings({ page: p })}
                         className={`flex h-[38px] w-[38px] items-center justify-center rounded-[12px] border text-[13px] font-black transition-colors ${
                           p === currentSettings.page
-                            ? 'bg-secondary hover:bg-secondary/90 border-transparent text-white hover:text-white'
+                            ? 'bg-secondary hover:bg-secondary/90 border-transparent text-secondary-foreground'
                             : 'text-foreground hover:border-secondary hover:text-secondary bg-card'
                         }`}
                       >

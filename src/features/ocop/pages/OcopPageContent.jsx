@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -27,20 +27,20 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const BTN_GRADIENT = { background: 'var(--gradient-primary)' };
 const HERO_BG = `linear-gradient(135deg,rgba(5,150,105,.92),rgba(3,95,172,.88),rgba(14,165,233,.78)), url("https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80") center/cover`;
 
 const CATEGORY_COLORS = {
-  thuoc_và_cskh: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
-  thu_cong_my_nghe: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
-  thuc_pham: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
-  do_uong: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
-  my_pham: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200' },
-  nong_san: { bg: 'bg-lime-50', text: 'text-lime-700', border: 'border-lime-200' },
-  duoc_lieu: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-  vai_va_may_mac: { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
-  trang_tri: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
-  qua_tang: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' },
+  thuoc_và_cskh: { bg: 'bg-quaternary-soft', text: 'text-quaternary-soft-foreground', border: 'border-quaternary/30' },
+  thu_cong_my_nghe: { bg: 'bg-tertiary-soft', text: 'text-tertiary-soft-foreground', border: 'border-tertiary/30' },
+  thuc_pham: { bg: 'bg-success-subtle', text: 'text-success-subtle-foreground', border: 'border-success/30' },
+  do_uong: { bg: 'bg-secondary-soft', text: 'text-secondary-soft-foreground', border: 'border-secondary/30' },
+  my_pham: { bg: 'bg-quinary-soft', text: 'text-quinary-soft-foreground', border: 'border-quinary/30' },
+  nong_san: { bg: 'bg-success-subtle', text: 'text-success-subtle-foreground', border: 'border-success/30' },
+  duoc_lieu: { bg: 'bg-success-subtle', text: 'text-success-subtle-foreground', border: 'border-success/30' },
+  vai_va_may_mac: { bg: 'bg-quaternary-soft', text: 'text-quaternary-soft-foreground', border: 'border-quaternary/30' },
+  trang_tri: { bg: 'bg-tertiary-soft', text: 'text-tertiary-soft-foreground', border: 'border-tertiary/30' },
+  qua_tang: { bg: 'bg-quinary-soft', text: 'text-quinary-soft-foreground', border: 'border-quinary/30' },
 };
 
 const DEFAULT_CAT_COLOR = {
@@ -88,8 +88,8 @@ function OcopCard({ item, navigate, t }) {
           }}
         />
         {stars > 0 && (
-          <span className="absolute top-3 left-3 flex items-center gap-1 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-0.5 text-xs font-bold text-[#b45309] backdrop-blur-sm">
-            <Star size={10} className="fill-[#d99200] text-[#d99200]" />
+          <span className="absolute top-3 left-3 flex items-center gap-1 rounded-full border border-gold/40 bg-gold-soft/95 px-2.5 py-0.5 text-xs font-bold text-gold-foreground backdrop-blur-sm">
+            <Star size={10} className="fill-rating text-rating" />
             {stars} {t('ocopPage.card.stars')}
           </span>
         )}
@@ -254,13 +254,16 @@ export default function OcopPageContent() {
               </div>
 
               {/* Search bar */}
-              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
+              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-border/80 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
                   <Search
                     size={16}
                     className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <Input
+                    id="ocop-search-input"
+                    name="ocopSearch"
+                    aria-label={t('ocopPage.filters.search_placeholder')}
                     type="text"
                     placeholder={t('ocopPage.filters.search_placeholder')}
                     value={search}
@@ -295,7 +298,7 @@ export default function OcopPageContent() {
                     setPage(1);
                     refetch?.();
                   }}
-                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white hover:text-white"
+                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-primary-foreground hover:text-primary-foreground"
                   style={BTN_GRADIENT}
                 >
                   {t('ocopPage.filters.search_btn')}

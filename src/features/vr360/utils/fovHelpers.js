@@ -1,4 +1,4 @@
-﻿const EARTH_RADIUS_METERS = 6371008.8;
+const EARTH_RADIUS_METERS = 6371008.8;
 
 export function normalizeBearing(bearing = 0) {
   const safeBearing = Number.isFinite(Number(bearing)) ? Number(bearing) : 0;

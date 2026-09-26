@@ -1,9 +1,10 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Eye, Share2, Star, UserRound } from 'lucide-react';
 import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function NewsDetailHero({ detail, t, locale, formatDate, onShare }) {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function NewsDetailHero({ detail, t, locale, formatDate, onShare 
       <Button variant="ghost"
         type="button"
         onClick={() => navigate('/news')}
-        className="mb-4 flex items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-3.5 py-2 text-sm font-semibold text-foreground shadow-sm hover:bg-[#eef7ff]"
+        className="border-border bg-card hover:bg-muted text-foreground mb-4 flex items-center gap-1.5 rounded-[10px] border px-3.5 py-2 text-sm font-semibold shadow-sm"
       >
         <ArrowLeft size={15} />
         {t('newsPage.detail.back')}
@@ -43,22 +44,28 @@ export default function NewsDetailHero({ detail, t, locale, formatDate, onShare 
         <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/35 to-transparent" />
 
         {/* Share button */}
-        <Button variant="ghost"
-          type="button"
-          onClick={onShare}
-          title={t('newsPage.detail.share')}
-          className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 hover:text-white"
-        >
-          <Share2 size={15} />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={onShare}
+              aria-label={t('newsPage.detail.share')}
+              className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 hover:text-white"
+            >
+              <Share2 size={15} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('newsPage.detail.share')}</TooltipContent>
+        </Tooltip>
 
         {/* Content on image */}
         <div className="absolute right-0 bottom-0 left-0 p-5 sm:p-7">
           {/* Badges row */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {isFeatured && (
-              <span className="flex items-center gap-1 rounded-full bg-[#f59e0b]/90 px-2.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
-                <Star size={10} className="fill-white" />
+              <span className="bg-warning/90 text-warning-foreground flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold backdrop-blur-sm">
+                <Star size={10} className="fill-warning-foreground" />
                 {t('newsPage.list.featured')}
               </span>
             )}

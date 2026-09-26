@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { MessageSquare, Send, LogIn } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -9,8 +9,6 @@ import { useGetNewsComments, useCreateNewsComment } from '@/services/api/news/ne
 import { mutater } from '@/services/mutater';
 import useAuthStore from '@/stores/useAuthStore';
 import { ADMIN_ROLE_CODES } from '@/constants/roles';
-
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
 
 function CommentItem({
   comment,
@@ -109,7 +107,7 @@ function CommentItem({
                 type="button"
                 onClick={() => onReplySubmit(comment.id)}
                 disabled={!replyContent.trim()}
-                className="h-7 rounded-[8px] px-3 text-xs font-bold text-white hover:text-white disabled:opacity-60"
+                className="h-7 rounded-[8px] px-3 text-xs font-bold text-primary-foreground hover:text-primary-foreground disabled:opacity-60"
                 style={BTN_GRADIENT}
               >
                 <Send size={11} className="mr-1" />
@@ -123,7 +121,7 @@ function CommentItem({
   );
 }
 
-const ADMIN_GRADIENT = { background: 'linear-gradient(135deg, #059669, #10b981)' };
+const ADMIN_GRADIENT = { background: 'var(--gradient-primary-secondary, var(--primary))' };
 
 function isAdminComment(comment) {
   if (comment.role_code != null) return ADMIN_ROLE_CODES.includes(comment.role_code);
@@ -135,14 +133,14 @@ function AdminReplyItem({ comment, t }) {
 
   return (
     <div className="mt-2 ml-8">
-      <article className="relative overflow-hidden rounded-[12px] border border-emerald-200/70 bg-emerald-50/60 p-3">
-        <div className="absolute top-0 bottom-0 left-0 w-[3px] rounded-l-[12px] bg-emerald-400" />
+      <article className="relative overflow-hidden rounded-[12px] border border-success/30 bg-success/10 p-3">
+        <div className="bg-success absolute top-0 bottom-0 left-0 w-[3px] rounded-l-[12px]" />
         <div className="flex items-start gap-2.5 pl-1.5">
           {comment.author_avatar ? (
             <img
               src={comment.author_avatar}
               alt={authorName}
-              className="h-7 w-7 shrink-0 rounded-full object-cover ring-2 ring-emerald-300/60"
+              className="h-7 w-7 shrink-0 rounded-full object-cover ring-2 ring-success/30"
             />
           ) : (
             <div
@@ -155,18 +153,18 @@ function AdminReplyItem({ comment, t }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-emerald-800">{authorName}</span>
-                <span className="inline-flex items-center rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-600/20 ring-inset">
+                <span className="text-success text-xs font-bold">{authorName}</span>
+                <span className="bg-success/20 text-success ring-success/30 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold ring-1 ring-inset">
                   {t('newsPage.comments.admin_role')}
                 </span>
               </div>
               {comment.created_at && (
-                <span className="shrink-0 text-xs text-emerald-600/70">
+                <span className="text-muted-foreground shrink-0 text-xs">
                   {new Date(comment.created_at).toLocaleDateString('vi-VN')}
                 </span>
               )}
             </div>
-            <p className="mt-1 text-xs leading-relaxed text-emerald-900/80">{comment.content}</p>
+            <p className="text-foreground/90 mt-1 text-xs leading-relaxed">{comment.content}</p>
           </div>
         </div>
       </article>
@@ -377,7 +375,7 @@ export default function NewsCommentSection({ newsId, t }) {
                   type="button"
                   onClick={handleSubmit}
                   disabled={!newComment.trim() || createComment.isPending}
-                  className="flex h-8 items-center gap-1.5 rounded-[10px] px-4 text-sm font-bold text-white hover:text-white disabled:opacity-60"
+                  className="flex h-8 items-center gap-1.5 rounded-[10px] px-4 text-sm font-bold text-primary-foreground hover:text-primary-foreground disabled:opacity-60"
                   style={BTN_GRADIENT}
                 >
                   <Send size={13} />
@@ -394,7 +392,7 @@ export default function NewsCommentSection({ newsId, t }) {
                 variant="ghost"
                 type="button"
                 onClick={() => navigate('/login')}
-                className="mx-auto mt-2.5 flex h-8 items-center gap-1.5 rounded-[10px] px-4 text-sm font-semibold text-white hover:text-white"
+                className="mx-auto mt-2.5 flex h-8 items-center gap-1.5 rounded-[10px] px-4 text-sm font-semibold text-primary-foreground hover:text-primary-foreground"
                 style={BTN_GRADIENT}
               >
                 <LogIn size={14} />

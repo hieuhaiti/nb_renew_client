@@ -7,7 +7,7 @@ export function TourDetailHero({ imageSrc, title, subtitle, tags, totalImages, t
   return (
     <section className="border-primary/20 bg-card relative overflow-hidden border-[0.5px]">
       <img
-        src={withBaseUrl(imageSrc)}
+        src={imageSrc ? withBaseUrl(imageSrc) : placeholderImg}
         alt={title || t('tourPage.unknown')}
         className="h-70 w-full object-cover"
         onError={(e) => {

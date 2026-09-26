@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --radius: 0.625rem;
   --radius-xs: 0.125rem;
   --radius-sm: 0.25rem;
@@ -11,122 +11,127 @@
   --font-sans: 'Be Vietnam Pro', system-ui, Arial, sans-serif;
 
   /* Shadows */
-  --shadow-color: 13 74 130;
+  --shadow-color: 130 76 55;
 
   /* App shell */
-  --background: #edf7ff;
-  --foreground: #171c1f;
+  --background: #fffaf5;
+  --foreground: #202124;
 
   /* Elevated surfaces */
   --card: #ffffff;
-  --card-foreground: #171c1f;
+  --card-foreground: #202124;
 
   /* Floating overlays */
   --popover: #ffffff;
-  --popover-foreground: #171c1f;
+  --popover-foreground: #202124;
 
   /* Lower-emphasis filled surfaces */
-  --primary: #10b981;
+  --primary: #c84b2e;
   --primary-foreground: #ffffff;
-  --primary-hover: #059669;
-  --primary-soft: #def8ed;
-  --primary-soft-foreground: #067a51;
+  --primary-hover: #aa3a20;
+  --primary-active: #8e2f18;
+  --primary-soft: #fff0eb;
+  --primary-soft-foreground: #a8442f;
   /* Secondary gradient stops */
-  --primary-1: #10b981;
-  --primary-2: #059669;
-  --primary-3: #067a51;
+  --primary-1: #ff9b7a;
+  --primary-2: #c84b2e;
+  --primary-3: #943018;
 
   /* High-emphasis brand/action */
-  --secondary: #0b66c3;
+  --secondary: #087f8c;
   --secondary-foreground: #ffffff;
-  --secondary-hover: #004b9b;
-  --secondary-soft: #eef7ff;
-  --secondary-soft-foreground: #0477bf;
-  /* Primary gradient stops - 1 = brightest, 3 = deepest */
-  --secondary-1: #0b66c3;
-  --secondary-2: #0ea5e9;
-  --secondary-3: #06b6d4;
+  --secondary-hover: #06636e;
+  --secondary-active: #044b54;
+  --secondary-soft: #e8f7f6;
+  --secondary-soft-foreground: #05616b;
+  /* Primary gradient stops */
+  --secondary-1: #21b3b0;
+  --secondary-2: #087f8c;
+  --secondary-3: #075766;
 
   /* Tertiary - Sunset Sand */
-  --tertiary: #f59e0b;
-  --tertiary-foreground: #ffffff;
-  --tertiary-hover: #d97706;
-  --tertiary-soft: #fff1dc;
-  --tertiary-soft-foreground: #b76100;
-  --tertiary-soft-hover: #ffe8c3;
+  --tertiary: #f4a261;
+  --tertiary-foreground: #542a12;
+  --tertiary-hover: #dc8248;
+  --tertiary-soft: #fff3e8;
+  --tertiary-soft-foreground: #9b4e21;
+  --tertiary-soft-hover: #ffe8d2;
   /* Tertiary gradient stops */
-  --tertiary-1: #f59e0b;
-  --tertiary-2: #d97706;
-  --tertiary-3: #b76100;
+  --tertiary-1: #ffc078;
+  --tertiary-2: #f4a261;
+  --tertiary-3: #d66f35;
 
-  /* Quaternary - Coral Reef */
-  --quaternary: #7c3aed;
+  /* Quaternary - Coastal Indigo */
+  --quaternary: #5b5fce;
   --quaternary-foreground: #ffffff;
-  --quaternary-hover: #493bc7;
-  --quaternary-soft: #f1edff;
-  --quaternary-soft-foreground: #493bc7;
-  --quaternary-soft-hover: #e4ddff;
+  --quaternary-hover: #474aa9;
+  --quaternary-soft: #efefff;
+  --quaternary-soft-foreground: #474aa9;
+  --quaternary-soft-hover: #e1e1ff;
 
-  /* Quinary - Misty Lavender */
-  --quinary: #ef4444;
+  /* Quinary - Hibiscus */
+  --quinary: #d9576f;
   --quinary-foreground: #ffffff;
-  --quinary-hover: #b91c1c;
-  --quinary-soft: #fee2e2;
-  --quinary-soft-foreground: #b91c1c;
-  --quinary-soft-hover: #fecaca;
+  --quinary-hover: #b83d55;
+  --quinary-soft: #ffedf0;
+  --quinary-soft-foreground: #a33149;
+  --quinary-soft-hover: #ffdce2;
   /* Quinary gradient stops */
-  --quinary-1: #ef4444;
-  --quinary-2: #dc2626;
-  --quinary-3: #b91c1c;
+  --quinary-1: #f28b9b;
+  --quinary-2: #d9576f;
+  --quinary-3: #b83d55;
 
   /* Gold - Golden Hour */
-  --gold: #e6b800;
-  --gold-foreground: #ffffff;
-  --gold-hover: #f5b21d;
-  --gold-soft: #fff4cf;
-  --gold-soft-foreground: #9a5a00;
-  --gold-soft-hover: #ffe89a;
+  --gold: #e9b949;
+  --gold-foreground: #4b3500;
+  --gold-hover: #d69e2e;
+  --gold-soft: #fff8df;
+  --gold-soft-foreground: #896600;
+  --gold-soft-hover: #ffefb0;
 
   /* Semantic emphasis */
-  --price-color: #0b4f91;
-  --price-original: #667085;
-  --deal-color: #ef4444;
-  --luxury-color: #7c3aed;
-  --rating-color: #b76100;
+  --price-color: #087f8c;
+  --price-original: #7b8088;
+  --deal-color: #d9576f;
+  --luxury-color: #5b5fce;
+  --rating-color: #b7791f;
 
   /* Surface tints */
-  --surface-beach: #fff6ea;
-  --surface-nature: #eef8f1;
-  --surface-city: #eef4fb;
-  --surface-luxury: #f5f1ff;
-  --surface-deal: #fff1e4;
+  --surface-beach: #fff3e6;
+  --surface-nature: #edf8f2;
+  --surface-city: #eef3fb;
+  --surface-luxury: #f3f1ff;
+  --surface-deal: #fff0f1;
 
   /* Subtle UI and helper content */
-  --muted: #eef7ff;
-  --muted-foreground: #667085;
-  --muted-hover: #daeeff;
+  --muted: #f5f1ec;
+  --muted-foreground: #595e66;
+  --muted-hover: #ebe3da;
 
   /* Hover / selected / nuanced POI support */
-  --accent: #ffdcc2;
-  --accent-foreground: #7f4400;
-  --accent-hover: #ffd0ae;
+  --accent: #ffe1c7;
+  --accent-foreground: #7a421e;
+  --accent-hover: #ffd2ad;
 
   /* Legacy / normalized aliases */
   --bg-tertiary: var(--accent);
   --loading-spinner: var(--primary);
 
   /* Neutral interactive surface */
-  --surface-hover: #d6dde4;
-  --surface-active: #e3edf6;
+  --surface-hover: #e9e4df;
+  --surface-active: #f1ebe5;
 
   /* Errors */
   --destructive: #c33b32;
   --destructive-foreground: #ffffff;
-  --destructive-hover: #ab2f27;
+  --destructive-hover: #a82e26;
+  --destructive-active: #8f241d;
 
   /* Warning feedback */
-  --warning: #b86908;
+  --warning: #a15902;
   --warning-foreground: #ffffff;
+  --warning-hover: #884b02;
+  --warning-active: #713e01;
   --warning-soft: #fff1e3;
 
   /* Weather */
@@ -197,6 +202,39 @@
   --error-404: #8bae66;
   --error-500: #628141;
   --error-503: #3b82f6;
+
+  /* ===== Semantic Subtle States (Phase 3) ===== */
+  --primary-subtle: #fff0eb;
+  --primary-subtle-foreground: #a8442f;
+  --success: #15803d;
+  --success-foreground: #ffffff;
+  --success-hover: #166534;
+  --success-active: #14532d;
+  --success-subtle: #e2f6e8;
+  --success-subtle-foreground: #166534;
+  --warning-subtle: #fff1e3;
+  --warning-subtle-foreground: #92400e;
+  --destructive-subtle: #fee8e7;
+  --destructive-subtle-foreground: #991b1b;
+  --info: #0369a1;
+  --info-foreground: #ffffff;
+  --info-hover: #025584;
+  --info-active: #01446a;
+  --info-subtle: #e0f2fe;
+  --info-subtle-foreground: #0369a1;
+
+  /* ===== Civic GIS Tourism Semantic Gradients (Phase 3) ===== */
+  --gradient-primary: linear-gradient(135deg, #ff9b7a 0%, #e76f51 50%, #b94c35 100%);
+  --gradient-secondary: linear-gradient(135deg, #21b3b0 0%, #087f8c 50%, #075766 100%);
+  --gradient-primary-secondary: linear-gradient(135deg, #e76f51 0%, #087f8c 100%);
+  --gradient-hero: linear-gradient(135deg, #075766 0%, #087f8c 50%, #21b3b0 100%);
+  --gradient-surface-card: linear-gradient(180deg, #ffffff 0%, #fffaf5 100%);
+  --gradient-surface-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 250, 245, 0.92) 100%);
+  --gradient-accent: linear-gradient(135deg, #ffc078 0%, #f4a261 100%);
+  --gradient-success: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-destructive: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --gradient-map-overlay: linear-gradient(180deg, rgba(7, 87, 102, 0.85) 0%, rgba(8, 127, 140, 0.4) 100%);
 }
 
 .dark {
@@ -225,6 +263,7 @@
   --primary: #8cc8ff;
   --primary-foreground: #061b33;
   --primary-hover: #b6ddff;
+  --primary-active: #6cb8ff;
   --primary-soft: #102a42;
   --primary-soft-foreground: #cae5ff;
   --primary-1: #d7efff;
@@ -234,6 +273,7 @@
   --secondary: #4adea8;
   --secondary-foreground: #05291e;
   --secondary-hover: #6ee7bf;
+  --secondary-active: #34d399;
   --secondary-soft: #12382b;
   --secondary-soft-foreground: #a7f3d0;
   --secondary-1: #a7f3d0;
@@ -300,10 +340,31 @@
   --destructive: #ff8f8f;
   --destructive-foreground: #351010;
   --destructive-hover: #ffb4b4;
+  --destructive-active: #fca5a5;
+  --destructive-subtle: #450a0a;
+  --destructive-subtle-foreground: #fca5a5;
 
   --warning: #ffc078;
   --warning-foreground: #321a00;
+  --warning-hover: #fed7aa;
+  --warning-active: #fdba74;
   --warning-soft: #3d2915;
+  --warning-subtle: #451a03;
+  --warning-subtle-foreground: #fcd34d;
+
+  --success: #4ade80;
+  --success-foreground: #052e16;
+  --success-hover: #86efac;
+  --success-active: #6ee7b7;
+  --success-subtle: #052e16;
+  --success-subtle-foreground: #86efac;
+
+  --info: #38bdf8;
+  --info-foreground: #082f49;
+  --info-hover: #7dd3fc;
+  --info-active: #38bdf8;
+  --info-subtle: #082f49;
+  --info-subtle-foreground: #7dd3fc;
 
   --weather-temp: #fb923c;
   --weather-humidity: #60a5fa;

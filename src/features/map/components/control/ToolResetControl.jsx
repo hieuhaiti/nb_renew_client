@@ -14,7 +14,8 @@ export default class ResetControl {
     Object.assign(this._btn.style, {
       width: '1.8125rem',
       height: '1.8125rem',
-      background: 'white',
+      background: 'var(--card)',
+      color: 'var(--foreground)',
       border: 'none',
       cursor: 'pointer',
       display: 'flex',
@@ -23,7 +24,7 @@ export default class ResetControl {
     });
 
     this._btn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 2v6h-6"/>
                 <path d="M3 12a9 9 0 0 1 9-9c2.5 0 4.8 1 6.5 2.7L21 8"/>
                 <path d="M3 22v-6h6"/>

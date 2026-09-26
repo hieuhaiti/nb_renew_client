@@ -147,7 +147,7 @@ export default function VlogPage() {
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center" />
               <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/85 to-white/75" />
               <CardContent className="relative px-6 py-8 sm:px-8 sm:py-9">
-                <span className="inline-flex rounded-full bg-pink-100 px-3 py-1 text-sm font-semibold text-pink-700">
+                <span className="inline-flex rounded-full bg-quinary-soft px-3 py-1 text-sm font-semibold text-quinary-soft-foreground">
                   {t('vlogPage.hero.badge')}
                 </span>
                 <h1 className="text-foreground mt-4 max-w-4xl text-xl font-extrabold tracking-tight md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl">
@@ -179,19 +179,19 @@ export default function VlogPage() {
 
                 {/* Stats — values come from static data; these counts are mock/demo figures */}
                 <div className="mt-6 grid gap-2 sm:grid-cols-3">
-                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
+                  <div className="border-border/60 rounded-2xl border bg-card/90 p-4">
                     <p className="text-lg font-bold md:text-xl xl:text-2xl">1.240</p>
                     <p className="text-muted-foreground text-sm font-medium">
                       {t('vlogPage.stats.posts')}
                     </p>
                   </div>
-                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
+                  <div className="border-border/60 rounded-2xl border bg-card/90 p-4">
                     <p className="text-lg font-bold md:text-xl xl:text-2xl">286</p>
                     <p className="text-muted-foreground text-sm font-medium">
                       {t('vlogPage.stats.authors')}
                     </p>
                   </div>
-                  <div className="border-border/60 rounded-2xl border bg-white/90 p-4">
+                  <div className="border-border/60 rounded-2xl border bg-card/90 p-4">
                     <p className="text-lg font-bold md:text-xl xl:text-2xl">
                       {new Intl.NumberFormat(undefined, {
                         notation: 'compact',
@@ -220,6 +220,9 @@ export default function VlogPage() {
                       {t('vlogPage.composer.title_label')}
                     </label>
                     <Input
+                      id="vlog-composer-title-input"
+                      name="vlogTitle"
+                      aria-label={t('vlogPage.composer.title_placeholder')}
                       value={newTitle}
                       onChange={(e) => setNewTitle(e.target.value)}
                       placeholder={t('vlogPage.composer.title_placeholder')}
@@ -266,7 +269,7 @@ export default function VlogPage() {
                   ].map((chip) => (
                     <span
                       key={chip}
-                      className="rounded-full bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-700"
+                      className="rounded-full bg-info-subtle px-3 py-1 text-sm font-semibold text-info-subtle-foreground"
                     >
                       {chip}
                     </span>
@@ -294,6 +297,9 @@ export default function VlogPage() {
                     <div className="relative">
                       <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                       <Input
+                        id="vlog-search-input"
+                        name="vlogKeyword"
+                        aria-label={t('vlogPage.filters.keyword_placeholder')}
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
                         placeholder={t('vlogPage.filters.keyword_placeholder')}
@@ -382,7 +388,7 @@ export default function VlogPage() {
               />
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {filteredPosts.length === 0 ? (
-                  <div className="text-muted-foreground col-span-full rounded-2xl border border-[#cfe0f4] bg-white py-16 text-center">
+                  <div className="text-muted-foreground col-span-full rounded-2xl border border-border bg-card py-16 text-center">
                     <p className="text-foreground text-sm font-semibold 2xl:text-base">
                       {t('vlogPage.states.empty_title')}
                     </p>
@@ -404,10 +410,10 @@ export default function VlogPage() {
                             e.target.src = placeholderImg;
                           }}
                         />
-                        <span className="typo-badge absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1">
+                        <span className="typo-badge absolute top-3 left-3 rounded-full border border-border/60 bg-background/90 px-2.5 py-1 text-foreground backdrop-blur-xs">
                           {item.type} · {item.place}
                         </span>
-                        <div className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90">
+                        <div className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-background/90 text-foreground backdrop-blur-xs">
                           {item.kind === 'video' || item.type === typeVideo ? (
                             <Play className="h-4 w-4" />
                           ) : (

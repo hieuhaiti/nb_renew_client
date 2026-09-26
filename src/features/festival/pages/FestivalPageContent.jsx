@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
@@ -27,21 +27,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const BTN_GRADIENT = { background: 'var(--gradient-primary-secondary, var(--primary))' };
 const HERO_BG = `linear-gradient(135deg,rgba(3,95,172,.90),rgba(14,165,233,.85),rgba(126,34,206,.72)), url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80") center/cover`;
 
 const TYPE_STYLES = {
-  religious: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
-  traditional: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
-  cultural: { bg: 'bg-muted', text: 'text-primary', border: 'border-border' },
-  folk: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
-  modern: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
-  seasonal: { bg: 'bg-lime-50', text: 'text-lime-700', border: 'border-lime-200' },
-  historical: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
-  music: { bg: 'bg-pink-50', text: 'text-pink-700', border: 'border-pink-200' },
-  food: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200' },
-  craft: { bg: 'bg-stone-50', text: 'text-stone-700', border: 'border-stone-200' },
-  sport: { bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-200' },
+  religious: { bg: 'bg-secondary/10', text: 'text-secondary', border: 'border-secondary/20' },
+  traditional: { bg: 'bg-warning/10', text: 'text-warning', border: 'border-warning/20' },
+  cultural: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
+  folk: { bg: 'bg-success/10', text: 'text-success', border: 'border-success/20' },
+  modern: { bg: 'bg-info/10', text: 'text-info', border: 'border-info/20' },
+  seasonal: { bg: 'bg-success-subtle', text: 'text-success-subtle-foreground', border: 'border-success/20' },
+  historical: { bg: 'bg-warning-subtle', text: 'text-warning-subtle-foreground', border: 'border-warning/20' },
+  music: { bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
+  food: { bg: 'bg-tertiary/10', text: 'text-tertiary', border: 'border-tertiary/20' },
+  craft: { bg: 'bg-muted', text: 'text-muted-foreground', border: 'border-border' },
+  sport: { bg: 'bg-info-subtle', text: 'text-info', border: 'border-info/20' },
 };
 
 const DEFAULT_TYPE_STYLE = {
@@ -291,13 +291,16 @@ export default function FestivalPageContent() {
               </div>
 
               {/* Search bar */}
-              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
+              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-border/80 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
                   <Search
                     size={16}
                     className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <Input
+                    id="festival-search-input"
+                    name="festivalSearch"
+                    aria-label={t('festivalPage.filters.search_placeholder')}
                     type="text"
                     placeholder={t('festivalPage.filters.search_placeholder')}
                     value={keyword}
@@ -331,7 +334,7 @@ export default function FestivalPageContent() {
                     setPage(1);
                     refetch?.();
                   }}
-                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white hover:text-white"
+                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-primary-foreground hover:text-primary-foreground"
                   style={BTN_GRADIENT}
                 >
                   {t('festivalPage.filters.search_btn')}

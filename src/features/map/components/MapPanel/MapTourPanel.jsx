@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   ArrowRight,
   CalendarDays,
@@ -27,24 +27,24 @@ import { withBaseUrl } from '@/lib/utils';
 
 const STOP_ACCENTS = [
   {
-    rail: 'from-cyan-500 to-sky-500',
-    border: 'border-cyan-200/80',
-    badge: 'bg-cyan-500/10 text-cyan-700',
+    rail: 'from-primary to-info',
+    border: 'border-primary/20',
+    badge: 'bg-primary/10 text-primary',
   },
   {
-    rail: 'from-emerald-500 to-teal-500',
-    border: 'border-emerald-200/80',
-    badge: 'bg-emerald-500/10 text-emerald-700',
+    rail: 'from-secondary to-success',
+    border: 'border-secondary/20',
+    badge: 'bg-secondary/10 text-secondary',
   },
   {
-    rail: 'from-amber-500 to-orange-500',
-    border: 'border-amber-200/80',
-    badge: 'bg-amber-500/10 text-amber-700',
+    rail: 'from-warning to-tertiary',
+    border: 'border-warning/20',
+    badge: 'bg-warning/10 text-warning',
   },
   {
-    rail: 'from-violet-500 to-fuchsia-500',
-    border: 'border-violet-200/80',
-    badge: 'bg-violet-500/10 text-violet-700',
+    rail: 'from-tertiary to-primary',
+    border: 'border-tertiary/20',
+    badge: 'bg-tertiary/10 text-tertiary',
   },
 ];
 
@@ -175,12 +175,12 @@ const CAPACITY_STATUS_META = {
     labelVi: 'Quá tải',
     labelEn: 'Overloaded',
     toneClass: 'text-destructive',
-    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--destructive) / 0.8), hsl(var(--destructive)))' },
   },
   near_full: {
     labelVi: 'Gần đầy',
     labelEn: 'Near full',
-    toneClass: 'text-orange-600',
+    toneClass: 'text-warning',
     barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
   },
   busy: {
@@ -192,26 +192,26 @@ const CAPACITY_STATUS_META = {
   moderate: {
     labelVi: 'Vừa phải',
     labelEn: 'Moderate',
-    toneClass: 'text-sky-600',
+    toneClass: 'text-info',
     barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
   },
   normal: {
     labelVi: 'Bình thường',
     labelEn: 'Normal',
-    toneClass: 'text-emerald-600',
+    toneClass: 'text-success',
     barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
   },
   low: {
     labelVi: 'Thưa thớt',
     labelEn: 'Low',
-    toneClass: 'text-emerald-500',
-    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+    toneClass: 'text-success',
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--success) / 0.7), hsl(var(--success)))' },
   },
   unknown: {
     labelVi: 'Chưa rõ',
     labelEn: 'Unknown',
     toneClass: 'text-muted-foreground',
-    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--muted-foreground) / 0.5), hsl(var(--muted-foreground) / 0.8))' },
   },
 };
 
@@ -221,11 +221,19 @@ function getCapacityStatusMeta(status) {
 }
 
 function resolveStopCapacity(stop) {
-  const pctRaw = stop?.capacity_pct ?? stop?.spot?.current_capacity_pct ?? null;
+  const pctRaw =
+    stop?.current_capacity_pct ??
+    stop?.capacity_pct ??
+    stop?.occupancy_pct ??
+    stop?.spot?.current_capacity_pct ??
+    stop?.spot?.capacity_pct ??
+    null;
   const pct = Number(pctRaw);
   const hasCapacityPct = Number.isFinite(pct);
-  const boundedPct = hasCapacityPct ? Math.max(0, Math.min(100, Math.round(pct))) : null;
-  const statusMeta = getCapacityStatusMeta(stop?.capacity_status);
+  const boundedPct = hasCapacityPct ? Math.max(0, Math.round(pct)) : null;
+  const rawStatus =
+    stop?.status ?? stop?.capacity_status ?? stop?.spot?.status ?? stop?.spot?.capacity_status;
+  const statusMeta = getCapacityStatusMeta(rawStatus);
   const visitorCount = Number(stop?.visitor_count ?? stop?.spot?.current_visitor_count ?? 0);
   const maxCapacity = Number(stop?.max_capacity ?? stop?.spot?.max_capacity ?? 0);
   const hasVisitorCount = Number.isFinite(visitorCount) && visitorCount >= 0;
@@ -344,7 +352,7 @@ function TourStopCard({ stop, day, order, accent, onFlyTo }) {
 
           {hasRating ? (
             <span className="typo-meta border-border/70 bg-muted/70 text-foreground inline-flex items-center gap-1 rounded-md border px-2 py-1">
-              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
+              <Star className="h-3.5 w-3.5 fill-warning text-warning" />
               {rating.toFixed(1)}
             </span>
           ) : null}
@@ -386,7 +394,7 @@ function TourStopCard({ stop, day, order, accent, onFlyTo }) {
             <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
               <div
                 className="h-full rounded-full transition-all"
-                style={{ width: `${capacityPct ?? 0}%`, ...statusMeta.barStyle }}
+                style={{ width: `${Math.min(capacityPct ?? 0, 100)}%`, ...statusMeta.barStyle }}
               />
             </div>
           </div>
@@ -462,17 +470,17 @@ function TourStopList({ stops, tourName, onFlyToStop }) {
   return (
     <div className="space-y-3 pb-1">
       <div className="grid grid-cols-3 gap-2">
-        <div className="border-border/70 rounded-lg border bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 p-2">
+        <div className="border-border/70 rounded-lg border bg-gradient-to-br from-info/15 to-info/5 p-2">
           <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.statsDays')}</p>
           <p className="typo-body text-foreground font-semibold">{totalDays}</p>
         </div>
 
-        <div className="border-border/70 rounded-lg border bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 p-2">
+        <div className="border-border/70 rounded-lg border bg-gradient-to-br from-success/15 to-success/5 p-2">
           <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.statsStops')}</p>
           <p className="typo-body text-foreground font-semibold">{sortedStops.length}</p>
         </div>
 
-        <div className="border-border/70 rounded-lg border bg-gradient-to-br from-amber-500/10 to-amber-500/5 p-2">
+        <div className="border-border/70 rounded-lg border bg-gradient-to-br from-warning/15 to-warning/5 p-2">
           <p className="typo-meta text-muted-foreground">{t('mapPage.tourPanel.statsDuration')}</p>
           <p className="typo-body text-foreground font-semibold">{totalDurationLabel}</p>
         </div>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -607,27 +607,27 @@ export default function TourismDetailPage() {
 
   return (
     <RootLayout>
-      <div className="min-h-screen bg-[#f5fbff] pb-10">
+      <div className="min-h-screen bg-background pb-10">
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
           {/* Breadcrumb */}
-          <nav className="mb-4 flex items-center gap-2 text-[13px] font-extrabold text-[#42627a]">
+          <nav className="mb-4 flex items-center gap-2 text-[13px] font-extrabold text-muted-foreground">
             <Button
               variant="ghost"
               onClick={() => navigate('/')}
-              className="flex items-center gap-1 transition-colors hover:text-[#08aeb9]"
+              className="flex items-center gap-1 transition-colors hover:text-secondary"
             >
               {t('common.home')}
             </Button>
-            <ChevronRight className="h-3 w-3 text-[#08aeb9]" />
+            <ChevronRight className="h-3 w-3 text-secondary" />
             <Button
               variant="ghost"
               onClick={() => navigate('/tourism-point')}
-              className="transition-colors hover:text-[#08aeb9]"
+              className="transition-colors hover:text-secondary"
             >
               {t('tourism.title')}
             </Button>
-            <ChevronRight className="h-3 w-3 text-[#08aeb9]" />
-            <span className="truncate text-[#08aeb9]">{attractionName}</span>
+            <ChevronRight className="h-3 w-3 text-secondary" />
+            <span className="truncate text-secondary">{attractionName}</span>
           </nav>
 
           {/* Hero */}
@@ -652,7 +652,7 @@ export default function TourismDetailPage() {
 
           {/* Share feedback toast */}
           {shareStatus !== 'idle' && (
-            <div className="mt-3 rounded-[10px] border border-[#dcecf7] bg-white px-4 py-2.5 text-sm font-medium text-[#42627a]">
+            <div className="mt-3 rounded-[10px] border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground">
               {shareStatus === 'copied'
                 ? t('tourism.share.copied')
                 : t('tourism.share.shared')}
@@ -685,18 +685,18 @@ export default function TourismDetailPage() {
 
               {/* Services */}
               {services.length > 0 && (
-                <section className="rounded-[24px] border border-[#dcecf7] bg-white px-5 py-5 shadow-[0_10px_28px_rgba(7,29,54,0.08)]">
-                  <h2 className="mb-4 flex items-center gap-2.5 text-xl font-bold text-[#071d36] md:text-2xl">
-                    <Bell className="h-6 w-6 text-[#08aeb9]" />
+                <section className="rounded-[24px] border border-border bg-card px-5 py-5 shadow-sm">
+                  <h2 className="mb-4 flex items-center gap-2.5 text-xl font-bold text-foreground md:text-2xl">
+                    <Bell className="h-6 w-6 text-secondary" />
                     {t('tourism.services')}
                   </h2>
                   <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                     {services.map(({ key, icon: Icon, label }) => (
                       <div
                         key={key}
-                        className="rounded-[16px] border border-[#e2eef7] bg-[#f6fbff] px-3 py-[13px] text-center text-[12px] font-extrabold text-[#325066]"
+                        className="rounded-[16px] border border-border/60 bg-muted/40 px-3 py-[13px] text-center text-[12px] font-extrabold text-foreground"
                       >
-                        <Icon className="mx-auto mb-2 h-5 w-5 text-[#08aeb9]" />
+                        <Icon className="mx-auto mb-2 h-5 w-5 text-secondary" />
                         {label}
                       </div>
                     ))}

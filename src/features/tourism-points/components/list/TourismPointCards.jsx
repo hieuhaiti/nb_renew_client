@@ -1,10 +1,11 @@
-﻿import React from 'react';
+import React from 'react';
 import { Bookmark, MapPin, Clock, Star } from 'lucide-react';
 import { formatVND, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const BTN_GRADIENT = { background: 'var(--gradient-primary-secondary, var(--primary))' };
 
 export function TourismPointSkeletonCard({ isFeatured }) {
   if (isFeatured) {
@@ -87,7 +88,7 @@ export function TourismPointFeaturedCard({
 
   return (
     <div
-      className="group mb-5 grid cursor-pointer grid-cols-1 overflow-hidden rounded-3xl border border-[#a8bed4] bg-white shadow-[0_14px_34px_rgba(13,74,130,0.14)] md:grid-cols-[1.1fr_1fr]"
+      className="group mb-5 grid cursor-pointer grid-cols-1 overflow-hidden rounded-3xl border border-border bg-card shadow-[0_14px_34px_rgba(13,74,130,0.14)] md:grid-cols-[1.1fr_1fr]"
       onClick={onClick}
     >
       {/* Image */}
@@ -104,14 +105,22 @@ export function TourismPointFeaturedCard({
         <span className="bg-primary/80 absolute top-3.5 left-3.5 rounded-full border border-white/30 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
           {categoryName}
         </span>
-        <Button
-          variant="ghost"
-          type="button"
-          onClick={onToggleLike}
-          className="text-primary absolute top-3.5 right-3.5 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-white/75 bg-white/90"
-        >
-          <Bookmark size={14} className={isLiked ? 'fill-destructive text-destructive' : ''} />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={onToggleLike}
+              className="text-foreground hover:text-primary absolute top-3.5 right-3.5 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-border/80 bg-background/80 shadow-xs"
+              aria-label={isLiked ? t('common.saved', { defaultValue: 'Đã lưu' }) : t('common.save', { defaultValue: 'Lưu điểm đến' })}
+            >
+              <Bookmark size={14} className={isLiked ? 'fill-destructive text-destructive' : ''} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {isLiked ? t('common.saved', { defaultValue: 'Đã lưu' }) : t('common.save', { defaultValue: 'Lưu điểm đến' })}
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {/* Body */}
@@ -119,12 +128,12 @@ export function TourismPointFeaturedCard({
         {/* Top meta */}
         <div className="text-primary mb-2.5 flex flex-wrap items-center gap-2.5 text-sm font-bold">
           {point?.is_featured && (
-            <span className="bg-primary rounded-[7px] px-2 py-0.5 text-xs font-bold text-white">
+            <span className="bg-primary text-primary-foreground rounded-[7px] px-2 py-0.5 text-xs font-bold">
               {t('common.new')}
             </span>
           )}
           <span className="flex items-center gap-1">
-            <Star size={13} className="fill-[#d99200] text-[#d99200]" />
+            <Star size={13} className="fill-warning text-warning" />
             {rating ? Number(rating).toFixed(1) : '—'} &mdash; {reviewCount}{' '}
             {t('tourismPointPage.reviews')}
           </span>
@@ -141,7 +150,7 @@ export function TourismPointFeaturedCard({
         </p>
 
         {/* Meta row */}
-        <div className="my-5 flex flex-wrap gap-4 text-sm font-bold text-[#53677e]">
+        <div className="my-5 flex flex-wrap gap-4 text-sm font-bold text-muted-foreground">
           {address && (
             <span className="flex items-center gap-1.5">
               <MapPin size={13} />
@@ -171,14 +180,22 @@ export function TourismPointFeaturedCard({
             >
               {t('tourismPointPage.view_detail')}
             </Button>
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={onToggleLike}
-              className="flex h-10.5 w-10.5 items-center justify-center rounded-full border border-[#9db8d2] bg-white text-[#52647a] hover:text-[#52647a]"
-            >
-              <Bookmark size={16} className={isLiked ? 'fill-destructive text-destructive' : ''} />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={onToggleLike}
+                  className="flex h-10.5 w-10.5 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground"
+                  aria-label={isLiked ? t('common.saved', { defaultValue: 'Đã lưu' }) : t('common.save', { defaultValue: 'Lưu điểm đến' })}
+                >
+                  <Bookmark size={16} className={isLiked ? 'fill-destructive text-destructive' : ''} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isLiked ? t('common.saved', { defaultValue: 'Đã lưu' }) : t('common.save', { defaultValue: 'Lưu điểm đến' })}
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </div>
@@ -208,7 +225,7 @@ export function TourismPointStandardCard({
     return (
       <div
         onClick={onClick}
-        className="group flex cursor-pointer items-center gap-4 overflow-hidden rounded-xl border border-[#a8bed4] bg-white p-3 shadow-sm transition-shadow hover:shadow-md"
+        className="group flex cursor-pointer items-center gap-4 overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm transition-shadow hover:shadow-md"
       >
         <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-lg">
           <img
@@ -246,7 +263,7 @@ export function TourismPointStandardCard({
   return (
     <div
       onClick={onClick}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[22px] border border-[#a8bed4] bg-white shadow-[0_8px_22px_rgba(13,74,130,0.10)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(13,74,130,0.18)]"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[22px] border border-border bg-card shadow-[0_8px_22px_rgba(13,74,130,0.10)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(13,74,130,0.18)]"
     >
       {/* Thumbnail */}
       <div className="relative h-43.75 overflow-hidden">
@@ -262,14 +279,22 @@ export function TourismPointStandardCard({
         <span className="bg-primary/80 absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
           {categoryName}
         </span>
-        <Button
-          variant="ghost"
-          type="button"
-          onClick={onToggleLike}
-          className="text-primary absolute top-3 right-3 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-white/75 bg-white/90"
-        >
-          <Bookmark size={13} className={isLiked ? 'fill-destructive text-destructive' : ''} />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={onToggleLike}
+              className="text-foreground hover:text-primary absolute top-3 right-3 flex h-8.5 w-8.5 items-center justify-center rounded-xl border border-border/80 bg-background/80 shadow-xs"
+              aria-label={isLiked ? t('common.saved', { defaultValue: 'Đã lưu' }) : t('common.save', { defaultValue: 'Lưu điểm đến' })}
+            >
+              <Bookmark size={13} className={isLiked ? 'fill-destructive text-destructive' : ''} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {isLiked ? t('common.saved', { defaultValue: 'Đã lưu' }) : t('common.save', { defaultValue: 'Lưu điểm đến' })}
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {/* Card body */}
@@ -278,8 +303,8 @@ export function TourismPointStandardCard({
           <h3 className="text-foreground group-hover:text-primary line-clamp-1 text-lg leading-snug font-black transition-colors">
             {name}
           </h3>
-          <span className="mt-0.5 flex shrink-0 items-center gap-1 text-sm font-bold text-[#d99200]">
-            <Star size={13} className="fill-[#d99200]" />
+          <span className="mt-0.5 flex shrink-0 items-center gap-1 text-sm font-bold text-warning">
+            <Star size={13} className="fill-warning text-warning" />
             {rating ? Number(rating).toFixed(1) : '—'}
           </span>
         </div>
@@ -289,15 +314,15 @@ export function TourismPointStandardCard({
         </p>
 
         {/* Footer */}
-        <div className="mt-3.5 grid gap-1.5 text-sm font-bold text-[#52647a]">
+        <div className="mt-3.5 grid gap-1.5 text-sm font-bold text-muted-foreground">
           {address && (
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#52647a]" />
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
               {address.split(',')[0]}
             </span>
           )}
           <div className="text-primary flex items-center justify-between font-black">
-            <span className="font-semibold text-[#52647a]">{openingHours || ''}</span>
+            <span className="font-semibold text-muted-foreground">{openingHours || ''}</span>
             <span>
               {price && parseInt(price) > 0
                 ? formatVND(price)

@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   MapPin,
@@ -28,8 +28,8 @@ import placeholderImg from '@/assets/images/placeholder.png';
 import qrImage from '@/assets/image.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-const PRIMARY_GRAD = 'linear-gradient(135deg,#12a9b7,#0e9f8f)';
-const ORANGE_GRAD = 'linear-gradient(135deg,#ff9f1c,#ffb703)';
+const PRIMARY_GRAD = 'var(--gradient-primary)';
+const ORANGE_GRAD = 'var(--gradient-secondary)';
 const QR_BOOKING_URL = 'https://dulichninhbinh.com.vn/';
 
 function resolveStopSpotId(stop) {
@@ -82,7 +82,7 @@ function StopMediaTrigger({ stop, t }) {
   if (images.length === 0) {
     return (
       <div
-        className="flex h-10 w-10 items-center justify-center rounded-[15px] text-white"
+        className="flex h-10 w-10 items-center justify-center rounded-[15px] text-secondary-foreground"
         style={{ background: ORANGE_GRAD }}
       >
         <MapPin size={16} />
@@ -91,23 +91,35 @@ function StopMediaTrigger({ stop, t }) {
   }
 
   return (
-    <Button
-      variant="ghost"
-      type="button"
-      onClick={() => openCarouselModal(images)}
-      className="relative h-10 w-10 overflow-hidden rounded-[15px] border border-white/50 p-0"
-      aria-label={t('tourPage.viewStopGallery')}
-      title={t('tourPage.viewStopGallery')}
-    >
-      <img src={withBaseUrl(images[0])} alt="" className="h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-black/20" />
-      {images.length > 1 && (
-        <span className="absolute right-1 bottom-1 rounded-full bg-black/65 px-1.5 text-[10px] font-black text-white">
-          +{images.length - 1}
-        </span>
-      )}
-      <span className="sr-only">{t('tourPage.viewStopGallery')}</span>
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          type="button"
+          onClick={() => openCarouselModal(images)}
+          className="relative h-10 w-10 overflow-hidden rounded-[15px] border border-white/50 p-0"
+          aria-label={t('tourPage.viewStopGallery')}
+        >
+          <img
+            src={images[0] ? withBaseUrl(images[0]) : placeholderImg}
+            alt=""
+            className="h-full w-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = placeholderImg;
+            }}
+          />
+          <div className="absolute inset-0 bg-black/20" />
+          {images.length > 1 && (
+            <span className="absolute right-1 bottom-1 rounded-full bg-black/65 px-1.5 text-[10px] font-black text-white">
+              +{images.length - 1}
+            </span>
+          )}
+          <span className="sr-only">{t('tourPage.viewStopGallery')}</span>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>{t('tourPage.viewStopGallery')}</TooltipContent>
+    </Tooltip>
   );
 }
 function computeStopsWithTimes(stops) {
@@ -145,14 +157,14 @@ const CAPACITY_STATUS_META = {
     toneClass: 'text-destructive',
     badgeClass:
       'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
-    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--destructive) / 0.8), hsl(var(--destructive)))' },
   },
   near_full: {
     labelVi: 'Gần đầy',
     labelEn: 'Near full',
-    toneClass: 'text-orange-600',
+    toneClass: 'text-warning',
     badgeClass:
-      'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
+      'border-warning/30 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
     barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
   },
   busy: {
@@ -166,33 +178,33 @@ const CAPACITY_STATUS_META = {
   moderate: {
     labelVi: 'Vừa phải',
     labelEn: 'Moderate',
-    toneClass: 'text-sky-600',
+    toneClass: 'text-info',
     badgeClass:
-      'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
+      'border-info/30 bg-info/10 text-info hover:bg-info/20 hover:text-info',
     barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
   },
   normal: {
     labelVi: 'Bình thường',
     labelEn: 'Normal',
-    toneClass: 'text-emerald-600',
+    toneClass: 'text-success',
     badgeClass:
-      'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
+      'border-success/30 bg-success/10 text-success hover:bg-success/20 hover:text-success',
     barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
   },
   low: {
     labelVi: 'Thưa thớt',
     labelEn: 'Low',
-    toneClass: 'text-emerald-500',
+    toneClass: 'text-success',
     badgeClass:
-      'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
-    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+      'border-success/20 bg-success/10 text-success hover:bg-success/20 hover:text-success',
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-soft), var(--secondary-1))' },
   },
   unknown: {
     labelVi: 'Chưa rõ',
     labelEn: 'Unknown',
     toneClass: 'text-muted-foreground',
     badgeClass: 'border-border/40 bg-muted/60 text-muted-foreground',
-    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--muted-foreground) / 0.5), hsl(var(--muted-foreground) / 0.8))' },
   },
 };
 
@@ -406,10 +418,7 @@ export default function TourDetailPage() {
 
   return (
     <RootLayout>
-      <div
-        className="min-h-screen overflow-x-hidden pb-10"
-        style={{ background: 'linear-gradient(180deg,#eaf7ff 0,#fff 42%,#f5fbff 100%)' }}
-      >
+      <div className="bg-background text-foreground min-h-screen overflow-x-hidden pb-10">
         <div className="px-5 pt-5.5 pb-11 md:px-[5vw]">
           {/* Breadcrumb */}
           <div className="text-muted-foreground mb-4 flex flex-wrap items-center gap-2 text-[13px] font-black">
@@ -440,7 +449,7 @@ export default function TourDetailPage() {
             <div
               className="relative flex min-h-75 flex-col justify-end overflow-hidden rounded-[32px] p-5 text-white shadow-(--ambient-shadow) md:min-h-117.5 md:p-7.5"
               style={{
-                background: `linear-gradient(135deg,rgba(6,32,60,.82),rgba(8,142,130,.62)),url('${coverImg}') center/cover no-repeat`,
+                background: `linear-gradient(135deg,rgba(0,0,0,.75),rgba(0,0,0,.45)),url('${coverImg}') center/cover no-repeat`,
               }}
             >
               <span className="mb-[14px] inline-flex w-max items-center gap-2 rounded-full border border-white/30 bg-white/20 px-[13px] py-[9px] text-[13px] font-black">
@@ -455,7 +464,7 @@ export default function TourDetailPage() {
               >
                 {tourName}
               </h1>
-              <p className="max-w-[820px] leading-[1.7]" style={{ color: '#eaffff' }}>
+              <p className="max-w-[820px] leading-[1.7] text-white/90">
                 {tourDescription}
               </p>
               <div className="mt-[18px] flex flex-wrap gap-3">
@@ -489,7 +498,7 @@ export default function TourDetailPage() {
                 className="relative col-span-2 min-h-45 overflow-hidden rounded-[24px] bg-cover bg-center shadow-(--ambient-shadow) sm:min-h-55"
                 style={{ backgroundImage: `url('${coverImg}')` }}
               >
-                <span className="text-secondary absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-[11px] py-2 text-[12px] font-black">
+                <span className="text-secondary border-border/60 bg-background/90 absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border px-[11px] py-2 text-[12px] font-black">
                   {t('tourPage.routeOverview')}
                 </span>
               </div>
@@ -503,7 +512,7 @@ export default function TourDetailPage() {
                   }}
                 >
                   {label && (
-                    <span className="text-secondary absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-[11px] py-2 text-[12px] font-black">
+                    <span className="text-secondary border-border/60 bg-background/90 absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border px-[11px] py-2 text-[12px] font-black">
                       {label.split(',')[0]}
                     </span>
                   )}
@@ -550,7 +559,7 @@ export default function TourDetailPage() {
                   ].map((item, i) => (
                     <div key={i} className="bg-muted rounded-[18px] border p-3.5">
                       <div
-                        className="mb-[10px] flex h-[38px] w-[38px] items-center justify-center rounded-[14px] text-white"
+                        className="mb-[10px] flex h-[38px] w-[38px] items-center justify-center rounded-[14px] text-primary-foreground"
                         style={{ background: PRIMARY_GRAD }}
                       >
                         {item.icon}
@@ -583,7 +592,7 @@ export default function TourDetailPage() {
                       >
                         <div
                           className="text-foreground flex items-center justify-between gap-2 px-4 py-[14px] font-black"
-                          style={{ background: 'linear-gradient(135deg,#eafafb,#fff7e6)' }}
+                          style={{ background: 'linear-gradient(135deg,var(--secondary-soft),var(--card))' }}
                         >
                           <span className="flex items-center gap-2">
                             {t('tourPage.dayHeading', {
@@ -726,7 +735,7 @@ export default function TourDetailPage() {
               <div className="border-border bg-card overflow-hidden rounded-[28px] shadow-(--ambient-shadow)">
                 <div
                   className="border-border border-b px-5 py-4"
-                  style={{ background: 'linear-gradient(135deg,#fff8e6,#fffdfa)' }}
+                  style={{ background: 'linear-gradient(135deg,var(--tertiary-soft),var(--card))' }}
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <span className="bg-secondary/10 text-secondary inline-flex items-center rounded-full px-3 py-1 text-[12px] font-black">
@@ -757,7 +766,7 @@ export default function TourDetailPage() {
                             onClick={() =>
                               window.open(QR_BOOKING_URL, '_blank', 'noopener,noreferrer')
                             }
-                            className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-white/70 bg-white p-2 shadow-[0_14px_35px_rgba(15,23,42,.12)] transition hover:-translate-y-0.5 hover:bg-muted hover:shadow-[0_18px_45px_rgba(15,23,42,.16)] sm:h-[92px] sm:w-[92px]"
+                            className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[22px] border border-border/70 bg-card p-2 shadow-[0_14px_35px_rgba(15,23,42,.12)] transition hover:-translate-y-0.5 hover:bg-muted hover:shadow-[0_18px_45px_rgba(15,23,42,.16)] sm:h-[92px] sm:w-[92px]"
                             aria-label={t('tourPage.bookTrip')}
                           >
                             <img

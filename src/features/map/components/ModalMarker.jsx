@@ -196,7 +196,7 @@ function OcopStars({ count }) {
           <Star
             key={i}
             size={10}
-            className={i < count ? 'fill-amber-400 text-amber-400' : 'fill-muted text-muted'}
+            className={i < count ? 'fill-warning text-warning' : 'fill-muted text-muted'}
           />
         )
       )}
@@ -220,7 +220,7 @@ function OcopProductCard({ ocop, spotLat, spotLng, onClick }) {
     <button
       type="button"
       onClick={() => onClick?.(ocop)}
-      className="focus-visible:ring-ring group flex w-full cursor-pointer items-start gap-2.5 rounded-lg p-2 text-left transition-all hover:bg-amber-50/80 hover:shadow-sm hover:ring-1 hover:ring-amber-200 focus-visible:ring-2 focus-visible:outline-none"
+      className="focus-visible:ring-ring group flex w-full cursor-pointer items-start gap-2.5 rounded-lg p-2 text-left transition-all hover:bg-muted hover:shadow-sm hover:ring-1 hover:ring-border focus-visible:ring-2 focus-visible:outline-none"
     >
       <img
         src={imageUrl}
@@ -235,7 +235,7 @@ function OcopProductCard({ ocop, spotLat, spotLng, onClick }) {
         <p className="typo-meta line-clamp-2 leading-snug font-medium">{ocop.name}</p>
         <OcopStars count={ocop.star_rating} />
         <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          {price && <span className="typo-meta font-medium text-amber-600">{price}</span>}
+          {price && <span className="typo-meta font-medium text-primary">{price}</span>}
           {dist != null && (
             <span className="typo-meta text-muted-foreground">
               {t('mapPage.ocopPanel.distFrom')} {formatDist(dist)}
@@ -292,7 +292,7 @@ function OcopNearbyPanel({ spot, isModalOpen, onSelectOcop }) {
       {/* Header */}
       <div className="shrink-0 border-b p-3">
         <div className="mb-2 flex items-center gap-1.5">
-          <ShoppingBag size={13} className="shrink-0 text-amber-500" />
+          <ShoppingBag size={13} className="shrink-0 text-primary" />
           <p className="typo-meta text-foreground font-semibold">{t('mapPage.ocopPanel.title')}</p>
         </div>
         {/* Radius filter chips */}
@@ -672,7 +672,7 @@ export default function ModalMarker() {
         </div>
         <div className="bg-background relative flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border shadow-lg sm:w-[38rem] sm:flex-none lg:w-[42rem] xl:w-2xl">
           {/* Close button */}
-          <DialogClose className="absolute top-4 right-4 z-10 cursor-pointer rounded-xs border border-white/80 bg-white opacity-90 shadow-sm transition-all hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+          <DialogClose className="absolute top-4 right-4 z-10 cursor-pointer rounded-xs border border-border/80 bg-background/90 text-foreground opacity-90 shadow-sm transition-all hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
             <XIcon />
             <span className="sr-only">Close</span>
           </DialogClose>
@@ -697,13 +697,13 @@ export default function ModalMarker() {
               <div
                 className="absolute right-0 bottom-0 left-0 h-1"
                 style={{
-                  backgroundColor: spot?.category_color || '#f97316',
+                  backgroundColor: spot?.category_color || 'var(--primary)',
                 }}
               />
             </div>
 
             {/* Content */}
-            <div className="flex flex-1 flex-col justify-between bg-sky-50/60 p-4">
+            <div className="flex flex-1 flex-col justify-between bg-card p-4">
               <div className="flex flex-col gap-3">
                 {isLoading ? (
                   <div className="space-y-2">
@@ -714,7 +714,7 @@ export default function ModalMarker() {
                 ) : spot ? (
                   <>
                     {/* Main info + QR (two-column layout) */}
-                    <div className="bg-background/60 grid gap-3 rounded-xl border border-sky-100 p-3 sm:grid-cols-5">
+                    <div className="bg-background/60 grid gap-3 rounded-xl border border-border p-3 sm:grid-cols-5">
                       <div className="flex min-w-0 flex-col gap-2.5 sm:col-span-3">
                         {/* Title + category */}
                         <div className="flex min-w-0 flex-col gap-1.5">
@@ -933,9 +933,9 @@ export default function ModalMarker() {
                   </Button>
                   <Button
                     size="sm"
-                    variant="default"
+                    variant="secondary"
                     onClick={() => window.open('https://3d.humgsoftware.pro.vn/', '_blank')}
-                    className="text-secondary-foreground w-full gap-1.5 bg-green-500"
+                    className="w-full gap-1.5"
                   >
                     <RectangleGoggles size={14} />
                     {t('mapPage.spotModal.view3D')}
@@ -957,7 +957,7 @@ export default function ModalMarker() {
                     size="sm"
                     variant="default"
                     onClick={handleVrTour}
-                    className="text-secondary-foreground w-full gap-1.5 bg-amber-500 hover:bg-amber-600"
+                    className="w-full gap-1.5"
                   >
                     <RectangleGoggles size={14} />
                     {t('mapPage.spotModal.vrTour')}

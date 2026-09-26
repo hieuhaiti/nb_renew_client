@@ -218,7 +218,7 @@ export default function Signup() {
                             ? passwordValue.length >= 12
                               ? 'bg-primary'
                               : passwordValue.length >= 8
-                                ? 'bg-amber-400'
+                                ? 'bg-warning'
                                 : 'bg-destructive'
                             : 'bg-muted',
                         ].join(' ')}

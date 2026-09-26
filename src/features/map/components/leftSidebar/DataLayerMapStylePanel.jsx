@@ -104,14 +104,15 @@ export default function DataLayerMapStylePanel({
                   'group bg-card hover:bg-muted/30 h-auto w-full flex-col items-start justify-start gap-1.5 rounded-lg border p-1.5 text-left transition-colors',
                   isActive ? 'border-primary bg-primary-soft/35' : 'border-border'
                 )}
+                aria-label={item.title}
                 title={item.description}
                 aria-pressed={isActive}
               >
                 <span
-                  className="block h-12 w-full rounded-md border border-black/10 bg-cover bg-center bg-no-repeat"
+                  className="block h-12 w-full rounded-md border border-border/60 bg-cover bg-center bg-no-repeat"
                   style={{
                     backgroundImage: item.preview ? `url(${item.preview})` : 'none',
-                    backgroundColor: item.preview ? 'transparent' : '#e5e7eb',
+                    backgroundColor: item.preview ? 'transparent' : 'var(--muted)',
                   }}
                 />
                 <span className="truncate text-sm font-semibold">{item.title}</span>

@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -77,7 +77,7 @@ export default function NewsDetailPageContent() {
             <div className="grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
               <div className="space-y-3">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-5 animate-pulse rounded-[8px] bg-[#f8fbff]" style={{ width: `${90 - i * 10}%` }} />
+                  <div key={i} className="h-5 animate-pulse rounded-[8px] bg-muted" style={{ width: `${90 - i * 10}%` }} />
                 ))}
               </div>
               <div className="space-y-3">

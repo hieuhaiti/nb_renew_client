@@ -101,13 +101,16 @@ export default function FeedbackPageContent() {
               </div>
 
               {/* Search + filter bar */}
-              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
+              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-border/80 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
                   <Search
                     size={16}
                     className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <Input
+                    id="feedback-search-input"
+                    name="feedbackSearch"
+                    aria-label={t('feedbackPage.filters.search_placeholder')}
                     type="text"
                     placeholder={t('feedbackPage.filters.search_placeholder')}
                     value={search}

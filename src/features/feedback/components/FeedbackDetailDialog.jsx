@@ -180,7 +180,7 @@ export default function FeedbackDetailDialog({ open, onOpenChange, feedbackId })
                     {feedback.images.map((url, idx) => (
                       <img
                         key={idx}
-                        src={withBaseUrl(url)}
+                        src={url ? withBaseUrl(url) : placeholderImg}
                         alt=""
                         className="h-24 w-full cursor-zoom-in rounded-lg border object-cover transition hover:opacity-80"
                         onClick={() => setLightboxSrc(withBaseUrl(url))}

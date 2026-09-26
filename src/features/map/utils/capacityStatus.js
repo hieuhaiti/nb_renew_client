@@ -1,61 +1,61 @@
 export const CAPACITY_STATUS_META = {
   overloaded: {
     activeBadgeClass:
-      'border-border/60 bg-destructive text-white hover:bg-destructive/80 hover:text-white',
+      'border-border/60 bg-destructive text-destructive-foreground hover:bg-destructive/80',
     badgeClass:
-      'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
+      'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20',
     toneClass: 'text-destructive',
-    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--destructive) / 0.8), hsl(var(--destructive)))' },
     labelKey: 'mapPage.capacityPanel.status.overloaded',
   },
   near_full: {
     activeBadgeClass:
-      'border-border/60 bg-orange-500 text-white hover:bg-orange-500/80 hover:text-white',
+      'border-border/60 bg-warning text-warning-foreground hover:bg-warning/80',
     badgeClass:
-      'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
-    toneClass: 'text-orange-600',
+      'border-warning/30 bg-warning/15 text-warning hover:bg-warning/25',
+    toneClass: 'text-warning',
     barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
     labelKey: 'mapPage.capacityPanel.status.near_full',
   },
   busy: {
-    activeBadgeClass: 'border-border/60 bg-warning text-white hover:bg-warning/80 hover:text-white',
+    activeBadgeClass: 'border-border/60 bg-warning text-warning-foreground hover:bg-warning/80',
     badgeClass:
-      'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
+      'border-warning/40 bg-warning/10 text-warning hover:bg-warning/20',
     toneClass: 'text-warning',
     barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
     labelKey: 'mapPage.capacityPanel.status.busy',
   },
   moderate: {
-    activeBadgeClass: 'border-border/60 bg-sky-500 text-white hover:bg-sky-500/80 hover:text-white',
+    activeBadgeClass: 'border-border/60 bg-info text-info-foreground hover:bg-info/80',
     badgeClass:
-      'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
-    toneClass: 'text-sky-600',
+      'border-info/30 bg-info/10 text-info hover:bg-info/20',
+    toneClass: 'text-info',
     barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
     labelKey: 'mapPage.capacityPanel.status.moderate',
   },
   normal: {
     activeBadgeClass:
-      'border-border/60 bg-emerald-500 text-white hover:bg-emerald-500/80 hover:text-white',
+      'border-border/60 bg-success text-success-foreground hover:bg-success/80',
     badgeClass:
-      'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
-    toneClass: 'text-emerald-600',
+      'border-success/30 bg-success/10 text-success hover:bg-success/20',
+    toneClass: 'text-success',
     barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
     labelKey: 'mapPage.capacityPanel.status.normal',
   },
   low: {
     activeBadgeClass:
-      'border-border/60 bg-emerald-500 text-white hover:bg-emerald-500/80 hover:text-white',
+      'border-border/60 bg-success text-success-foreground hover:bg-success/80',
     badgeClass:
-      'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
-    toneClass: 'text-emerald-500',
-    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+      'border-success/30 bg-success/15 text-success hover:bg-success/25',
+    toneClass: 'text-success',
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--success) / 0.7), hsl(var(--success)))' },
     labelKey: 'mapPage.capacityPanel.status.low',
   },
   unknown: {
     activeBadgeClass: 'border-border/60 bg-muted text-muted-foreground hover:bg-muted/80',
     badgeClass: 'border-border/40 bg-muted/60 text-muted-foreground hover:bg-muted',
     toneClass: 'text-muted-foreground',
-    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--muted-foreground) / 0.5), hsl(var(--muted-foreground) / 0.8))' },
     labelKey: 'mapPage.capacityPanel.status.unknown',
   },
 };

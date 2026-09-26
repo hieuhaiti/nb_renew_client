@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import { normalizeBearing, updateFovPolygon as buildFovPolygon } from '../utils/fovHelpers';
 
 const EMPTY_FEATURE_COLLECTION = {

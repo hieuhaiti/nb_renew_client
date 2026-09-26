@@ -196,9 +196,11 @@ export default function MapBaseArea() {
 
     mapRef.current.split.getContainer().style.display = 'none';
 
+    let isMounted = true;
     const map = mapRef.current.single;
 
     const handleSingleLoad = () => {
+      if (!isMounted || !map) return;
       setMapRef(map);
       useMapStore.getState().setMapRefObj(mapRef);
 
@@ -225,15 +227,21 @@ export default function MapBaseArea() {
         'right'
       );
 
-      setMapsReady((prev) => ({ ...prev, single: true }));
+      if (isMounted) {
+        setMapsReady((prev) => ({ ...prev, single: true }));
+      }
     };
 
     const handleSplitLoad = () => {
-      setMapsReady((prev) => ({ ...prev, split: true }));
+      if (isMounted) {
+        setMapsReady((prev) => ({ ...prev, split: true }));
+      }
     };
 
     map.on('load', handleSingleLoad);
-    mapRef.current.split.on('load', handleSplitLoad);
+    if (mapRef.current.split) {
+      mapRef.current.split.on('load', handleSplitLoad);
+    }
 
     const handleMove = () => {
       // mapbox-gl-compare already syncs both maps; avoid double jumpTo on every move.
@@ -254,6 +262,7 @@ export default function MapBaseArea() {
     };
 
     const handleMoveEnd = () => {
+      if (!isMounted) return;
       const center = map.getCenter();
       setMapState({ lat: center.lat, lng: center.lng, zoom: map.getZoom() });
       handleMove();
@@ -263,6 +272,11 @@ export default function MapBaseArea() {
     map.on('moveend', handleMoveEnd);
 
     return () => {
+      isMounted = false;
+      map.off('load', handleSingleLoad);
+      if (mapRef.current.split) {
+        mapRef.current.split.off('load', handleSplitLoad);
+      }
       map.off('move', handleMove);
       map.off('moveend', handleMoveEnd);
 
@@ -275,20 +289,46 @@ export default function MapBaseArea() {
         compareTeardownTimerRef.current = null;
       }
 
-      if (mapRef.current.single) {
-        mapRef.current.single.remove();
-        mapRef.current.single = null;
+      if (routeMarkersRef.current.start) {
+        routeMarkersRef.current.start.remove();
+        routeMarkersRef.current.start = null;
       }
+      if (routeMarkersRef.current.end) {
+        routeMarkersRef.current.end.remove();
+        routeMarkersRef.current.end = null;
+      }
+      if (stepHoverMarkerRef.current) {
+        stepHoverMarkerRef.current.remove();
+        stepHoverMarkerRef.current = null;
+      }
+
       if (compareRef.current) {
-        compareRef.current.remove();
+        try {
+          compareRef.current.remove();
+        } catch {}
         compareRef.current = null;
       }
+      if (mapRef.current.compare) {
+        try {
+          mapRef.current.compare.remove();
+        } catch {}
+        mapRef.current.compare = null;
+      }
+      if (mapRef.current.single) {
+        try {
+          mapRef.current.single.remove();
+        } catch {}
+        mapRef.current.single = null;
+      }
       if (mapRef.current.split) {
-        mapRef.current.split.remove();
+        try {
+          mapRef.current.split.remove();
+        } catch {}
         mapRef.current.split = null;
       }
-      mapRef.current.compare = null;
-      setMapRef(null);
+      useMapStore.getState().setMapRef(null);
+      useMapStore.getState().setMapRefObj(null);
+      useMapStore.getState().setLocateControl(null);
       setMapsReady({ single: false, split: false });
     };
   }, []);

@@ -34,7 +34,7 @@ export function normalizeCategoryTreePayload(payload) {
   };
 }
 
-export function categoriesService({ lang = 'vi' } = {}) {
+export function useCategoriesService({ lang = 'vi' } = {}) {
   return useApiQuery(
     ['categories', lang],
     `spot-categories/tree`,
@@ -44,3 +44,5 @@ export function categoriesService({ lang = 'vi' } = {}) {
     }
   );
 }
+
+export const categoriesService = useCategoriesService;

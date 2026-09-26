@@ -1,7 +1,7 @@
 import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import i18n from '@/i18n';
-import { useEffect, useRef } from 'react';
+import { useEffect, useId } from 'react';
 import { fetcher } from '@/services/fetcher';
 import { mutater } from '@/services/mutater';
 import { tokenManager } from '@/lib/tokenManager';
@@ -65,11 +65,8 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
   const lang = useLanguageStore((state) => state.lang);
   const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
   const { queryKey: _optionsQueryKey, queryFn: optionsQueryFn, ...queryOptions } = options || {};
-  const loadingKeyRef = useRef(
-    `query:${Array.isArray(key) ? key.join('.') : key}:${endPoint}:${Math.random()
-      .toString(36)
-      .slice(2)}`
-  );
+  const hookId = useId();
+  const loadingKey = `query:${Array.isArray(key) ? key.join('.') : key}:${endPoint}:${hookId}`;
 
   const query = useQuery({
     ...queryOptions,
@@ -79,7 +76,6 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
 
   // Sync global loading overlay
   useEffect(() => {
-    const loadingKey = loadingKeyRef.current;
     if (!loading) {
       setLoadingByKey(loadingKey, false);
       return undefined;
@@ -87,7 +83,7 @@ export function useApiQuery(key, endPoint, options = {}, loading = true, notific
 
     setLoadingByKey(loadingKey, query.isLoading || query.isFetching);
     return () => setLoadingByKey(loadingKey, false);
-  }, [query.isLoading, query.isFetching, setLoadingByKey, loading]);
+  }, [query.isLoading, query.isFetching, setLoadingByKey, loading, loadingKey]);
 
   // Success toast (opt-in)
   useEffect(() => {
@@ -143,7 +139,8 @@ export function useApiQueries(config = {}, loading = true) {
   const lang = useLanguageStore((state) => state.lang);
   const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
   const rawQueries = Array.isArray(config?.queries) ? config.queries : [];
-  const loadingKeyRef = useRef(`queries:${Math.random().toString(36).slice(2)}`);
+  const hookId = useId();
+  const loadingKey = `queries:${hookId}`;
 
   const queries = useQueries({
     queries: rawQueries.map((queryConfig) => {
@@ -160,7 +157,6 @@ export function useApiQueries(config = {}, loading = true) {
   const isAnyLoading = queries.some((query) => query.isLoading || query.isFetching);
 
   useEffect(() => {
-    const loadingKey = loadingKeyRef.current;
     if (!loading) {
       setLoadingByKey(loadingKey, false);
       return undefined;
@@ -168,7 +164,7 @@ export function useApiQueries(config = {}, loading = true) {
 
     setLoadingByKey(loadingKey, isAnyLoading);
     return () => setLoadingByKey(loadingKey, false);
-  }, [isAnyLoading, loading, setLoadingByKey]);
+  }, [isAnyLoading, loading, setLoadingByKey, loadingKey]);
 
   const errorSignature = queries.map((query) => query.errorUpdatedAt || 0).join('|');
 
@@ -213,11 +209,8 @@ export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
   const navigate = useNavigate();
   const setLoadingByKey = useLoadingStore((state) => state.setLoadingByKey);
   const queryClient = useQueryClient();
-  const loadingKeyRef = useRef(
-    `mutation:${Array.isArray(key) ? key.join('.') : key || 'unknown'}:${endPoint}:${Math.random()
-      .toString(36)
-      .slice(2)}`
-  );
+  const hookId = useId();
+  const loadingKey = `mutation:${Array.isArray(key) ? key.join('.') : key || 'unknown'}:${endPoint}:${hookId}`;
 
   const { onSuccess: optionsOnSuccess, onError: optionsOnError, ...restOptions } = options;
 
@@ -260,10 +253,9 @@ export function useApiMutation(key, endPoint, method = 'POST', options = {}) {
 
   // Sync global loading overlay
   useEffect(() => {
-    const loadingKey = loadingKeyRef.current;
     setLoadingByKey(loadingKey, mutation.isPending);
     return () => setLoadingByKey(loadingKey, false);
-  }, [mutation.isPending, setLoadingByKey]);
+  }, [mutation.isPending, setLoadingByKey, loadingKey]);
 
   return mutation;
 }

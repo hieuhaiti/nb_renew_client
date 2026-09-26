@@ -11,13 +11,13 @@ import { withLanguageQueryKey } from '@/services/useApi';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { highlightPointOnMap } from '@/features/map/utils/MapHelper';
-import { resolveCapacityPct, resolveCapacityStatus } from '@/features/map/utils/capacityUtils';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   CAPACITY_STATUS_META,
   getCapacityStatusLabel,
   getCapacityStatusMeta,
+  resolveCapacityStatus,
 } from '@/features/map/utils/capacityStatus';
 
 function getViewOnMapVariant(status) {
@@ -38,78 +38,61 @@ function getViewOnMapVariant(status) {
       return 'outline';
   }
 }
-export const CAPACITY_STATUSES = ['overloaded', 'near_full', 'busy', 'moderate', 'normal', 'low'];
 
-const CAPACITY_STATUS_SET = new Set(CAPACITY_STATUSES);
-
-// Backend exposes capacity under different field names depending on the endpoint:
-// /capacity/current uses capacity_pct, /spots?capacity=true uses current_capacity_pct.
-const PCT_FIELDS = ['capacity_pct', 'current_capacity_pct', 'occupancy_pct'];
-const STATUS_FIELDS = ['status', 'capacity_status', 'current_capacity_status'];
-const VISITOR_FIELDS = ['visitor_count', 'current_visitor_count', 'current_visitors'];
-const MAX_FIELDS = ['max_capacity', 'capacity'];
-
-function firstFiniteNumber(source, fields) {
-  for (const field of fields) {
-    const value = Number(source?.[field]);
-    if (Number.isFinite(value)) return value;
+function getCapacityCardClass(status) {
+  switch (status) {
+    case 'overloaded':
+      return 'border-destructive/30 bg-destructive/5 hover:border-destructive/50 hover:bg-destructive/10';
+    case 'near_full':
+      return 'border-warning/30 bg-warning/5 hover:border-warning/50 hover:bg-warning/10';
+    case 'busy':
+      return 'border-warning/40 bg-warning/5 hover:border-warning/60 hover:bg-warning/10';
+    case 'moderate':
+      return 'border-info/30 bg-info/5 hover:border-info/50 hover:bg-info/10';
+    case 'normal':
+      return 'border-success/30 bg-success/5 hover:border-success/50 hover:bg-success/10';
+    case 'low':
+      return 'border-success/20 bg-success/5 hover:border-success/40 hover:bg-success/10';
+    default:
+      return 'border-border/40 bg-muted/30 hover:border-border/60 hover:bg-muted/50';
   }
-  return null;
 }
 
-function clampPct(value) {
-  return Math.min(Math.max(Math.round(value), 0), 100);
-}
-
-/**
- * True when the record carries usable visitor/max counts.
- *
- * The counts are treated as the source of truth because /spots?capacity=true has been
- * observed to serve a precomputed percentage that contradicts its own counts.
- */
-function hasReliableCounts(item) {
-  const current = firstFiniteNumber(item, VISITOR_FIELDS);
-  const max = firstFiniteNumber(item, MAX_FIELDS);
-  return current != null && max != null && max > 0;
-}
-
-/**
- * Returns the occupancy percentage clamped to 0-100, or null when the record
- * carries no capacity signal at all.
- */
-export function resolveCapacityPct(item) {
-  if (!item || typeof item !== 'object') return null;
-
-  if (hasReliableCounts(item)) {
-    const current = firstFiniteNumber(item, VISITOR_FIELDS);
-    const max = firstFiniteNumber(item, MAX_FIELDS);
-    return clampPct((current / max) * 100);
+function getCapacityActiveBorderClass(status) {
+  switch (status) {
+    case 'overloaded':
+      return 'border-destructive';
+    case 'near_full':
+      return 'border-warning';
+    case 'busy':
+      return 'border-warning';
+    case 'moderate':
+      return 'border-info';
+    case 'normal':
+      return 'border-success';
+    case 'low':
+      return 'border-success';
+    default:
+      return 'border-border';
   }
-
-  const direct = firstFiniteNumber(item, PCT_FIELDS);
-  return direct == null ? null : clampPct(direct);
 }
 
-export function resolveCapacityStatus(item, pct = resolveCapacityPct(item)) {
-  // Only trust a server-supplied status when we could not derive one from the counts.
-  if (!hasReliableCounts(item)) {
-    for (const field of STATUS_FIELDS) {
-      const status = String(item?.[field] ?? '').trim();
-      if (CAPACITY_STATUS_SET.has(status)) return status;
-    }
-  }
-
-  if (pct == null) return null;
-  if (pct >= 100) return 'overloaded';
-  if (pct >= 85) return 'near_full';
-  if (pct >= 70) return 'busy';
-  if (pct >= 40) return 'moderate';
-  if (pct > 0) return 'low';
-  return null;
+function resolveCapacityPct(item) {
+  const direct = item.current_capacity_pct ?? item.capacity_pct ?? item.occupancy_pct;
+  if (direct != null) return Math.max(0, Math.round(Number(direct)));
+  const current = Number(item.visitor_count ?? item.current_visitors ?? 0);
+  const max = Number(item.max_capacity ?? item.capacity ?? 0);
+  if (max <= 0) return 0;
+  return Math.max(0, Math.round((current / max) * 100));
 }
+
+function resolveStatus(item, pct) {
+  return resolveCapacityStatus(item.status ?? item.capacity_status, pct);
+}
+
 function normalizeItem(raw, defaultName) {
-  const pct = resolveCapacityPct(raw) ?? 0;
-  const status = resolveCapacityStatus(raw, pct) ?? 'low';
+  const pct = resolveCapacityPct(raw);
+  const status = resolveStatus(raw, pct);
   const coords = raw.geojson?.coordinates;
   return {
     id: raw.spot_id ?? raw.id,
@@ -253,8 +236,8 @@ export default function CapacityPanel() {
           <p className="typo-section-title text-foreground">{t('mapPage.capacityPanel.title')}</p>
           <p className="typo-meta text-muted-foreground truncate">
             {sseStatus === 'open' ? (
-              <span className="flex items-center gap-1 text-emerald-600">
-                <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" />
+              <span className="flex items-center gap-1 text-success">
+                <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-success" />
                 {t('mapPage.capacityPanel.live')}
               </span>
             ) : sseStatus === 'connecting' ? (
@@ -291,6 +274,9 @@ export default function CapacityPanel() {
         <div className="relative shrink-0">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
+            id="capacity-panel-search-input"
+            name="capacitySearch"
+            aria-label={t('mapPage.capacityPanel.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('mapPage.capacityPanel.searchPlaceholder')}
@@ -401,7 +387,7 @@ export default function CapacityPanel() {
                     <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
                       <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${item.pct}%`, ...meta.barStyle }}
+                        style={{ width: `${Math.min(item.pct, 100)}%`, ...meta.barStyle }}
                       />
                     </div>
                   </div>

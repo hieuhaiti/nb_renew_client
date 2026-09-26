@@ -34,20 +34,20 @@ import { withBaseUrl } from '@/lib/utils';
 const SCENE_PREVIEW =
   'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=300&q=80';
 const C = {
-  primary: '#0f9f8f',
-  primaryDark: '#05796d',
-  secondary: '#ffb703',
-  blue: '#219ebc',
-  text: '#15324f',
-  muted: '#64748b',
-  light: '#f5fbff',
-  border: '#e2edf5',
+  primary: 'var(--primary)',
+  primaryDark: 'var(--primary)',
+  secondary: 'var(--secondary)',
+  blue: 'var(--info)',
+  text: 'var(--foreground)',
+  muted: 'var(--muted-foreground)',
+  light: 'var(--muted)',
+  border: 'var(--border)',
 };
 const panelStyle = {
-  background: 'rgba(255,255,255,0.96)',
+  background: 'var(--card)',
   border: `1px solid ${C.border}`,
   borderRadius: '26px',
-  boxShadow: '0 18px 45px rgba(15,47,73,.12)',
+  boxShadow: 'var(--shadow-elevation-3, 0 18px 45px rgb(0 0 0 / 0.12))',
   overflow: 'hidden',
   display: 'flex',
   flexDirection: 'column',
@@ -123,9 +123,9 @@ function SceneCard({ scene, index, isSelected, onClick }) {
         gridTemplateColumns: '86px 1fr',
         gap: '12px',
         padding: '10px',
-        border: `1px solid ${isSelected ? '#8de2d7' : C.border}`,
+        border: `1px solid ${isSelected ? 'var(--primary)' : C.border}`,
         borderRadius: '18px',
-        background: isSelected ? '#f0fffc' : '#fff',
+        background: isSelected ? 'var(--primary-soft)' : 'var(--card)',
         cursor: 'pointer',
         transition: '0.25s',
         transform: isSelected ? 'translateY(-2px)' : 'none',
@@ -155,7 +155,7 @@ function SceneCard({ scene, index, isSelected, onClick }) {
               fontSize: '10px',
               fontWeight: 900,
               background: C.secondary,
-              color: '#fff',
+              color: 'var(--secondary-foreground)',
               padding: '2px 6px',
               borderRadius: '999px',
             }}
@@ -303,8 +303,8 @@ function LegendBadge({ children }) {
       style={{
         fontSize: '11px',
         fontWeight: 900,
-        background: '#eefaf9',
-        color: C.primaryDark,
+        background: 'var(--primary-soft, var(--muted))',
+        color: 'var(--foreground)',
         padding: '8px 10px',
         borderRadius: '999px',
         whiteSpace: 'nowrap',
@@ -327,9 +327,9 @@ function ActionBtn({ primary, onClick, icon, children }) {
         gap: '8px',
         alignItems: 'center',
         justifyContent: 'center',
-        background: primary ? `linear-gradient(135deg,${C.primary},${C.blue})` : '#eefaf9',
-        color: primary ? '#fff' : C.primaryDark,
-        boxShadow: primary ? '0 12px 26px rgba(33,158,188,.22)' : 'none',
+        background: primary ? 'var(--gradient-primary)' : 'var(--primary-soft, var(--muted))',
+        color: primary ? 'var(--primary-foreground)' : 'var(--foreground)',
+        boxShadow: primary ? 'var(--ambient-shadow)' : 'none',
         fontSize: '12px',
         border: 'none',
         cursor: 'pointer',
@@ -417,14 +417,14 @@ function NoSpotEmptyState({ onBack }) {
           gap: '8px',
           borderRadius: '999px',
           padding: '12px 24px',
-          background: `linear-gradient(135deg,${C.primary},${C.blue})`,
-          color: '#fff',
+          background: 'var(--gradient-primary)',
+          color: 'var(--primary-foreground)',
           fontWeight: 900,
           fontSize: '14px',
           border: 'none',
           cursor: 'pointer',
           fontFamily: 'inherit',
-          boxShadow: '0 12px 26px rgba(15,159,143,.25)',
+          boxShadow: 'var(--ambient-shadow)',
           transition: 'opacity 0.2s, transform 0.2s',
         }}
         onMouseEnter={(e) => {
@@ -696,8 +696,8 @@ export default function Vr360PageContent() {
                   transition: 'background 0.2s, color 0.2s',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#eefaf9';
-                  e.currentTarget.style.color = C.primaryDark;
+                  e.currentTarget.style.background = 'var(--muted)';
+                  e.currentTarget.style.color = C.foreground;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'none';
@@ -750,7 +750,7 @@ export default function Vr360PageContent() {
                 <div
                   style={{
                     borderRadius: '22px',
-                    background: 'linear-gradient(135deg,#083d4d,#0f9f8f)',
+                    background: 'var(--gradient-secondary)',
                     padding: '18px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -786,7 +786,7 @@ export default function Vr360PageContent() {
                 <div
                   style={{
                     borderRadius: '22px',
-                    background: 'linear-gradient(135deg,#083d4d,#0f9f8f)',
+                    background: 'var(--gradient-secondary)',
                     color: 'white',
                     padding: '18px',
                   }}
@@ -835,7 +835,7 @@ export default function Vr360PageContent() {
                     style={{
                       fontSize: '13px',
                       lineHeight: 1.6,
-                      color: '#dff8f5',
+                      color: 'rgba(255,255,255,0.9)',
                       display: '-webkit-box',
                       WebkitLineClamp: 3,
                       WebkitBoxOrient: 'vertical',
@@ -888,9 +888,9 @@ export default function Vr360PageContent() {
             style={{
               borderRadius: '30px',
               overflow: 'hidden',
-              boxShadow: '0 18px 45px rgba(15,47,73,.12)',
-              border: '1px solid rgba(255,255,255,.8)',
-              background: '#101820',
+              boxShadow: 'var(--ambient-shadow)',
+              border: '1px solid var(--border)',
+              background: 'var(--card)',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '480px',
@@ -921,7 +921,7 @@ export default function Vr360PageContent() {
             {/* Bottom guide bar */}
             <div
               style={{
-                background: 'rgba(255,255,255,.95)',
+                background: 'hsl(var(--card) / 0.95)',
                 padding: '14px 16px',
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -971,7 +971,7 @@ export default function Vr360PageContent() {
               borderRadius: '16px',
               overflow: 'hidden',
               border: `1px solid ${C.border}`,
-              background: '#fff',
+              background: 'var(--card)',
               flexShrink: 0,
             }}
           >
@@ -989,14 +989,14 @@ export default function Vr360PageContent() {
                 transition: 'background 0.2s, color 0.2s',
                 background:
                   mobilePanelTab === 'scenes'
-                    ? `linear-gradient(135deg,${C.primary},${C.blue})`
+                    ? 'var(--gradient-primary)'
                     : 'transparent',
-                color: mobilePanelTab === 'scenes' ? '#fff' : C.muted,
+                color: mobilePanelTab === 'scenes' ? 'var(--primary-foreground)' : C.muted,
               }}
               onMouseEnter={(e) => {
                 if (mobilePanelTab !== 'scenes') {
-                  e.currentTarget.style.background = '#eefaf9';
-                  e.currentTarget.style.color = C.primaryDark;
+                  e.currentTarget.style.background = 'var(--muted)';
+                  e.currentTarget.style.color = C.foreground;
                 }
               }}
               onMouseLeave={(e) => {
@@ -1022,14 +1022,14 @@ export default function Vr360PageContent() {
                 transition: 'background 0.2s, color 0.2s',
                 background:
                   mobilePanelTab === 'info'
-                    ? `linear-gradient(135deg,${C.primary},${C.blue})`
+                    ? 'var(--gradient-primary)'
                     : 'transparent',
-                color: mobilePanelTab === 'info' ? '#fff' : C.muted,
+                color: mobilePanelTab === 'info' ? 'var(--primary-foreground)' : C.muted,
               }}
               onMouseEnter={(e) => {
                 if (mobilePanelTab !== 'info') {
-                  e.currentTarget.style.background = '#eefaf9';
-                  e.currentTarget.style.color = C.primaryDark;
+                  e.currentTarget.style.background = 'var(--muted)';
+                  e.currentTarget.style.color = C.foreground;
                 }
               }}
               onMouseLeave={(e) => {
@@ -1283,11 +1283,11 @@ export default function Vr360PageContent() {
                   style={{
                     padding: '13px',
                     borderRadius: '16px',
-                    background: '#fff8e6',
-                    color: '#9a5b00',
+                    background: 'var(--warning-soft, hsl(var(--warning) / 0.15))',
+                    color: 'hsl(var(--warning))',
                     fontSize: '12px',
                     lineHeight: 1.6,
-                    border: '1px solid #ffe2a6',
+                    border: '1px solid hsl(var(--warning) / 0.3)',
                     display: 'flex',
                     gap: '8px',
                     alignItems: 'flex-start',

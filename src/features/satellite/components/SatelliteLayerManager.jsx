@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { ChevronDown, ChevronUp, Layers } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSatelliteStore } from '../store/useSatelliteStore';
