@@ -276,7 +276,7 @@ export default function FestivalPageContent() {
                 {[
                   { value: total, label: t('festivalPage.stats.total') },
                   { value: upcomingCount, label: t('festivalPage.stats.upcoming') },
-                  { value: allTypeKeys.length || '—', label: t('festivalPage.stats.page') },
+                  { value: totalPages, label: t('festivalPage.stats.page') },
                 ].map((s) => (
                   <div
                     key={s.label}

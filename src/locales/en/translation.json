@@ -691,6 +691,7 @@
     "radius": "Radius",
     "radiusAll": "No radius limit",
     "free": "Free",
+    "contact": "Contact",
     "no_results": "No results found",
     "errorLoading": "Unable to load data",
     "tryDifferentKeyword": "Try searching with a different keyword",
@@ -1332,7 +1333,8 @@
     "no_description": "No description available",
     "labels": {
       "province": "Province / City",
-      "unit": "Producer",
+      "unit": "Unit",
+      "producer": "Producer",
       "certification": "Certification",
       "price": "Reference price",
       "stars": "Star rating"

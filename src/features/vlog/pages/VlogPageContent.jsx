@@ -16,7 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { VLOG_INITIAL_POSTS, VLOG_TRENDING } from '@/features/vlog/data/vlogData';
+import { VLOG_TRENDING } from '@/features/vlog/data/vlogData';
+import { useGetVlogs } from '@/services/api/vlog/vlogService';
 import placeholderImg from '@/assets/images/placeholder.png';
 
 function SectionHeading({ title, description }) {
@@ -31,19 +32,7 @@ function SectionHeading({ title, description }) {
 export default function VlogPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const initialPosts = useMemo(
-    () =>
-      VLOG_INITIAL_POSTS.map((item) => ({
-        ...item,
-        title: t(item.titleKey),
-        place: t(item.placeKey),
-        type: t(item.typeKey),
-        topic: t(item.topicKey),
-        description: t(item.descriptionKey),
-        dateLabel: t(item.dateLabelKey, item.dateLabelOptions),
-      })),
-    [t]
-  );
+
   const trendingItems = useMemo(
     () =>
       VLOG_TRENDING.map((item) => ({
@@ -54,21 +43,47 @@ export default function VlogPage() {
     [t]
   );
 
-  const [posts, setPosts] = useState(initialPosts);
   const [keyword, setKeyword] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [placeFilter, setPlaceFilter] = useState('all');
   const [topicFilter, setTopicFilter] = useState('all');
   const [debouncedKeyword] = useDebounce(keyword.trim(), 400);
 
-  const [newTitle, setNewTitle] = useState('');
-  const [newPlace, setNewPlace] = useState(initialPosts[0]?.place ?? '');
-  const [newDescription, setNewDescription] = useState('');
+  const { data: vlogsApiData, isLoading: isVlogsLoading, refetch } = useGetVlogs({
+    page: 1,
+    limit: 12,
+    search: debouncedKeyword || undefined,
+  });
 
-  React.useEffect(() => {
-    setPosts(initialPosts);
-    setNewPlace((prev) => prev || initialPosts[0]?.place || '');
-  }, [initialPosts]);
+  const apiItems = useMemo(() => {
+    const raw = vlogsApiData?.data?.items || vlogsApiData?.items || [];
+    return raw.map((item) => ({
+      id: item.id,
+      title: item.title,
+      place: item.province_name || t('vlogPage.mock.places.ninh_binh', { defaultValue: 'Ninh Bình' }),
+      type: item.platform === 'youtube' || item.platform === 'tiktok' ? t('vlogPage.types.video') : t('vlogPage.types.post'),
+      topic: item.topic || t('vlogPage.topics.experience', { defaultValue: 'Trải nghiệm' }),
+      author: item.author_name || t('vlogPage.post.author_default', { defaultValue: 'Thành viên' }),
+      likes: item.like_count ?? 0,
+      comments: item.comment_count ?? 0,
+      image: item.cover_image_url || placeholderImg,
+      description: item.excerpt || item.description || '',
+      dateLabel: item.created_at ? new Date(item.created_at).toLocaleDateString('vi-VN') : '',
+      kind: item.platform === 'youtube' || item.platform === 'tiktok' ? 'video' : 'post',
+    }));
+  }, [vlogsApiData, t]);
+
+  const [localPosts, setLocalPosts] = useState([]);
+  const posts = useMemo(() => [...localPosts, ...apiItems], [localPosts, apiItems]);
+
+  const pagination = useMemo(() => vlogsApiData?.data?.pagination || vlogsApiData?.pagination || null, [vlogsApiData]);
+  const totalPosts = (pagination?.total ?? apiItems.length) + localPosts.length;
+  const totalAuthors = useMemo(() => new Set(posts.map((p) => p.author).filter(Boolean)).size, [posts]);
+  const totalViews = useMemo(() => posts.reduce((acc, cur) => acc + (cur.likes || 0), 0), [posts]);
+
+  const [newTitle, setNewTitle] = useState('');
+  const [newPlace, setNewPlace] = useState('');
+  const [newDescription, setNewDescription] = useState('');
 
   const TYPE_ALL_VALUE = 'all';
   const typePost = t('vlogPage.types.post');
@@ -130,7 +145,7 @@ export default function VlogPage() {
       description: nextDescription,
       dateLabel: t('vlogPage.just_now'),
     };
-    setPosts((prev) => [nextPost, ...prev]);
+    setLocalPosts((prev) => [nextPost, ...prev]);
     setNewTitle('');
     setNewDescription('');
     setTopicFilter(TYPE_ALL_VALUE);
@@ -177,16 +192,16 @@ export default function VlogPage() {
                   </Button>
                 </div>
 
-                {/* Stats — values come from static data; these counts are mock/demo figures */}
+                {/* Stats */}
                 <div className="mt-6 grid gap-2 sm:grid-cols-3">
                   <div className="border-border/60 rounded-2xl border bg-card/90 p-4">
-                    <p className="text-lg font-bold md:text-xl xl:text-2xl">1.240</p>
+                    <p className="text-lg font-bold md:text-xl xl:text-2xl">{totalPosts}</p>
                     <p className="text-muted-foreground text-sm font-medium">
                       {t('vlogPage.stats.posts')}
                     </p>
                   </div>
                   <div className="border-border/60 rounded-2xl border bg-card/90 p-4">
-                    <p className="text-lg font-bold md:text-xl xl:text-2xl">286</p>
+                    <p className="text-lg font-bold md:text-xl xl:text-2xl">{totalAuthors}</p>
                     <p className="text-muted-foreground text-sm font-medium">
                       {t('vlogPage.stats.authors')}
                     </p>
@@ -196,7 +211,7 @@ export default function VlogPage() {
                       {new Intl.NumberFormat(undefined, {
                         notation: 'compact',
                         maximumFractionDigits: 1,
-                      }).format(18500)}
+                      }).format(totalViews)}
                     </p>
                     <p className="text-muted-foreground text-sm font-medium">
                       {t('vlogPage.stats.views')}

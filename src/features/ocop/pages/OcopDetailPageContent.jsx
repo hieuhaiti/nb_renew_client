@@ -196,7 +196,7 @@ export default function OcopDetailPageContent() {
                   <div className="text-foreground flex items-start gap-2.5 text-sm">
                     <span className="mt-0.5 shrink-0 text-primary">🏭</span>
                     <span className="text-muted-foreground shrink-0">
-                      {t('ocopDetail.labels.unit')}:
+                      {t('ocopDetail.labels.producer')}:
                     </span>
                     <span className="font-semibold">{detail.producer_name}</span>
                   </div>

@@ -691,6 +691,7 @@
     "radius": "Bán kính",
     "radiusAll": "Không giới hạn bán kính",
     "free": "Miễn phí",
+    "contact": "Liên hệ",
     "no_results": "Không tìm thấy kết quả",
     "errorLoading": "Không thể tải dữ liệu",
     "tryDifferentKeyword": "Hãy thử tìm kiếm với từ khóa khác",
@@ -1332,7 +1333,8 @@
     "no_description": "Không có mô tả",
     "labels": {
       "province": "Tỉnh / Thành phố",
-      "unit": "Nhà sản xuất",
+      "unit": "Đơn vị tính",
+      "producer": "Nhà sản xuất",
       "certification": "Chứng nhận",
       "price": "Giá tham khảo",
       "stars": "Xếp hạng sao"

@@ -10,6 +10,8 @@ import { mutater } from '@/services/mutater';
 import useAuthStore from '@/stores/useAuthStore';
 import { ADMIN_ROLE_CODES } from '@/constants/roles';
 
+const BTN_GRADIENT = { background: 'var(--gradient-primary)' };
+
 function CommentItem({
   comment,
   t,

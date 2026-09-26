@@ -43,6 +43,20 @@ function getPointTicketPrice(point) {
   return point?.ticket_price_adult ?? point?.entrance_fee ?? null;
 }
 
+function formatPointTicketPrice(price, t) {
+  if (price == null || price === '') {
+    return t('tourismPointPage.contact', { defaultValue: 'Liên hệ' });
+  }
+  const num = Number(price);
+  if (!Number.isNaN(num) && num === 0) {
+    return t('tourismPointPage.free');
+  }
+  if (!Number.isNaN(num) && num > 0) {
+    return formatVND(num);
+  }
+  return t('tourismPointPage.contact', { defaultValue: 'Liên hệ' });
+}
+
 function getOpeningHours(point) {
   const oh = point?.opening_hours;
   if (!oh) return null;
@@ -168,9 +182,7 @@ export function TourismPointFeaturedCard({
         {/* Actions */}
         <div className="flex items-center justify-between gap-3.5">
           <div className="text-primary text-2xl font-black">
-            {price && parseInt(price) > 0
-              ? formatVND(price)
-              : t('tourismPointPage.free')}
+            {formatPointTicketPrice(price, t)}
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -250,9 +262,7 @@ export function TourismPointStandardCard({
               <MapPin size={12} /> {address.split(',')[0] || ''}
             </span>
             <span className="text-foreground font-bold">
-              {price && parseInt(price) > 0
-                ? formatVND(price)
-                : t('tourismPointPage.free')}
+              {formatPointTicketPrice(price, t)}
             </span>
           </div>
         </div>
@@ -324,9 +334,7 @@ export function TourismPointStandardCard({
           <div className="text-primary flex items-center justify-between font-black">
             <span className="font-semibold text-muted-foreground">{openingHours || ''}</span>
             <span>
-              {price && parseInt(price) > 0
-                ? formatVND(price)
-                : t('tourismPointPage.free')}
+              {formatPointTicketPrice(price, t)}
             </span>
           </div>
         </div>
