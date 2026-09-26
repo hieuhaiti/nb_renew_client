@@ -12,7 +12,17 @@ const badgeVariants = cva(
         default: 'bg-primary text-primary-foreground [a&]:hover:bg-primary/90',
         secondary: 'bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
         destructive:
-          'bg-destructive text-white focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90',
+          'bg-destructive text-destructive-foreground focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90',
+        success: 'border-transparent bg-success text-success-foreground [a&]:hover:bg-success/90',
+        warning: 'border-transparent bg-warning text-warning-foreground [a&]:hover:bg-warning/90',
+        info: 'border-transparent bg-info text-info-foreground [a&]:hover:bg-info/90',
+        soft_success: 'border-success/30 bg-success-subtle text-success-subtle-foreground',
+        soft_warning: 'border-warning/30 bg-warning-subtle text-warning-subtle-foreground',
+        soft_destructive: 'border-destructive/30 bg-destructive-subtle text-destructive-subtle-foreground',
+        soft_info: 'border-info/30 bg-info-subtle text-info-subtle-foreground',
+        soft_primary: 'border-primary/20 bg-primary-soft text-primary-soft-foreground',
+        soft_secondary: 'border-secondary/20 bg-secondary-soft text-secondary-soft-foreground',
+        gradient_primary: 'border-transparent bg-gradient-to-r from-primary to-secondary text-white shadow-xs',
         outline:
           'border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
         ghost: '[a&]:hover:bg-accent [a&]:hover:text-accent-foreground',

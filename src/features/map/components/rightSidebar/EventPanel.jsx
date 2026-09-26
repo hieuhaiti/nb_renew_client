@@ -144,6 +144,9 @@ export default function EventPanel() {
         <div className="relative">
           <Search className="text-primary-soft-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
+            id="event-panel-search-input"
+            name="eventPanelSearch"
+            aria-label={t('mapPage.eventPanel.searchPlaceholder')}
             value={filters.search}
             onChange={(event) => setFestivalFilters({ search: event.target.value, page: 1 })}
             placeholder={t('mapPage.eventPanel.searchPlaceholder')}

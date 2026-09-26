@@ -34,7 +34,7 @@ function extractSubcategoriesFromTree(payload, categoryId) {
   };
 }
 
-export function subCategoriesService({ lang = 'vi', category_id } = {}) {
+export function useSubCategoriesService({ lang = 'vi', category_id } = {}) {
   return useApiQuery(['subcategories', lang, category_id], `spot-categories/tree`, {
     enabled: !!category_id,
     select: (payload) => extractSubcategoriesFromTree(payload, category_id),
@@ -42,7 +42,9 @@ export function subCategoriesService({ lang = 'vi', category_id } = {}) {
   });
 }
 
-export async function fetchSubCategoriesByCategoryId({ lang = 'vi', category_id }) {
+export const subCategoriesService = useSubCategoriesService;
+
+export async function fetchSubCategoriesByCategoryId({ _lang = 'vi', category_id }) {
   const payload = await fetcher(`spot-categories/tree`);
   return extractSubcategoriesFromTree(payload, category_id);
 }

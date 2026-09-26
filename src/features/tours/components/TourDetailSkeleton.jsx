@@ -84,7 +84,7 @@ function RelatedToursCardSkeleton() {
 function PriceCardSkeleton() {
   return (
     <div className="overflow-hidden rounded-[28px] border-border bg-card shadow-(--ambient-shadow)">
-      <div className="border-b border-border p-5" style={{ background: 'linear-gradient(135deg,#fff8e6,#fff)' }}>
+      <div className="border-b border-border p-5" style={{ background: 'linear-gradient(135deg,var(--tertiary-soft),var(--card))' }}>
         <Skeleton className="mb-2 h-[14px] w-[60px] rounded-[6px]" />
         <Skeleton className="mb-2 h-[40px] w-[160px] rounded-[10px]" />
         <Skeleton className="h-[14px] w-[50px] rounded-[6px]" />
@@ -128,10 +128,7 @@ function GuideCardSkeleton() {
 export default function TourDetailSkeleton() {
   return (
     <RootLayout>
-      <div
-        className="min-h-screen overflow-x-hidden pb-10"
-        style={{ background: 'linear-gradient(180deg,#eaf7ff 0,#fff 42%,#f5fbff 100%)' }}
-      >
+      <div className="min-h-screen bg-background overflow-x-hidden pb-10">
         <div className="px-5 pt-5.5 pb-11 md:px-[5vw]">
 
           {/* Breadcrumb */}

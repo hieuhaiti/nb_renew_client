@@ -113,8 +113,8 @@ async function doRefresh() {
   if (!refreshToken) throw new Error('NO_REFRESH_TOKEN');
 
   const refreshRes = await axios.post(
-    `${BASE_URL?.replace(/\/$/, '')}/auth/refresh/`,
-    { refreshToken },
+    `${BASE_URL?.replace(/\/$/, '')}/auth/refresh`,
+    { refreshToken, refresh_token: refreshToken },
     { headers: { 'Content-Type': 'application/json' } }
   );
 

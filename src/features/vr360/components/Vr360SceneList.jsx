@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -103,15 +103,21 @@ export default function Vr360SceneList({
           </Badge>
         )}
         {typeof onClose === 'function' && (
-          <Button
-            variant="ghost"
-            type="button"
-            size="icon"
-            className="h-6 w-6 flex-shrink-0"
-            onClick={onClose}
-          >
-            <X className="h-3.5 w-3.5" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                type="button"
+                size="icon"
+                className="h-6 w-6 flex-shrink-0"
+                onClick={onClose}
+                aria-label={t('common.close') || 'Đóng'}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('common.close') || 'Đóng'}</TooltipContent>
+          </Tooltip>
         )}
       </div>
 

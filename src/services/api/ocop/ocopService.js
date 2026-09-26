@@ -7,6 +7,7 @@ export function useGetOcopProducts({
   category,
   province_code,
   star_rating,
+  has_image,
   params = {},
   options = {},
 } = {}) {
@@ -17,6 +18,9 @@ export function useGetOcopProducts({
   if (category) qs.set('category', category);
   if (province_code) qs.set('province_code', province_code);
   if (star_rating) qs.set('star_rating', star_rating);
+  if (has_image !== undefined && has_image !== null && has_image !== '') {
+    qs.set('has_image', has_image);
+  }
 
   const queryKey = [
     'ocop',
@@ -26,6 +30,7 @@ export function useGetOcopProducts({
     category || '',
     province_code || '',
     star_rating || '',
+    has_image !== undefined && has_image !== null ? String(has_image) : '',
   ];
 
   return useApiQuery(queryKey, `ocop?${qs.toString()}`, options);

@@ -33,6 +33,7 @@ import {
   normalizeTourRoutePoint,
 } from '@/features/map/utils/highlightRouteUtils';
 import { clearHighlightedRouteLayers } from '@/features/map/utils/MapHelper';
+import { getCapacityStatusMeta as getTourCapacityStatusMeta } from '@/features/map/utils/capacityStatus';
 import { defaultLatLong, defaultZoom, pitchDefault } from '@/features/map/constant/mapConstant';
 import { useMapStore } from '@/features/map/store/useMapStore';
 import { useMapStyleStore } from '@/features/map/store/useMapStyleStore';
@@ -147,48 +148,6 @@ function buildStopRouteCandidate(stop, pointDetail) {
   };
 }
 
-const TOUR_CAPACITY_STATUS_META = {
-  overloaded: {
-    labelKey: 'mapPage.capacityPanel.status.overloaded',
-    toneClass: 'text-destructive',
-    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
-  },
-  near_full: {
-    labelKey: 'mapPage.capacityPanel.status.near_full',
-    toneClass: 'text-orange-600',
-    barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
-  },
-  busy: {
-    labelKey: 'mapPage.capacityPanel.status.busy',
-    toneClass: 'text-warning',
-    barStyle: { background: 'linear-gradient(90deg, var(--gold), var(--tertiary-2))' },
-  },
-  moderate: {
-    labelKey: 'mapPage.capacityPanel.status.moderate',
-    toneClass: 'text-sky-600',
-    barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
-  },
-  normal: {
-    labelKey: 'mapPage.capacityPanel.status.normal',
-    toneClass: 'text-emerald-600',
-    barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
-  },
-  low: {
-    labelKey: 'mapPage.capacityPanel.status.low',
-    toneClass: 'text-emerald-500',
-    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
-  },
-  unknown: {
-    labelKey: 'mapPage.capacityPanel.status.unknown',
-    toneClass: 'text-muted-foreground',
-    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
-  },
-};
-
-function getTourCapacityStatusMeta(status) {
-  const key = String(status || 'unknown').toLowerCase();
-  return TOUR_CAPACITY_STATUS_META[key] ?? TOUR_CAPACITY_STATUS_META.unknown;
-}
 
 function TourCapacitySummary({ tourId, t }) {
   const { data, isLoading, isError } = useGetTourCurrentCapacity(tourId, {
@@ -447,6 +406,9 @@ export default function TourPanel() {
         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
+            id="tour-panel-search-input"
+            name="tourPanelSearch"
+            aria-label={t('mapPage.tourPanel.searchPlaceholder')}
             value={filters.search}
             onChange={(event) => setTourPanelFilters({ search: event.target.value, page: 1 })}
             placeholder={t('mapPage.tourPanel.searchPlaceholder')}

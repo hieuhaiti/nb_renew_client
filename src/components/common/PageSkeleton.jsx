@@ -141,8 +141,7 @@ function HeroListSkeleton() {
 function TourSkeleton() {
   return (
     <div
-      className="min-h-screen overflow-x-hidden"
-      style={{ background: 'linear-gradient(180deg,#eaf7ff 0,#fff 42%,#f5fbff 100%)' }}
+      className="bg-background text-foreground min-h-screen overflow-x-hidden"
       aria-busy="true"
     >
       {/* Hero */}
@@ -182,15 +181,14 @@ function TourSkeleton() {
 function TourismPointSkeleton() {
   return (
     <div
-      className="min-h-screen"
-      style={{ background: 'linear-gradient(180deg,#eef9ff 0%,#fff 42%,#f7fbff 100%)' }}
+      className="bg-background text-foreground min-h-screen"
       aria-busy="true"
     >
       {/* Hero */}
       <div className="px-4 pt-5 pb-0 sm:px-6">
         <div
           className="grid min-h-[240px] w-full grid-cols-1 items-end gap-5 overflow-hidden rounded-[30px] p-6 sm:p-7 lg:min-h-[255px] lg:grid-cols-[1.1fr_0.9fr]"
-          style={{ background: 'linear-gradient(90deg,rgba(4,55,76,.5),rgba(12,169,158,.35))' }}
+          style={{ background: 'var(--gradient-secondary)' }}
         >
           <div className="flex flex-col gap-4">
             <Skeleton className="h-3 w-32 rounded bg-white/30" />
@@ -202,7 +200,7 @@ function TourismPointSkeleton() {
           </div>
           <div className="grid grid-cols-3 gap-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="rounded-[20px] bg-white/[.92] p-4">
+              <div key={i} className="rounded-[20px] border border-border/60 bg-card/90 p-4">
                 <Skeleton className="mb-2 h-7 w-10 rounded-lg" />
                 <Skeleton className="h-3 w-full rounded" />
               </div>
@@ -212,9 +210,7 @@ function TourismPointSkeleton() {
       </div>
 
       {/* Toolbar */}
-      <div className="sticky top-0 z-40 border-b px-4 py-3.5 sm:px-6"
-        style={{ background: 'linear-gradient(180deg,rgba(233,247,255,.96),rgba(223,242,255,.96))' }}
-      >
+      <div className="sticky top-0 z-40 border-b border-border/60 bg-background/90 px-4 py-3.5 sm:px-6 backdrop-blur-md">
         <Skeleton className="h-[52px] w-full rounded-[24px]" />
       </div>
 

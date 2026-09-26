@@ -980,7 +980,7 @@ export default function MiniMap({
         <button
           type="button"
           onClick={switchToOverview}
-          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'overview' ? 'bg-amber-500 text-white' : 'bg-white/90 text-gray-700 hover:bg-white hover:text-gray-900'}`}
+          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'overview' ? 'bg-secondary text-secondary-foreground' : 'bg-card/90 text-card-foreground border border-border/40 hover:bg-card'}`}
         >
           Toàn cảnh
         </button>
@@ -988,7 +988,7 @@ export default function MiniMap({
         <button
           type="button"
           onClick={switchToCloseup}
-          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'closeup' ? 'bg-blue-600 text-white' : 'bg-white/90 text-gray-700 hover:bg-white hover:text-gray-900'}`}
+          className={`rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors ${viewMode === 'closeup' ? 'bg-primary text-primary-foreground' : 'bg-card/90 text-card-foreground border border-border/40 hover:bg-card'}`}
         >
           Cận cảnh
         </button>
@@ -996,7 +996,7 @@ export default function MiniMap({
           type="button"
           onClick={handleLocateUser}
           disabled={isLocating}
-          className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors disabled:cursor-not-allowed ${isLocating ? 'bg-slate-300 text-slate-700' : 'bg-white/90 text-gray-700 hover:bg-white hover:text-gray-900'}`}
+          className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-bold shadow-sm transition-colors disabled:cursor-not-allowed ${isLocating ? 'bg-muted text-muted-foreground' : 'bg-card/90 text-card-foreground border border-border/40 hover:bg-card'}`}
         >
           <LocateFixed size={12} />
           {isLocating ? 'GPS...' : 'GPS'}

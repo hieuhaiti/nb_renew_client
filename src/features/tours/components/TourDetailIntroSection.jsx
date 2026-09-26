@@ -29,13 +29,13 @@ export function TourDetailIntroSection({ description, includes, excludes, t }) {
           )}
           {excludes?.length > 0 && (
             <div>
-              <h3 className="mb-1.5 text-sm font-semibold text-red-400">
+              <h3 className="mb-1.5 text-sm font-semibold text-destructive">
                 {t('tourPage.excludes')}
               </h3>
               <ul className="space-y-1">
                 {excludes.map((item, i) => (
                   <li key={i} className="text-muted-foreground flex items-start gap-1.5 text-sm">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-destructive" />
                     {item}
                   </li>
                 ))}

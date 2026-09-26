@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const PRIMARY_GRAD = 'linear-gradient(135deg,#12a9b7,#0e9f8f)';
+const PRIMARY_GRAD = 'var(--gradient-secondary)';
 const HERO_LEFT_BG = `linear-gradient(135deg,rgba(6,36,68,.84),rgba(9,158,143,.78)),url('https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat`;
 const PAGE_SIZE = 12;
 const PRICE_MIN_VALUE = 0;
@@ -45,14 +45,14 @@ const CAPACITY_STATUS_META = {
     toneClass: 'text-destructive',
     badgeClass:
       'border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive',
-    barStyle: { background: 'linear-gradient(90deg, #f87171, #b91c1c)' },
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--destructive) / 0.8), hsl(var(--destructive)))' },
   },
   near_full: {
     labelVi: 'Gần đầy',
     labelEn: 'Near full',
-    toneClass: 'text-orange-600',
+    toneClass: 'text-warning',
     badgeClass:
-      'border-orange-500/30 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 hover:text-orange-600',
+      'border-warning/30 bg-warning/10 text-warning hover:bg-warning/20 hover:text-warning',
     barStyle: { background: 'linear-gradient(90deg, var(--tertiary-1), var(--quaternary))' },
   },
   busy: {
@@ -66,33 +66,33 @@ const CAPACITY_STATUS_META = {
   moderate: {
     labelVi: 'Vừa phải',
     labelEn: 'Moderate',
-    toneClass: 'text-sky-600',
+    toneClass: 'text-info',
     badgeClass:
-      'border-sky-500/30 bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 hover:text-sky-600',
+      'border-info/30 bg-info/10 text-info hover:bg-info/20 hover:text-info',
     barStyle: { background: 'linear-gradient(90deg, var(--primary-1), var(--primary-2))' },
   },
   normal: {
     labelVi: 'Bình thường',
     labelEn: 'Normal',
-    toneClass: 'text-emerald-600',
+    toneClass: 'text-success',
     badgeClass:
-      'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600',
+      'border-success/30 bg-success/10 text-success hover:bg-success/20 hover:text-success',
     barStyle: { background: 'linear-gradient(90deg, var(--secondary-1), var(--secondary-2))' },
   },
   low: {
     labelVi: 'Thưa thớt',
     labelEn: 'Low',
-    toneClass: 'text-emerald-500',
+    toneClass: 'text-success',
     badgeClass:
-      'border-emerald-400/30 bg-emerald-400/10 text-emerald-500 hover:bg-emerald-400/20 hover:text-emerald-500',
-    barStyle: { background: 'linear-gradient(90deg, #6ee7b7, var(--secondary-1))' },
+      'border-success/20 bg-success/10 text-success hover:bg-success/20 hover:text-success',
+    barStyle: { background: 'linear-gradient(90deg, var(--secondary-soft), var(--secondary-1))' },
   },
   unknown: {
     labelVi: 'Chưa rõ',
     labelEn: 'Unknown',
     toneClass: 'text-muted-foreground',
     badgeClass: 'border-border/40 bg-muted/60 text-muted-foreground',
-    barStyle: { background: 'linear-gradient(90deg, #94a3b8, #64748b)' },
+    barStyle: { background: 'linear-gradient(90deg, hsl(var(--muted-foreground) / 0.5), hsl(var(--muted-foreground) / 0.8))' },
   },
 };
 
@@ -195,10 +195,10 @@ function TourCard({ tour, onOpen, t, lang }) {
             e.target.src = placeholderImg;
           }}
         />
-        <span className="text-secondary absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-[11px] py-[7px] text-[12px] font-black">
+        <span className="text-secondary border-border/60 bg-background/90 absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full border px-[11px] py-[7px] text-[12px] font-black">
           {tour?.province_name || t('tourPage.defaultProvince')}
         </span>
-        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-[rgba(6,26,51,.78)] px-[11px] py-[8px] text-[12px] font-black text-white">
+        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-[11px] py-[8px] text-[12px] font-black text-white backdrop-blur-xs">
           <Clock size={11} /> {tour?.duration_days || 1} {t('tourPage.days')}
         </span>
       </div>
@@ -232,7 +232,7 @@ function TourCard({ tour, onOpen, t, lang }) {
             {rating > 0 ? (
               <>
                 <b className="text-foreground mb-0.5 flex items-center gap-1 text-[13px]">
-                  <Star size={10} className="fill-[#ff9f1c] text-[#ff9f1c]" /> {rating.toFixed(1)}/5
+                  <Star size={10} className="fill-rating text-rating" /> {rating.toFixed(1)}/5
                 </b>
                 {t('tourPage.rating')}
               </>
@@ -272,7 +272,7 @@ function TourCard({ tour, onOpen, t, lang }) {
         </div>
         <div className="flex items-center justify-between gap-2">
           <div>
-            <strong className="text-[20px] font-black text-[#ef7b00]">
+            <strong className="text-[20px] font-black text-price">
               {price > 0 ? formatVND(price) : t('tourPage.contact')}
             </strong>
             {price > 0 && (
@@ -284,7 +284,7 @@ function TourCard({ tour, onOpen, t, lang }) {
           <Button
             variant="ghost"
             type="button"
-            className="rounded-[14px] px-[13px] py-2.5 text-[13px] font-black text-white hover:text-white hover:opacity-90"
+            className="rounded-[14px] px-[13px] py-2.5 text-[13px] font-black text-primary-foreground hover:text-primary-foreground hover:opacity-90"
             style={{ background: PRIMARY_GRAD }}
           >
             {t('tourPage.viewDetail')}
@@ -317,10 +317,13 @@ function FilterSidebar({
       </h3>
 
       <div className="mb-[13px]">
-        <label className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
+        <label htmlFor="tour-search-input" className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
           {t('tourPage.filters.keyword')}
         </label>
         <Input
+          id="tour-search-input"
+          name="tourSearch"
+          aria-label={t('tourPage.searchPlaceholder')}
           placeholder={t('tourPage.searchPlaceholder')}
           value={search}
           onChange={(e) => onSearch(e.target.value)}
@@ -329,9 +332,9 @@ function FilterSidebar({
       </div>
 
       <div className="mb-[13px]">
-        <label className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
+        <span className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
           {t('tourPage.filters.featured')}
-        </label>
+        </span>
         <Select value={featuredFilter} onValueChange={onFeatured}>
           <SelectTrigger className="border-border bg-muted text-foreground w-full rounded-[15px] px-3 py-3 text-[14px] font-bold">
             <SelectValue />
@@ -344,9 +347,9 @@ function FilterSidebar({
       </div>
 
       <div className="mb-[13px]">
-        <label className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
+        <span className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
           {t('tourPage.duration')}
-        </label>
+        </span>
         <Select
           value={durationFilter || 'all'}
           onValueChange={(value) => onDuration(value === 'all' ? '' : value)}
@@ -365,9 +368,9 @@ function FilterSidebar({
       </div>
 
       <div className="mb-[8px]">
-        <label className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
+        <span className="text-muted-foreground mb-[7px] block text-[12px] font-black tracking-wide uppercase">
           {t('tourPage.filters.priceRange')}
-        </label>
+        </span>
         <div className="text-muted-foreground mb-2 flex items-center justify-between text-[12px] font-bold">
           <span>{formatVND(priceRange[0])}</span>
           <span>{formatVND(priceRange[1])}</span>
@@ -386,7 +389,13 @@ function FilterSidebar({
           className="mb-3"
         />
         <div className="grid grid-cols-2 gap-2">
+          <label htmlFor="tour-price-min-input" className="sr-only">
+            {t('tourPage.filters.priceMin')}
+          </label>
           <Input
+            id="tour-price-min-input"
+            name="tourPriceMin"
+            aria-label={t('tourPage.filters.priceMin')}
             type="number"
             min="0"
             max={String(PRICE_MAX_VALUE)}
@@ -400,7 +409,13 @@ function FilterSidebar({
             placeholder={t('tourPage.filters.priceMin')}
             className="border-border bg-muted text-foreground w-full rounded-[15px] px-3 py-3 text-[14px] font-bold outline-none"
           />
+          <label htmlFor="tour-price-max-input" className="sr-only">
+            {t('tourPage.filters.priceMax')}
+          </label>
           <Input
+            id="tour-price-max-input"
+            name="tourPriceMax"
+            aria-label={t('tourPage.filters.priceMax')}
             type="number"
             min="0"
             max={String(PRICE_MAX_VALUE)}
@@ -558,10 +573,7 @@ export default function TourPageContent() {
 
   return (
     <RootLayout>
-      <div
-        className="min-h-screen overflow-x-hidden"
-        style={{ background: 'linear-gradient(180deg,#eaf7ff 0,#fff 42%,#f5fbff 100%)' }}
-      >
+      <div className="bg-background text-foreground min-h-screen overflow-x-hidden">
         {/* Hero */}
         <section className="px-5 pt-6.5 pb-5 md:px-[5vw]">
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_.95fr]">
@@ -579,7 +591,7 @@ export default function TourPageContent() {
               >
                 {t('tourPage.hero.title')}
               </h1>
-              <p className="max-w-[700px] leading-[1.72]" style={{ color: '#eafaff' }}>
+              <p className="max-w-[700px] leading-[1.72] text-white/90">
                 {t('tourPage.hero.description')}
               </p>
             </div>

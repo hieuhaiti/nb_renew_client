@@ -1010,7 +1010,7 @@ export default function Vr360SceneViewer({
                     className="w-full"
                     trackClassName="bg-muted/70 h-1.5"
                     rangeClassName="from-primary to-tertiary bg-gradient-to-r"
-                    thumbClassName="size-3.5 border-border bg-white ring-2 ring-white/20 hover:ring-3 focus-visible:ring-3"
+                    thumbClassName="size-3.5 border-border bg-background ring-2 ring-primary/20 hover:ring-3 focus-visible:ring-3"
                     aria-label={t('vr360.narration_volume')}
                   />
                   <span className="text-foreground/90 w-8 text-right text-xs font-semibold tabular-nums">

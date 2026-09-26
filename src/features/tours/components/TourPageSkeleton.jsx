@@ -44,10 +44,7 @@ function FilterSidebarSkeleton() {
 export default function TourPageSkeleton() {
   return (
     <RootLayout>
-      <div
-        className="min-h-screen overflow-x-hidden"
-        style={{ background: 'linear-gradient(180deg,#eaf7ff 0,#fff 42%,#f5fbff 100%)' }}
-      >
+      <div className="bg-background text-foreground min-h-screen overflow-x-hidden">
         {/* Hero */}
         <section className="px-5 pt-6.5 pb-5 md:px-[5vw]">
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_.95fr]">

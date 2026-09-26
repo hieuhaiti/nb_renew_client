@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, MapPin, Package, ShieldCheck, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -8,22 +8,22 @@ import { formatVND, withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { Button } from '@/components/ui/button';
 
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const BTN_GRADIENT = { background: 'var(--gradient-primary)' };
 
 const CATEGORY_COLORS = {
-  thuc_pham: { bg: 'bg-[#fef3c7]', text: 'text-[#b45309]', border: 'border-[#fde68a]' },
-  do_uong: { bg: 'bg-[#dbeafe]', text: 'text-[#1d4ed8]', border: 'border-[#bfdbfe]' },
-  duoc_lieu: { bg: 'bg-[#dcfce7]', text: 'text-[#166534]', border: 'border-[#bbf7d0]' },
-  thuoc_và_cskh: { bg: 'bg-[#fce7f3]', text: 'text-[#9d174d]', border: 'border-[#fbcfe8]' },
-  vai_va_may_mac: { bg: 'bg-[#f3e8ff]', text: 'text-[#6b21a8]', border: 'border-[#e9d5ff]' },
-  thu_cong_my_nghe: { bg: 'bg-[#fff7ed]', text: 'text-[#9a3412]', border: 'border-[#fed7aa]' },
-  sinh_vat_canh: { bg: 'bg-[#ecfdf5]', text: 'text-[#065f46]', border: 'border-[#a7f3d0]' },
+  thuc_pham: { bg: 'bg-success-subtle', text: 'text-success-subtle-foreground', border: 'border-success/30' },
+  do_uong: { bg: 'bg-secondary-soft', text: 'text-secondary-soft-foreground', border: 'border-secondary/30' },
+  duoc_lieu: { bg: 'bg-success-subtle', text: 'text-success-subtle-foreground', border: 'border-success/30' },
+  thuoc_và_cskh: { bg: 'bg-quaternary-soft', text: 'text-quaternary-soft-foreground', border: 'border-quaternary/30' },
+  vai_va_may_mac: { bg: 'bg-quaternary-soft', text: 'text-quaternary-soft-foreground', border: 'border-quaternary/30' },
+  thu_cong_my_nghe: { bg: 'bg-tertiary-soft', text: 'text-tertiary-soft-foreground', border: 'border-tertiary/30' },
+  sinh_vat_canh: { bg: 'bg-success-subtle', text: 'text-success-subtle-foreground', border: 'border-success/30' },
 };
 
 const DEFAULT_CAT_COLOR = {
-  bg: 'bg-[#f8fbff]',
-  text: 'text-[#52647a]',
-  border: 'border-[#cfe0f4]',
+  bg: 'bg-muted',
+  text: 'text-muted-foreground',
+  border: 'border-border',
 };
 
 /* Province code → name mapping; only codes known at build-time are listed here.
@@ -70,18 +70,18 @@ export default function OcopDetailPageContent() {
       <RootLayout>
         <div className="min-h-screen px-4 py-5 lg:py-6">
           <div className="mx-auto w-full max-w-7xl">
-            <div className="mb-4 h-9 w-32 animate-pulse rounded-[10px] border border-[#cfe0f4] bg-[#f8fbff]" />
+            <div className="mb-4 h-9 w-32 animate-pulse rounded-[10px] border border-border/60 bg-muted/40" />
             <div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
-              <div className="h-80 animate-pulse rounded-[18px] border border-[#cfe0f4] bg-[#f8fbff] sm:h-96" />
+              <div className="h-80 animate-pulse rounded-[18px] border border-border/60 bg-muted/40 sm:h-96" />
               <div className="space-y-3">
-                <div className="h-8 w-3/4 animate-pulse rounded-[8px] bg-[#f8fbff]" />
+                <div className="h-8 w-3/4 animate-pulse rounded-[8px] bg-muted/40" />
                 <div className="flex gap-2">
-                  <div className="h-6 w-20 animate-pulse rounded-full bg-[#f8fbff]" />
-                  <div className="h-6 w-24 animate-pulse rounded-full bg-[#f8fbff]" />
+                  <div className="h-6 w-20 animate-pulse rounded-full bg-muted/40" />
+                  <div className="h-6 w-24 animate-pulse rounded-full bg-muted/40" />
                 </div>
-                <div className="h-32 animate-pulse rounded-[12px] border border-[#cfe0f4] bg-[#f8fbff]" />
-                <div className="h-24 animate-pulse rounded-[12px] border border-[#cfe0f4] bg-[#f8fbff]" />
-                <div className="h-12 animate-pulse rounded-[10px] bg-[#f8fbff]" />
+                <div className="h-32 animate-pulse rounded-[12px] border border-border/60 bg-muted/40" />
+                <div className="h-24 animate-pulse rounded-[12px] border border-border/60 bg-muted/40" />
+                <div className="h-12 animate-pulse rounded-[10px] bg-muted/40" />
               </div>
             </div>
           </div>
@@ -94,15 +94,15 @@ export default function OcopDetailPageContent() {
     return (
       <RootLayout>
         <div className="flex min-h-screen items-center justify-center px-4">
-          <div className="w-full max-w-sm rounded-[18px] border border-[#cfe0f4] bg-white p-8 text-center shadow-[0_4px_16px_rgba(13,74,130,0.07)]">
+          <div className="w-full max-w-sm rounded-[18px] border border-border bg-card p-8 text-center shadow-sm">
             <p className="text-foreground text-sm font-bold 2xl:text-base">
               {t('ocopDetail.default_name')}
             </p>
             <Button
-              variant="ghost"
+              variant="outline"
               type="button"
               onClick={() => navigate('/ocop')}
-              className="text-foreground mt-4 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-4 py-2 text-sm font-semibold hover:bg-[#eef7ff]"
+              className="mt-4 flex w-full items-center justify-center gap-1.5"
             >
               <ArrowLeft size={14} />
               {t('ocopDetail.back')}
@@ -118,10 +118,10 @@ export default function OcopDetailPageContent() {
       <div className="min-h-screen px-4 py-5 lg:py-6">
         <div className="mx-auto w-full max-w-7xl">
           <Button
-            variant="ghost"
+            variant="outline"
             type="button"
             onClick={() => navigate('/ocop')}
-            className="text-foreground mb-4 flex items-center gap-1.5 rounded-[10px] border border-[#cfe0f4] bg-white px-3.5 py-2 text-sm font-semibold shadow-sm hover:bg-[#eef7ff]"
+            className="mb-4 flex items-center gap-1.5 shadow-xs"
           >
             <ArrowLeft size={15} />
             {t('ocopDetail.back')}
@@ -129,7 +129,7 @@ export default function OcopDetailPageContent() {
 
           <div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
             {/* Image */}
-            <div className="relative overflow-hidden rounded-[18px] border border-[#cfe0f4] shadow-[0_8px_24px_rgba(13,74,130,0.10)]">
+            <div className="relative overflow-hidden rounded-xl border border-border shadow-md">
               <div className="h-72 sm:h-96 lg:h-full lg:min-h-105">
                 <img
                   src={imageSrc || placeholderImg}
@@ -142,8 +142,8 @@ export default function OcopDetailPageContent() {
                 />
               </div>
               {stars > 0 && (
-                <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-1 text-xs font-bold text-[#b45309] backdrop-blur-sm">
-                  <Star size={10} className="fill-[#b45309]" />
+                <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full border border-gold/40 bg-gold-soft/95 px-2.5 py-1 text-xs font-bold text-gold-foreground backdrop-blur-sm">
+                  <Star size={10} className="fill-rating text-rating" />
                   {stars} {t('ocopDetail.labels.stars')}
                 </div>
               )}
@@ -164,7 +164,7 @@ export default function OcopDetailPageContent() {
                 </h1>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   {stars > 0 && (
-                    <span className="flex items-center gap-1 rounded-full border border-[#fde68a] bg-[#fef3c7] px-2.5 py-0.5 text-xs font-bold text-[#b45309]">
+                    <span className="flex items-center gap-1 rounded-full border border-gold/40 bg-gold-soft px-2.5 py-0.5 text-xs font-bold text-gold-foreground">
                       {'★'.repeat(stars)}
                       {'☆'.repeat(5 - stars)} · {stars} {t('ocopDetail.labels.stars')}
                     </span>
@@ -181,20 +181,20 @@ export default function OcopDetailPageContent() {
 
               <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
 
-              <div className="space-y-3 rounded-[12px] border border-[#cfe0f4] bg-[#f8fbff] p-4">
+              <div className="space-y-3 rounded-xl border border-border bg-card p-4">
                 <div className="text-foreground flex items-center gap-2.5 text-sm">
-                  <Package size={15} className="shrink-0 text-[#0b66c3]" />
+                  <Package size={15} className="shrink-0 text-primary" />
                   <span className="text-muted-foreground">{t('ocopDetail.labels.unit')}:</span>
                   <span className="font-semibold">{detail?.unit || '—'}</span>
                 </div>
                 <div className="text-foreground flex items-center gap-2.5 text-sm">
-                  <MapPin size={15} className="shrink-0 text-[#0b66c3]" />
+                  <MapPin size={15} className="shrink-0 text-primary" />
                   <span className="text-muted-foreground">{t('ocopDetail.labels.province')}:</span>
                   <span className="font-semibold">{provinceLabel}</span>
                 </div>
                 {detail?.producer_name && (
                   <div className="text-foreground flex items-start gap-2.5 text-sm">
-                    <span className="mt-0.5 shrink-0 text-[#0b66c3]">🏭</span>
+                    <span className="mt-0.5 shrink-0 text-primary">🏭</span>
                     <span className="text-muted-foreground shrink-0">
                       {t('ocopDetail.labels.unit')}:
                     </span>
@@ -203,7 +203,7 @@ export default function OcopDetailPageContent() {
                 )}
                 {detail?.certification_no && (
                   <div className="text-foreground flex items-center gap-2.5 text-sm">
-                    <ShieldCheck size={15} className="shrink-0 text-[#0b66c3]" />
+                    <ShieldCheck size={15} className="shrink-0 text-primary" />
                     <span className="text-muted-foreground">
                       {t('ocopDetail.labels.certification')}:
                     </span>
@@ -214,9 +214,9 @@ export default function OcopDetailPageContent() {
                 )}
               </div>
 
-              <div className="rounded-[12px] border border-[#cfe0f4] bg-white p-4">
+              <div className="rounded-xl border border-border bg-card p-4">
                 <p className="text-muted-foreground mb-1 text-xs">{t('ocopDetail.labels.price')}</p>
-                <p className="text-lg font-black text-[#0b66c3] md:text-xl xl:text-2xl">
+                <p className="text-lg font-black text-price md:text-xl xl:text-2xl">
                   {priceLabel}
                 </p>
                 {detail?.unit && priceValue > 0 && (
@@ -231,7 +231,7 @@ export default function OcopDetailPageContent() {
                   detail?.shop_url && window.open(detail.shop_url, '_blank', 'noopener,noreferrer')
                 }
                 disabled={!detail?.shop_url}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-[10px] text-sm font-bold text-white hover:text-white disabled:opacity-40"
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-[10px] text-sm font-bold text-primary-foreground disabled:opacity-40"
                 style={BTN_GRADIENT}
               >
                 {t('ocopDetail.view_map')}

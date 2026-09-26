@@ -81,11 +81,11 @@ function formatVoucherDiscount(voucher) {
 
 /* ─── static module-level constants ────────────────── */
 const ICON_GRADS = [
-  'linear-gradient(135deg,#10b981,#2ec4b6)', // secondary teal
-  'linear-gradient(135deg,#0b66c3,#0ea5e9)', // primary blue
-  'linear-gradient(135deg,#f59e0b,#ffb703)', // tertiary amber
-  'linear-gradient(135deg,#7c3aed,#a78bfa)', // quaternary purple
-  'linear-gradient(135deg,#ef4444,#fb8500)', // quinary coral
+  'var(--gradient-secondary)', // secondary teal
+  'var(--gradient-primary)', // primary blue
+  'var(--gradient-sunset)', // tertiary amber
+  'var(--gradient-mystic)', // quaternary purple
+  'var(--gradient-destructive)', // quinary coral
 ];
 
 const QUICK_ICON_MAP = {
@@ -411,7 +411,7 @@ export default function HomePageContent() {
     limit: 4,
     is_published: true,
   });
-  const { data: ocopListData } = useGetOcopProducts({ page: 1, limit: 3 });
+  const { data: ocopListData } = useGetOcopProducts({ page: 1, limit: 12, has_image: true });
   const { data: toursListData } = useGetAllTours({ page: 1, limit: 1 });
   const { data: nearbyVouchersData } = useGetNearbyVouchers({
     lat: defaultLatLong.lat,
@@ -464,7 +464,14 @@ export default function HomePageContent() {
 
   const ocopProducts = useMemo(() => {
     const raw = ocopListData?.data?.items || ocopListData?.items || [];
-    return Array.isArray(raw) ? raw : [];
+    if (!Array.isArray(raw)) return [];
+    const withImages = raw.filter(
+      (item) =>
+        Boolean(item?.cover_image_url) ||
+        (Array.isArray(item?.media_urls) && item.media_urls.some(Boolean))
+    );
+    const list = withImages.length > 0 ? withImages : raw;
+    return list.slice(0, 3);
   }, [ocopListData]);
 
   const featuredTour = toursListData?.data?.tours?.[0] ?? toursListData?.tours?.[0] ?? null;
@@ -613,9 +620,9 @@ export default function HomePageContent() {
         className="text-foreground overflow-x-hidden"
         style={{
           background:
-            'radial-gradient(circle at 5% 8%,rgba(16,185,129,.12),transparent 26%),' +
-            'radial-gradient(circle at 90% 12%,rgba(245,158,11,.14),transparent 24%),' +
-            'linear-gradient(180deg,#f5fcff 0%,#ffffff 42%,#f7fbff 100%)',
+            'radial-gradient(circle at 5% 8%,hsl(var(--secondary) / 0.12),transparent 26%),' +
+            'radial-gradient(circle at 90% 12%,hsl(var(--tertiary) / 0.14),transparent 24%),' +
+            'var(--background)',
         }}
       >
         {/* ══════════════════════════════════════════
@@ -623,25 +630,25 @@ export default function HomePageContent() {
         ══════════════════════════════════════════ */}
         <section className="grid items-start gap-7 px-5 pt-7 pb-[22px] md:grid-cols-[1.1fr_.9fr] md:px-[5vw] lg:min-h-[calc(100vh-76px)] lg:grid-cols-[1.05fr_.95fr] lg:items-center">
           {/* ── Left ── */}
-          <div>
+          <div className="min-w-0">
             {/* Badge */}
             <Badge
               variant="outline"
-              className="mb-4 gap-2 rounded-full border-(--tertiary-soft-hover) bg-(--tertiary-soft) px-3.5 py-2.5 text-[13px] font-black text-(--tertiary-soft-foreground)"
+              className="mb-4 inline-flex max-w-full items-center gap-2 rounded-2xl border-(--tertiary-soft-hover) bg-(--tertiary-soft) px-3.5 py-2 text-[13px] font-black text-(--tertiary-soft-foreground) whitespace-normal break-words leading-snug text-left"
             >
-              <Sparkles size={13} />
-              {t('home.hero.description')}
+              <Sparkles size={13} className="shrink-0" />
+              <span>{t('home.hero.description')}</span>
             </Badge>
 
             {/* H1 */}
             <h1
-              className="text-foreground mb-4 leading-[1.06] font-black tracking-[-2.2px]"
-              style={{ fontSize: 'clamp(36px,5vw,68px)' }}
+              className="text-foreground mb-4 leading-[1.08] font-black tracking-tight sm:tracking-[-2px] break-words"
+              style={{ fontSize: 'clamp(28px,5.5vw,68px)' }}
             >
               {t('home.hero.title')}
             </h1>
 
-            <p className="text-muted-foreground mb-5 max-w-xl text-[17px] leading-[1.75]">
+            <p className="text-muted-foreground mb-5 max-w-xl text-[16px] sm:text-[17px] leading-[1.75]">
               {t('home.hero.lead')}
             </p>
 
@@ -653,6 +660,9 @@ export default function HomePageContent() {
                   <Search size={15} className="text-secondary shrink-0" />
                   <div className="relative min-w-0 flex-1">
                     <Input
+                      id="home-search-keyword"
+                      name="keyword"
+                      aria-label={t('home.search.placeholder')}
                       value={keyword}
                       onChange={(e) => setKeyword(e.target.value)}
                       onFocus={() => setIsSearchFocused(true)}
@@ -666,6 +676,7 @@ export default function HomePageContent() {
                         type="button"
                         variant="ghost"
                         size="icon-xs"
+                        aria-label="Xóa từ khóa tìm kiếm"
                         className="text-muted-foreground absolute top-1/2 right-0 -translate-y-1/2"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => setKeyword('')}
@@ -771,15 +782,15 @@ export default function HomePageContent() {
                   type="button"
                   variant="outline"
                   onClick={() => navigate(item.path)}
-                  className={`border-border bg-card h-auto flex-col gap-0 rounded-[18px] p-3 shadow-[var(--ambient-shadow)] ${cardHover}`}
+                  className={`border-border bg-card h-auto flex-col gap-0 rounded-[18px] p-2 sm:p-3 shadow-[var(--ambient-shadow)] ${cardHover}`}
                 >
                   <div
-                    className="mx-auto mb-2 flex h-[38px] w-[38px] items-center justify-center rounded-[14px] text-white"
+                    className="mx-auto mb-1.5 sm:mb-2 flex h-8 w-8 sm:h-[38px] sm:w-[38px] items-center justify-center rounded-[12px] sm:rounded-[14px] text-white"
                     style={{ background: ICON_GRADS[i % ICON_GRADS.length] }}
                   >
-                    {QUICK_ICON_MAP[item.icon] ?? <MapPinned size={18} />}
+                    {QUICK_ICON_MAP[item.icon] ?? <MapPinned size={16} />}
                   </div>
-                  <span className="text-foreground/70 block text-[12px] font-black">
+                  <span className="text-foreground/70 block text-[11px] sm:text-[12px] font-black truncate max-w-full">
                     {item.title}
                   </span>
                 </Button>
@@ -791,39 +802,39 @@ export default function HomePageContent() {
               {resolvedHeroStats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="border-border bg-card rounded-[20px] border p-3.5 shadow-[var(--ambient-shadow)]"
+                  className="border-border bg-card rounded-[20px] border p-3 sm:p-3.5 shadow-[var(--ambient-shadow)]"
                 >
-                  <strong className="text-secondary block text-[25px] font-black">
+                  <strong className="text-secondary block text-[22px] sm:text-[25px] font-black">
                     {stat.value}
                   </strong>
-                  <span className="text-muted-foreground text-[12px] font-bold">{stat.label}</span>
+                  <span className="text-muted-foreground text-[11px] sm:text-[12px] font-bold block truncate">{stat.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* ── Right: dashboard ── */}
-          <div className="grid items-stretch gap-4 xl:grid-cols-[1fr_.72fr]">
+          <div className="min-w-0 grid items-stretch gap-4 xl:grid-cols-[1fr_.72fr]">
             {/* Map preview — click to open full map */}
             <div
               role="button"
               tabIndex={0}
               onClick={() => navigate('/map')}
               onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/map')}
-              className="focus-visible:ring-ring relative min-h-[300px] cursor-pointer overflow-hidden rounded-[34px] border border-white/80 shadow-(--ambient-shadow-strong) focus-visible:ring-2 focus-visible:outline-none sm:min-h-[360px] md:min-h-[420px] lg:min-h-[560px]"
+              className="focus-visible:ring-ring relative min-h-[280px] cursor-pointer overflow-hidden rounded-[28px] sm:rounded-[34px] border border-border/80 shadow-(--ambient-shadow-strong) focus-visible:ring-2 focus-visible:outline-none sm:min-h-[360px] md:min-h-[420px] lg:min-h-[560px]"
               style={{
                 background:
-                  'linear-gradient(135deg,rgba(10,68,88,.18),rgba(16,185,129,.15)),' +
+                  'linear-gradient(135deg,hsl(var(--primary)/0.18),hsl(var(--secondary)/0.15)),' +
                   "url('https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/105.936,20.253,8.2,0/700x900?access_token=pk.eyJ1IjoibmdvY3R0ZCIsImEiOiJjbWJibmlod3MwMmluMnFyMG1xMWt0dTdrIn0.ok5SgmXGrHFLeMPf-OG5_w')",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
             >
               {/* Toolbar */}
-              <div className="pointer-events-none absolute top-[18px] right-[18px] left-[18px] flex items-start justify-between gap-2.5">
-                <div className="bg-card/95 inline-flex items-center gap-2 rounded-full px-3.5 py-2.5 text-[12px] font-black shadow-[var(--ambient-shadow)]">
-                  <MapPinned size={13} className="text-secondary" />
-                  {t('home.hero.map_preview_label')}
+              <div className="pointer-events-none absolute top-3.5 right-3.5 left-3.5 sm:top-[18px] sm:right-[18px] sm:left-[18px] flex items-start justify-between gap-2.5">
+                <div className="bg-card/95 inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-3 py-1.5 sm:px-3.5 sm:py-2.5 text-[11px] sm:text-[12px] font-black shadow-[var(--ambient-shadow)]">
+                  <MapPinned size={13} className="text-secondary shrink-0" />
+                  <span className="truncate">{t('home.hero.map_preview_label')}</span>
                 </div>
                 <div className="pointer-events-auto flex flex-col gap-2">
                   {['+', '−'].map((s) => (
@@ -853,7 +864,7 @@ export default function HomePageContent() {
               ].map((p, i) => (
                 <div
                   key={i}
-                  className="absolute flex h-11 w-11 items-center justify-center rounded-[50%_50%_50%_8px] shadow-[0_8px_20px_rgba(0,0,0,.22)]"
+                  className="absolute flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-[50%_50%_50%_8px] shadow-[0_8px_20px_rgba(0,0,0,.22)]"
                   style={{
                     left: p.left,
                     top: p.top,
@@ -867,21 +878,21 @@ export default function HomePageContent() {
 
               {/* Map info */}
               {/* TODO: '65%' crowd load & '4 tuyến' are mock – replace with live crowd-density API */}
-              <div className="bg-card/96 absolute right-[18px] bottom-[18px] left-[18px] rounded-[24px] p-4 shadow-[var(--ambient-shadow-strong)]">
-                <h3 className="text-foreground mb-2 text-[15px] font-black">
+              <div className="bg-card/96 absolute right-3 bottom-3 left-3 sm:right-[18px] sm:bottom-[18px] sm:left-[18px] rounded-[20px] sm:rounded-[24px] p-3 sm:p-4 shadow-[var(--ambient-shadow-strong)]">
+                <h3 className="text-foreground mb-2 text-[14px] sm:text-[15px] font-black">
                   {t('home.hero.map_status_title')}
                 </h3>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
                   {[
                     { val: '65%', label: t('home.hero.map_crowd_label') },
                     { val: `AQI ${weatherOverview?.aqiValue ?? '--'}`, label: t(aqiMeta.labelKey) },
                     { val: '4', label: t('home.hero.map_routes_label') },
                   ].map((cell) => (
-                    <div key={cell.label} className="bg-muted rounded-[14px] p-2.5">
-                      <strong className="text-foreground block text-[15px] font-black">
+                    <div key={cell.label} className="bg-muted rounded-[12px] sm:rounded-[14px] p-2 sm:p-2.5">
+                      <strong className="text-foreground block text-[13px] sm:text-[15px] font-black">
                         {cell.val}
                       </strong>
-                      <span className="text-muted-foreground text-[12px] font-bold">
+                      <span className="text-muted-foreground text-[11px] sm:text-[12px] font-bold block truncate">
                         {cell.label}
                       </span>
                     </div>
@@ -895,14 +906,14 @@ export default function HomePageContent() {
               {/* Weather */}
               <div
                 className={glassCard}
-                style={{ background: 'linear-gradient(135deg,#fff7dc,var(--card))' }}
+                style={{ background: 'linear-gradient(135deg,var(--tertiary-soft),var(--card))' }}
               >
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="text-foreground flex items-center gap-2 text-[17px] font-black">
                     <CloudSun size={16} className="text-secondary" />
                     {t('home.weather_card.title')}
                   </h3>
-                  <span className="h-[11px] w-[11px] rounded-full bg-[#22c55e] shadow-[0_0_0_6px_rgba(34,197,94,.13)]" />
+                  <span className="bg-success shadow-success/20 h-[11px] w-[11px] rounded-full shadow-[0_0_0_6px]" />
                 </div>
                 <div className="mb-3 flex items-center justify-between">
                   <strong className="text-tertiary text-[38px] font-black">
@@ -924,7 +935,9 @@ export default function HomePageContent() {
                       val: weather ? formatWindSpeedKph(weather?.wind?.speed) : '--',
                     },
                     {
-                      icon: <img src={aqiMeta.iconSrc} alt="" className="h-3 w-3 object-contain" />,
+                      icon: aqiMeta?.iconSrc ? (
+                        <img src={aqiMeta.iconSrc} alt="" className="h-3 w-3 object-contain" />
+                      ) : null,
                       label: t('home.weather_card.aqi'),
                       val: `${weatherOverview?.aqiValue ?? '--'} · ${t(aqiMeta.labelKey)}`,
                     },
@@ -1074,7 +1087,7 @@ export default function HomePageContent() {
             </div>
             <Button
               className="h-10 rounded-full text-white"
-              style={{ background: 'linear-gradient(135deg,#10b981,#0b66c3)' }}
+              style={{ background: 'var(--gradient-primary-secondary, var(--primary))' }}
               onClick={() => navigate('/map')}
             >
               <Compass size={14} /> {t('home.featured_destinations.open_map')}
@@ -1227,7 +1240,7 @@ export default function HomePageContent() {
                   </div>
                   <Button
                     className="mt-2.5 w-full rounded-[12px] text-white"
-                    style={{ background: 'linear-gradient(135deg,#10b981,#0b66c3)' }}
+                    style={{ background: 'var(--gradient-primary-secondary, var(--primary))' }}
                     onClick={() => handleOpenTourOnMap(featuredTour)}
                   >
                     {t('home.tour_section.view_map')}
@@ -1239,7 +1252,7 @@ export default function HomePageContent() {
 
           {/* VR Banner */}
           <div
-            className="mt-5 grid items-center gap-5 overflow-hidden rounded-[32px] p-[34px] shadow-[var(--ambient-shadow-strong)] md:grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto]"
+            className="mt-5 grid items-center gap-5 overflow-hidden rounded-[32px] p-6 sm:p-[34px] shadow-[var(--ambient-shadow-strong)] md:grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto]"
             style={{
               background:
                 "linear-gradient(135deg,rgba(16,185,129,.94),rgba(11,102,195,.9)),url('https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1400&q=80') center/cover",
@@ -1247,16 +1260,16 @@ export default function HomePageContent() {
             }}
           >
             <div>
-              <h2 className="mb-2.5 flex items-center gap-2.5 text-[28px] leading-snug font-black sm:text-[30px]">
-                <Compass size={26} />
-                {t('home.vr_banner.title')}
+              <h2 className="mb-2.5 flex items-center gap-2.5 text-[22px] sm:text-[28px] leading-snug font-black">
+                <Compass size={24} className="shrink-0" />
+                <span>{t('home.vr_banner.title')}</span>
               </h2>
-              <p className="max-w-2xl text-[15px] leading-[1.65] opacity-90">
+              <p className="max-w-2xl text-[14px] sm:text-[15px] leading-[1.65] opacity-90">
                 {t('home.vr_banner.desc')}
               </p>
             </div>
             <Button
-              className="bg-card text-secondary hover:bg-card/90 h-12 shrink-0 rounded-full px-6 text-[14px] font-black"
+              className="bg-card text-secondary hover:bg-card/90 h-11 sm:h-12 shrink-0 rounded-full px-6 text-[14px] font-black"
               onClick={() => navigate('/vr360')}
             >
               <Play size={15} /> {t('home.vr_banner.cta')}
@@ -1271,16 +1284,16 @@ export default function HomePageContent() {
           <div className="grid gap-4 md:grid-cols-[.8fr_1.2fr] lg:grid-cols-[.8fr_1.2fr]">
             {/* Role intro */}
             <div
-              className="rounded-[32px] p-[30px] text-white shadow-[var(--ambient-shadow-strong)]"
-              style={{ background: 'linear-gradient(135deg,#083d4d,#10b981)' }}
+              className="rounded-[32px] p-[30px] text-secondary-foreground shadow-[var(--ambient-shadow-strong)]"
+              style={{ background: 'var(--gradient-secondary)' }}
             >
-              <Badge className="mb-3 gap-1.5 border border-white/25 bg-white/15 text-[12px] text-white">
+              <Badge className="mb-3 gap-1.5 border border-white/25 bg-white/15 text-[12px] text-secondary-foreground">
                 <Users size={12} /> {t('home.role_section.badge')}
               </Badge>
               <h2 className="mb-3 text-[30px] leading-[1.2] font-black md:text-[26px] lg:text-[34px]">
                 {t('home.role_section.title')}
               </h2>
-              <p className="text-[14px] leading-[1.7] text-white/85">
+              <p className="text-[14px] leading-[1.7] text-secondary-foreground/85">
                 {t('home.role_section.desc')}
               </p>
             </div>
@@ -1521,13 +1534,20 @@ export default function HomePageContent() {
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {ocopProducts.map((product) => (
+                
                 <article
                   key={product.id}
                   className={`border-border bg-card overflow-hidden rounded-[26px] border shadow-[var(--ambient-shadow)] ${cardHover}`}
                 >
                   <div className="flex items-center justify-center px-6 py-4">
                     <img
-                      src={withBaseUrl(product.cover_image_url)}
+                      src={
+                        product.cover_image_url
+                          ? withBaseUrl(product.cover_image_url)
+                          : product.media_urls?.[0]
+                          ? withBaseUrl(product.media_urls[0])
+                          : placeholderImg
+                      }
                       alt={product.name || ''}
                       className="h-[190px] w-full rounded-[18px] object-cover sm:w-[72%]"
                       onError={(e) => {
@@ -1585,17 +1605,13 @@ export default function HomePageContent() {
             FOOTER
         ══════════════════════════════════════════ */}
         <footer
-          className="mt-5 grid gap-6 px-5 py-[34px] text-[#d9f6f3] md:px-[5vw]"
-          style={{
-            background: '#083d4d',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))',
-          }}
+          className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-5 py-[34px] text-white/90 md:px-[5vw] bg-[var(--secondary-3)]"
         >
           <div>
             <h3 className="mb-2 text-[17px] font-black text-white">
               {t('home.footer_section.brand_name')}
             </h3>
-            <p className="text-[13px] leading-[1.8] text-[#b8d6d4]">
+            <p className="text-[13px] leading-[1.8] text-white/75">
               {t('home.footer_section.brand')}
             </p>
           </div>
@@ -1631,7 +1647,7 @@ export default function HomePageContent() {
                 <Button
                   key={lnk.label}
                   variant="link"
-                  className="block h-auto p-0 text-[13px] leading-[1.8] text-[#b8d6d4] hover:text-white"
+                  className="block h-auto p-0 text-[13px] leading-[1.8] text-white/75 hover:text-white"
                   onClick={() => navigate(lnk.path)}
                 >
                   {lnk.label}

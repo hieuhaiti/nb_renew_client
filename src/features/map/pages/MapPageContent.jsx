@@ -3,6 +3,8 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Layers, Menu, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import MapLayout from '@/features/map/layout/MapLayout';
 import MapDirectionPanel from '@/features/map/components/mapPanel/MapDirectionPanel';
@@ -83,6 +85,8 @@ export default function MapPage() {
     load: true,
     satellite: false,
   });
+  const [showMobileDataLayer, setShowMobileDataLayer] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const categoriesStoreID = useCategoriesStore((state) => state.categoriesStoreID);
   const categoriesStoreName = useCategoriesStore((state) => state.categoriesStoreName);
@@ -780,7 +784,8 @@ export default function MapPage() {
           />
 
           <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[300px_minmax(0,1fr)_340px] 2xl:grid-cols-[320px_minmax(0,1fr)_380px]">
-            <div className="flex h-full min-h-0 flex-col gap-3">
+            {/* Desktop Left DataLayer Sidebar */}
+            <div className="hidden xl:flex h-full min-h-0 flex-col gap-3">
               <Card className="border-border min-h-0 flex-1 overflow-hidden rounded-2xl shadow-sm">
                 <CardContent className="h-full min-h-0">
                   <DataLayer
@@ -792,17 +797,36 @@ export default function MapPage() {
               </Card>
             </div>
 
-            <div className="border-border relative isolate h-full min-h-0 overflow-hidden rounded-3xl p-0 shadow-sm">
+            {/* Central Map Canvas Area */}
+            <div className="border-border relative isolate h-full min-h-0 overflow-hidden rounded-2xl sm:rounded-3xl p-0 shadow-sm">
               <MapBaseArea />
-              <div className="pointer-events-none absolute top-3 left-3 z-30 xl:hidden">
-                <MapNameOverlay
-                  compact
-                  className="pointer-events-auto h-auto"
-                  categoriesStoreID={mapOverlayCategoryId}
-                  categoriesStoreName={mapOverlayCategoryName}
-                  categoryColor={selectedCategoryColor}
-                />
+
+              {/* Mobile Quick Toggles (Layers & Tools) */}
+              <div className="pointer-events-none absolute top-3 left-3 z-30 flex items-center gap-2 xl:hidden">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="pointer-events-auto bg-card/95 backdrop-blur-xs shadow-md rounded-xl text-xs font-bold gap-1.5 h-8 px-2.5"
+                  onClick={() => setShowMobileDataLayer(true)}
+                  aria-label="Mở lớp dữ liệu bản đồ"
+                >
+                  <Layers className="h-3.5 w-3.5 text-primary" />
+                  <span>{t('mapPage.toolbar.layers', { defaultValue: 'Lớp' })}</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="pointer-events-auto bg-card/95 backdrop-blur-xs shadow-md rounded-xl text-xs font-bold gap-1.5 h-8 px-2.5"
+                  onClick={() => setShowMobileSidebar(true)}
+                  aria-label="Mở tiện ích bản đồ"
+                >
+                  <Menu className="h-3.5 w-3.5 text-secondary" />
+                  <span>{t('mapPage.toolbar.tools', { defaultValue: 'Tiện ích' })}</span>
+                </Button>
               </div>
+
               {showLeftPanelRail && activePanel === 'direction' && (
                 <div className="xl:hidden">
                   <MapDirectionPanel
@@ -868,12 +892,13 @@ export default function MapPage() {
                   categories={categoriesListForOverlay}
                 />
               </div>
-              <div className="w-22vw pointer-events-none absolute top-3 right-3 z-40">
+              <div className="pointer-events-none absolute top-3 right-3 z-40 max-w-[200px] sm:max-w-none">
                 <MapWeatherCard compact className="pointer-events-auto h-auto" />
               </div>
             </div>
 
-            <div className="h-full min-h-0">
+            {/* Desktop Right Sidebar */}
+            <div className="hidden xl:block h-full min-h-0">
               <MapRightSidebar
                 activeSidebar={activeSidebar}
                 tab={activeTab}
@@ -898,6 +923,91 @@ export default function MapPage() {
             </div>
           </div>
         </div>
+
+        {/* Mobile DataLayer Drawer */}
+        {showMobileDataLayer && (
+          <div
+            className="fixed inset-0 z-50 flex bg-black/40 backdrop-blur-xs xl:hidden"
+            onClick={() => setShowMobileDataLayer(false)}
+          >
+            <div
+              className="relative h-full w-[85%] max-w-xs bg-card p-3 shadow-2xl flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-border">
+                <span className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <Layers className="h-4 w-4 text-primary" />
+                  {t('mapPage.toolbar.category', { defaultValue: 'Lớp dữ liệu' })}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => setShowMobileDataLayer(false)}
+                  aria-label="Đóng lớp dữ liệu"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex-1 min-h-0 overflow-y-auto pt-2">
+                <DataLayer
+                  categoryId={categoriesStoreID}
+                  categoryIds={allCategoryIds}
+                  showAllCategories={activeChip === 'all'}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Sidebar Drawer */}
+        {showMobileSidebar && (
+          <div
+            className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs xl:hidden"
+            onClick={() => setShowMobileSidebar(false)}
+          >
+            <div
+              className="relative h-full w-[90%] max-w-sm bg-card p-3 shadow-2xl flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-border">
+                <span className="font-bold text-sm text-foreground">
+                  {t('mapPage.toolbar.details', { defaultValue: 'Tiện ích & Điểm đến' })}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => setShowMobileSidebar(false)}
+                  aria-label="Đóng tiện ích"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex-1 min-h-0 overflow-y-auto pt-2">
+                <MapRightSidebar
+                  activeSidebar={activeSidebar}
+                  tab={activeTab}
+                  onTabChange={handleSidebarTabChange}
+                  destinations={resolvedMapDestinations}
+                  selectedPlace={selectedPlace}
+                  onSelectPlace={handleSelectPlace}
+                  monitoringItems={monitoringItems}
+                  tourSuggestions={resolvedTourSuggestions}
+                  onOpenRoute={handleOpenRoute}
+                  onOpenVr={handleOpenVr}
+                  onOpenSuggestTab={() => setActiveTab('tour')}
+                  categoriesStoreID={categoriesStoreID}
+                  layerItems={mapLayerToggles}
+                  layerState={layerState}
+                  onLayerToggle={handleLayerToggle}
+                  basemapOptions={mapBasemapOptions}
+                  activeBasemap={activeBasemap}
+                  onBasemapChange={handleBasemapChange}
+                  hasDirectionDetails={hasDirectionDetails}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </MapLayout>
   );

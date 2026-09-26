@@ -1,8 +1,9 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Bot, Menu, MessageSquare, Plus, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import useAuthStore from '@/stores/useAuthStore';
 import useChatbotStore from '@/features/map/store/useChatbotStore';
@@ -304,14 +305,15 @@ export default function ChatbotPanel() {
                               <ol className="my-1 ml-4 list-decimal space-y-0.5">{children}</ol>
                             ),
                             li: ({ children }) => <li>{children}</li>,
-                            img: ({ src, alt }) => (
-                              <img
-                                src={withBaseUrl(src)}
-                                alt={alt}
-                                className="mt-2 max-w-full cursor-pointer rounded-lg transition-opacity hover:opacity-80"
-                                onClick={() => setZoomImage(withBaseUrl(src))}
-                              />
-                            ),
+                            img: ({ src, alt }) =>
+                              src ? (
+                                <img
+                                  src={withBaseUrl(src)}
+                                  alt={alt}
+                                  className="mt-2 max-w-full cursor-pointer rounded-lg transition-opacity hover:opacity-80"
+                                  onClick={() => setZoomImage(withBaseUrl(src))}
+                                />
+                              ) : null,
                           }}
                         >
                           {msg.content}
@@ -362,6 +364,9 @@ export default function ChatbotPanel() {
           </div>
           <div className="mt-3 flex gap-2 max-[900px]:mt-2 max-[900px]:gap-1.5">
             <Input
+              id="map-chatbot-prompt-input"
+              name="chatbotPrompt"
+              aria-label={t('mapPage.chatbot.placeholder')}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -486,34 +491,45 @@ export default function ChatbotPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={() => setZoomImage(null)}
-              className="bg-muted/90 text-muted-foreground hover:bg-muted hover:text-foreground absolute top-3 right-3 z-10 rounded-lg p-1.5 transition-colors"
-            >
-              <X className="size-5" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => setZoomImage(null)}
+                  className="bg-muted/90 text-muted-foreground hover:bg-muted hover:text-foreground absolute top-3 right-3 z-10 rounded-lg p-1.5 transition-colors"
+                  aria-label={t('common.close') || 'Đóng'}
+                >
+                  <X className="size-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('common.close') || 'Đóng'}</TooltipContent>
+            </Tooltip>
 
             {/* Open in new tab button */}
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={() => {
-                window.open(zoomImage, '_blank');
-              }}
-              className="bg-muted/90 text-muted-foreground hover:bg-muted hover:text-foreground absolute top-3 right-14 z-10 rounded-lg p-1.5 transition-colors"
-              title={t('common.open_in_new_tab')}
-            >
-              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  type="button"
+                  onClick={() => {
+                    window.open(zoomImage, '_blank');
+                  }}
+                  className="bg-muted/90 text-muted-foreground hover:bg-muted hover:text-foreground absolute top-3 right-14 z-10 rounded-lg p-1.5 transition-colors"
+                  aria-label={t('common.open_in_new_tab') || 'Mở trong tab mới'}
+                >
+                  <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('common.open_in_new_tab') || 'Mở trong tab mới'}</TooltipContent>
+            </Tooltip>
 
             {/* Image */}
             <img

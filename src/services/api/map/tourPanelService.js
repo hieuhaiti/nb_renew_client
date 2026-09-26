@@ -125,13 +125,9 @@ export async function fetchPointById(pointId) {
   if (!pointId) return null;
 
   const normalizedPointId = encodeURIComponent(String(pointId));
-  try {
-    const response = await fetcher(`spots/id/${normalizedPointId}`);
-    const root = response?.data || response;
-    const candidate =
-      root?.point || root?.spot || root?.item || root?.data?.point || root?.data?.spot || root;
-    return candidate || null;
-  } catch (error) {
-    throw error;
-  }
+  const response = await fetcher(`spots/id/${normalizedPointId}`);
+  const root = response?.data || response;
+  const candidate =
+    root?.point || root?.spot || root?.item || root?.data?.point || root?.data?.spot || root;
+  return candidate || null;
 }

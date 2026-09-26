@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModalCarouselStore } from '@/features/map/store/useModalStore';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { withBaseUrl } from '@/lib/utils';
+import placeholderImg from '@/assets/images/placeholder.png';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from '@/components/ui/button';
 
@@ -72,10 +73,14 @@ export default function ModalCarousel() {
                   <Card className="h-full cursor-grab overflow-hidden active:cursor-grabbing">
                     <CardContent className="relative aspect-video w-full">
                       <img
-                        src={withBaseUrl(img)}
+                        src={img ? withBaseUrl(img) : placeholderImg}
                         alt={`${t('image')} ${(idx % imageData.length) + 1}`}
                         className="absolute inset-0 h-full w-full cursor-zoom-in rounded-lg object-cover shadow-lg"
-                        onClick={() => setZoomImage(withBaseUrl(img))}
+                        onClick={() => setZoomImage(img ? withBaseUrl(img) : placeholderImg)}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = placeholderImg;
+                        }}
                       />
                     </CardContent>
                   </Card>

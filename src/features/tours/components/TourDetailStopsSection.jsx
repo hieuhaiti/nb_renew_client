@@ -1,9 +1,10 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Clock3, MapPin, Images } from 'lucide-react';
 import { formatStopDuration, withBaseUrl } from '@/lib/utils';
 import { useGetSpotMedia } from '@/services/api/tourism-points/tourismPointsApi';
 import { useModalCarouselStore } from '@/features/map/store/useModalStore';
 import { Button } from '@/components/ui/button';
+import placeholderImg from '@/assets/images/placeholder.png';
 
 function StopMediaStrip({ spot_id }) {
   const { data: mediaResp } = useGetSpotMedia({ spot_id, options: { enabled: Boolean(spot_id) } });
@@ -37,14 +38,18 @@ function StopMediaStrip({ spot_id }) {
           variant="ghost"
           key={i}
           type="button"
-          className="relative h-12 w-16 shrink-0 overflow-hidden rounded-[8px] border border-[#cfe0f4] focus:outline-none"
+          className="relative h-12 w-16 shrink-0 overflow-hidden rounded-[8px] border border-border focus:outline-none"
           onClick={() => openCarouselModal(images)}
           aria-label={t('tourPage.viewStopGallery')}
         >
           <img
-            src={withBaseUrl(url)}
+            src={url ? withBaseUrl(url) : placeholderImg}
             alt=""
             className="h-full w-full object-cover transition-opacity hover:opacity-85"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = placeholderImg;
+            }}
           />
           {i === preview.length - 1 && extra > 0 && (
             <div className="absolute inset-0 flex items-center justify-center rounded-[8px] bg-black/45 text-xs font-bold text-white">

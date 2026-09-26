@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
   Star,
   ThumbsUp,
@@ -14,8 +14,8 @@ import { withBaseUrl } from '@/lib/utils';
 import placeholderImg from '@/assets/images/placeholder.png';
 import { Button } from '@/components/ui/button';
 
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
-const BAR_GRADIENT = 'linear-gradient(135deg, #0b66c3, #0ea5e9)';
+const BTN_GRADIENT = { background: 'var(--gradient-primary)' };
+const BAR_GRADIENT = 'var(--gradient-primary)';
 
 function StarsDisplay({ count, size = 12 }) {
   return (
@@ -25,7 +25,7 @@ function StarsDisplay({ count, size = 12 }) {
           key={i}
           size={size}
           className={
-            i < count ? 'fill-[#d99200] text-[#d99200]' : 'fill-[#d99200] text-[#d99200] opacity-20'
+            i < count ? 'fill-rating text-rating' : 'fill-rating text-rating opacity-20'
           }
         />
       ))}
@@ -49,8 +49,8 @@ function StarPicker({ value, hover, onValue, onHover, size = 'h-6 w-6' }) {
           <Star
             className={`${size} transition-colors ${
               idx < (hover || value)
-                ? 'fill-[#d99200] text-[#d99200]'
-                : 'fill-[#d99200] text-[#d99200] opacity-20'
+                ? 'fill-rating text-rating'
+                : 'fill-rating text-rating opacity-20'
             }`}
           />
         </Button>
@@ -135,7 +135,7 @@ function ReviewCard({ r, computeDisplayRating, onDeleteReview, t }) {
               {photoUrls.map((src, idx) => (
                 <img
                   key={idx}
-                  src={withBaseUrl(src)}
+                  src={src ? withBaseUrl(src) : placeholderImg}
                   alt={`review-photo-${idx}`}
                   className="h-14 w-20 shrink-0 rounded-[8px] object-cover"
                   onError={(e) => {
@@ -249,7 +249,7 @@ export function TourismDetailReviewsSection({
               return (
                 <div key={score} className="text-muted-foreground flex items-center gap-2 text-xs">
                   <span className="w-3 shrink-0 text-right font-medium">{score}</span>
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/70">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${ratio}%`, background: BAR_GRADIENT }}
@@ -492,7 +492,7 @@ export function TourismDetailReviewsSection({
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
-            className="h-9 rounded-[10px] px-5 text-sm font-bold text-white hover:text-white disabled:opacity-60"
+            className="h-9 rounded-[10px] px-5 text-sm font-bold text-primary-foreground hover:text-primary-foreground disabled:opacity-60"
             style={BTN_GRADIENT}
           >
             {isSubmitting

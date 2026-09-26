@@ -66,7 +66,8 @@ export default class ToolBaseMap {
     Object.assign(this._toggleBtn.style, {
       width: '29px',
       height: '29px',
-      background: '#ffffff',
+      background: 'var(--card)',
+      color: 'var(--foreground)',
       border: 'none',
       cursor: 'pointer',
       display: 'flex',
@@ -83,9 +84,9 @@ export default class ToolBaseMap {
       width: '236px',
       padding: '8px',
       borderRadius: '8px',
-      border: '1px solid rgba(0, 0, 0, 0.12)',
-      background: 'rgba(255, 255, 255, 0.96)',
-      boxShadow: '0 12px 28px rgba(15, 23, 42, 0.2)',
+      border: '1px solid var(--border)',
+      background: 'var(--card)',
+      boxShadow: '0 12px 28px rgba(0, 0, 0, 0.15)',
       transformOrigin: 'right center',
       transition: 'opacity 180ms ease, transform 180ms ease, max-height 180ms ease',
       opacity: '0',
@@ -117,9 +118,9 @@ export default class ToolBaseMap {
         width: '100%',
         minHeight: '76px',
         borderRadius: '6px',
-        border: '1px solid rgba(30, 41, 59, 0.14)',
-        background: '#ffffff',
-        color: '#0f172a',
+        border: '1px solid var(--border)',
+        background: 'var(--card)',
+        color: 'var(--card-foreground)',
         cursor: 'pointer',
         padding: '4px',
         display: 'grid',
@@ -133,12 +134,12 @@ export default class ToolBaseMap {
         height: '44px',
         width: '100%',
         borderRadius: '4px',
-        backgroundColor: '#e4e4e7',
+        backgroundColor: 'var(--muted)',
         backgroundImage: previewImage ? `url(${previewImage})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        border: '1px solid rgba(15, 23, 42, 0.14)',
+        border: '1px solid var(--border)',
       });
 
       const label = document.createElement('span');
@@ -207,8 +208,8 @@ export default class ToolBaseMap {
     this._optionButtons.forEach(({ node }) => {
       const isActive = node.dataset.style === styleUrl;
       node.dataset.active = String(isActive);
-      node.style.background = isActive ? '#f8fafc' : '#ffffff';
-      node.style.borderColor = isActive ? 'rgba(59, 130, 246, 0.45)' : 'rgba(30, 41, 59, 0.14)';
+      node.style.background = isActive ? 'var(--accent)' : 'var(--card)';
+      node.style.borderColor = isActive ? 'var(--primary)' : 'var(--border)';
     });
   }
 

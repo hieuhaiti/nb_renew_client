@@ -13,7 +13,7 @@ function GalleryBtn({ src, alt, onClick, className = '' }) {
       className={`relative overflow-hidden rounded-[18px] focus:outline-none transition-all duration-200 hover:scale-[1.01] hover:opacity-95 ${className}`}
     >
       <img
-        src={withBaseUrl(src)}
+        src={src ? withBaseUrl(src) : placeholderImg}
         alt={alt}
         className="h-full w-full object-cover"
         onError={(e) => {
@@ -48,7 +48,7 @@ export function TourismDetailGallerySection({
         <Button
           variant="ghost"
           onClick={() => (typeof onViewAll === 'function' ? onViewAll() : onPickImage(0))}
-          className="text-sm font-semibold text-[#08aeb9] hover:underline"
+          className="text-sm font-semibold text-secondary hover:underline"
         >
           {t('tourism.view_all_photos')} ({totalImages})
         </Button>
@@ -82,7 +82,7 @@ export function TourismDetailGallerySection({
           <button
             type="button"
             onClick={() => (typeof onViewAll === 'function' ? onViewAll() : onPickImage(0))}
-            className="mt-2 w-full rounded-[14px] border border-[#dcecf7] bg-[#f6fbff] py-2.5 text-xs font-extrabold text-[#08aeb9] transition-colors hover:border-secondary hover:bg-muted hover:text-secondary"
+            className="mt-2 w-full rounded-[14px] border border-border bg-muted/40 py-2.5 text-xs font-extrabold text-secondary transition-colors hover:border-secondary hover:bg-muted hover:text-secondary"
           >
             {t('tourism.more_photos', { count: totalImages - 3 })}
           </button>

@@ -29,7 +29,7 @@ export function TourDetailGallerySection({ images, title, onPickImage, t }) {
             className={`h-full w-full overflow-hidden rounded-[8px] p-0 ${idx === 0 ? 'row-span-2' : ''}`}
           >
             <img
-              src={withBaseUrl(src)}
+              src={src ? withBaseUrl(src) : placeholderImg}
               alt={`${title || 'tour'}-${idx + 1}`}
               className="h-full w-full object-cover"
               onError={(e) => {

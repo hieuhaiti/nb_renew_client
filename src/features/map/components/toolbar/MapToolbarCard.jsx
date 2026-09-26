@@ -524,6 +524,9 @@ export default function MapToolbarCard({
               <div className="relative w-full min-w-0 sm:col-span-2 xl:col-span-1">
                 <Search className="text-quaternary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
+                  id="map-toolbar-search-input"
+                  name="mapKeyword"
+                  aria-label={t('mapPage.toolbar.searchPlaceholder')}
                   size="toolbar"
                   value={keyword}
                   onChange={(event) => onKeywordChange(event.target.value)}
@@ -578,6 +581,7 @@ export default function MapToolbarCard({
                             variant="ghost"
                             className="h-auto w-full justify-start gap-3 rounded-lg px-2.5 py-2"
                             onClick={() => handleSelectResult(item)}
+                            aria-label={item.name}
                           >
                             <MapPin className="text-primary h-4 w-4 shrink-0" />
                             <div className="min-w-0 flex-1 text-left">
@@ -661,6 +665,11 @@ export default function MapToolbarCard({
               <div className="relative w-full min-w-0">
                 <Navigation className="text-secondary pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 fill-current" />
                 <Input
+                  id="direction-start-input"
+                  name="directionStart"
+                  aria-label={t('mapPage.direction.startPlaceholder', {
+                    defaultValue: 'Enter start point',
+                  })}
                   ref={startInputRef}
                   size="toolbar"
                   value={startLocationInput.placeName}
@@ -681,26 +690,32 @@ export default function MapToolbarCard({
                   })}
                   className="pr-9 pl-9 text-sm"
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={handleUseCurrentLocation}
-                  title={t('mapPage.direction.current_location', {
-                    defaultValue: 'My location',
-                  })}
-                  aria-label={t('mapPage.direction.current_location', {
-                    defaultValue: 'My location',
-                  })}
-                >
-                  {isLocatingStart ? (
-                    <Loader2 className="text-primary h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <LocateFixed className="text-primary h-3.5 w-3.5" />
-                  )}
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="text-muted-foreground absolute top-1/2 right-1.5 h-7 w-7 -translate-y-1/2"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={handleUseCurrentLocation}
+                      aria-label={t('mapPage.direction.current_location', {
+                        defaultValue: 'My location',
+                      })}
+                    >
+                      {isLocatingStart ? (
+                        <Loader2 className="text-primary h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <LocateFixed className="text-primary h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {t('mapPage.direction.current_location', {
+                      defaultValue: 'My location',
+                    })}
+                  </TooltipContent>
+                </Tooltip>
                 {showStartSuggestions && startLocationInput.placeName.trim().length >= 2 && (
                   <div className="bg-popover absolute z-50 mt-1 w-full rounded-md border p-1 shadow-md">
                     {isSearchingStart ||
@@ -725,6 +740,7 @@ export default function MapToolbarCard({
                           variant="ghost"
                           className="hover:bg-muted h-auto w-full rounded-sm px-2 py-1.5 text-left"
                           onClick={() => handleStartSuggestionClick(suggestion)}
+                          aria-label={suggestion.placeName}
                           title={suggestion.placeName}
                         >
                           <p className="truncate text-sm font-semibold">{suggestion.placeName}</p>
@@ -743,6 +759,11 @@ export default function MapToolbarCard({
               <div className="relative w-full min-w-0">
                 <MapPin className="text-destructive pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
+                  id="direction-end-input"
+                  name="directionEnd"
+                  aria-label={t('mapPage.direction.endPlaceholder', {
+                    defaultValue: 'Enter destination',
+                  })}
                   size="toolbar"
                   value={endLocationInput.placeName}
                   onChange={(event) => handleDestinationSearch(event.target.value)}
@@ -786,6 +807,7 @@ export default function MapToolbarCard({
                           variant="ghost"
                           className="hover:bg-muted h-auto w-full rounded-sm px-2 py-1.5 text-left"
                           onClick={() => handleEndSuggestionClick(suggestion)}
+                          aria-label={suggestion.placeName}
                           title={suggestion.placeName}
                         >
                           <p className="truncate text-sm font-semibold">{suggestion.placeName}</p>

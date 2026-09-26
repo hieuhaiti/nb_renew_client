@@ -44,15 +44,15 @@ function getCapacityCardClass(status) {
     case 'overloaded':
       return 'border-destructive/30 bg-destructive/5 hover:border-destructive/50 hover:bg-destructive/10';
     case 'near_full':
-      return 'border-orange-500/30 bg-orange-500/5 hover:border-orange-500/50 hover:bg-orange-500/10';
+      return 'border-warning/30 bg-warning/5 hover:border-warning/50 hover:bg-warning/10';
     case 'busy':
       return 'border-warning/40 bg-warning/5 hover:border-warning/60 hover:bg-warning/10';
     case 'moderate':
-      return 'border-sky-500/30 bg-sky-500/5 hover:border-sky-500/50 hover:bg-sky-500/10';
+      return 'border-info/30 bg-info/5 hover:border-info/50 hover:bg-info/10';
     case 'normal':
-      return 'border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/50 hover:bg-emerald-500/10';
+      return 'border-success/30 bg-success/5 hover:border-success/50 hover:bg-success/10';
     case 'low':
-      return 'border-emerald-400/30 bg-emerald-400/5 hover:border-emerald-400/50 hover:bg-emerald-400/10';
+      return 'border-success/20 bg-success/5 hover:border-success/40 hover:bg-success/10';
     default:
       return 'border-border/40 bg-muted/30 hover:border-border/60 hover:bg-muted/50';
   }
@@ -63,15 +63,15 @@ function getCapacityActiveBorderClass(status) {
     case 'overloaded':
       return 'border-destructive';
     case 'near_full':
-      return 'border-orange-500';
+      return 'border-warning';
     case 'busy':
       return 'border-warning';
     case 'moderate':
-      return 'border-sky-500';
+      return 'border-info';
     case 'normal':
-      return 'border-emerald-500';
+      return 'border-success';
     case 'low':
-      return 'border-emerald-400';
+      return 'border-success';
     default:
       return 'border-border';
   }
@@ -236,8 +236,8 @@ export default function CapacityPanel() {
           <p className="typo-section-title text-foreground">{t('mapPage.capacityPanel.title')}</p>
           <p className="typo-meta text-muted-foreground truncate">
             {sseStatus === 'open' ? (
-              <span className="flex items-center gap-1 text-emerald-600">
-                <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" />
+              <span className="flex items-center gap-1 text-success">
+                <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-success" />
                 {t('mapPage.capacityPanel.live')}
               </span>
             ) : sseStatus === 'connecting' ? (
@@ -274,6 +274,9 @@ export default function CapacityPanel() {
         <div className="relative shrink-0">
           <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
           <Input
+            id="capacity-panel-search-input"
+            name="capacitySearch"
+            aria-label={t('mapPage.capacityPanel.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('mapPage.capacityPanel.searchPlaceholder')}

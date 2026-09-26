@@ -16,7 +16,26 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: [],
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/aframe')) {
+            return 'vendor-aframe';
+          }
+          if (id.includes('node_modules/mapbox-gl')) {
+            return 'vendor-mapbox';
+          }
+          if (id.includes('node_modules/@turf/')) {
+            return 'vendor-turf';
+          }
+          if (
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-dom/') ||
+            id.includes('node_modules/react-router-dom/')
+          ) {
+            return 'vendor-react';
+          }
+        },
+      },
     },
   },
 });

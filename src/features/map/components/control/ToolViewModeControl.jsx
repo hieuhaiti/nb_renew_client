@@ -216,12 +216,12 @@ export default class ToolViewModeControl {
     const { terrainState, buildingState } = useMapStyleStore.getState();
     const is3D = terrainState === true && buildingState === true;
 
-    this._btn2D.style.background = is3D ? '#ffffff' : '#eff6ff';
-    this._btn2D.style.color = is3D ? '#0f172a' : '#1d4ed8';
+    this._btn2D.style.background = is3D ? 'var(--card)' : 'var(--primary-soft, var(--muted))';
+    this._btn2D.style.color = is3D ? 'var(--foreground)' : 'var(--primary)';
     this._btn2D.style.fontWeight = is3D ? '600' : '700';
 
-    this._btn3D.style.background = is3D ? '#eff6ff' : '#ffffff';
-    this._btn3D.style.color = is3D ? '#1d4ed8' : '#0f172a';
+    this._btn3D.style.background = is3D ? 'var(--primary-soft, var(--muted))' : 'var(--card)';
+    this._btn3D.style.color = is3D ? 'var(--primary)' : 'var(--foreground)';
     this._btn3D.style.fontWeight = is3D ? '700' : '600';
   }
 

@@ -56,22 +56,22 @@ export default function OcopProductModal() {
               e.target.src = placeholderImg;
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-green-900/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
 
           <div className="absolute top-3 left-3">
-            <Badge className="gap-1 border-0 bg-amber-400 text-xs font-bold text-amber-900 shadow">
-              <Star size={10} className="fill-amber-900" />
+            <Badge className="gap-1 border-0 bg-warning text-xs font-bold text-warning-foreground shadow">
+              <Star size={10} className="fill-warning-foreground" />
               OCOP
             </Badge>
           </div>
 
           {star_rating > 0 && (
             <div className="absolute bottom-3 left-3">
-              <div className="flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 shadow">
+              <div className="flex items-center gap-1 rounded-full bg-card/90 px-2 py-0.5 shadow">
                 {Array.from({ length: star_rating }, (_, index) => (
-                  <Star key={index} size={11} className="fill-amber-400 text-amber-400" />
+                  <Star key={index} size={11} className="fill-warning text-warning" />
                 ))}
-                <span className="text-xs font-semibold text-amber-700">
+                <span className="text-xs font-semibold text-warning">
                   {t('mapPage.ocopPanel.ocopStars', { count: star_rating })}
                 </span>
               </div>
@@ -86,30 +86,30 @@ export default function OcopProductModal() {
 
           {producer_name && (
             <div className="flex items-center gap-2">
-              <Building2 size={13} className="shrink-0 text-green-600" />
+              <Building2 size={13} className="shrink-0 text-primary" />
               <span className="text-muted-foreground text-sm">{producer_name}</span>
             </div>
           )}
 
           {formattedPrice && (
             <div className="flex items-center gap-2">
-              <Tag size={13} className="shrink-0 text-green-600" />
-              <span className="text-sm font-semibold text-green-700">{formattedPrice}</span>
+              <Tag size={13} className="shrink-0 text-primary" />
+              <span className="text-sm font-semibold text-primary">{formattedPrice}</span>
             </div>
           )}
 
           {spot_name && (
             <div className="flex items-start gap-2">
-              <MapPin size={13} className="mt-0.5 shrink-0 text-green-600" />
+              <MapPin size={13} className="mt-0.5 shrink-0 text-primary" />
               <span className="text-muted-foreground text-sm">{spot_name}</span>
             </div>
           )}
 
           <div className="border-muted border-t" />
 
-          <div className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 dark:bg-green-950/30">
-            <ShoppingBag size={14} className="shrink-0 text-green-700" />
-            <p className="text-xs text-green-700">
+          <div className="flex items-center gap-2 rounded-lg bg-success-subtle px-3 py-2">
+            <ShoppingBag size={14} className="shrink-0 text-success" />
+            <p className="text-xs text-success-subtle-foreground">
               {t('mapPage.ocopPanel.productCertified')}{' '}
               <span className="font-semibold">
                 {t('mapPage.ocopPanel.ocopStars', { count: star_rating })}
@@ -121,7 +121,8 @@ export default function OcopProductModal() {
           {spot_id && (
             <Button
               size="sm"
-              className="w-full gap-1.5 bg-green-600 text-white hover:bg-green-700"
+              variant="default"
+              className="w-full gap-1.5"
               onClick={handleViewSpot}
             >
               <MapPin size={14} />

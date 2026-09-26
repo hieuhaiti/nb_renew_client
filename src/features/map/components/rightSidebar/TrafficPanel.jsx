@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Activity, AlertTriangle, RefreshCw, Wifi, WifiOff, Construction, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -84,7 +84,7 @@ export default function TrafficPanel() {
             <span
               className={cn(
                 'mt-0.5 h-2 w-2 shrink-0 rounded-full',
-                isLive ? 'animate-pulse bg-emerald-500' : 'bg-muted-foreground/40'
+                isLive ? 'animate-pulse bg-success' : 'bg-muted-foreground/40'
               )}
             />
             <p className="typo-section-title text-foreground">{t('mapPage.traffic.title')}</p>
@@ -116,29 +116,29 @@ export default function TrafficPanel() {
                   icon: <AlertTriangle className="h-3 w-3" />,
                   value: stats.total,
                   label: t('mapPage.traffic.summary.total'),
-                  color: '#f97316',
-                  bg: '#f9731612',
+                  color: 'hsl(var(--warning))',
+                  bg: 'hsl(var(--warning) / 0.12)',
                 },
                 {
                   icon: <Car className="h-3 w-3" />,
                   value: stats.accidents,
                   label: t('mapPage.traffic.summary.accident'),
-                  color: '#dc2626',
-                  bg: '#dc262612',
+                  color: 'hsl(var(--destructive))',
+                  bg: 'hsl(var(--destructive) / 0.12)',
                 },
                 {
                   icon: <Activity className="h-3 w-3" />,
                   value: stats.jams,
                   label: t('mapPage.traffic.summary.jam'),
-                  color: '#ef4444',
-                  bg: '#ef444412',
+                  color: 'hsl(var(--destructive))',
+                  bg: 'hsl(var(--destructive) / 0.12)',
                 },
                 {
                   icon: <Construction className="h-3 w-3" />,
                   value: stats.works,
                   label: t('mapPage.traffic.summary.works'),
-                  color: '#3b82f6',
-                  bg: '#3b82f612',
+                  color: 'hsl(var(--info))',
+                  bg: 'hsl(var(--info) / 0.12)',
                 },
               ].map((s) => (
                 <div
@@ -169,7 +169,7 @@ export default function TrafficPanel() {
                 <span className="typo-meta text-muted-foreground">
                   {t('mapPage.traffic.summary.avg_delay')}
                 </span>
-                <span className="typo-meta font-semibold text-orange-500">
+                <span className="typo-meta font-semibold text-warning">
                   +{stats.avgDelayMin} {t('mapPage.traffic.summary.minutes')}
                 </span>
               </div>
@@ -179,7 +179,7 @@ export default function TrafficPanel() {
             <div className="bg-muted/40 border-border space-y-0.5 rounded-xl border p-2">
               <label className="hover:bg-muted/60 flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-colors">
                 <Checkbox id="traffic-flow" checked={showFlow} onCheckedChange={setShowFlow} />
-                <Activity className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                <Activity className="h-3.5 w-3.5 shrink-0 text-success" />
                 <span className="typo-body text-foreground flex-1 font-medium">
                   {t('mapPage.traffic.flow')}
                 </span>
@@ -190,7 +190,7 @@ export default function TrafficPanel() {
                   checked={showIncidents}
                   onCheckedChange={setShowIncidents}
                 />
-                <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-orange-500" />
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-warning" />
                 <span className="typo-body text-foreground flex-1 font-medium">
                   {t('mapPage.traffic.incidents')}
                 </span>
@@ -211,7 +211,7 @@ export default function TrafficPanel() {
                   </span>
                 ) : (
                   <>
-                    <Wifi className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                    <Wifi className="h-3.5 w-3.5 shrink-0 text-success" />
                     <span className="typo-meta text-muted-foreground">
                       {t('mapPage.traffic.live')}
                     </span>

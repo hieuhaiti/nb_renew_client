@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, RefreshCw, Inbox, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useDebounce } from 'use-debounce';
@@ -22,7 +22,7 @@ import {
  *  - item.reading_time — estimated reading time
  */
 
-const BTN_GRADIENT = { background: 'linear-gradient(135deg, #0b66c3, #0ea5e9)' };
+const BTN_GRADIENT = { background: 'var(--gradient-primary)' };
 const HERO_BG = `linear-gradient(135deg,rgba(3,95,172,.90),rgba(37,99,235,.85),rgba(14,165,233,.75)), url("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80") center/cover`;
 
 function formatDate(value, locale) {
@@ -61,7 +61,7 @@ function NewsCard({ item, navigate, locale, t }) {
           }}
         />
         {item?.is_featured && (
-          <span className="absolute top-3 left-3 rounded-full border border-[#fde68a] bg-[#fef3c7]/95 px-2.5 py-0.5 text-xs font-bold text-[#b45309] backdrop-blur-sm">
+          <span className="absolute top-3 left-3 rounded-full border border-warning/30 bg-warning-subtle/95 px-2.5 py-0.5 text-xs font-bold text-warning-subtle-foreground backdrop-blur-sm">
             {t('newsPage.list.featured')}
           </span>
         )}
@@ -212,13 +212,16 @@ export default function NewsPageContent() {
               </div>
 
               {/* Search bar */}
-              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-white/75 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
+              <div className="bg-card/95 flex flex-1 flex-col gap-3 rounded-3xl border border-border/80 p-4 shadow-[0_12px_28px_rgba(0,0,0,.14)] sm:flex-row sm:items-center">
                 <div className="relative min-w-0 flex-1">
                   <Search
                     size={16}
                     className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <Input
+                    id="news-search-input"
+                    name="newsSearch"
+                    aria-label={t('newsPage.filters.placeholder')}
                     type="text"
                     placeholder={t('newsPage.filters.placeholder')}
                     value={search}
@@ -254,7 +257,7 @@ export default function NewsPageContent() {
                     setPage(1);
                     refetch?.();
                   }}
-                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-white hover:text-white"
+                  className="h-11 shrink-0 rounded-xl px-5 text-sm font-bold text-primary-foreground hover:text-primary-foreground"
                   style={BTN_GRADIENT}
                 >
                   {t('newsPage.filters.keyword')}
