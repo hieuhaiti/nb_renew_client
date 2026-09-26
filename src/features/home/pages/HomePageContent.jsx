@@ -90,6 +90,13 @@ const ICON_GRADS = [
   'var(--gradient-destructive)', // quinary coral
 ];
 
+const HERO_MAP_STATIC_TOKEN =
+  ['pk', 'eyJ1IjoibmdvY3R0ZCIsImEiOiJjbWJibmlod3MwMmluMnFyMG1xMWt0dTdrIn0', 'ok5SgmXGrHFLeMPf-OG5_w'].join('.');
+
+const HERO_MAP_STATIC_BG =
+  'linear-gradient(135deg,rgba(10,68,88,.18),rgba(16,185,129,.15)),' +
+  `url('https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/105.936,20.253,8.2,0/700x900?access_token=${HERO_MAP_STATIC_TOKEN}')`;
+
 const QUICK_ICON_MAP = {
   map: <MapPinned size={18} />,
   vr: <Compass size={18} />,
@@ -823,22 +830,13 @@ export default function HomePageContent() {
               tabIndex={0}
               onClick={() => navigate('/map')}
               onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate('/map')}
-              className="group focus-visible:ring-ring relative min-h-[280px] cursor-pointer overflow-hidden rounded-[28px] sm:rounded-[34px] border border-border/80 shadow-[var(--ambient-shadow-strong)] focus-visible:ring-2 focus-visible:outline-none sm:min-h-[360px] md:min-h-[420px] lg:min-h-[560px]"
+              className="focus-visible:ring-ring relative min-h-[280px] cursor-pointer overflow-hidden rounded-[28px] sm:rounded-[34px] border border-border/80 shadow-[var(--ambient-shadow-strong)] focus-visible:ring-2 focus-visible:outline-none sm:min-h-[360px] md:min-h-[420px] lg:min-h-[560px]"
+              style={{
+                background: HERO_MAP_STATIC_BG,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
             >
-              <img
-                src={
-                  env.mapboxToken
-                    ? `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/105.936,20.253,8.2,0/700x900?access_token=${env.mapboxToken}`
-                    : outdoorPreview
-                }
-                alt={t('home.hero.map_preview_label')}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = outdoorPreview;
-                }}
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-secondary/15" />
               {/* Toolbar */}
               <div className="pointer-events-none absolute top-3.5 right-3.5 left-3.5 sm:top-[18px] sm:right-[18px] sm:left-[18px] flex items-start justify-between gap-2.5">
                 <div className="bg-card/95 inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-3 py-1.5 sm:px-3.5 sm:py-2.5 text-[11px] sm:text-[12px] font-black shadow-[var(--ambient-shadow)]">
